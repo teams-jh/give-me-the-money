@@ -7,7 +7,10 @@ export const paths = {
   page404: '/error/404',
   page500: '/error/500',
   home: '/home',
-  fileManager: `/opic-drive`,
+  dashboard: {
+    root: '/dashboard',
+  },
+  fileManager: '/drive',
   practice: {
     root: `/practice`,
     myTests: `/practice/my-tests`,

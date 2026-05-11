@@ -40,27 +40,26 @@ export const navData: NavSectionProps['data'] = [
   {
     subheader: 'Overview',
     items: [
-      { title: 'Home', path: paths.home, icon: ICONS.home },
-      { title: 'Drive', path: paths.fileManager, icon: ICONS.folder },
+      { title: 'Dashboard', path: paths.dashboard.root, icon: ICONS.home },
+      { title: 'Asset Drive', path: paths.fileManager, icon: ICONS.folder },
       {
-        title: 'Practice',
+        title: 'Trading',
         path: paths.practice.root,
         icon: ICONS.practice,
         children: [
-          { title: '내 모의고사', path: paths.practice.myTests },
-          { title: '랜덤 모의고사', path: paths.practice.randomTest },
+          { title: 'My Strategy', path: paths.practice.myTests },
+          { title: 'Simulation', path: paths.practice.randomTest },
         ],
       },
       {
-        title: 'Listening',
+        title: 'Market',
         path: paths.listening.root,
         icon: ICONS.listening,
         children: [
-          { title: 'Playlist', path: paths.listening.playlist },
-          { title: '랜덤 듣기', path: paths.listening.random },
+          { title: 'Watchlist', path: paths.listening.playlist },
+          { title: 'Live Updates', path: paths.listening.random },
         ],
       },
-
     ],
   },
 ];
@@ -70,37 +69,41 @@ export const navData: NavSectionProps['data'] = [
 export const mainNavData: NavMainProps['data'] = [
   { title: 'Home', path: '/', icon: <HomeRoundedIcon sx={{ width: 22, height: 22 }} /> },
   {
+    title: 'Dashboard',
+    path: paths.dashboard.root,
+    icon: <HomeRoundedIcon sx={{ width: 22, height: 22 }} />,
+  },
+  {
     title: 'Drive',
     path: paths.fileManager,
     icon: <FolderRoundedIcon sx={{ width: 22, height: 22 }} />,
   },
   {
-    title: 'Practice',
+    title: 'Trading',
     path: paths.practice.root,
     icon: <AssignmentRoundedIcon sx={{ width: 22, height: 22 }} />,
     children: [
       {
-        subheader: 'Practice',
+        subheader: 'Trading',
         items: [
-          { title: '내 모의고사', path: paths.practice.myTests },
-          { title: '랜덤 모의고사', path: paths.practice.randomTest },
+          { title: 'My Strategy', path: paths.practice.myTests },
+          { title: 'Simulation', path: paths.practice.randomTest },
         ],
       },
     ],
   },
   {
-    title: 'Listening',
+    title: 'Market',
     path: paths.listening.root,
     icon: <HeadphonesRoundedIcon sx={{ width: 22, height: 22 }} />,
     children: [
       {
-        subheader: 'Listening',
+        subheader: 'Market',
         items: [
-          { title: 'Playlist', path: paths.listening.playlist },
-          { title: '랜덤 듣기', path: paths.listening.random },
+          { title: 'Watchlist', path: paths.listening.playlist },
+          { title: 'Live Updates', path: paths.listening.random },
         ],
       },
     ],
   },
-
 ];
