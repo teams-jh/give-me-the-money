@@ -80,8 +80,8 @@ export function Footer({
                 [theme.breakpoints.up(layoutQuery)]: { mx: 'unset' },
               })}
             >
-              The starting point for your next project with Minimal UI Kit, built on the newest
-              version of Material-UI ©, ready to be customized to your style.
+              Give Me The Money는 최신 금융 기술과 AI 알고리즘을 결합하여 
+              당신의 투자 성공을 돕는 스마트 자산 관리 플랫폼입니다.
             </Typography>
 
             <Box
@@ -139,7 +139,7 @@ export function Footer({
         </Grid>
 
         <Typography variant="body2" sx={{ mt: 10 }}>
-          © All rights reserved.
+          © 2026 Give Me The Money. All rights reserved.
         </Typography>
       </Container>
     </FooterRoot>
@@ -155,6 +155,7 @@ export function HomeFooter({ sx, ...other }: FooterProps) {
         {
           py: 5,
           textAlign: 'center',
+          bgcolor: 'transparent',
         },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
@@ -162,10 +163,10 @@ export function HomeFooter({ sx, ...other }: FooterProps) {
     >
       <Container>
         <Logo />
-        <Box sx={{ mt: 1, typography: 'caption' }}>
-          © All rights reserved.
-          <br /> made by
-          <Link href="https://bloodstrawberry.tistory.com/"> bloodstrawberry</Link>
+        <Box sx={{ mt: 2, typography: 'caption', color: 'text.secondary' }}>
+          © 2026 Give Me The Money. All rights reserved.
+          <br /> 
+          Invest smarter, Grow faster.
         </Box>
       </Container>
     </FooterRoot>
