@@ -28,7 +28,7 @@ export function DashboardHomeView() {
 
         <Grid container spacing={3}>
           {/* Summary Card 1 */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <SummaryCard
               title="총 자산"
               value="₩128,450,000"
@@ -39,7 +39,7 @@ export function DashboardHomeView() {
           </Grid>
 
           {/* Summary Card 2 */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <SummaryCard
               title="오늘의 수익"
               value="+₩1,240,000"
@@ -50,7 +50,7 @@ export function DashboardHomeView() {
           </Grid>
 
           {/* Summary Card 3 */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <SummaryCard
               title="수익률 (YTD)"
               value="45.2%"
