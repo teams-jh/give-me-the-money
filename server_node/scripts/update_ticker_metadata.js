@@ -4,8 +4,7 @@
  * 흐름:
  *   1. src/db/russell1000_tickers.json 에서 티커 목록 로드
  *   2. 티커별 yahoo-finance2 quoteSummary + historical(3년) 조회
- *   3. S&P 500 편입 조건 자동 계산
- *   4. src/db/tickers/{TICKER}.json 저장
+ *   3. src/db/tickers/{TICKER}.json 저장 (원본 데이터만, 판단 로직 없음)
  *
  * 실행:
  *   node server_node/scripts/update_ticker_metadata.js            # 전체
@@ -25,12 +24,6 @@ const OUTPUT_DIR    = path.join(DB_DIR, "tickers");
 const CONCURRENCY   = 5;      // 동시 처리 수
 const BATCH_DELAY   = 3000;   // 배치 간 딜레이 (ms)
 const PRICE_YEARS   = 3;      // 주가 기간 (년)
-
-// S&P 500 편입 기준값
-const SP500_MIN_MARKET_CAP  = 20_500_000_000;  // $20.5B
-const SP500_MIN_FLOAT_RATIO = 0.5;             // 유동 비율 50%
-const SP500_MIN_ADVT_RATIO  = 1.0;             // 연간 거래량 / 유동시총 ≥ 1.0
-const SP500_QUARTERS        = 4;               // 흑자 유지 분기 수
 
 const QUOTE_SUMMARY_MODULES = [
   "price",
@@ -103,106 +96,72 @@ function buildTickerJson(ticker, summary, prices) {
   const fd  = summary.financialData                    ?? {};
   const ish = summary.incomeStatementHistoryQuarterly  ?? {};
 
-  // 분기 순이익 (최신순)
+  // 분기 순이익 (최신 4개)
   const quarterlyEarnings = (ish.incomeStatementHistory ?? [])
-    .slice(0, SP500_QUARTERS)
+    .slice(0, 4)
     .map((q) => ({
       quarter:    formatQuarter(q.endDate),
       net_income: q.netIncome ?? null,
     }));
-
-  // S&P 500 편입 조건 계산
-  const marketCap        = p.marketCap         ?? null;
-  const floatShares      = ks.floatShares       ?? null;
-  const sharesOutstanding= ks.sharesOutstanding ?? null;
-  const avgDailyVolume   = sd.averageVolume     ?? null;
-  const currentPrice     = p.regularMarketPrice ?? fd.currentPrice ?? null;
-
-  const floatRatio = (floatShares && sharesOutstanding)
-    ? floatShares / sharesOutstanding : null;
-
-  // 연간 달러 거래량 / 유동시총 = avgVol × 252 × price / (floatShares × price)
-  //                             = avgVol × 252 / floatShares
-  const advtRatio = (avgDailyVolume && floatShares)
-    ? (avgDailyVolume * 252) / floatShares : null;
-
-  const isProfitable = quarterlyEarnings.length >= SP500_QUARTERS
-    && quarterlyEarnings.every((q) => q.net_income !== null && q.net_income > 0);
-
-  const exchange = p.exchangeName ?? p.exchange ?? null;
-  const isUsExchange = ["NMS","NYQ","NGM","NCM","PCX","NYSEArca"].includes(exchange);
-  const isUs         = (ap.country ?? "").toUpperCase().includes("UNITED STATES") || ap.country === "US";
-
-  const eligibility = {
-    market_cap_ok:    marketCap !== null ? marketCap >= SP500_MIN_MARKET_CAP  : null,
-    float_ratio_ok:   floatRatio !== null ? floatRatio >= SP500_MIN_FLOAT_RATIO : null,
-    liquidity_ok:     advtRatio !== null ? advtRatio >= SP500_MIN_ADVT_RATIO   : null,
-    profitability_ok: quarterlyEarnings.length >= SP500_QUARTERS ? isProfitable : null,
-    country_ok:       ap.country ? isUs           : null,
-    exchange_ok:      exchange   ? isUsExchange   : null,
-  };
-  eligibility.is_eligible = Object.values(eligibility).every((v) => v === true);
 
   return {
     ticker,
     updated_at: new Date().toISOString(),
 
     info: {
-      name:                 p.longName   ?? p.shortName ?? null,
-      exchange:             exchange,
-      currency:             p.currency   ?? null,
-      sector:               ap.sector    ?? null,
-      industry:             ap.industry  ?? null,
-      country:              ap.country   ?? null,
-      employees:            ap.fullTimeEmployees ?? null,
-      website:              ap.website   ?? null,
-      description:          ap.longBusinessSummary ?? null,
-      is_actively_trading:  p.marketState !== "CLOSED" ? true : null,
+      name:       p.longName ?? p.shortName ?? null,
+      exchange:   p.exchangeName ?? p.exchange ?? null,
+      currency:   p.currency     ?? null,
+      sector:     ap.sector      ?? null,
+      industry:   ap.industry    ?? null,
+      country:    ap.country     ?? null,
+      employees:  ap.fullTimeEmployees   ?? null,
+      website:    ap.website             ?? null,
+      description: ap.longBusinessSummary ?? null,
+      is_actively_trading: p.marketState ? p.marketState !== "POST" : null,
     },
 
     market: {
-      market_cap:            marketCap,
-      shares_outstanding:    sharesOutstanding,
-      float_shares:          floatShares,
-      float_ratio:           floatRatio !== null ? round(floatRatio, 4) : null,
-      price:                 currentPrice,
-      previous_close:        sd.previousClose     ?? null,
-      fifty_two_week_high:   sd.fiftyTwoWeekHigh  ?? null,
-      fifty_two_week_low:    sd.fiftyTwoWeekLow   ?? null,
-      beta:                  sd.beta              ?? null,
+      market_cap:          p.marketCap          ?? null,
+      shares_outstanding:  ks.sharesOutstanding  ?? null,
+      float_shares:        ks.floatShares        ?? null,
+      price:               p.regularMarketPrice ?? fd.currentPrice ?? null,
+      previous_close:      sd.previousClose      ?? null,
+      fifty_two_week_high: sd.fiftyTwoWeekHigh   ?? null,
+      fifty_two_week_low:  sd.fiftyTwoWeekLow    ?? null,
+      beta:                sd.beta               ?? null,
     },
 
     liquidity: {
-      avg_daily_volume_3m:   avgDailyVolume,
-      avg_daily_volume_10d:  sd.averageVolume10days ?? null,
-      advt_to_float_ratio:   advtRatio !== null ? round(advtRatio, 4) : null,
+      avg_daily_volume_3m:  sd.averageVolume        ?? null,
+      avg_daily_volume_10d: sd.averageVolume10days   ?? null,
     },
 
     valuation: {
-      trailing_pe:   sd.trailingPE   ?? null,
-      forward_pe:    sd.forwardPE    ?? null,
-      peg_ratio:     ks.pegRatio     ?? null,
-      price_to_book: ks.priceToBook  ?? null,
-      trailing_eps:  ks.trailingEps  ?? null,
-      forward_eps:   ks.forwardEps   ?? null,
-      enterprise_value: ks.enterpriseValue ?? null,
+      trailing_pe:      sd.trailingPE       ?? null,
+      forward_pe:       sd.forwardPE        ?? null,
+      peg_ratio:        ks.pegRatio         ?? null,
+      price_to_book:    ks.priceToBook      ?? null,
+      trailing_eps:     ks.trailingEps      ?? null,
+      forward_eps:      ks.forwardEps       ?? null,
+      enterprise_value: ks.enterpriseValue  ?? null,
     },
 
     profitability: {
-      profit_margins:    fd.profitMargins    ?? null,
-      gross_margins:     fd.grossMargins     ?? null,
-      operating_margins: fd.operatingMargins ?? null,
-      roe:               fd.returnOnEquity   ?? null,
-      roa:               fd.returnOnAssets   ?? null,
-      revenue_growth:    fd.revenueGrowth    ?? null,
-      earnings_growth:   fd.earningsGrowth   ?? null,
+      profit_margins:     fd.profitMargins    ?? null,
+      gross_margins:      fd.grossMargins     ?? null,
+      operating_margins:  fd.operatingMargins ?? null,
+      roe:                fd.returnOnEquity   ?? null,
+      roa:                fd.returnOnAssets   ?? null,
+      revenue_growth:     fd.revenueGrowth    ?? null,
+      earnings_growth:    fd.earningsGrowth   ?? null,
       quarterly_earnings: quarterlyEarnings,
     },
 
     dividend: {
-      rate:               sd.dividendRate  ?? null,
-      yield:              sd.dividendYield ?? null,
-      payout_ratio:       sd.payoutRatio   ?? null,
+      rate:         sd.dividendRate  ?? null,
+      yield:        sd.dividendYield ?? null,
+      payout_ratio: sd.payoutRatio   ?? null,
     },
 
     ownership: {
@@ -211,15 +170,13 @@ function buildTickerJson(ticker, summary, prices) {
       short_ratio:           ks.shortRatio              ?? null,
     },
 
-    sp500_eligibility: eligibility,
-
     prices,
   };
 }
 
-function round(v, d = 2) {
+function round(v) {
   if (v == null || isNaN(v)) return null;
-  return Math.round(v * 10 ** d) / 10 ** d;
+  return Math.round(v * 100) / 100;
 }
 
 function formatQuarter(date) {
