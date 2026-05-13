@@ -1,0 +1,73 @@
+name: Update Ticker Metadata
+
+on:
+  # Russell 1000 업데이트 워크플로우 완료 후 자동 실행
+  workflow_run:
+    workflows: ["Update Russell 1000 Tickers"]
+    types: [completed]
+
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "기존 파일 덮어쓰기 (true/false)"
+        required: false
+        default: "false"
+      ticker:
+        description: "단일 종목만 처리 (예: AAPL) — 비워두면 전체"
+        required: false
+        default: ""
+
+jobs:
+  update-metadata:
+    runs-on: ubuntu-latest
+
+    # workflow_run 트리거 시 성공한 경우만 실행
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Run metadata update (single ticker)
+        if: ${{ github.event.inputs.ticker != '' }}
+        run: node server_node/scripts/update_ticker_metadata.js --ticker ${{ github.event.inputs.ticker }} ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+
+      - name: Run metadata update (all tickers)
+        if: ${{ github.event.inputs.ticker == '' || github.event_name == 'workflow_run' }}
+        run: node server_node/scripts/update_ticker_metadata.js ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/db/tickers/
+
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 건너뜀"
+          else
+            COUNT=$(git diff --cached --name-only | wc -l)
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: 티커 메타데이터 업데이트 ${COUNT}개 (${TIMESTAMP})"
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::티커 메타데이터 업데이트 실패! Actions 로그를 확인하세요."
