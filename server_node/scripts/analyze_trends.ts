@@ -1,13 +1,13 @@
 /**
  * analyze_trends.ts
  *
- * 전체 종목의 주가 추세를 분류하여 src/db/trend.json 으로 저장한다.
+ * 전체 종목의 주가 추세를 분류하여 src/db/trend/ 디렉토리에 저장한다.
  *
  * 흐름:
  *   1. src/db/all_tickers.json  →  분석 대상 티커 목록
  *   2. src/db/tickers/{TICKER}.json     →  일봉 prices 읽기
  *   3. 기간 커팅  →  다운샘플(주봉/월봉)  →  classifyTrend()
- *   4. src/db/trend.json 저장
+ *   4. src/db/trend/trend_{n}_{period}.json 저장
  *
  * 실행 예:
  *   ts-node --esm server_node/scripts/analyze_trends.ts
@@ -29,6 +29,7 @@ const __dirname  = path.dirname(__filename);
 const DB_DIR       = path.resolve(__dirname, "../../src/db");
 const ALL_TICKERS_FILE = path.join(DB_DIR, "all_tickers.json");
 const TICKERS_DIR  = path.join(DB_DIR, "tickers");
+const TREND_DIR    = path.join(DB_DIR, "trend");
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
@@ -113,7 +114,7 @@ const DEFAULT_MIN_PTS  = 8;
 function resolveOutputFile(n: number | undefined, period: PeriodOption | undefined): string {
   const nPart      = n      !== undefined ? String(n) : "all";
   const periodPart = period !== undefined ? period    : "all";
-  return path.join(DB_DIR, `trend_${nPart}_${periodPart}.json`);
+  return path.join(TREND_DIR, `trend_${nPart}_${periodPart}.json`);
 }
 
 // ── Step 0: CLI 파싱 ──────────────────────────────────────────────────────────
@@ -340,6 +341,7 @@ function main(): void {
     stocks,
   };
 
+  fs.mkdirSync(TREND_DIR, { recursive: true });
   fs.writeFileSync(outputFile, JSON.stringify(output, null, 2), "utf-8");
   log(`📁 저장 완료: ${outputFile}`);
 }
