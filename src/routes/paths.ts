@@ -22,4 +22,5 @@ export const paths = {
     random: `/listening/random`,
   },
   top100: '/top100',
+  chartAnalysis: '/chart-analysis',
 };

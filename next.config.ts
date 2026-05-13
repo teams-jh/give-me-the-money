@@ -4,6 +4,7 @@ const isStaticExport = true;
 
 /** @type {import('next').NextConfig} */
 const nextConfig: any = {
+  reactStrictMode: false,
   trailingSlash: true,
   output: isStaticExport ? 'export' : undefined,
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',

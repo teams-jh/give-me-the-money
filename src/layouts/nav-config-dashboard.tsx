@@ -67,6 +67,11 @@ export const navData: NavSectionProps['data'] = [
         path: paths.top100,
         icon: ICONS.analytics,
       },
+      {
+        title: '차트 분석',
+        path: paths.chartAnalysis,
+        icon: ICONS.analytics,
+      },
     ],
   },
 ];
@@ -116,6 +121,11 @@ export const mainNavData: NavMainProps['data'] = [
   {
     title: '미국 TOP 100 추세 분석',
     path: paths.top100,
+    icon: <TimelineRoundedIcon sx={{ width: 22, height: 22 }} />,
+  },
+  {
+    title: '차트 분석',
+    path: paths.chartAnalysis,
     icon: <TimelineRoundedIcon sx={{ width: 22, height: 22 }} />,
   },
 ];
