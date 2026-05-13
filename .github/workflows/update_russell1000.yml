@@ -38,7 +38,7 @@ jobs:
         run: npm ci
 
       - name: Run Russell 1000 update script
-        run: node server_node/scripts/update_russell1000.cjs
+        run: npx tsx server_node/scripts/update_russell1000.ts
 
       - name: Commit and push
         run: |

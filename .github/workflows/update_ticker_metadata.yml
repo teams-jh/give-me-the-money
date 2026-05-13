@@ -46,11 +46,11 @@ jobs:
 
       - name: Run metadata update (single ticker)
         if: ${{ github.event.inputs.ticker != '' }}
-        run: node server_node/scripts/update_ticker_metadata.cjs --ticker ${{ github.event.inputs.ticker }} ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+        run: npx tsx server_node/scripts/update_ticker_metadata.ts --ticker ${{ github.event.inputs.ticker }} ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Run metadata update (all tickers)
         if: ${{ github.event.inputs.ticker == '' || github.event_name == 'workflow_run' }}
-        run: node server_node/scripts/update_ticker_metadata.cjs ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+        run: npx tsx server_node/scripts/update_ticker_metadata.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Commit and push
         run: |
