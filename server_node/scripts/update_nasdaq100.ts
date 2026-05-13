@@ -28,10 +28,7 @@ const QQQ_CSV_URL =
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
-interface Stock {
-  ticker: string;
-  name:   string;
-}
+
 
 interface Nasdaq100Json {
   updated_at:  string;
@@ -39,7 +36,6 @@ interface Nasdaq100Json {
   source_url:  string;
   total_count: number;
   tickers:     string[];
-  stocks:      Stock[];
 }
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
@@ -88,7 +84,7 @@ function parseRow(line: string): string[] {
   return cols;
 }
 
-function parseCsv(raw: string): Stock[] {
+function parseCsv(raw: string): string[] {
   const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
 
   // 헤더 행 탐색: "Ticker" 또는 "Holding Ticker" 컬럼이 포함된 첫 번째 행
@@ -109,25 +105,22 @@ function parseCsv(raw: string): Stock[] {
   let tickerIdx = headers.indexOf("holding ticker");
   if (tickerIdx === -1) tickerIdx = headers.indexOf("ticker");
   
-  const nameIdx = headers.indexOf("name");
-  
   // Invesco CSV의 경우 Class 관련 컬럼 이름이 다양할 수 있음
   let assetClassIdx = headers.indexOf("class");
   if (assetClassIdx === -1) assetClassIdx = headers.indexOf("security type");
   if (assetClassIdx === -1) assetClassIdx = headers.indexOf("asset class");
 
-  log(`헤더 인덱스 — ticker:${tickerIdx}, name:${nameIdx}, class:${assetClassIdx}`);
+  log(`헤더 인덱스 — ticker:${tickerIdx}, class:${assetClassIdx}`);
 
   if (tickerIdx === -1) {
     throw new Error("Ticker 컬럼을 찾을 수 없습니다.");
   }
 
-  const stocks: Stock[] = [];
+  const parsedTickers: string[] = [];
 
   for (const line of lines.slice(headerIdx + 1)) {
     const cols       = parseRow(line);
     let ticker       = (cols[tickerIdx] ?? "").trim();
-    const name       = (cols[nameIdx] ?? "").trim();
 
     // Invesco CSV에서 티커에 추가 공백 등이 있을 수 있음
     ticker = ticker.split(" ")[0] || "";
@@ -145,28 +138,27 @@ function parseCsv(raw: string): Stock[] {
       }
     }
 
-    stocks.push({ ticker, name });
+    parsedTickers.push(ticker);
   }
 
-  return stocks;
+  return parsedTickers;
 }
 
 // ── 3단계: JSON 저장 ──────────────────────────────────────────────────────────
 
-function saveJson(stocks: Stock[]): void {
+function saveJson(parsedTickers: string[]): void {
   fs.mkdirSync(DB_DIR, { recursive: true });
 
   const output: Nasdaq100Json = {
     updated_at:  new Date().toISOString(),
     source:      "Invesco QQQ ETF",
     source_url:  QQQ_CSV_URL,
-    total_count: stocks.length,
-    tickers:     stocks.map((s) => s.ticker),
-    stocks,
+    total_count: parsedTickers.length,
+    tickers:     parsedTickers,
   };
 
   fs.writeFileSync(OUTPUT, JSON.stringify(output, null, 2), "utf8");
-  log(`JSON 저장 완료: ${OUTPUT}  (${stocks.length}개)`);
+  log(`JSON 저장 완료: ${OUTPUT}  (${parsedTickers.length}개)`);
 }
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
@@ -182,14 +174,14 @@ async function main(): Promise<void> {
     log("만약 실행이 실패한다면, 브라우저에서 직접 CSV를 다운로드하여 로컬 파일로 처리하도록 스크립트를 수정해야 합니다.");
   }
   
-  const stocks = parseCsv(raw);
+  const parsedTickers = parseCsv(raw);
 
-  if (stocks.length === 0) throw new Error("파싱된 종목이 없습니다.");
+  if (parsedTickers.length === 0) throw new Error("파싱된 종목이 없습니다.");
 
-  log(`파싱 완료: ${stocks.length}개 종목`);
-  log(`상위 5개: ${stocks.slice(0, 5).map((s) => s.ticker).join(", ")}`);
+  log(`파싱 완료: ${parsedTickers.length}개 종목`);
+  log(`상위 5개: ${parsedTickers.slice(0, 5).join(", ")}`);
 
-  saveJson(stocks);
+  saveJson(parsedTickers);
   log("=== 업데이트 완료 ===");
 }
 
