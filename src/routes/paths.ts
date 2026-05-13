@@ -21,5 +21,5 @@ export const paths = {
     playlist: `/listening/playlist`,
     random: `/listening/random`,
   },
-
+  top100: '/top100',
 };

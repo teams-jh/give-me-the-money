@@ -7,11 +7,13 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import HeadphonesRoundedIcon from '@mui/icons-material/HeadphonesRounded';
+import TimelineRoundedIcon from '@mui/icons-material/TimelineRounded';
 
 const ICONS = {
   folder: <FolderRoundedIcon fontSize="small" />,
   practice: <AssignmentRoundedIcon fontSize="small" />,
   listening: <HeadphonesRoundedIcon fontSize="small" />,
+  analytics: <TimelineRoundedIcon fontSize="small" />,
 
   home: <HomeRoundedIcon fontSize="small" />,
 };
@@ -60,6 +62,11 @@ export const navData: NavSectionProps['data'] = [
           { title: 'Live Updates', path: paths.listening.random },
         ],
       },
+      {
+        title: '미국 TOP 100 추세 분석',
+        path: paths.top100,
+        icon: ICONS.analytics,
+      },
     ],
   },
 ];
@@ -105,5 +112,10 @@ export const mainNavData: NavMainProps['data'] = [
         ],
       },
     ],
+  },
+  {
+    title: '미국 TOP 100 추세 분석',
+    path: paths.top100,
+    icon: <TimelineRoundedIcon sx={{ width: 22, height: 22 }} />,
   },
 ];
