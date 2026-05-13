@@ -396,6 +396,55 @@ async function processTicker(ticker: string, force: boolean): Promise<ProcessSta
   }
 }
 
+// ── 시총 기준 all_tickers.json 재정렬 ────────────────────────────────────────
+
+interface AllTickersJson {
+  updated_at:        string;
+  source:            string;
+  total_count:       number;
+  nasdaq100_count:   number;
+  russell1000_count: number;
+  tickers:           string[];
+}
+
+function sortAllTickersByMarketCap(): void {
+  log("=== all_tickers.json 시총 기준 재정렬 시작 ===");
+
+  // all_tickers.json 읽기
+  const allJson = JSON.parse(
+    fs.readFileSync(TICKERS_JSON, "utf8")
+  ) as AllTickersJson;
+
+  // 각 티커의 market_cap 수집
+  const caps: { ticker: string; cap: number }[] = [];
+
+  for (const ticker of allJson.tickers) {
+    const file = path.join(OUTPUT_DIR, `${ticker}.json`);
+    if (!fs.existsSync(file)) continue;
+
+    const data = JSON.parse(fs.readFileSync(file, "utf8")) as {
+      market: { market_cap: number | null };
+    };
+    caps.push({ ticker, cap: data.market.market_cap ?? 0 });
+  }
+
+  // 시총 내림차순 정렬, market_cap 없는 종목은 뒤로
+  caps.sort((a, b) => b.cap - a.cap);
+
+  const sorted = caps.map((c) => c.ticker);
+
+  // all_tickers.json 덮어쓰기
+  const output: AllTickersJson = {
+    ...allJson,
+    updated_at: new Date().toISOString(),
+    tickers:    sorted,
+  };
+
+  fs.writeFileSync(TICKERS_JSON, JSON.stringify(output, null, 2), "utf8");
+  log(`정렬 완료: ${sorted.length}개 (시총 기준 내림차순)`);
+  log(`상위 5개: ${sorted.slice(0, 5).join(", ")}`);
+}
+
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
@@ -427,6 +476,11 @@ async function main(): Promise<void> {
 
   log(`\n=== 완료 ===`);
   log(`성공: ${stats.ok}  /  스킵: ${stats.skipped}  /  실패: ${stats.error}`);
+
+  // 단일 종목 모드일 때는 정렬 스킵 (전체 시총 데이터가 갱신된 게 아니므로)
+  if (!single) {
+    sortAllTickersByMarketCap();
+  }
 }
 
 main().catch((e: unknown) => {
