@@ -52,6 +52,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: Nasdaq 100 티커 업데이트 (${TIMESTAMP})"
+            git pull --rebase
             git push
           fi
 
@@ -98,6 +99,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: Russell 1000 티커 업데이트 (${TIMESTAMP})"
+            git pull --rebase
             git push
           fi
 
