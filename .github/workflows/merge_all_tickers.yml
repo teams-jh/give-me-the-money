@@ -1,0 +1,99 @@
+name: Merge All Tickers
+
+on:
+  # Nasdaq 100 또는 Russell 1000 업데이트 완료 시 트리거
+  workflow_run:
+    workflows:
+      - "Update Nasdaq 100 Tickers"
+      - "Update Russell 1000 Tickers"
+    types: [completed]
+
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "수동 실행 사유"
+        required: false
+        default: "manual trigger"
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    # workflow_run 트리거 시 해당 워크플로우가 성공한 경우만 진행
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # workflow_run 트리거 시 nasdaq100, russell1000 둘 다 최근 성공했는지 확인
+      - name: Check both workflows succeeded
+        id: check
+        if: ${{ github.event_name == 'workflow_run' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NASDAQ_RESULT=$(gh run list \
+            --workflow=update_nasdaq100.yml \
+            --limit=1 \
+            --json conclusion \
+            --jq '.[0].conclusion')
+
+          RUSSELL_RESULT=$(gh run list \
+            --workflow=update_russell1000.yml \
+            --limit=1 \
+            --json conclusion \
+            --jq '.[0].conclusion')
+
+          echo "nasdaq100 last run: $NASDAQ_RESULT"
+          echo "russell1000 last run: $RUSSELL_RESULT"
+
+          if [ "$NASDAQ_RESULT" = "success" ] && [ "$RUSSELL_RESULT" = "success" ]; then
+            echo "both_success=true" >> $GITHUB_OUTPUT
+          else
+            echo "both_success=false" >> $GITHUB_OUTPUT
+            echo "두 워크플로우가 모두 성공하지 않아 병합을 건너뜁니다."
+          fi
+
+      - name: Set up Node.js
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.check.outputs.both_success == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.check.outputs.both_success == 'true' }}
+        working-directory: server_node
+        run: npm ci
+
+      - name: Run merge script
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.check.outputs.both_success == 'true' }}
+        run: npx tsx server_node/scripts/merge_all_tickers.ts
+
+      - name: Commit and push
+        if: ${{ github.event_name == 'workflow_dispatch' || steps.check.outputs.both_success == 'true' }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/db/all_tickers.json
+
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 건너뜀"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: 전체 티커 병합 업데이트 (${TIMESTAMP})"
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::티커 병합 실패! Actions 로그를 확인하세요."

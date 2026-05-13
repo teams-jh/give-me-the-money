@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trend_${{ matrix.n }}_${{ matrix.period }}
-          path: src/db/trend_${{ matrix.n }}_${{ matrix.period }}.json
+          path: src/db/trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
           retention-days: 1   # 커밋 후 불필요하므로 1일만 보관
 
   # ── 12개 결과를 한 번에 커밋 ────────────────────────────────────────────────
@@ -71,15 +71,15 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: src/db/           # 각 artifact가 src/db/trend_N_PERIOD/ 서브폴더로 풀림
-          merge-multiple: true    # 서브폴더 없이 src/db/ 바로 밑에 파일 저장
+          path: src/db/trend/
+          merge-multiple: true
 
       - name: Commit and push
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/trend_*.json
+          git add src/db/trend/
 
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 건너뜀"
