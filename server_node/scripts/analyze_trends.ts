@@ -26,10 +26,9 @@ import type { PriceSeries, TrendResult, TrendType } from "../shared/classifyTren
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
-const DB_DIR         = path.resolve(__dirname, "../../src/db");
-const RUSSELL_FILE   = path.join(DB_DIR, "russell1000_tickers.json");
-const TICKERS_DIR    = path.join(DB_DIR, "tickers");
-const OUTPUT_FILE    = path.join(DB_DIR, "trend.json");
+const DB_DIR       = path.resolve(__dirname, "../../src/db");
+const RUSSELL_FILE = path.join(DB_DIR, "russell1000_tickers.json");
+const TICKERS_DIR  = path.join(DB_DIR, "tickers");
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
@@ -103,6 +102,19 @@ const PERIOD_MIN_PTS: Record<PeriodOption, number> = {
 // 전기간: 주봉, minPts 8
 const DEFAULT_INTERVAL = "weekly" as const;
 const DEFAULT_MIN_PTS  = 8;
+
+// ── 출력 파일명 결정 ──────────────────────────────────────────────────────────
+
+/** -n / --period 조합으로 출력 파일명 결정
+ *  예) -n 100 --period 1y  →  trend_100_1y.json
+ *      -n 500              →  trend_500_all.json
+ *      (옵션 없음)          →  trend_all_all.json
+ */
+function resolveOutputFile(n: number | undefined, period: PeriodOption | undefined): string {
+  const nPart      = n      !== undefined ? String(n) : "all";
+  const periodPart = period !== undefined ? period    : "all";
+  return path.join(DB_DIR, `trend_${nPart}_${periodPart}.json`);
+}
 
 // ── Step 0: CLI 파싱 ──────────────────────────────────────────────────────────
 
@@ -317,7 +329,8 @@ function main(): void {
   console.log(`  횡보(sideways):   ${summary.sideways}개`);
   console.log(`  반등(recovering): ${summary.recovering}개`);
 
-  // 7. trend.json 저장
+  // 7. trend_{n}_{period}.json 저장
+  const outputFile = resolveOutputFile(args.n, args.period);
   const output: TrendJson = {
     generated_at:   now(),
     period:         periodLabel,
@@ -327,8 +340,8 @@ function main(): void {
     stocks,
   };
 
-  fs.writeFileSync(OUTPUT_FILE, JSON.stringify(output, null, 2), "utf-8");
-  log(`📁 저장 완료: ${OUTPUT_FILE}`);
+  fs.writeFileSync(outputFile, JSON.stringify(output, null, 2), "utf-8");
+  log(`📁 저장 완료: ${outputFile}`);
 }
 
 main();

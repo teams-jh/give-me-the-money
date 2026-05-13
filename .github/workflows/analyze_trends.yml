@@ -1,0 +1,95 @@
+name: Analyze Trends
+
+on:
+  # Update Ticker Metadata 완료 후 자동 실행
+  workflow_run:
+    workflows: ["Update Ticker Metadata"]
+    types: [completed]
+
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "수동 실행 사유"
+        required: false
+        default: "manual trigger"
+
+jobs:
+  # ── 12개 시나리오 병렬 분석 ──────────────────────────────────────────────────
+  analyze:
+    name: "n=${{ matrix.n }} / ${{ matrix.period }}"
+    runs-on: ubuntu-latest
+
+    # workflow_run 트리거 시 성공한 경우만 실행
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    strategy:
+      fail-fast: false   # 한 시나리오 실패해도 나머지 계속 실행
+      matrix:
+        n:      [100, 500, 1000]
+        period: ["3m", "1y", "2y", "3y"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Run analyze_trends
+        run: npx tsx server_node/scripts/analyze_trends.ts -n ${{ matrix.n }} --period ${{ matrix.period }}
+
+      - name: Upload result as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trend_${{ matrix.n }}_${{ matrix.period }}
+          path: src/db/trend_${{ matrix.n }}_${{ matrix.period }}.json
+          retention-days: 1   # 커밋 후 불필요하므로 1일만 보관
+
+  # ── 12개 결과를 한 번에 커밋 ────────────────────────────────────────────────
+  commit:
+    name: "Commit all trend files"
+    runs-on: ubuntu-latest
+    needs: analyze
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: src/db/           # 각 artifact가 src/db/trend_N_PERIOD/ 서브폴더로 풀림
+          merge-multiple: true    # 서브폴더 없이 src/db/ 바로 밑에 파일 저장
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/db/trend_*.json
+
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 건너뜀"
+          else
+            COUNT=$(git diff --cached --name-only | wc -l)
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: 추세 분석 결과 업데이트 ${COUNT}개 파일 (${TIMESTAMP})"
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::추세 분석 커밋 실패! Actions 로그를 확인하세요."
