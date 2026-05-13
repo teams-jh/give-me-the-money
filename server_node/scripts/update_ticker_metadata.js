@@ -14,7 +14,8 @@
 
 const fs           = require("fs");
 const path         = require("path");
-const yahooFinance = require("yahoo-finance2").default;
+const YahooFinance = require("yahoo-finance2").default;
+const yahooFinance = new YahooFinance();
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 const DB_DIR        = path.resolve(__dirname, "../../src/db");

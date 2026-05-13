@@ -15,7 +15,8 @@ const fs           = require("fs");
 const path         = require("path");
 const axios        = require("axios");
 const cheerio      = require("cheerio");
-const yahooFinance = require("yahoo-finance2").default;
+const YahooFinance = require("yahoo-finance2").default;
+const yahooFinance = new YahooFinance();
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 // __dirname = server_node/scripts/ → ../../src/db = 레포 루트/src/db
