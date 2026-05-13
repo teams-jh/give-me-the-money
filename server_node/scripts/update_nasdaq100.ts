@@ -51,11 +51,23 @@ async function downloadCsv(): Promise<string> {
 
   const { data } = await axios.get<string>(QQQ_CSV_URL, {
     headers: {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
-      "Accept":     "text/csv,application/csv,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Referer":         "https://www.invesco.com/us/financial-products/etfs/product-detail?audienceType=Investor&ticker=QQQ",
+      "sec-ch-ua":          '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+      "sec-ch-ua-mobile":   "?0",
+      "sec-ch-ua-platform": '"Windows"',
+      "Sec-Fetch-Dest":  "document",
+      "Sec-Fetch-Mode":  "navigate",
+      "Sec-Fetch-Site":  "same-origin",
+      "Cache-Control":   "no-cache",
+      "Connection":      "keep-alive",
     },
     responseType: "text",
     timeout:      30_000,
+    maxRedirects: 5,
   });
 
   log(`CSV 다운로드 완료 (${data.length.toLocaleString()} bytes)`);
