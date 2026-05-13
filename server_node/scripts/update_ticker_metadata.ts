@@ -2,7 +2,7 @@
  * 티커별 메타데이터 JSON 생성
  *
  * 흐름:
- *   1. src/db/russell1000_tickers.json 에서 티커 목록 로드
+ *   1. src/db/all_tickers.json 에서 티커 목록 로드
  *   2. 티커별 yahoo-finance2 quoteSummary + historical(3년) 조회
  *   3. src/db/tickers/{TICKER}.json 저장 (원본 데이터만, 판단 로직 없음)
  *
@@ -25,7 +25,7 @@ const yahooFinance  = new YahooFinance();
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
 const DB_DIR       = path.resolve(__dirname, "../../src/db");
-const TICKERS_JSON = path.join(DB_DIR, "russell1000_tickers.json");
+const TICKERS_JSON = path.join(DB_DIR, "all_tickers.json");
 const OUTPUT_DIR   = path.join(DB_DIR, "tickers");
 
 const CONCURRENCY = 5;
@@ -213,18 +213,18 @@ function formatQuarter(date: Date | null | undefined): string | null {
   return `${date.getFullYear()}Q${q}`;
 }
 
-// ── 1단계: Russell 1000 티커 목록 로드 ───────────────────────────────────────
+// ── 1단계: 전체 티커 목록 로드 ───────────────────────────────────────
 
 function loadTickers(): string[] {
   if (!fs.existsSync(TICKERS_JSON)) {
     throw new Error(
-      `${TICKERS_JSON} 파일이 없습니다. update_russell1000.ts 를 먼저 실행하세요.`
+      `${TICKERS_JSON} 파일이 없습니다. merge_all_tickers.ts 를 먼저 실행하세요.`
     );
   }
   const { tickers } = JSON.parse(fs.readFileSync(TICKERS_JSON, "utf8")) as {
     tickers: string[];
   };
-  log(`Russell 1000 티커 ${tickers.length}개 로드`);
+  log(`전체 티커 ${tickers.length}개 로드`);
   return tickers;
 }
 
