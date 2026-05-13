@@ -2,9 +2,13 @@
  * Nasdaq 100 티커 리스트 업데이트
  *
  * 흐름:
- *   1. Invesco QQQ ETF 홀딩스 CSV 다운로드
- *   2. 주식 종목만 파싱 (Cash 등 제외)
+ *   1. Wikipedia Nasdaq-100 페이지 HTML 다운로드
+ *   2. cheerio로 구성 종목 테이블 파싱
  *   3. src/db/nasdaq100_tickers.json 저장
+ *
+ * 변경 이유:
+ *   Invesco 공식 CSV URL이 GitHub Actions 등 클라우드/데이터센터 IP를
+ *   Fastly CDN 레벨에서 차단(HTTP 406)하므로 Wikipedia로 소스 변경.
  *
  * 실행:
  *   npx tsx server_node/scripts/update_nasdaq100.ts
@@ -14,6 +18,7 @@ import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import axios from "axios";
+import * as cheerio from "cheerio";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -23,12 +28,9 @@ const __dirname  = path.dirname(__filename);
 const DB_DIR = path.resolve(__dirname, "../../src/db");
 const OUTPUT = path.join(DB_DIR, "nasdaq100_tickers.json");
 
-const QQQ_CSV_URL =
-  "https://www.invesco.com/us/financial-products/etfs/holdings/main/holdings/0?audienceType=Investor&action=download&ticker=QQQ";
+const WIKIPEDIA_URL = "https://en.wikipedia.org/wiki/Nasdaq-100";
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
-
-
 
 interface Nasdaq100Json {
   updated_at:  string;
@@ -44,156 +46,100 @@ function log(msg: string): void {
   console.log(`${new Date().toISOString()} [INFO] ${msg}`);
 }
 
-// ── 1단계: CSV 다운로드 ───────────────────────────────────────────────────────
+// ── 1단계: Wikipedia HTML 다운로드 ───────────────────────────────────────────
 
-async function downloadCsv(): Promise<string> {
-  log("Invesco QQQ 홀딩스 CSV 다운로드 중...");
+async function fetchWikipediaHtml(): Promise<string> {
+  log("Wikipedia Nasdaq-100 페이지 다운로드 중...");
 
-  const { data } = await axios.get<string>(QQQ_CSV_URL, {
+  const { data } = await axios.get<string>(WIKIPEDIA_URL, {
     headers: {
-      "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+      "User-Agent":      "Mozilla/5.0 (compatible; give-me-the-money-bot/1.0)",
+      "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.9",
       "Accept-Encoding": "gzip, deflate, br",
-      "Referer":         "https://www.invesco.com/us/financial-products/etfs/product-detail?audienceType=Investor&ticker=QQQ",
-      "sec-ch-ua":          '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-      "sec-ch-ua-mobile":   "?0",
-      "sec-ch-ua-platform": '"Windows"',
-      "Sec-Fetch-Dest":  "document",
-      "Sec-Fetch-Mode":  "navigate",
-      "Sec-Fetch-Site":  "same-origin",
-      "Cache-Control":   "no-cache",
-      "Connection":      "keep-alive",
     },
     responseType: "text",
     timeout:      30_000,
-    maxRedirects: 5,
   });
 
-  log(`CSV 다운로드 완료 (${data.length.toLocaleString()} bytes)`);
+  log(`HTML 다운로드 완료 (${data.length.toLocaleString()} bytes)`);
   return data;
 }
 
-// ── 2단계: CSV 파싱 ───────────────────────────────────────────────────────────
+// ── 2단계: HTML 파싱 ──────────────────────────────────────────────────────────
 
-/** CSV 한 행을 파싱 (따옴표 내 쉼표 처리) */
-function parseRow(line: string): string[] {
-  const cols: string[] = [];
-  let cur = "";
-  let inQuote = false;
+function parseWikipediaHtml(html: string): string[] {
+  const $ = cheerio.load(html);
+  const tickers: string[] = [];
 
-  for (const ch of line) {
-    if (ch === '"') {
-      inQuote = !inQuote;
-    } else if (ch === "," && !inQuote) {
-      cols.push(cur);
-      cur = "";
-    } else {
-      cur += ch;
-    }
-  }
-  cols.push(cur);
-  return cols;
-}
+  // Wikipedia Nasdaq-100 페이지의 "Components" 섹션 테이블을 탐색
+  // 테이블 헤더에 "Ticker" 컬럼이 있는 테이블을 찾음
+  $("table.wikitable").each((_tableIdx, table) => {
+    const headers: string[] = [];
+    $(table).find("tr").first().find("th").each((_i, th) => {
+      headers.push($(th).text().trim().toLowerCase());
+    });
 
-function parseCsv(raw: string): string[] {
-  const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+    const tickerColIdx = headers.findIndex(
+      (h) => h.includes("ticker") || h.includes("symbol")
+    );
 
-  // 헤더 행 탐색: "Ticker" 또는 "Holding Ticker" 컬럼이 포함된 첫 번째 행
-  const headerIdx = lines.findIndex((l) => {
-    const lower = l.toLowerCase();
-    return lower.includes("ticker") || lower.includes("holding ticker");
+    if (tickerColIdx === -1) return; // 이 테이블은 건너뜀
+
+    log(`종목 테이블 발견 — 헤더: [${headers.join(", ")}], ticker 열: ${tickerColIdx}`);
+
+    $(table).find("tr").slice(1).each((_rowIdx, row) => {
+      const cells = $(row).find("td");
+      if (cells.length === 0) return;
+
+      const rawTicker = $(cells[tickerColIdx]).text().trim();
+      // 각주 문자([1], * 등) 제거 후 첫 번째 토큰만 사용
+      const ticker = rawTicker.replace(/\[.*?\]|\*/g, "").split(/\s+/)[0] ?? "";
+
+      if (ticker && /^[A-Z]{1,5}$/.test(ticker)) {
+        tickers.push(ticker);
+      }
+    });
   });
 
-  if (headerIdx === -1) {
-    throw new Error("헤더 행을 찾을 수 없습니다. CSV 포맷이 변경되었을 수 있습니다.");
-  }
-
-  const headerLine = lines[headerIdx];
-  if (headerLine === undefined) throw new Error("헤더 행이 비어 있습니다.");
-
-  const headers = parseRow(headerLine).map((h) => h.toLowerCase().trim());
-  
-  let tickerIdx = headers.indexOf("holding ticker");
-  if (tickerIdx === -1) tickerIdx = headers.indexOf("ticker");
-  
-  // Invesco CSV의 경우 Class 관련 컬럼 이름이 다양할 수 있음
-  let assetClassIdx = headers.indexOf("class");
-  if (assetClassIdx === -1) assetClassIdx = headers.indexOf("security type");
-  if (assetClassIdx === -1) assetClassIdx = headers.indexOf("asset class");
-
-  log(`헤더 인덱스 — ticker:${tickerIdx}, class:${assetClassIdx}`);
-
-  if (tickerIdx === -1) {
-    throw new Error("Ticker 컬럼을 찾을 수 없습니다.");
-  }
-
-  const parsedTickers: string[] = [];
-
-  for (const line of lines.slice(headerIdx + 1)) {
-    const cols       = parseRow(line);
-    let ticker       = (cols[tickerIdx] ?? "").trim();
-
-    // Invesco CSV에서 티커에 추가 공백 등이 있을 수 있음
-    ticker = ticker.split(" ")[0] || "";
-
-    // 유효하지 않은 티커나 현금성 자산 제외
-    if (!ticker || ticker === "-" || ticker.toLowerCase() === "cash" || ticker.toUpperCase() === "USD") {
-      continue;
-    }
-
-    // Class 컬럼이 존재할 경우 Equity(주식)가 아닌 항목(예: Currency, Cash) 제외
-    if (assetClassIdx !== -1) {
-      const assetClass = (cols[assetClassIdx] ?? "").trim().toLowerCase();
-      if (assetClass.includes("cash") || assetClass.includes("currency") || assetClass === "fx") {
-        continue;
-      }
-    }
-
-    parsedTickers.push(ticker);
-  }
-
-  return parsedTickers;
+  return tickers;
 }
 
 // ── 3단계: JSON 저장 ──────────────────────────────────────────────────────────
 
-function saveJson(parsedTickers: string[]): void {
+function saveJson(tickers: string[]): void {
   fs.mkdirSync(DB_DIR, { recursive: true });
 
   const output: Nasdaq100Json = {
     updated_at:  new Date().toISOString(),
-    source:      "Invesco QQQ ETF",
-    source_url:  QQQ_CSV_URL,
-    total_count: parsedTickers.length,
-    tickers:     parsedTickers,
+    source:      "Wikipedia – Nasdaq-100",
+    source_url:  WIKIPEDIA_URL,
+    total_count: tickers.length,
+    tickers,
   };
 
   fs.writeFileSync(OUTPUT, JSON.stringify(output, null, 2), "utf8");
-  log(`JSON 저장 완료: ${OUTPUT}  (${parsedTickers.length}개)`);
+  log(`JSON 저장 완료: ${OUTPUT}  (${tickers.length}개)`);
 }
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  log("=== Nasdaq 100 (QQQ) 티커 업데이트 시작 ===");
+  log("=== Nasdaq 100 티커 업데이트 시작 ===");
 
-  const raw    = await downloadCsv();
-  
-  // Invesco 웹사이트가 CSV 대신 HTML(SPA 등)을 반환할 수 있으므로 방어 코드 추가
-  if (raw.trim().toLowerCase().startsWith("<!doctype html>") || raw.trim().toLowerCase().startsWith("<html")) {
-    log("[경고] 다운로드된 내용이 HTML입니다. Invesco 측 API 변경으로 인해 CSV 직접 다운로드가 차단되었을 수 있습니다.");
-    log("만약 실행이 실패한다면, 브라우저에서 직접 CSV를 다운로드하여 로컬 파일로 처리하도록 스크립트를 수정해야 합니다.");
+  const html    = await fetchWikipediaHtml();
+  const tickers = parseWikipediaHtml(html);
+
+  if (tickers.length < 90) {
+    throw new Error(
+      `파싱된 종목이 너무 적습니다 (${tickers.length}개). Wikipedia 페이지 구조가 변경되었을 수 있습니다.`
+    );
   }
-  
-  const parsedTickers = parseCsv(raw);
 
-  if (parsedTickers.length === 0) throw new Error("파싱된 종목이 없습니다.");
+  log(`파싱 완료: ${tickers.length}개 종목`);
+  log(`상위 5개: ${tickers.slice(0, 5).join(", ")}`);
 
-  log(`파싱 완료: ${parsedTickers.length}개 종목`);
-  log(`상위 5개: ${parsedTickers.slice(0, 5).join(", ")}`);
-
-  saveJson(parsedTickers);
+  saveJson(tickers);
   log("=== 업데이트 완료 ===");
 }
 
