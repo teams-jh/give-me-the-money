@@ -1,10 +1,10 @@
 /**
  * analyze_trends.ts
  *
- * Russell 1000 종목의 주가 추세를 분류하여 src/db/trend.json 으로 저장한다.
+ * 전체 종목의 주가 추세를 분류하여 src/db/trend.json 으로 저장한다.
  *
  * 흐름:
- *   1. src/db/russell1000_tickers.json  →  분석 대상 티커 목록
+ *   1. src/db/all_tickers.json  →  분석 대상 티커 목록
  *   2. src/db/tickers/{TICKER}.json     →  일봉 prices 읽기
  *   3. 기간 커팅  →  다운샘플(주봉/월봉)  →  classifyTrend()
  *   4. src/db/trend.json 저장
@@ -27,7 +27,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
 const DB_DIR       = path.resolve(__dirname, "../../src/db");
-const RUSSELL_FILE = path.join(DB_DIR, "russell1000_tickers.json");
+const ALL_TICKERS_FILE = path.join(DB_DIR, "all_tickers.json");
 const TICKERS_DIR  = path.join(DB_DIR, "tickers");
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
@@ -149,7 +149,7 @@ function parseArgs(): CliArgs {
 // ── Step 1: 티커 목록 읽기 ────────────────────────────────────────────────────
 
 function loadTickers(n: number | undefined): string[] {
-  const raw  = fs.readFileSync(RUSSELL_FILE, "utf-8");
+  const raw  = fs.readFileSync(ALL_TICKERS_FILE, "utf-8");
   const data = JSON.parse(raw) as { tickers: string[] };
   const all  = data.tickers;
   return n !== undefined ? all.slice(0, n) : all;
@@ -254,7 +254,7 @@ function main(): void {
   const minPts      = args.period ? PERIOD_MIN_PTS[args.period]  : DEFAULT_MIN_PTS;
 
   console.log("=".repeat(60));
-  console.log("  Russell 1000 주가 추세 분석");
+  console.log("  전체 종목 주가 추세 분석");
   console.log(`  기간: ${periodLabel}  |  봉: ${interval}  |  minPts: ${minPts}`);
   if (args.n !== undefined) console.log(`  대상: 상위 ${args.n}개`);
   console.log("=".repeat(60));
