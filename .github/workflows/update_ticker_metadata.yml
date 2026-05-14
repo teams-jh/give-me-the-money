@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: "기존 파일 덮어쓰기 (true/false)"
+        description: "오늘 이미 다운로드된 파일도 재다운로드 (true/false)"
         required: false
         default: "false"
       ticker:

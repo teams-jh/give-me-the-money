@@ -366,16 +366,30 @@ function buildTickerJson(
 function saveTickerJson(ticker: string, data: TickerData): void {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   const file = path.join(OUTPUT_DIR, `${ticker}.json`);
-  fs.writeFileSync(file, JSON.stringify(data, null, 2), "utf8");
+  const tmp  = path.join(OUTPUT_DIR, `${ticker}.tmp.json`);
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
+  fs.renameSync(tmp, file);   // atomic: 읽기 충돌 없음
 }
 
 // ── 5단계: 단일 티커 처리 ────────────────────────────────────────────────────
 
+function isUpdatedToday(file: string): boolean {
+  try {
+    const data        = JSON.parse(fs.readFileSync(file, "utf8")) as { updated_at?: string };
+    if (!data.updated_at) return false;
+    const updatedDate = new Date(data.updated_at).toISOString().slice(0, 10);
+    const today       = new Date().toISOString().slice(0, 10);
+    return updatedDate === today;
+  } catch {
+    return false;
+  }
+}
+
 async function processTicker(ticker: string, force: boolean): Promise<ProcessStatus> {
   const file = path.join(OUTPUT_DIR, `${ticker}.json`);
 
-  if (!force && fs.existsSync(file)) {
-    log(`[SKIP] ${ticker} — 이미 존재 (--force 로 덮어쓰기 가능)`);
+  if (!force && fs.existsSync(file) && isUpdatedToday(file)) {
+    log(`[SKIP] ${ticker} — 오늘 이미 다운로드됨 (--force 로 재다운로드 가능)`);
     return { status: "skipped" };
   }
 
