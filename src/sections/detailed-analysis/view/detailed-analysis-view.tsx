@@ -12,6 +12,10 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { useTheme, alpha } from '@mui/material/styles';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
@@ -29,13 +33,16 @@ const PERIOD_OPTIONS: { value: PeriodKey; label: string }[] = [
   { value: '3y', label: '3년' },
 ];
 
+const DAILY_INVESTMENT = 10000; // 매일 1만원
+
 export function DetailedAnalysisView() {
   const theme = useTheme();
   const [selectedTickers, setSelectedTickers] = useState<string[]>(['AAPL', 'MSFT', 'NVDA', 'TSLA']);
   const [inputValue, setInputValue] = useState('');
   const [period, setPeriod] = useState<PeriodKey>('1y');
+  const [currentTab, setCurrentTab] = useState('comparison');
 
-  const chartData = useMemo(() => {
+  const rawChartData = useMemo(() => {
     return selectedTickers.map((ticker) => {
       const rawData = allTickersData[ticker];
       if (!rawData) return null;
@@ -45,77 +52,100 @@ export function DetailedAnalysisView() {
       
       return {
         name: ticker,
-        data: periodData.chart_data.map((val, idx) => ({
-          x: new Date(periodData.chart_labels[idx]).getTime(),
-          y: val
-        })),
+        chart_data: periodData.chart_data,
+        chart_labels: periodData.chart_labels,
       };
     }).filter((item): item is NonNullable<typeof item> => item !== null);
   }, [selectedTickers, period]);
 
-  const series = chartData.map((item) => ({
-    name: item.name,
-    data: item.data,
-  }));
+  const comparisonSeries = useMemo(() => {
+    return rawChartData.map((item) => ({
+      name: item.name,
+      data: item.chart_data.map((val, idx) => ({
+        x: new Date(item.chart_labels[idx]).getTime(),
+        y: val
+      })),
+    }));
+  }, [rawChartData]);
+
+  const dcaData = useMemo(() => {
+    return rawChartData.map((item) => {
+      let cumulativeShares = 0;
+      let totalInvested = 0;
+      const history: { x: number; y: number }[] = [];
+
+      item.chart_data.forEach((price, idx) => {
+        totalInvested += DAILY_INVESTMENT;
+        cumulativeShares += DAILY_INVESTMENT / price;
+        const currentValue = cumulativeShares * price;
+        
+        history.push({
+          x: new Date(item.chart_labels[idx]).getTime(),
+          y: Math.round(currentValue),
+        });
+      });
+
+      const finalValue = history[history.length - 1]?.y || 0;
+      const totalInvestedAmount = totalInvested;
+      const profit = finalValue - totalInvestedAmount;
+      const profitPct = (profit / totalInvestedAmount) * 100;
+
+      return {
+        name: item.name,
+        history,
+        finalValue,
+        totalInvestedAmount,
+        profit,
+        profitPct,
+      };
+    });
+  }, [rawChartData]);
+
+  const dcaSeries = useMemo(() => {
+    return dcaData.map((item) => ({
+      name: item.name,
+      data: item.history,
+    }));
+  }, [dcaData]);
 
   const chartOptions: any = {
     chart: {
-      id: 'comparison-chart',
       toolbar: { show: true },
       zoom: { enabled: true },
       background: 'transparent',
       fontFamily: theme.typography.fontFamily,
     },
-    colors: [
-      theme.palette.primary.main,
-      theme.palette.info.main,
-      theme.palette.warning.main,
-      theme.palette.success.main,
-      theme.palette.error.main,
-      theme.palette.secondary.main,
-      '#FF4842', '#1890FF', '#919EAB', '#00AB55', '#FFC107',
-    ],
     xaxis: {
       type: 'datetime',
-      labels: {
-        style: { colors: theme.palette.text.secondary },
-      },
+      labels: { style: { colors: theme.palette.text.secondary } },
     },
     yaxis: {
       title: { 
-        text: '지수화된 가격 (기준 100)',
+        text: currentTab === 'comparison' ? '지수화된 가격 (기준 100)' : '평가 금액 (원)',
         style: { color: theme.palette.text.secondary, fontWeight: 600 }
       },
-      labels: { style: { colors: theme.palette.text.secondary } },
+      labels: { 
+        style: { colors: theme.palette.text.secondary },
+        formatter: (value: number) => currentTab === 'comparison' ? value.toFixed(0) : `${value.toLocaleString()}원`
+      },
     },
-    stroke: {
-      curve: 'smooth',
-      width: 3,
-    },
+    stroke: { curve: 'smooth', width: 3 },
     legend: {
       position: 'bottom',
       horizontalAlign: 'center',
       labels: { colors: theme.palette.text.secondary },
-      itemMargin: { horizontal: 10, vertical: 5 },
     },
     tooltip: {
       theme: theme.palette.mode,
-      x: { 
-        show: true,
-        format: 'yyyy-MM-dd'
-      },
+      x: { format: 'yyyy-MM-dd' },
       y: {
-        formatter: (value: number) => `${value.toFixed(2)}`,
+        formatter: (value: number) => currentTab === 'comparison' ? value.toFixed(2) : `${value.toLocaleString()}원`
       },
     },
     grid: {
       borderColor: alpha(theme.palette.grey[500], 0.1),
       strokeDashArray: 3,
     },
-    markers: {
-      size: 0,
-      hover: { size: 5 }
-    }
   };
 
   const handleAddTicker = (newValue: string | null) => {
@@ -125,33 +155,23 @@ export function DetailedAnalysisView() {
     setInputValue('');
   };
 
-  const handleDeleteTicker = (tickerToDelete: string) => {
-    setSelectedTickers((prev) => prev.filter((t) => t !== tickerToDelete));
-  };
-
-  const handleChangePeriod = (event: React.MouseEvent<HTMLElement>, newPeriod: PeriodKey | null) => {
-    if (newPeriod !== null) {
-      setPeriod(newPeriod);
-    }
-  };
-
   return (
     <DashboardContent maxWidth="xl">
       <Stack spacing={4}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 800 }}>
-              종목 상세 비교 분석 📊
+              종목 상세 분석 및 시뮬레이션 📊
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-              최대 여러 종목의 수익률 추이를 동일한 선상에서 비교합니다.
+              종목 간 수익률 비교와 적립식 투자(DCA) 시뮬레이션을 제공합니다.
             </Typography>
           </Box>
 
           <ToggleButtonGroup
             value={period}
             exclusive
-            onChange={handleChangePeriod}
+            onChange={(e, v) => v && setPeriod(v)}
             size="small"
             color="primary"
           >
@@ -168,82 +188,98 @@ export function DetailedAnalysisView() {
             <Autocomplete
               fullWidth
               options={allTickersList}
-              getOptionLabel={(option) => option}
-              value={null}
-              onChange={(event, newValue) => handleAddTicker(newValue)}
+              onChange={(e, v) => handleAddTicker(v)}
               inputValue={inputValue}
-              onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+              onInputChange={(e, v) => setInputValue(v)}
               renderInput={(params) => (
-                <TextField 
-                  {...params} 
-                  label="종목 검색 및 추가" 
-                  placeholder="예: AAPL, TSLA, MSFT..."
-                  InputProps={{
-                    ...params.InputProps,
-                    sx: { borderRadius: 1.5 }
-                  }}
-                />
+                <TextField {...params} label="종목 검색 및 추가" placeholder="예: AAPL, TSLA..." />
               )}
             />
-
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {selectedTickers.map((ticker) => (
                 <Chip
                   key={ticker}
                   label={ticker}
-                  onDelete={() => handleDeleteTicker(ticker)}
+                  onDelete={() => setSelectedTickers((prev) => prev.filter((t) => t !== ticker))}
                   color="primary"
                   variant="soft"
-                  sx={{ 
-                    fontWeight: 700,
-                    '& .MuiChip-label': { px: 1.5 }
-                  }}
+                  sx={{ fontWeight: 700 }}
                 />
               ))}
-              {selectedTickers.length === 0 && (
-                <Typography variant="body2" sx={{ color: 'text.disabled', fontStyle: 'italic', py: 1 }}>
-                  비교할 종목이 없습니다. 위 검색창에서 종목을 추가해주세요.
-                </Typography>
-              )}
             </Box>
           </Stack>
         </Card>
 
-        <Card sx={{ p: 3, minHeight: 600, boxShadow: theme.customShadows?.card }}>
-          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
+        <Card sx={{ boxShadow: theme.customShadows?.card }}>
+          <Stack 
+            direction="row" 
+            alignItems="center" 
+            justifyContent="space-between" 
+            sx={{ px: 3, py: 2, borderBottom: 1, borderColor: 'divider' }}
+          >
             <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              수익률 추이 (기준점: 기간 시작일 = 100)
+              {currentTab === 'comparison' ? '수익률 추이 분석' : '적립식 투자(DCA) 결과'}
             </Typography>
+
+            <Button
+              variant={currentTab === 'dca' ? 'contained' : 'outlined'}
+              color="primary"
+              onClick={() => setCurrentTab(prev => prev === 'comparison' ? 'dca' : 'comparison')}
+              startIcon={<span>💰</span>}
+              sx={{ borderRadius: 1, fontWeight: 700 }}
+            >
+              매일 만원씩 모았다면?
+            </Button>
           </Stack>
-          
-          <Box sx={{ height: 500, width: '100%' }}>
-            {series.length > 0 ? (
-              <ChartApex
-                options={chartOptions}
-                series={series}
-                type="line"
-                height="100%"
-              />
-            ) : (
-              <Box
-                sx={{
-                  height: 1,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  bgcolor: (theme) => alpha(theme.palette.grey[500], 0.04),
-                  borderRadius: 1.5,
-                  border: (theme) => `dashed 1px ${theme.palette.divider}`,
-                }}
-              >
-                <Stack spacing={1} alignItems="center">
-                  <Typography variant="h6" sx={{ color: 'text.disabled' }}>데이터 없음</Typography>
-                  <Typography variant="body2" sx={{ color: 'text.disabled' }}>비교할 종목을 추가해 주세요.</Typography>
-                </Stack>
+
+          <Box sx={{ p: 3 }}>
+            {currentTab === 'dca' && (
+              <Box sx={{ mb: 3, p: 2, bgcolor: alpha(theme.palette.primary.main, 0.05), borderRadius: 1.5 }}>
+                <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 700 }}>
+                  💡 시뮬레이션 조건: 매일 {DAILY_INVESTMENT.toLocaleString()}원씩 해당 종목을 매수했을 경우
+                </Typography>
               </Box>
             )}
+
+            <Box sx={{ height: 500 }}>
+              {selectedTickers.length > 0 ? (
+                <ChartApex
+                  options={chartOptions}
+                  series={currentTab === 'comparison' ? comparisonSeries : dcaSeries}
+                  type="line"
+                  height="100%"
+                />
+              ) : (
+                <Box sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography sx={{ color: 'text.disabled' }}>비교할 종목을 추가해 주세요.</Typography>
+                </Box>
+              )}
+            </Box>
           </Box>
         </Card>
+
+        {currentTab === 'dca' && selectedTickers.length > 0 && (
+          <Grid container spacing={3}>
+            {dcaData.map((item) => (
+              <Grid key={item.name} size={{ xs: 12, md: 6, lg: 3 }}>
+                <Card sx={{ p: 3, textAlign: 'center', boxShadow: theme.customShadows?.card }}>
+                  <Typography variant="overline" sx={{ color: 'text.secondary' }}>{item.name} 최종 결과</Typography>
+                  <Typography variant="h4" sx={{ mt: 1, mb: 1, fontWeight: 800 }}>
+                    {item.finalValue.toLocaleString()}원
+                  </Typography>
+                  <Stack direction="row" justifyContent="center" spacing={1}>
+                    <Typography variant="body2" sx={{ color: item.profit >= 0 ? 'success.main' : 'error.main', fontWeight: 700 }}>
+                      {item.profit >= 0 ? '+' : ''}{item.profit.toLocaleString()}원 ({item.profitPct.toFixed(2)}%)
+                    </Typography>
+                  </Stack>
+                  <Typography variant="caption" sx={{ color: 'text.disabled', mt: 2, display: 'block' }}>
+                    총 투자금: {item.totalInvestedAmount.toLocaleString()}원
+                  </Typography>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Stack>
     </DashboardContent>
   );
