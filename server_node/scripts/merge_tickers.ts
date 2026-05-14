@@ -29,7 +29,8 @@ export interface MergeConfig {
 }
 
 interface SourceTickerJson {
-  tickers: string[];
+  tickers:  string[];
+  name_map?: Record<string, string>;
   [key: string]: unknown;
 }
 
@@ -41,7 +42,7 @@ export function log(msg: string): void {
 
 // ── 핵심 함수 ─────────────────────────────────────────────────────────────────
 
-function readTickers(filePath: string): string[] {
+function readTickersAndNameMap(filePath: string): { tickers: string[]; nameMap: Record<string, string> } {
   const raw  = fs.readFileSync(filePath, "utf8");
   const data = JSON.parse(raw) as SourceTickerJson;
 
@@ -49,7 +50,12 @@ function readTickers(filePath: string): string[] {
     throw new Error(`tickers 배열 없음: ${filePath}`);
   }
 
-  return data.tickers;
+  return { tickers: data.tickers, nameMap: data.name_map ?? {} };
+}
+
+/** @deprecated use readTickersAndNameMap */
+function readTickers(filePath: string): string[] {
+  return readTickersAndNameMap(filePath).tickers;
 }
 
 function dedupeAndSort(lists: string[][]): string[] {
@@ -65,9 +71,9 @@ export function mergeTickers(config: MergeConfig): void {
 
   // 각 소스 읽기
   const sourceTickers = sources.map(({ path: p, label }) => {
-    const tickers = readTickers(p);
+    const { tickers, nameMap } = readTickersAndNameMap(p);
     log(`${label}: ${tickers.length}개`);
-    return { label, tickers };
+    return { label, tickers, nameMap };
   });
 
   const totalBefore = sourceTickers.reduce((s, x) => s + x.tickers.length, 0);
@@ -85,12 +91,20 @@ export function mergeTickers(config: MergeConfig): void {
 
   const sourceNames = sources.map((s) => path.basename(s.path)).join(" + ");
 
+  // 모든 소스의 name_map 병합 (나중 소스가 앞 소스를 덮어씀)
+  const mergedNameMap: Record<string, string> = {};
+  for (const { nameMap } of sourceTickers) {
+    Object.assign(mergedNameMap, nameMap);
+  }
+  const hasNameMap = Object.keys(mergedNameMap).length > 0;
+
   const outputJson = {
     updated_at:  new Date().toISOString(),
     source:      sourceNames,
     total_count: merged.length,
     ...counts,
     tickers: merged,
+    ...(hasNameMap ? { name_map: mergedNameMap } : {}),
   };
 
   fs.mkdirSync(path.dirname(output), { recursive: true });

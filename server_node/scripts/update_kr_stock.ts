@@ -146,7 +146,8 @@ interface KrIndexJson {
   source:      string;
   source_url:  string;
   total_count: number;
-  tickers:     string[];   // 종목코드 문자열 배열 (russell1000 형식과 동일)
+  tickers:     string[];              // 종목코드 문자열 배열 (russell1000 형식과 동일)
+  name_map:    Record<string, string>; // { "005930.KS": "삼성전자" } 한글명 매핑
 }
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
@@ -264,12 +265,14 @@ function saveJson(
 ): void {
   fs.mkdirSync(METADATA_DIR, { recursive: true });
 
+  const tickerKeys = tickers.map((t) => `${t.code}${yahooSuffix}`);
   const out: KrIndexJson = {
     updated_at:  new Date().toISOString(),
     source:      `한국투자증권 DWS – ${path.basename(sourceUrl)}`,
     source_url:  sourceUrl,
     total_count: tickers.length,
-    tickers:     tickers.map((t) => `${t.code}${yahooSuffix}`),  // Yahoo Finance 포맷 (예: 005930.KS)
+    tickers:     tickerKeys,  // Yahoo Finance 포맷 (예: 005930.KS)
+    name_map:    Object.fromEntries(tickerKeys.map((k, i) => [k, tickers[i]!.name])),  // 한글명 매핑
   };
 
   fs.writeFileSync(outputFile, JSON.stringify(out, null, 2), "utf8");

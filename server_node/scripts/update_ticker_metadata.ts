@@ -150,6 +150,7 @@ interface TickerData {
   updated_at: string;
   info: {
     name:                string | null;
+    kr_name:             string | null;  // 한글명 (국내주식만, 해외주식은 null)
     exchange:            string | null;
     currency:            string | null;
     sector:              string | null;
@@ -237,18 +238,19 @@ function formatQuarter(date: Date | null | undefined): string | null {
 
 // ── 1단계: 전체 티커 목록 로드 ───────────────────────────────────────
 
-function loadTickers(config: MarketConfig): string[] {
+function loadTickers(config: MarketConfig): { tickers: string[]; nameMap: Record<string, string> } {
   if (!fs.existsSync(config.tickersJson)) {
     const scriptName = path.basename(config.tickersJson).replace("all_", "merge_").replace(".json", ".ts");
     throw new Error(
       `${config.tickersJson} 파일이 없습니다. ${scriptName} 를 먼저 실행하세요.`
     );
   }
-  const { tickers } = JSON.parse(fs.readFileSync(config.tickersJson, "utf8")) as {
+  const parsed = JSON.parse(fs.readFileSync(config.tickersJson, "utf8")) as {
     tickers: string[];
+    name_map?: Record<string, string>;
   };
-  log(`[${config.label}] 전체 티커 ${tickers.length}개 로드`);
-  return tickers;
+  log(`[${config.label}] 전체 티커 ${parsed.tickers.length}개 로드`);
+  return { tickers: parsed.tickers, nameMap: parsed.name_map ?? {} };
 }
 
 // ── 2단계: 종목 데이터 조회 ──────────────────────────────────────────────────
@@ -296,6 +298,7 @@ function buildTickerJson(
   ticker:  string,
   summary: YfSummary,
   prices:  PriceRow[],
+  krName:  string | null = null,
 ): TickerData {
   const p   = summary.price                           ?? {};
   const ap  = summary.assetProfile                    ?? {};
@@ -320,6 +323,7 @@ function buildTickerJson(
 
     info: {
       name:                p.longName ?? p.shortName ?? null,
+      kr_name:             krName,
       exchange:            p.exchangeName ?? p.exchange ?? null,
       currency:            p.currency    ?? null,
       sector:              ap.sector     ?? null,
@@ -412,7 +416,7 @@ function isUpdatedToday(file: string): boolean {
   }
 }
 
-async function processTicker(ticker: string, force: boolean, outputDir: string): Promise<ProcessStatus> {
+async function processTicker(ticker: string, force: boolean, outputDir: string, krName: string | null = null): Promise<ProcessStatus> {
   const file = path.join(outputDir, `${tickerToFilename(ticker)}.json`);
 
   if (!force && fs.existsSync(file) && isUpdatedToday(file)) {
@@ -426,7 +430,7 @@ async function processTicker(ticker: string, force: boolean, outputDir: string):
       fetchPriceHistory(ticker),
     ]);
 
-    const data = buildTickerJson(ticker, summary, prices);
+    const data = buildTickerJson(ticker, summary, prices, krName);
     saveTickerJson(ticker, data, outputDir);
     return { status: "ok", priceCount: prices.length };
 
@@ -444,6 +448,7 @@ interface AllTickersJson {
   source:      string;
   total_count: number;
   tickers:     string[];
+  name_map?:   Record<string, string>;  // 한글명 매핑 (국내주식용)
   [key: string]: unknown;   // nasdaq100_count, russell1000_count 등 동적 카운트 필드
 }
 
@@ -499,18 +504,20 @@ async function main(): Promise<void> {
   log(`=== [${config.label}] 티커 메타데이터 업데이트 시작 ===`);
 
   const allTickers = single ? [single.toUpperCase()] : loadTickers(config);
-  const batches    = chunk(allTickers, CONCURRENCY);
+  const nameMap    = single ? {} : allTickers.nameMap;
+  const tickers    = single ? [single.toUpperCase()] : allTickers.tickers;
+  const batches    = chunk(tickers, CONCURRENCY);
   const stats      = { ok: 0, skipped: 0, error: 0 };
   let done = 0;
 
   for (const batch of batches) {
-    const results = await Promise.all(batch.map((t) => processTicker(t, force, config.outputDir)));
+    const results = await Promise.all(batch.map((t) => processTicker(t, force, config.outputDir, nameMap[t] ?? null)));
 
     results.forEach((r, i) => {
       done++;
       stats[r.status] += 1;
       if (r.status === "ok") {
-        log(`[${done}/${allTickers.length}] ${batch[i] ?? ""} ✓  (주가 ${r.priceCount}일)`);
+        log(`[${done}/${tickers.length}] ${batch[i] ?? ""} ✓  (주가 ${r.priceCount}일)`);
       }
     });
 
