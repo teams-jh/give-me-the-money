@@ -45,7 +45,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/kospi200_tickers.json src/db/kosdaq150_tickers.json
+          git add src/db/kospi300_tickers.json src/db/kosdaq200_tickers.json
 
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 건너뜀"
