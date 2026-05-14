@@ -2,7 +2,7 @@
  * 티커별 메타데이터 JSON 생성
  *
  * 흐름:
- *   1. src/db/all_tickers.json 에서 티커 목록 로드
+ *   1. src/db/metadata/all_us_tickers.json 에서 티커 목록 로드
  *   2. 티커별 yahoo-finance2 quoteSummary + historical(3년) 조회
  *   3. src/db/tickers/{TICKER}.json 저장 (원본 데이터만, 판단 로직 없음)
  *
@@ -10,6 +10,9 @@
  *   npx tsx server_node/scripts/update_ticker_metadata.ts           # 전체
  *   npx tsx server_node/scripts/update_ticker_metadata.ts --force   # 기존 파일 덮어쓰기
  *   npx tsx server_node/scripts/update_ticker_metadata.ts --ticker AAPL  # 단일 종목
+ *
+ * 사전 조건:
+ *   npx tsx server_node/scripts/merge_us_tickers.ts
  */
 
 import fs   from "fs";
@@ -25,7 +28,7 @@ const yahooFinance  = new YahooFinance();
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
 const DB_DIR       = path.resolve(__dirname, "../../src/db");
-const TICKERS_JSON = path.join(DB_DIR, "all_tickers.json");
+const TICKERS_JSON = path.join(DB_DIR, "metadata", "all_us_tickers.json");
 const OUTPUT_DIR   = path.join(DB_DIR, "tickers");
 
 const CONCURRENCY = 5;
@@ -216,7 +219,7 @@ function formatQuarter(date: Date | null | undefined): string | null {
 function loadTickers(): string[] {
   if (!fs.existsSync(TICKERS_JSON)) {
     throw new Error(
-      `${TICKERS_JSON} 파일이 없습니다. merge_all_tickers.ts 를 먼저 실행하세요.`
+      `${TICKERS_JSON} 파일이 없습니다. merge_us_tickers.ts 를 먼저 실행하세요.`
     );
   }
   const { tickers } = JSON.parse(fs.readFileSync(TICKERS_JSON, "utf8")) as {
@@ -406,21 +409,20 @@ async function processTicker(ticker: string, force: boolean): Promise<ProcessSta
   }
 }
 
-// ── 시총 기준 all_tickers.json 재정렬 ────────────────────────────────────────
+// ── 시총 기준 all_us_tickers.json 재정렬 ─────────────────────────────────────
 
 interface AllTickersJson {
-  updated_at:        string;
-  source:            string;
-  total_count:       number;
-  nasdaq100_count:   number;
-  russell1000_count: number;
-  tickers:           string[];
+  updated_at:  string;
+  source:      string;
+  total_count: number;
+  tickers:     string[];
+  [key: string]: unknown;   // nasdaq100_count, russell1000_count 등 동적 카운트 필드
 }
 
 function sortAllTickersByMarketCap(): void {
-  log("=== all_tickers.json 시총 기준 재정렬 시작 ===");
+  log("=== all_us_tickers.json 시총 기준 재정렬 시작 ===");
 
-  // all_tickers.json 읽기
+  // all_us_tickers.json 읽기
   const allJson = JSON.parse(
     fs.readFileSync(TICKERS_JSON, "utf8")
   ) as AllTickersJson;
@@ -443,7 +445,7 @@ function sortAllTickersByMarketCap(): void {
 
   const sorted = caps.map((c) => c.ticker);
 
-  // all_tickers.json 덮어쓰기
+  // all_us_tickers.json 덮어쓰기
   const output: AllTickersJson = {
     ...allJson,
     updated_at: new Date().toISOString(),
