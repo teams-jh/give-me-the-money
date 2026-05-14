@@ -1,8 +1,8 @@
-name: Analyze US Trends
+name: Analyze KR Trends
 
 on:
   workflow_run:
-    workflows: ["Update US Ticker Metadata"]
+    workflows: ["Update KR Ticker Metadata"]
     types: [completed]
 
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        n:      [100, 500, 1000]
+        n:      [100, 200, 500]
         period: ["3m", "1y", "2y", "3y"]
 
     steps:
@@ -41,13 +41,13 @@ jobs:
         run: npm ci
 
       - name: Run analyze_trends
-        run: npx tsx server_node/scripts/analyze_trends.ts --market us -n ${{ matrix.n }} --period ${{ matrix.period }}
+        run: npx tsx server_node/scripts/analyze_trends.ts --market kr -n ${{ matrix.n }} --period ${{ matrix.period }}
 
       - name: Upload result as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: us_trend_${{ matrix.n }}_${{ matrix.period }}
-          path: src/db/us_trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
+          name: kr_trend_${{ matrix.n }}_${{ matrix.period }}
+          path: src/db/kr_trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
           retention-days: 1
 
   commit:
@@ -67,7 +67,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: src/db/us_trend/
+          path: src/db/kr_trend/
           merge-multiple: true
 
       - name: Commit and push
@@ -75,18 +75,18 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/us_trend/
+          git add src/db/kr_trend/
 
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 건너뜀"
           else
             COUNT=$(git diff --cached --name-only | wc -l)
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
-            git commit -m "data: 미국 추세 분석 결과 업데이트 ${COUNT}개 파일 (${TIMESTAMP})"
+            git commit -m "data: 국내 추세 분석 결과 업데이트 ${COUNT}개 파일 (${TIMESTAMP})"
             git pull --rebase
             git push
           fi
 
       - name: Notify on failure
         if: failure()
-        run: echo "::error::미국 추세 분석 커밋 실패! Actions 로그를 확인하세요."
+        run: echo "::error::국내 추세 분석 커밋 실패! Actions 로그를 확인하세요."
