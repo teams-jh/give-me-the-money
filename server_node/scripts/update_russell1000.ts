@@ -20,7 +20,7 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const DB_DIR = path.resolve(__dirname, "../../src/db");
+const DB_DIR = path.resolve(__dirname, "../../src/db/metadata");
 const OUTPUT = path.join(DB_DIR, "russell1000_tickers.json");
 
 const IWB_CSV_URL =

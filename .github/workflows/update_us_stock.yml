@@ -45,7 +45,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/nasdaq100_tickers.json
+          git add src/db/metadata/nasdaq100_tickers.json
 
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 건너뜀"
@@ -92,7 +92,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/russell1000_tickers.json
+          git add src/db/metadata/russell1000_tickers.json
 
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 건너뜀"
