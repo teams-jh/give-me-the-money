@@ -19,8 +19,8 @@
 import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { classifyTrend }     from "../shared/classifyTrend.js";
-import type { PriceSeries, TrendResult, TrendType } from "../shared/classifyTrend.js";
+import { classifyTrend }     from "../../src/library/shared/classifyTrend.js";
+import type { PriceSeries, TrendResult, TrendType } from "../../src/library/shared/classifyTrend.js";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
