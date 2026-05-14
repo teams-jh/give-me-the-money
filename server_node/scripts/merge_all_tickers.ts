@@ -1,11 +1,11 @@
 /**
- * 전체 티커 리스트 병합
+ * 미국 전체 티커 리스트 병합
  *
  * 흐름:
- *   1. src/db/nasdaq100_tickers.json 읽기
- *   2. src/db/russell1000_tickers.json 읽기
+ *   1. src/db/metadata/nasdaq100_tickers.json 읽기
+ *   2. src/db/metadata/russell1000_tickers.json 읽기
  *   3. 두 리스트를 중복 없이 합쳐 알파벳순 정렬
- *   4. src/db/all_tickers.json 저장
+ *   4. src/db/metadata/all_us_tickers.json 저장
  *
  * 실행:
  *   npx tsx server_node/scripts/merge_all_tickers.ts
@@ -20,10 +20,10 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const DB_DIR        = path.resolve(__dirname, "../../src/db");
-const NASDAQ100_PATH  = path.join(DB_DIR, "nasdaq100_tickers.json");
-const RUSSELL1000_PATH = path.join(DB_DIR, "russell1000_tickers.json");
-const OUTPUT        = path.join(DB_DIR, "all_tickers.json");
+const METADATA_DIR     = path.resolve(__dirname, "../../src/db/metadata");
+const NASDAQ100_PATH   = path.join(METADATA_DIR, "nasdaq100_tickers.json");
+const RUSSELL1000_PATH = path.join(METADATA_DIR, "russell1000_tickers.json");
+const OUTPUT           = path.join(METADATA_DIR, "all_us_tickers.json");
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ function saveJson(
   nasdaq100Count: number,
   russell1000Count: number
 ): void {
-  fs.mkdirSync(DB_DIR, { recursive: true });
+  fs.mkdirSync(METADATA_DIR, { recursive: true });
 
   const output: AllTickersJson = {
     updated_at:        new Date().toISOString(),
@@ -93,7 +93,7 @@ function saveJson(
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
 function main(): void {
-  log("=== 전체 티커 리스트 병합 시작 ===");
+  log("=== 미국 전체 티커 리스트 병합 시작 ===");
 
   const nasdaq100Tickers  = readTickerJson(NASDAQ100_PATH);
   const russell1000Tickers = readTickerJson(RUSSELL1000_PATH);
