@@ -94,9 +94,29 @@ export { allTickersData };
  * Only loads the specific ticker data when needed.
  */
 export const getTickerData = async (ticker: string): Promise<TickerData> => {
+  // Determine likely market (KR tickers are usually 6-digit numbers)
+  const isKr = /^\d+$/.test(ticker);
+
   try {
-    const module = await import(`../db/tickers/${ticker}.json`);
-    return module.default;
+    if (isKr) {
+      try {
+        const module = await import(`../db/kr_tickers/${ticker}.json`);
+        return module.default;
+      } catch {
+        // Fallback to US
+        const module = await import(`../db/us_tickers/${ticker}.json`);
+        return module.default;
+      }
+    } else {
+      try {
+        const module = await import(`../db/us_tickers/${ticker}.json`);
+        return module.default;
+      } catch {
+        // Fallback to KR
+        const module = await import(`../db/kr_tickers/${ticker}.json`);
+        return module.default;
+      }
+    }
   } catch (error) {
     console.error(`Failed to load data for ticker: ${ticker}`, error);
     throw error;
@@ -106,5 +126,10 @@ export const getTickerData = async (ticker: string): Promise<TickerData> => {
 /**
  * 3. Ticker List
  */
-import allTickersMetadata from '../db/metadata/all_tickers.json';
-export const tickers = allTickersMetadata.tickers;
+import allKrMetadata from '../db/metadata/all_kr_tickers.json';
+import allUsMetadata from '../db/metadata/all_us_tickers.json';
+
+export const tickers = [
+  ...allKrMetadata.tickers,
+  ...allUsMetadata.tickers,
+];

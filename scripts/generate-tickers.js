@@ -1,29 +1,51 @@
 const fs = require('fs');
 const path = require('path');
 
-const tickersDir = path.join(__dirname, '../src/db/tickers');
+const krTickersDir = path.join(__dirname, '../src/db/kr_tickers');
+const usTickersDir = path.join(__dirname, '../src/db/us_tickers');
 const outputFile = path.join(__dirname, '../src/library/all-tickers-data.ts');
 
-const files = fs.readdirSync(tickersDir).filter(f => f.endsWith('.json'));
+const krFiles = fs.existsSync(krTickersDir) ? fs.readdirSync(krTickersDir).filter(f => f.endsWith('.json')) : [];
+const usFiles = fs.existsSync(usTickersDir) ? fs.readdirSync(usTickersDir).filter(f => f.endsWith('.json')) : [];
 
 let content = '/**\n * Auto-generated file containing all ticker data.\n * Do not edit manually.\n */\n\n';
 content += "import { TickerData } from './tickers';\n\n";
 
-// 임포트 섹션 생성
-files.forEach((file, index) => {
-  const ticker = file.replace('.json', '');
-  // 특수 문자가 포함된 티커(예: BRK.B)를 위해 유효한 변수명으로 변환
-  const varName = `data_${ticker.replace(/[^a-zA-Z0-0]/g, '_')}`;
-  content += `import ${varName} from '../db/tickers/${file}';\n`;
+// KR Tickers
+krFiles.forEach((file) => {
+  const tickerFromFileName = file.replace('.json', '');
+  const varName = `data_kr_${tickerFromFileName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+  content += `import ${varName} from '../db/kr_tickers/${file}';\n`;
+});
+
+// US Tickers
+usFiles.forEach((file) => {
+  const tickerFromFileName = file.replace('.json', '');
+  const varName = `data_us_${tickerFromFileName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+  content += `import ${varName} from '../db/us_tickers/${file}';\n`;
 });
 
 content += '\nexport const allTickersData: Record<string, TickerData> = {\n';
-files.forEach((file) => {
-  const ticker = file.replace('.json', '');
-  const varName = `data_${ticker.replace(/[^a-zA-Z0-0]/g, '_')}`;
+
+krFiles.forEach((file) => {
+  const filePath = path.join(krTickersDir, file);
+  const json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const ticker = json.ticker;
+  const tickerFromFileName = file.replace('.json', '');
+  const varName = `data_kr_${tickerFromFileName.replace(/[^a-zA-Z0-9]/g, '_')}`;
   content += `  '${ticker}': ${varName} as unknown as TickerData,\n`;
 });
+
+usFiles.forEach((file) => {
+  const filePath = path.join(usTickersDir, file);
+  const json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const ticker = json.ticker;
+  const tickerFromFileName = file.replace('.json', '');
+  const varName = `data_us_${tickerFromFileName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+  content += `  '${ticker}': ${varName} as unknown as TickerData,\n`;
+});
+
 content += '};\n';
 
 fs.writeFileSync(outputFile, content);
-console.log(`Successfully generated ${outputFile} with ${files.length} tickers.`);
+console.log(`Successfully generated ${outputFile} with ${krFiles.length + usFiles.length} tickers.`);

@@ -37,6 +37,7 @@ const DAILY_INVESTMENT = 10000; // 매일 1만원
 
 export function DetailedAnalysisView() {
   const theme = useTheme();
+  const [market, setMarket] = useState<'US' | 'KR'>('US');
   const [selectedTickers, setSelectedTickers] = useState<string[]>(['AAPL', 'MSFT', 'NVDA', 'TSLA']);
   const [inputValue, setInputValue] = useState('');
   const [period, setPeriod] = useState<PeriodKey>('1y');
@@ -51,7 +52,8 @@ export function DetailedAnalysisView() {
       const periodData = stock.periods[period];
       
       return {
-        name: ticker,
+        ticker,
+        companyName: rawData.info.name,
         chart_data: periodData.chart_data,
         chart_labels: periodData.chart_labels,
       };
@@ -60,7 +62,7 @@ export function DetailedAnalysisView() {
 
   const comparisonSeries = useMemo(() => {
     return rawChartData.map((item) => ({
-      name: item.name,
+      name: item.companyName,
       data: item.chart_data.map((val, idx) => ({
         x: new Date(item.chart_labels[idx]).getTime(),
         y: val
@@ -91,7 +93,8 @@ export function DetailedAnalysisView() {
       const profitPct = (profit / totalInvestedAmount) * 100;
 
       return {
-        name: item.name,
+        ticker: item.ticker,
+        companyName: item.companyName,
         history,
         finalValue,
         totalInvestedAmount,
@@ -103,7 +106,7 @@ export function DetailedAnalysisView() {
 
   const dcaSeries = useMemo(() => {
     return dcaData.map((item) => ({
-      name: item.name,
+      name: item.companyName,
       data: item.history,
     }));
   }, [dcaData]);
@@ -121,12 +124,15 @@ export function DetailedAnalysisView() {
     },
     yaxis: {
       title: { 
-        text: currentTab === 'comparison' ? '지수화된 가격 (기준 100)' : '평가 금액 (원)',
+        text: currentTab === 'comparison' ? '지수화된 가격 (기준 100)' : '평가 금액',
         style: { color: theme.palette.text.secondary, fontWeight: 600 }
       },
       labels: { 
         style: { colors: theme.palette.text.secondary },
-        formatter: (value: number) => currentTab === 'comparison' ? value.toFixed(0) : `${value.toLocaleString()}원`
+        formatter: (value: number) => {
+          if (currentTab === 'comparison') return value.toFixed(0);
+          return value >= 10000 ? `${(value / 10000).toFixed(1)}만` : value.toLocaleString();
+        }
       },
     },
     stroke: { curve: 'smooth', width: 3 },
@@ -149,11 +155,16 @@ export function DetailedAnalysisView() {
   };
 
   const tickerOptions = useMemo(() => {
-    return allTickersList.map((ticker) => ({
+    const filtered = allTickersList.filter(t => {
+      const isKr = t.includes('.');
+      return market === 'KR' ? isKr : !isKr;
+    });
+
+    return filtered.map((ticker) => ({
       ticker,
       name: allTickersData[ticker]?.info?.name || '',
     }));
-  }, []);
+  }, [market]);
 
   const handleAddTicker = (newValue: { ticker: string; name: string } | null) => {
     if (newValue && !selectedTickers.includes(newValue.ticker)) {
@@ -192,35 +203,54 @@ export function DetailedAnalysisView() {
 
         <Card sx={{ p: 3, boxShadow: theme.customShadows?.card }}>
           <Stack spacing={3}>
-            <Autocomplete
-              fullWidth
-              options={tickerOptions}
-              getOptionLabel={(option) => `${option.ticker} - ${option.name}`}
-              onChange={(e, v) => handleAddTicker(v)}
-              inputValue={inputValue}
-              onInputChange={(e, v) => setInputValue(v)}
-              filterOptions={(options, state) => {
-                const query = state.inputValue.toLowerCase();
-                return options.filter(
-                  (opt) =>
-                    opt.ticker.toLowerCase().includes(query) ||
-                    opt.name.toLowerCase().includes(query)
-                );
-              }}
-              renderOption={(props, option) => (
-                <Box component="li" {...props} key={option.ticker}>
-                  <Stack>
-                    <Typography variant="subtitle2">{option.ticker}</Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                      {option.name}
-                    </Typography>
-                  </Stack>
-                </Box>
-              )}
-              renderInput={(params) => (
-                <TextField {...params} label="종목 검색 및 추가" placeholder="티커(AAPL) 또는 회사명(Apple) 검색..." />
-              )}
-            />
+            <Stack direction="row" spacing={2} alignItems="center">
+              <ToggleButtonGroup
+                value={market}
+                exclusive
+                onChange={(e, v) => v && setMarket(v)}
+                size="medium"
+                color="primary"
+                sx={{ height: 56 }}
+              >
+                <ToggleButton value="US" sx={{ px: 3, fontWeight: 700 }}>🇺🇸 US</ToggleButton>
+                <ToggleButton value="KR" sx={{ px: 3, fontWeight: 700 }}>🇰🇷 KR</ToggleButton>
+              </ToggleButtonGroup>
+
+              <Autocomplete
+                fullWidth
+                options={tickerOptions}
+                getOptionLabel={(option) => `${option.name} (${option.ticker})`}
+                onChange={(e, v) => handleAddTicker(v)}
+                inputValue={inputValue}
+                onInputChange={(e, v) => setInputValue(v)}
+                filterOptions={(options, state) => {
+                  const query = state.inputValue.toLowerCase();
+                  return options.filter(
+                    (opt) =>
+                      opt.ticker.toLowerCase().includes(query) ||
+                      opt.name.toLowerCase().includes(query)
+                  );
+                }}
+                renderOption={(props, option) => (
+                  <Box component="li" {...props} key={option.ticker}>
+                    <Stack>
+                      <Typography variant="subtitle2">{option.name}</Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        {option.ticker}
+                      </Typography>
+                    </Stack>
+                  </Box>
+                )}
+                renderInput={(params) => (
+                  <TextField 
+                    {...params} 
+                    label={market === 'US' ? "미국 종목 검색 및 추가" : "한국 종목 검색 및 추가"} 
+                    placeholder="티커 또는 회사명 검색..." 
+                  />
+                )}
+              />
+            </Stack>
+
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {selectedTickers.map((ticker) => (
                 <Chip
@@ -287,12 +317,19 @@ export function DetailedAnalysisView() {
         {currentTab === 'dca' && selectedTickers.length > 0 && (
           <Grid container spacing={3}>
             {dcaData.map((item) => (
-              <Grid key={item.name} size={{ xs: 12, md: 6, lg: 3 }}>
+              <Grid key={item.ticker} size={{ xs: 12, md: 6, lg: 3 }}>
                 <Card sx={{ p: 3, textAlign: 'center', boxShadow: theme.customShadows?.card }}>
-                  <Typography variant="overline" sx={{ color: 'text.secondary' }}>{item.name} 최종 결과</Typography>
-                  <Typography variant="h4" sx={{ mt: 1, mb: 1, fontWeight: 800 }}>
+                  <Typography variant="subtitle2" sx={{ color: 'text.primary', fontWeight: 700 }}>
+                    {item.companyName}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
+                    {item.ticker}
+                  </Typography>
+                  
+                  <Typography variant="h4" sx={{ mb: 1, fontWeight: 800 }}>
                     {item.finalValue.toLocaleString()}원
                   </Typography>
+                  
                   <Stack direction="row" justifyContent="center" spacing={1}>
                     <Typography variant="body2" sx={{ color: item.profit >= 0 ? 'success.main' : 'error.main', fontWeight: 700 }}>
                       {item.profit >= 0 ? '+' : ''}{item.profit.toLocaleString()}원 ({item.profitPct.toFixed(2)}%)
