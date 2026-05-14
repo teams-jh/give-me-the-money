@@ -84,12 +84,34 @@ function log(msg: string): void {
   console.log(`${new Date().toISOString()} [INFO] ${msg}`);
 }
 
-// ── 1단계: KRX API 호출 ───────────────────────────────────────────────────────
+// ── 1단계: KRX 세션 쿠키 획득 ───────────────────────────────────────────────
+
+async function fetchSessionCookie(): Promise<string> {
+  log("KRX 홈페이지 접속 — 세션 쿠키 획득 중...");
+
+  const resp = await axios.get(KRX_REFERER, {
+    headers: {
+      "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+      "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8",
+    },
+    timeout: 30_000,
+  });
+
+  const raw = resp.headers["set-cookie"] ?? [];
+  const cookie = raw.map((c: string) => c.split(";")[0]).join("; ");
+
+  log(`세션 쿠키 획득: ${cookie || "(없음)"}`);
+  return cookie;
+}
+
+// ── 2단계: KRX API 호출 ───────────────────────────────────────────────────────
 
 async function fetchKrxIndex(
   idxIndMktSrtCd:  string,
   idxIndMktSrtCd2: string,
   indexName:       string,
+  cookie:          string,
 ): Promise<KrxResponseItem[]> {
   log(`KRX ${indexName} 구성종목 조회 중...`);
 
@@ -105,16 +127,26 @@ async function fetchKrxIndex(
 
   const { data } = await axios.post<KrxResponse>(KRX_URL, params.toString(), {
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      "User-Agent":   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-      "Referer":      KRX_REFERER,
-      "Accept":       "application/json, text/javascript, */*; q=0.01",
+      "Content-Type":    "application/x-www-form-urlencoded; charset=UTF-8",
+      "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      "Referer":         KRX_REFERER,
+      "Accept":          "application/json, text/javascript, */*; q=0.01",
+      "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8",
+      "X-Requested-With": "XMLHttpRequest",
+      ...(cookie ? { "Cookie": cookie } : {}),
     },
     timeout: 30_000,
   });
 
-  log(`${indexName} 응답 수신: ${data.output?.length ?? 0}개 항목`);
-  return data.output ?? [];
+  // 디버그: 응답 구조 확인 (예상과 다를 경우 파악용)
+  if (!data.output) {
+    log(`[DEBUG] 응답 키: ${Object.keys(data).join(", ")}`);
+    log(`[DEBUG] 응답 본문 (500자): ${JSON.stringify(data).slice(0, 500)}`);
+    throw new Error(`${indexName}: output 필드가 없습니다. KRX API 구조를 확인하세요.`);
+  }
+
+  log(`${indexName} 응답 수신: ${data.output.length}개 항목`);
+  return data.output;
 }
 
 // ── 2단계: 파싱 ───────────────────────────────────────────────────────────────
@@ -151,10 +183,12 @@ function saveJson(tickers: KrTicker[], indexName: string, outputFile: string): v
 async function main(): Promise<void> {
   log("=== 국내주식 티커 업데이트 시작 ===");
 
+  const cookie = await fetchSessionCookie();
+
   for (const idx of INDEXES) {
     log(`--- ${idx.name} 처리 시작 ---`);
 
-    const items   = await fetchKrxIndex(idx.idxIndMktSrtCd, idx.idxIndMktSrtCd2, idx.name);
+    const items   = await fetchKrxIndex(idx.idxIndMktSrtCd, idx.idxIndMktSrtCd2, idx.name, cookie);
     const tickers = parseItems(items);
 
     if (tickers.length < idx.minCount) {
