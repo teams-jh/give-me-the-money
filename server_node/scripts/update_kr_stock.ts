@@ -52,9 +52,10 @@ const INDEXES = [
     // 시가총액: field spec 누적 위치 212, 폭 9
     marketCapPos:   212,
     marketCapWidth: 9,
-    topN:       300,
-    outputFile: path.join(METADATA_DIR, "kospi300_tickers.json"),
-    minCount:   200,
+    topN:        300,
+    outputFile:  path.join(METADATA_DIR, "kospi300_tickers.json"),
+    minCount:    200,
+    yahooSuffix: ".KS",
     fieldSpecs: [
       2, 1, 4, 4, 4,
       1, 1, 1, 1, 1,
@@ -100,9 +101,10 @@ const INDEXES = [
     // 시가총액: field spec 59개 합산 위치 216, 폭 5 (단위: 억)
     marketCapPos:   216,
     marketCapWidth: 5,
-    topN:       200,
-    outputFile: path.join(METADATA_DIR, "kosdaq200_tickers.json"),
-    minCount:   150,
+    topN:        200,
+    outputFile:  path.join(METADATA_DIR, "kosdaq200_tickers.json"),
+    minCount:    150,
+    yahooSuffix: ".KQ",
     fieldSpecs: [
       2, 1,
       4, 4, 4, 1, 1,
@@ -255,9 +257,10 @@ function filterAndRank(rows: ParsedRow[], topN: number): ParsedRow[] {
 // ── 5단계: JSON 저장 ──────────────────────────────────────────────────────────
 
 function saveJson(
-  tickers:   ParsedRow[],
-  sourceUrl: string,
+  tickers:    ParsedRow[],
+  sourceUrl:  string,
   outputFile: string,
+  yahooSuffix: string,
 ): void {
   fs.mkdirSync(METADATA_DIR, { recursive: true });
 
@@ -266,7 +269,7 @@ function saveJson(
     source:      `한국투자증권 DWS – ${path.basename(sourceUrl)}`,
     source_url:  sourceUrl,
     total_count: tickers.length,
-    tickers:     tickers.map((t) => t.code),   // 코드 문자열 배열 (russell1000 동일 형식)
+    tickers:     tickers.map((t) => `${t.code}${yahooSuffix}`),  // Yahoo Finance 포맷 (예: 005930.KS)
   };
 
   fs.writeFileSync(outputFile, JSON.stringify(out, null, 2), "utf8");
@@ -310,7 +313,7 @@ async function main(): Promise<void> {
     log(`상위 ${idx.topN}개 추출 완료`);
     log(`Top5: ${ranked.slice(0, 5).map((t) => `${t.code} ${t.name}(${t.marketCap}억)`).join(", ")}`);
 
-    saveJson(ranked, idx.url, idx.outputFile);
+    saveJson(ranked, idx.url, idx.outputFile, idx.yahooSuffix);
   }
 
   log("=== 업데이트 완료 ===");
