@@ -8,12 +8,16 @@ on:
 
   workflow_dispatch:
     inputs:
+      market:
+        description: "처리할 마켓 (us / kr)"
+        required: false
+        default: "us"
       force:
         description: "오늘 이미 다운로드된 파일도 재다운로드 (true/false)"
         required: false
         default: "false"
       ticker:
-        description: "단일 종목만 처리 (예: AAPL) — 비워두면 전체"
+        description: "단일 종목만 처리 (예: AAPL 또는 005930.KS) — 비워두면 전체"
         required: false
         default: ""
 
@@ -46,18 +50,20 @@ jobs:
 
       - name: Run metadata update (single ticker)
         if: ${{ github.event.inputs.ticker != '' }}
-        run: npx tsx server_node/scripts/update_ticker_metadata.ts --ticker ${{ github.event.inputs.ticker }} ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+        run: npx tsx server_node/scripts/update_ticker_metadata.ts --market ${{ github.event.inputs.market || 'us' }} --ticker ${{ github.event.inputs.ticker }} ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Run metadata update (all tickers)
         if: ${{ github.event.inputs.ticker == '' || github.event_name == 'workflow_run' }}
-        run: npx tsx server_node/scripts/update_ticker_metadata.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+        run: npx tsx server_node/scripts/update_ticker_metadata.ts --market ${{ github.event.inputs.market || 'us' }} ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Commit and push
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/tickers/ src/db/metadata/all_us_tickers.json
+          git add src/db/tickers/ src/db/kr_tickers/ \
+                  src/db/metadata/all_us_tickers.json \
+                  src/db/metadata/all_kr_tickers.json
 
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 건너뜀"

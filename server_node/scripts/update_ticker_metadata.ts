@@ -1,18 +1,22 @@
 /**
- * 티커별 메타데이터 JSON 생성
+ * 티커별 메타데이터 JSON 생성 (미국 / 국내 통합)
  *
  * 흐름:
- *   1. src/db/metadata/all_us_tickers.json 에서 티커 목록 로드
+ *   1. --market 에 해당하는 all_{market}_tickers.json 에서 티커 목록 로드
  *   2. 티커별 yahoo-finance2 quoteSummary + historical(3년) 조회
- *   3. src/db/tickers/{TICKER}.json 저장 (원본 데이터만, 판단 로직 없음)
+ *   3. src/db/{outputDir}/{TICKER}.json 저장 (원본 데이터만, 판단 로직 없음)
+ *   4. 완료 후 all_{market}_tickers.json 을 시총 기준 재정렬
  *
  * 실행:
- *   npx tsx server_node/scripts/update_ticker_metadata.ts           # 전체
- *   npx tsx server_node/scripts/update_ticker_metadata.ts --force   # 기존 파일 덮어쓰기
- *   npx tsx server_node/scripts/update_ticker_metadata.ts --ticker AAPL  # 단일 종목
+ *   npx tsx server_node/scripts/update_ticker_metadata.ts --market us          # 미국 전체
+ *   npx tsx server_node/scripts/update_ticker_metadata.ts --market kr          # 국내 전체
+ *   npx tsx server_node/scripts/update_ticker_metadata.ts --market us --force  # 강제 재다운로드
+ *   npx tsx server_node/scripts/update_ticker_metadata.ts --market us --ticker AAPL
+ *   npx tsx server_node/scripts/update_ticker_metadata.ts --market kr --ticker 005930.KS
  *
  * 사전 조건:
- *   npx tsx server_node/scripts/merge_us_tickers.ts
+ *   npx tsx server_node/scripts/merge_us_tickers.ts   # --market us
+ *   npx tsx server_node/scripts/merge_kr_tickers.ts   # --market kr
  */
 
 import fs   from "fs";
@@ -25,11 +29,31 @@ const __filename    = fileURLToPath(import.meta.url);
 const __dirname     = path.dirname(__filename);
 const yahooFinance  = new YahooFinance();
 
-// ── 설정 ─────────────────────────────────────────────────────────────────────
+// ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
-const DB_DIR       = path.resolve(__dirname, "../../src/db");
-const TICKERS_JSON = path.join(DB_DIR, "metadata", "all_us_tickers.json");
-const OUTPUT_DIR   = path.join(DB_DIR, "tickers");
+const DB_DIR = path.resolve(__dirname, "../../src/db");
+
+interface MarketConfig {
+  label:       string;   // 로그용 ("미국" | "국내")
+  tickersJson: string;   // all_*_tickers.json 절대 경로
+  outputDir:   string;   // 티커 JSON 저장 디렉토리 절대 경로
+  mergeScript: string;   // 사전 조건 안내용
+}
+
+const MARKET_CONFIG: Record<string, MarketConfig> = {
+  us: {
+    label:       "미국",
+    tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
+    outputDir:   path.join(DB_DIR, "tickers"),
+    mergeScript: "merge_us_tickers.ts",
+  },
+  kr: {
+    label:       "국내",
+    tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
+    outputDir:   path.join(DB_DIR, "kr_tickers"),
+    mergeScript: "merge_kr_tickers.ts",
+  },
+};
 
 const CONCURRENCY = 5;
 const BATCH_DELAY = 3_000;   // ms
@@ -216,16 +240,16 @@ function formatQuarter(date: Date | null | undefined): string | null {
 
 // ── 1단계: 전체 티커 목록 로드 ───────────────────────────────────────
 
-function loadTickers(): string[] {
-  if (!fs.existsSync(TICKERS_JSON)) {
+function loadTickers(config: MarketConfig): string[] {
+  if (!fs.existsSync(config.tickersJson)) {
     throw new Error(
-      `${TICKERS_JSON} 파일이 없습니다. merge_us_tickers.ts 를 먼저 실행하세요.`
+      `${config.tickersJson} 파일이 없습니다. ${config.mergeScript} 를 먼저 실행하세요.`
     );
   }
-  const { tickers } = JSON.parse(fs.readFileSync(TICKERS_JSON, "utf8")) as {
+  const { tickers } = JSON.parse(fs.readFileSync(config.tickersJson, "utf8")) as {
     tickers: string[];
   };
-  log(`전체 티커 ${tickers.length}개 로드`);
+  log(`[${config.label}] 전체 티커 ${tickers.length}개 로드`);
   return tickers;
 }
 
@@ -362,10 +386,10 @@ function buildTickerJson(
 
 // ── 4단계: 파일 저장 ──────────────────────────────────────────────────────────
 
-function saveTickerJson(ticker: string, data: TickerData): void {
-  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-  const file = path.join(OUTPUT_DIR, `${ticker}.json`);
-  const tmp  = path.join(OUTPUT_DIR, `${ticker}.tmp.json`);
+function saveTickerJson(ticker: string, data: TickerData, outputDir: string): void {
+  fs.mkdirSync(outputDir, { recursive: true });
+  const file = path.join(outputDir, `${ticker}.json`);
+  const tmp  = path.join(outputDir, `${ticker}.tmp.json`);
   fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
   fs.renameSync(tmp, file);   // atomic: 읽기 충돌 없음
 }
@@ -384,8 +408,8 @@ function isUpdatedToday(file: string): boolean {
   }
 }
 
-async function processTicker(ticker: string, force: boolean): Promise<ProcessStatus> {
-  const file = path.join(OUTPUT_DIR, `${ticker}.json`);
+async function processTicker(ticker: string, force: boolean, outputDir: string): Promise<ProcessStatus> {
+  const file = path.join(outputDir, `${ticker}.json`);
 
   if (!force && fs.existsSync(file) && isUpdatedToday(file)) {
     log(`[SKIP] ${ticker} — 오늘 이미 다운로드됨 (--force 로 재다운로드 가능)`);
@@ -399,7 +423,7 @@ async function processTicker(ticker: string, force: boolean): Promise<ProcessSta
     ]);
 
     const data = buildTickerJson(ticker, summary, prices);
-    saveTickerJson(ticker, data);
+    saveTickerJson(ticker, data, outputDir);
     return { status: "ok", priceCount: prices.length };
 
   } catch (e) {
@@ -409,7 +433,7 @@ async function processTicker(ticker: string, force: boolean): Promise<ProcessSta
   }
 }
 
-// ── 시총 기준 all_us_tickers.json 재정렬 ─────────────────────────────────────
+// ── 시총 기준 재정렬 ──────────────────────────────────────────────────────────
 
 interface AllTickersJson {
   updated_at:  string;
@@ -419,19 +443,17 @@ interface AllTickersJson {
   [key: string]: unknown;   // nasdaq100_count, russell1000_count 등 동적 카운트 필드
 }
 
-function sortAllTickersByMarketCap(): void {
-  log("=== all_us_tickers.json 시총 기준 재정렬 시작 ===");
+function sortAllTickersByMarketCap(config: MarketConfig): void {
+  log(`=== [${config.label}] 시총 기준 재정렬 시작 ===`);
 
-  // all_us_tickers.json 읽기
   const allJson = JSON.parse(
-    fs.readFileSync(TICKERS_JSON, "utf8")
+    fs.readFileSync(config.tickersJson, "utf8")
   ) as AllTickersJson;
 
-  // 각 티커의 market_cap 수집
   const caps: { ticker: string; cap: number }[] = [];
 
   for (const ticker of allJson.tickers) {
-    const file = path.join(OUTPUT_DIR, `${ticker}.json`);
+    const file = path.join(config.outputDir, `${ticker}.json`);
     if (!fs.existsSync(file)) continue;
 
     const data = JSON.parse(fs.readFileSync(file, "utf8")) as {
@@ -440,19 +462,16 @@ function sortAllTickersByMarketCap(): void {
     caps.push({ ticker, cap: data.market.market_cap ?? 0 });
   }
 
-  // 시총 내림차순 정렬, market_cap 없는 종목은 뒤로
   caps.sort((a, b) => b.cap - a.cap);
-
   const sorted = caps.map((c) => c.ticker);
 
-  // all_us_tickers.json 덮어쓰기
   const output: AllTickersJson = {
     ...allJson,
     updated_at: new Date().toISOString(),
     tickers:    sorted,
   };
 
-  fs.writeFileSync(TICKERS_JSON, JSON.stringify(output, null, 2), "utf8");
+  fs.writeFileSync(config.tickersJson, JSON.stringify(output, null, 2), "utf8");
   log(`정렬 완료: ${sorted.length}개 (시총 기준 내림차순)`);
   log(`상위 5개: ${sorted.slice(0, 5).join(", ")}`);
 }
@@ -464,16 +483,24 @@ async function main(): Promise<void> {
   const force  = args.includes("--force");
   const tIdx   = args.indexOf("--ticker");
   const single = tIdx !== -1 ? (args[tIdx + 1] ?? null) : null;
+  const mIdx   = args.indexOf("--market");
+  const market = mIdx !== -1 ? (args[mIdx + 1] ?? "us") : "us";
 
-  log("=== 티커 메타데이터 업데이트 시작 ===");
+  const config = MARKET_CONFIG[market];
+  if (!config) {
+    err(`알 수 없는 마켓: ${market}. 사용 가능: ${Object.keys(MARKET_CONFIG).join(", ")}`);
+    process.exit(1);
+  }
 
-  const allTickers = single ? [single.toUpperCase()] : loadTickers();
+  log(`=== [${config.label}] 티커 메타데이터 업데이트 시작 ===`);
+
+  const allTickers = single ? [single.toUpperCase()] : loadTickers(config);
   const batches    = chunk(allTickers, CONCURRENCY);
   const stats      = { ok: 0, skipped: 0, error: 0 };
   let done = 0;
 
   for (const batch of batches) {
-    const results = await Promise.all(batch.map((t) => processTicker(t, force)));
+    const results = await Promise.all(batch.map((t) => processTicker(t, force, config.outputDir)));
 
     results.forEach((r, i) => {
       done++;
@@ -489,9 +516,8 @@ async function main(): Promise<void> {
   log(`\n=== 완료 ===`);
   log(`성공: ${stats.ok}  /  스킵: ${stats.skipped}  /  실패: ${stats.error}`);
 
-  // 단일 종목 모드일 때는 정렬 스킵 (전체 시총 데이터가 갱신된 게 아니므로)
   if (!single) {
-    sortAllTickersByMarketCap();
+    sortAllTickersByMarketCap(config);
   }
 }
 
