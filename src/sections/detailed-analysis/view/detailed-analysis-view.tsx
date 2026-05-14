@@ -148,9 +148,16 @@ export function DetailedAnalysisView() {
     },
   };
 
-  const handleAddTicker = (newValue: string | null) => {
-    if (newValue && !selectedTickers.includes(newValue)) {
-      setSelectedTickers((prev) => [...prev, newValue]);
+  const tickerOptions = useMemo(() => {
+    return allTickersList.map((ticker) => ({
+      ticker,
+      name: allTickersData[ticker]?.info?.name || '',
+    }));
+  }, []);
+
+  const handleAddTicker = (newValue: { ticker: string; name: string } | null) => {
+    if (newValue && !selectedTickers.includes(newValue.ticker)) {
+      setSelectedTickers((prev) => [...prev, newValue.ticker]);
     }
     setInputValue('');
   };
@@ -187,12 +194,31 @@ export function DetailedAnalysisView() {
           <Stack spacing={3}>
             <Autocomplete
               fullWidth
-              options={allTickersList}
+              options={tickerOptions}
+              getOptionLabel={(option) => `${option.ticker} - ${option.name}`}
               onChange={(e, v) => handleAddTicker(v)}
               inputValue={inputValue}
               onInputChange={(e, v) => setInputValue(v)}
+              filterOptions={(options, state) => {
+                const query = state.inputValue.toLowerCase();
+                return options.filter(
+                  (opt) =>
+                    opt.ticker.toLowerCase().includes(query) ||
+                    opt.name.toLowerCase().includes(query)
+                );
+              }}
+              renderOption={(props, option) => (
+                <Box component="li" {...props} key={option.ticker}>
+                  <Stack>
+                    <Typography variant="subtitle2">{option.ticker}</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      {option.name}
+                    </Typography>
+                  </Stack>
+                </Box>
+              )}
               renderInput={(params) => (
-                <TextField {...params} label="종목 검색 및 추가" placeholder="예: AAPL, TSLA..." />
+                <TextField {...params} label="종목 검색 및 추가" placeholder="티커(AAPL) 또는 회사명(Apple) 검색..." />
               )}
             />
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
