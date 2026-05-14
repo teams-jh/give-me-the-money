@@ -384,10 +384,16 @@ function buildTickerJson(
 
 // ── 4단계: 파일 저장 ──────────────────────────────────────────────────────────
 
+/** Yahoo Finance 티커에서 파일명용 코드 추출 (005930.KS → 005930, AAPL → AAPL) */
+function tickerToFilename(ticker: string): string {
+  return ticker.split(".")[0] ?? ticker;
+}
+
 function saveTickerJson(ticker: string, data: TickerData, outputDir: string): void {
   fs.mkdirSync(outputDir, { recursive: true });
-  const file = path.join(outputDir, `${ticker}.json`);
-  const tmp  = path.join(outputDir, `${ticker}.tmp.json`);
+  const name = tickerToFilename(ticker);
+  const file = path.join(outputDir, `${name}.json`);
+  const tmp  = path.join(outputDir, `${name}.tmp.json`);
   fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
   fs.renameSync(tmp, file);   // atomic: 읽기 충돌 없음
 }
@@ -407,7 +413,7 @@ function isUpdatedToday(file: string): boolean {
 }
 
 async function processTicker(ticker: string, force: boolean, outputDir: string): Promise<ProcessStatus> {
-  const file = path.join(outputDir, `${ticker}.json`);
+  const file = path.join(outputDir, `${tickerToFilename(ticker)}.json`);
 
   if (!force && fs.existsSync(file) && isUpdatedToday(file)) {
     log(`[SKIP] ${ticker} — 오늘 이미 다운로드됨 (--force 로 재다운로드 가능)`);
@@ -451,7 +457,7 @@ function sortAllTickersByMarketCap(config: MarketConfig): void {
   const caps: { ticker: string; cap: number }[] = [];
 
   for (const ticker of allJson.tickers) {
-    const file = path.join(config.outputDir, `${ticker}.json`);
+    const file = path.join(config.outputDir, `${tickerToFilename(ticker)}.json`);
     if (!fs.existsSync(file)) continue;
 
     const data = JSON.parse(fs.readFileSync(file, "utf8")) as {
