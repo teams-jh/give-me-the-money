@@ -132,8 +132,6 @@ interface TickerData {
     industry:            string | null;
     country:             string | null;
     employees:           number | null;
-    website:             string | null;
-    description:         string | null;
     is_actively_trading: boolean | null;
   };
   market: {
@@ -303,8 +301,6 @@ function buildTickerJson(
       industry:            ap.industry   ?? null,
       country:             ap.country    ?? null,
       employees:           ap.fullTimeEmployees      ?? null,
-      website:             ap.website                ?? null,
-      description:         ap.longBusinessSummary    ?? null,
       is_actively_trading: p.marketState != null ? p.marketState !== "POST" : null,
     },
 
