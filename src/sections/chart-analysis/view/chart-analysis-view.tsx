@@ -19,7 +19,8 @@ import ReactECharts from 'echarts-for-react';
 import ChartApex from 'react-apexcharts';
 
 // Data
-import stockData from 'src/db/test/stock_data.json';
+import { allTickersData } from 'src/library/tickers';
+import { transformTickerToStock } from 'src/sections/top100/top100-utils';
 
 // ----------------------------------------------------------------------
 
@@ -35,18 +36,21 @@ export function ChartAnalysisView() {
   const [currentTab, setCurrentTab] = useState('lightweight');
 
   const nvdaData = useMemo(() => {
-    const stock = stockData.stocks.find((s) => s.ticker === 'NVDA');
-    if (!stock) return [];
+    const ticker = 'NVDA';
+    const rawData = allTickersData[ticker];
+    if (!rawData) return [];
 
+    const stock = transformTickerToStock(rawData);
     const period = stock.periods['1y'];
+    
     return period.chart_labels.map((label, index) => ({
       date: label,
       value: period.chart_data[index],
       regression: period.regression?.[index],
-      // Simulate OHLC for candlestick charts
-      open: period.chart_data[index] * (0.98 + Math.random() * 0.04),
-      high: period.chart_data[index] * (1.02 + Math.random() * 0.02),
-      low: period.chart_data[index] * (0.96 + Math.random() * 0.02),
+      // 실제 종가는 존재하나, 캔들스틱 차트 테스트를 위해 OHLC 값을 시뮬레이션합니다.
+      open: period.chart_data[index] * (0.99 + Math.random() * 0.02),
+      high: period.chart_data[index] * (1.01 + Math.random() * 0.01),
+      low: period.chart_data[index] * (0.98 + Math.random() * 0.01),
       close: period.chart_data[index],
     }));
   }, []);

@@ -24,10 +24,11 @@ import Grid from '@mui/material/Grid';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { Scrollbar } from 'src/components/scrollbar';
 
-import rawStockData from 'src/db/test/stock_data.json';
-import rawScreenerData from 'src/db/test/screener_data.json';
+import { nasdaq100, russell1000 } from 'src/library/metadata';
+import { allTickersData } from 'src/library/tickers';
 
 import { 
+  Stock,
   StockData, 
   ScreenerItem, 
   PeriodKey, 
@@ -38,11 +39,7 @@ import { getTrendLabel } from '../top100-charts';
 import { StockTableRow } from '../top100-table-row';
 import { ScreenerCard } from '../top100-screener-card';
 import { StockDetailModal } from '../top100-detail-modal';
-
-// ----------------------------------------------------------------------
-
-const stockData = rawStockData as unknown as StockData;
-const screenerData = rawScreenerData as { INC: ScreenerItem[], EXC: ScreenerItem[] };
+import { transformTickerToStock } from '../top100-utils';
 
 // ----------------------------------------------------------------------
 
@@ -62,6 +59,58 @@ export function Top100View() {
   const [selectedTicker, setSelectedTicker] = useState<string | null>(null);
   const [modalPeriod, setModalPeriod] = useState<PeriodKey>('3y');
 
+  // Process Nasdaq 100 Data
+  const stockData = useMemo<StockData>(() => {
+    const nasdaqTickers = nasdaq100.tickers;
+    const stocks: Stock[] = nasdaqTickers
+      .map(ticker => allTickersData[ticker])
+      .filter(data => !!data)
+      .map(data => transformTickerToStock(data));
+
+    return {
+      generated_at: nasdaq100.updated_at,
+      stocks
+    };
+  }, []);
+
+  // Process Screener Data (Candidates for Nasdaq 100 from Russell 1000)
+  const screenerData = useMemo(() => {
+    const nasdaqSet = new Set(nasdaq100.tickers);
+    
+    // Inclusion: Russell 1000 but not in Nasdaq 100, sorted by Market Cap
+    const inclusion = russell1000.tickers
+      .filter(ticker => !nasdaqSet.has(ticker))
+      .map(ticker => allTickersData[ticker])
+      .filter(data => !!data && data.info.sector !== 'Financial') // Nasdaq 100 usually excludes financials
+      .sort((a, b) => b.market.market_cap - a.market.market_cap)
+      .slice(0, 50)
+      .map(data => ({
+        ticker: data.ticker,
+        name: data.info.name,
+        sector: data.info.sector,
+        market_cap_b: data.market.market_cap / 1e9,
+        zone: data.market.market_cap > 100e9 ? 'green' : 'watch',
+        passed: ['Market Cap', 'Liquidity']
+      } as ScreenerItem));
+
+    // Exclusion: Nasdaq 100 with low market cap relative to others
+    const exclusion = nasdaq100.tickers
+      .map(ticker => allTickersData[ticker])
+      .filter(data => !!data)
+      .sort((a, b) => a.market.market_cap - b.market.market_cap)
+      .slice(0, 20)
+      .map(data => ({
+        ticker: data.ticker,
+        name: data.info.name,
+        sector: data.info.sector,
+        market_cap_b: data.market.market_cap / 1e9,
+        risk_level: data.market.market_cap < 10e9 ? 'high' : 'medium',
+        signals: ['Low Market Cap']
+      } as ScreenerItem));
+
+    return { INC: inclusion, EXC: exclusion };
+  }, []);
+
   const handleOpenModal = (ticker: string) => {
     setSelectedTicker(ticker);
     setModalPeriod(currentPeriod);
@@ -74,7 +123,7 @@ export function Top100View() {
   const sectors = useMemo(() => {
     const s = new Set(stockData.stocks.map(x => x.sector));
     return Array.from(s).sort();
-  }, []);
+  }, [stockData]);
 
   const trendCounts = useMemo(() => {
     const counts: Record<string, number> = { bullish: 0, recovering: 0, sideways: 0, bearish: 0 };
@@ -83,7 +132,7 @@ export function Top100View() {
       if (counts[t] !== undefined) counts[t]++;
     });
     return counts;
-  }, [currentPeriod]);
+  }, [stockData, currentPeriod]);
 
   const sortedStocks = useMemo(() => {
     let filtered = [...stockData.stocks];
@@ -113,7 +162,7 @@ export function Top100View() {
       }
       return 0;
     });
-  }, [currentPeriod, searchQuery, mainTab, trendFilter, sectorFilter, sortBy]);
+  }, [stockData, currentPeriod, searchQuery, mainTab, trendFilter, sectorFilter, sortBy]);
 
   const filteredInclusion = useMemo(() => {
     return (screenerData.INC).filter(item => {
@@ -124,7 +173,7 @@ export function Top100View() {
       const matchZone = zoneFilter === 'all' || item.zone === zoneFilter;
       return matchSearch && matchZone;
     });
-  }, [searchQuery, zoneFilter]);
+  }, [screenerData, searchQuery, zoneFilter]);
 
   const filteredExclusion = useMemo(() => {
     return (screenerData.EXC).filter(item => {
@@ -135,11 +184,11 @@ export function Top100View() {
       const matchRisk = riskFilter === 'all' || item.risk_level === riskFilter;
       return matchSearch && matchRisk;
     });
-  }, [searchQuery, riskFilter]);
+  }, [screenerData, searchQuery, riskFilter]);
 
   const selectedStock = useMemo(() => 
     stockData.stocks.find(s => s.ticker === selectedTicker), 
-  [selectedTicker]);
+  [stockData, selectedTicker]);
 
   return (
     <DashboardContent maxWidth="xl">
@@ -147,12 +196,12 @@ export function Top100View() {
         <Stack direction="row" alignItems="center" justifyContent="space-between">
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 800 }}>
-              미국 TOP 100 추세 분석 {mainTab === 'trend' ? '📈' : '🔍'}
+              나스닥 100 추세 분석 {mainTab === 'trend' ? '📈' : '🔍'}
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
               {mainTab === 'trend' 
-                ? `S&P 100 주요 종목들의 기간별 수익률과 추세를 선형 회귀 분석으로 확인하세요. (업데이트: ${stockData.generated_at})`
-                : 'S&P 500 지수 편입/편출 가능성이 있는 종목들을 필터링하여 제공합니다.'}
+                ? `Nasdaq 100 종목들의 기간별 수익률과 추세를 실시간 분석 데이터로 확인하세요. (업데이트: ${stockData.generated_at})`
+                : 'Nasdaq 100 지수 편입 후보 및 편출 위험 종목을 분석합니다.'}
             </Typography>
           </Box>
         </Stack>
@@ -168,7 +217,7 @@ export function Top100View() {
           }}
         >
           <Tab label="추세 분석" value="trend" icon={<TimelineRoundedIcon />} iconPosition="start" />
-          <Tab label="스크리너 (S&P 500)" value="screener" icon={<SearchIcon />} iconPosition="start" />
+          <Tab label="나스닥 스크리너" value="screener" icon={<SearchIcon />} iconPosition="start" />
         </Tabs>
 
         {mainTab === 'trend' ? (
@@ -300,8 +349,8 @@ export function Top100View() {
               variant="scrollable"
               sx={{ borderBottom: 1, borderColor: 'divider' }}
             >
-              <Tab label={`S&P 500 편입 후보 (${screenerData.INC.length})`} value="inclusion" />
-              <Tab label={`S&P 500 편출 위험 (${screenerData.EXC.length})`} value="exclusion" />
+              <Tab label={`나스닥 100 편입 후보 (${screenerData.INC.length})`} value="inclusion" />
+              <Tab label={`나스닥 100 편출 위험 (${screenerData.EXC.length})`} value="exclusion" />
             </Tabs>
 
             <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
