@@ -37,7 +37,6 @@ interface MarketConfig {
   label:       string;   // 로그용 ("미국" | "국내")
   tickersJson: string;   // all_*_tickers.json 절대 경로
   outputDir:   string;   // 티커 JSON 저장 디렉토리 절대 경로
-  mergeScript: string;   // 사전 조건 안내용
 }
 
 const MARKET_CONFIG: Record<string, MarketConfig> = {
@@ -45,13 +44,11 @@ const MARKET_CONFIG: Record<string, MarketConfig> = {
     label:       "미국",
     tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
     outputDir:   path.join(DB_DIR, "tickers"),
-    mergeScript: "merge_us_tickers.ts",
   },
   kr: {
     label:       "국내",
     tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
     outputDir:   path.join(DB_DIR, "kr_tickers"),
-    mergeScript: "merge_kr_tickers.ts",
   },
 };
 
@@ -242,8 +239,9 @@ function formatQuarter(date: Date | null | undefined): string | null {
 
 function loadTickers(config: MarketConfig): string[] {
   if (!fs.existsSync(config.tickersJson)) {
+    const scriptName = path.basename(config.tickersJson).replace("all_", "merge_").replace(".json", ".ts");
     throw new Error(
-      `${config.tickersJson} 파일이 없습니다. ${config.mergeScript} 를 먼저 실행하세요.`
+      `${config.tickersJson} 파일이 없습니다. ${scriptName} 를 먼저 실행하세요.`
     );
   }
   const { tickers } = JSON.parse(fs.readFileSync(config.tickersJson, "utf8")) as {
