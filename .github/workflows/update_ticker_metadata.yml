@@ -61,7 +61,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/tickers/ src/db/kr_tickers/ \
+          git add src/db/us_tickers/ src/db/kr_tickers/ \
                   src/db/metadata/all_us_tickers.json \
                   src/db/metadata/all_kr_tickers.json
 

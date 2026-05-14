@@ -43,7 +43,7 @@ const MARKET_CONFIG: Record<string, MarketConfig> = {
   us: {
     label:       "미국",
     tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
-    outputDir:   path.join(DB_DIR, "tickers"),
+    outputDir:   path.join(DB_DIR, "us_tickers"),
   },
   kr: {
     label:       "국내",
