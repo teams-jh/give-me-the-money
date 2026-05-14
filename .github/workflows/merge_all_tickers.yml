@@ -54,6 +54,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: 전체 티커 병합 업데이트 (${TIMESTAMP})"
+            git pull --rebase
             git push
           fi
 

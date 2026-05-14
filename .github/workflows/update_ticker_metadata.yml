@@ -65,6 +65,7 @@ jobs:
             COUNT=$(git diff --cached --name-only | wc -l)
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: 티커 메타데이터 업데이트 ${COUNT}개 (${TIMESTAMP})"
+            git pull --rebase
             git push
           fi
 
