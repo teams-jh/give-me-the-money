@@ -1,58 +1,7 @@
 import { TickerData } from 'src/library/tickers';
+import { classifyTrend as sharedClassifyTrend, PriceSeries } from '../../library/shared';
 import { Stock, PeriodKey, PeriodData } from './types';
 
-/**
- * Linear Regression calculation
- */
-function calculateLinearRegression(data: number[]) {
-  const n = data.length;
-  if (n === 0) return { slope: 0, intercept: 0, regression: [], r2: 0 };
-
-  let sumX = 0;
-  let sumY = 0;
-  let sumXY = 0;
-  let sumXX = 0;
-
-  for (let i = 0; i < n; i++) {
-    const y = data[i];
-    const x = i;
-    sumX += x;
-    sumY += y;
-    sumXY += x * y;
-    sumXX += x * x;
-  }
-
-  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-  const intercept = (sumY - slope * sumX) / n;
-
-  const regression = data.map((_, i) => slope * i + intercept);
-
-  // R-squared
-  const meanY = sumY / n;
-  const ssRes = data.reduce((acc, y, i) => acc + Math.pow(y - regression[i], 2), 0);
-  const ssTot = data.reduce((acc, y) => acc + Math.pow(y - meanY, 2), 0);
-  const r2 = ssTot === 0 ? 0 : 1 - (ssRes / ssTot);
-
-  return { slope, intercept, regression, r2 };
-}
-
-/**
- * Classify trend based on slope and r2
- */
-function classifyTrend(slope: number, r2: number, slopeEarly: number, slopeLate: number): string {
-  const slopeThreshold = 0.0001; // Tiny threshold for flat
-  
-  if (r2 < 0.3) return 'sideways';
-  
-  if (slope > slopeThreshold) {
-    if (slopeEarly < 0 && slopeLate > slopeThreshold) return 'recovering';
-    return 'bullish';
-  }
-  
-  if (slope < -slopeThreshold) return 'bearish';
-  
-  return 'sideways';
-}
 
 /**
  * Transform raw TickerData into the Stock format used in views
@@ -77,31 +26,57 @@ export function transformTickerToStock(data: TickerData): Stock {
 function calculatePeriodData(data: TickerData, days: number): PeriodData {
   const allPrices = data.prices || [];
   const slice = allPrices.slice(-days);
-  const chart_data = slice.map(p => p.adj_close);
-  const chart_labels = slice.map(p => p.date);
+  
+  const series: PriceSeries = {
+    labels: slice.map(p => p.date),
+    values: slice.map(p => p.adj_close),
+  };
 
-  const { slope, regression, r2 } = calculateLinearRegression(chart_data);
+  const result = sharedClassifyTrend(series, 5);
 
-  // Early/Late slopes for recovering trend detection
-  const mid = Math.floor(chart_data.length / 2);
-  const earlyData = chart_data.slice(0, mid);
-  const lateData = chart_data.slice(mid);
-  const slopeEarly = calculateLinearRegression(earlyData).slope;
-  const slopeLate = calculateLinearRegression(lateData).slope;
+  if (!result) {
+    return {
+      trend: 'sideways',
+      slope_pct: 0,
+      r2: 0,
+      slope_early_pct: 0,
+      slope_late_pct: 0,
+      total_return: 0,
+      chart_labels: [],
+      chart_data: [],
+      regression: [],
+    };
+  }
 
-  const total_return = chart_data.length > 1 
-    ? ((chart_data[chart_data.length - 1] / chart_data[0]) - 1) * 100 
-    : 0;
-
+  // The shared function returns data normalized to 100, 
+  // but we might want the actual price-based regression for some views.
+  // Actually, the current charts seem to use the regression as is.
+  // Let's check how regression was calculated before:
+  // regression = data.map((_, i) => slope * i + intercept);
+  // It was based on original prices.
+  
+  // The shared classifyTrend returns:
+  // chartData: values.map(v => round(v / base * 100, 2))
+  // regression: x.map(i => round((intercept + slopeAll * i) / base * 100, 2))
+  
+  // If we want to keep the UI exactly the same (price based), we might need to denormalize.
+  // However, the user said "use the shared function to draw regression".
+  // If we use the normalized data, the chart will look slightly different but correct relative to itself.
+  
+  // Wait, let's look at BigChart in top100-charts.tsx:
+  // const min = Math.min(...data.chart_data, ...data.regression);
+  // It handles its own min/max, so normalized vs price doesn't matter for the VISUAL result,
+  // AS LONG AS both chart_data and regression are on the same scale.
+  
   return {
-    trend: classifyTrend(slope, r2, slopeEarly, slopeLate),
-    slope_pct: slope, // Simplified
-    r2,
-    slope_early_pct: slopeEarly,
-    slope_late_pct: slopeLate,
-    total_return,
-    chart_labels,
-    chart_data,
-    regression,
+    trend: result.trend,
+    slope_pct: result.slopePct,
+    r2: result.r2,
+    slope_early_pct: result.slopeEarlyPct,
+    slope_late_pct: result.slopeLatePct,
+    total_return: result.totalReturn,
+    chart_labels: result.chartLabels,
+    chart_data: result.chartData,
+    regression: result.regression,
   };
 }
