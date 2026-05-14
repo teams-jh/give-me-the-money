@@ -32,7 +32,8 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const DB_DIR  = path.resolve(__dirname, "../../src/db");
+const DB_DIR      = path.resolve(__dirname, "../../src/db");
+const METADATA_DIR = path.join(DB_DIR, "metadata");
 const DWS_BASE = "https://new.real.download.dws.co.kr/common/master";
 
 // DWS 서버 인증서 체인 이슈로 rejectUnauthorized: false 필요 (ticker-map 동일)
@@ -52,7 +53,7 @@ const INDEXES = [
     marketCapPos:   212,
     marketCapWidth: 9,
     topN:       300,
-    outputFile: path.join(DB_DIR, "kospi300_tickers.json"),
+    outputFile: path.join(METADATA_DIR, "kospi300_tickers.json"),
     minCount:   200,
     fieldSpecs: [
       2, 1, 4, 4, 4,
@@ -100,7 +101,7 @@ const INDEXES = [
     marketCapPos:   216,
     marketCapWidth: 5,
     topN:       200,
-    outputFile: path.join(DB_DIR, "kosdaq200_tickers.json"),
+    outputFile: path.join(METADATA_DIR, "kosdaq200_tickers.json"),
     minCount:   150,
     fieldSpecs: [
       2, 1,
@@ -138,19 +139,12 @@ const INDEXES = [
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
-interface KrTicker {
-  code:       string;
-  name:       string;
-  cap_size:   string;
-}
-
 interface KrIndexJson {
   updated_at:  string;
   source:      string;
   source_url:  string;
-  index_name:  string;
   total_count: number;
-  tickers:     KrTicker[];
+  tickers:     string[];   // 종목코드 문자열 배열 (russell1000 형식과 동일)
 }
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
@@ -262,23 +256,17 @@ function filterAndRank(rows: ParsedRow[], topN: number): ParsedRow[] {
 
 function saveJson(
   tickers:   ParsedRow[],
-  indexName: string,
   sourceUrl: string,
   outputFile: string,
 ): void {
-  fs.mkdirSync(DB_DIR, { recursive: true });
+  fs.mkdirSync(METADATA_DIR, { recursive: true });
 
   const out: KrIndexJson = {
     updated_at:  new Date().toISOString(),
-    source:      `한국투자증권 DWS – ${indexName}`,
+    source:      `한국투자증권 DWS – ${path.basename(sourceUrl)}`,
     source_url:  sourceUrl,
-    index_name:  indexName,
     total_count: tickers.length,
-    tickers: tickers.map((t) => ({
-      code:     t.code,
-      name:     t.name,
-      cap_size: t.capSize,
-    })),
+    tickers:     tickers.map((t) => t.code),   // 코드 문자열 배열 (russell1000 동일 형식)
   };
 
   fs.writeFileSync(outputFile, JSON.stringify(out, null, 2), "utf8");
@@ -322,7 +310,7 @@ async function main(): Promise<void> {
     log(`상위 ${idx.topN}개 추출 완료`);
     log(`Top5: ${ranked.slice(0, 5).map((t) => `${t.code} ${t.name}(${t.marketCap}억)`).join(", ")}`);
 
-    saveJson(ranked, idx.name, idx.url, idx.outputFile);
+    saveJson(ranked, idx.url, idx.outputFile);
   }
 
   log("=== 업데이트 완료 ===");
