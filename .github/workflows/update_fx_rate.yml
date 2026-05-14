@@ -8,10 +8,10 @@ on:
 
   workflow_dispatch:
     inputs:
-      reason:
-        description: "수동 실행 사유"
+      force:
+        description: "오늘 이미 업데이트된 파일도 재다운로드 (true/false)"
         required: false
-        default: "manual trigger"
+        default: "false"
 
 jobs:
   update-fx-rate:
@@ -39,7 +39,7 @@ jobs:
         run: npm ci
 
       - name: Run FX rate update script
-        run: npx tsx server_node/scripts/update_fx_rate.ts
+        run: npx tsx server_node/scripts/update_fx_rate.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Commit and push
         run: |

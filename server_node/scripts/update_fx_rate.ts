@@ -4,8 +4,13 @@
  * Yahoo Finance에서 KRW=X 티커로 최근 3년치 일봉 환율 데이터를 다운로드하고
  * 주식 티커 JSON과 동일한 구조로 src/db/fx/USDKRW.json 에 저장한다.
  *
+ * 스킵 조건:
+ *   - USDKRW.json 의 updated_at 이 오늘 날짜이면 건너뜀
+ *   - --force 플래그로 강제 재다운로드 가능
+ *
  * 실행:
  *   npx tsx server_node/scripts/update_fx_rate.ts
+ *   npx tsx server_node/scripts/update_fx_rate.ts --force
  */
 
 import fs   from "fs";
@@ -105,6 +110,19 @@ function log(msg: string): void {
 function round(v: number | null | undefined): number | null {
   if (v == null || isNaN(v)) return null;
   return Math.round(v * 100) / 100;
+}
+
+/** USDKRW.json 의 updated_at 이 오늘 날짜면 true */
+function isUpdatedToday(): boolean {
+  try {
+    const data        = JSON.parse(fs.readFileSync(OUTPUT, "utf8")) as { updated_at?: string };
+    if (!data.updated_at) return false;
+    const updatedDate = new Date(data.updated_at).toISOString().slice(0, 10);
+    const today       = new Date().toISOString().slice(0, 10);
+    return updatedDate === today;
+  } catch {
+    return false;  // 파일 없음 → 스킵하지 않음
+  }
 }
 
 // ── 1단계: 일봉 가격 데이터 다운로드 ─────────────────────────────────────────
@@ -259,7 +277,16 @@ function saveJson(data: FxJson): void {
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
+  const force = process.argv.includes("--force");
+
   log("=== USD/KRW 환율 데이터 업데이트 시작 ===");
+
+  // 오늘 이미 업데이트된 파일이 있으면 스킵 (--force 로 우회 가능)
+  if (!force && isUpdatedToday()) {
+    log("오늘 이미 업데이트됨 — 건너뜀 (재다운로드: --force 플래그 사용)");
+    log("=== 스킵 ===");
+    return;
+  }
 
   const prices = await fetchPrices();
 
