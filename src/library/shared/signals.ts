@@ -540,6 +540,172 @@ export function detectRiskSignal(
   return { atr: latestATR, stopLoss, mdd, alerts };
 }
 
+
+// ── 8. 52주 신고가 / 신저가 돌파 ─────────────────────────────────────────────
+
+/** 52주 신고가/신저가 감지 결과 */
+export interface HighLowSignal {
+  high52w:  number | null;   // 52주 최고가 (계산값)
+  low52w:   number | null;   // 52주 최저가 (계산값)
+  alerts:   Alert[];
+}
+
+/**
+ * 52주(period 봉) 신고가 돌파 / 신저가 이탈 감지.
+ *
+ * market 필드의 fifty_two_week_low 는 KR 99%가 0 이므로
+ * prices 배열에서 직접 계산한다.
+ *
+ * 돌파/근접 기준:
+ *   신고가 돌파  : 현재가 >= 52주 고가            → strong bullish
+ *   신고가 근접  : 현재가 >= 52주 고가 * 0.97     → normal bullish
+ *   신저가 근접  : 현재가 <= 52주 저가 * 1.03     → normal bearish
+ *   신저가 이탈  : 현재가 <= 52주 저가            → strong bearish
+ *
+ * @param closes - 종가 배열 (시간순, 최소 period+1 개)
+ * @param period - 비교 기간 거래일 수 (기본 252 = 1년)
+ * @param nearPct - 근접 판단 임계 % (기본 0.03 = 3%)
+ */
+export function detectHighLowBreakout(
+  closes:  number[],
+  period:  number = 252,
+  nearPct: number = 0.03,
+): HighLowSignal {
+  const alerts: Alert[] = [];
+  const n = closes.length;
+
+  // 현재가 이전 period 봉의 고/저가 (현재 봉 제외)
+  if (n < period + 1) return { high52w: null, low52w: null, alerts };
+
+  const window  = closes.slice(n - period - 1, n - 1);   // 현재 봉 제외
+  const high52w = Math.max(...window);
+  const low52w  = Math.min(...window);
+  const current = closes[n - 1] as number;
+
+  const nearHigh = high52w * (1 - nearPct);
+  const nearLow  = low52w  * (1 + nearPct);
+
+  if (current >= high52w) {
+    alerts.push({
+      type:           "high52w_breakout",
+      direction:      "bullish",
+      strength:       "strong",
+      label:          `52주 신고가 돌파 (현재 ${current.toLocaleString()} / 고가 ${high52w.toLocaleString()})`,
+      value:          current,
+      scoreAffecting: true,
+    });
+  } else if (current >= nearHigh) {
+    alerts.push({
+      type:           "high52w_near",
+      direction:      "bullish",
+      strength:       "normal",
+      label:          `52주 신고가 근접 (고가 대비 ${((current / high52w - 1) * 100).toFixed(1)}%)`,
+      value:          current,
+      scoreAffecting: true,
+    });
+  }
+
+  if (current <= low52w) {
+    alerts.push({
+      type:           "low52w_breakdown",
+      direction:      "bearish",
+      strength:       "strong",
+      label:          `52주 신저가 이탈 (현재 ${current.toLocaleString()} / 저가 ${low52w.toLocaleString()})`,
+      value:          current,
+      scoreAffecting: true,
+    });
+  } else if (current <= nearLow) {
+    alerts.push({
+      type:           "low52w_near",
+      direction:      "bearish",
+      strength:       "normal",
+      label:          `52주 신저가 근접 (저가 대비 +${((current / low52w - 1) * 100).toFixed(1)}%)`,
+      value:          current,
+      scoreAffecting: true,
+    });
+  }
+
+  return { high52w, low52w, alerts };
+}
+
+// ── 9. 가격-거래량 다이버전스 ─────────────────────────────────────────────────
+
+/** 가격-거래량 다이버전스 감지 결과 */
+export interface PriceVolumeDivSignal {
+  priceChangePct:  number | null;   // lookback 기간 가격 변화율 (%)
+  volumeChangePct: number | null;   // 전반→후반 거래량 변화율 (%)
+  alerts:          Alert[];
+}
+
+/**
+ * 가격 방향과 거래량 추세 불일치 감지 (OBV 다이버전스와 별개).
+ *
+ * lookback 기간을 전반/후반으로 나눠 평균 거래량을 비교.
+ * 방향 판단:
+ *   가격 상승(+2%+) & 거래량 감소(-20%+) → 상승 추세 약화 (bearish)
+ *   가격 하락(-2%+) & 거래량 감소(-20%+) → 하락 추세 약화, 반등 가능 (bullish)
+ *
+ * @param closes      - 종가 배열 (시간순)
+ * @param volumes     - 거래량 배열 (closes와 같은 길이)
+ * @param lookback    - 분석 기간 (기본 40봉)
+ * @param priceThresh - 가격 변화 최소 임계 (기본 0.02 = 2%)
+ * @param volThresh   - 거래량 감소 최소 임계 (기본 0.20 = 20%)
+ */
+export function detectPriceVolumeDivergence(
+  closes:      number[],
+  volumes:     number[],
+  lookback:    number = 40,
+  priceThresh: number = 0.02,
+  volThresh:   number = 0.20,
+): PriceVolumeDivSignal {
+  const alerts: Alert[] = [];
+  const n = closes.length;
+
+  if (n < lookback + 1) return { priceChangePct: null, volumeChangePct: null, alerts };
+
+  const priceWindow  = closes.slice(n - lookback);
+  const volumeWindow = volumes.slice(n - lookback);
+  const half         = Math.floor(lookback / 2);
+
+  const priceFirst  = priceWindow[0]  as number;
+  const priceLast   = priceWindow[priceWindow.length - 1] as number;
+  const priceChangePct = (priceLast / priceFirst - 1) * 100;
+
+  const volEarly = volumeWindow.slice(0, half).reduce((s, v) => s + v, 0) / half;
+  const volLate  = volumeWindow.slice(half).reduce((s, v) => s + v, 0) / (lookback - half);
+  const volumeChangePct = (volLate / volEarly - 1) * 100;
+
+  const priceUp   = priceChangePct  >  priceThresh * 100;
+  const priceDown = priceChangePct  < -priceThresh * 100;
+  const volDown   = volumeChangePct < -volThresh   * 100;
+
+  if (priceUp && volDown) {
+    alerts.push({
+      type:           "pv_bearish_divergence",
+      direction:      "bearish",
+      strength:       "normal",
+      label:          `가격-거래량 약세 다이버전스 (가격 +${priceChangePct.toFixed(1)}% / 거래량 ${volumeChangePct.toFixed(1)}%)`,
+      value:          volumeChangePct,
+      scoreAffecting: true,
+    });
+  } else if (priceDown && volDown) {
+    alerts.push({
+      type:           "pv_bullish_divergence",
+      direction:      "bullish",
+      strength:       "weak",
+      label:          `가격-거래량 강세 다이버전스 (가격 ${priceChangePct.toFixed(1)}% / 거래량 ${volumeChangePct.toFixed(1)}%)`,
+      value:          volumeChangePct,
+      scoreAffecting: true,
+    });
+  }
+
+  return {
+    priceChangePct:  Math.round(priceChangePct  * 100) / 100,
+    volumeChangePct: Math.round(volumeChangePct * 100) / 100,
+    alerts,
+  };
+}
+
 // ── 통합 분석 ─────────────────────────────────────────────────────────────────
 
 /** 종목별 전체 신호 요약 */
@@ -553,6 +719,8 @@ export interface SignalSummary {
   atr:       number | null;
   stopLoss:  number | null;
   mdd:       number;
+  high52w:   number | null;
+  low52w:    number | null;
   alerts:    Alert[];
 }
 
@@ -582,13 +750,15 @@ export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
   const volumes = ohlcv.map(o => o.volume);
 
   // 각 신호 감지
-  const cross  = detectGoldenCross(closes);
-  const rsi    = detectRSISignal(closes);
-  const macdS  = detectMACDCross(closes);
-  const bb     = detectBBBreakout(closes);
-  const vol    = detectVolumeSpike(closes, volumes);
-  const obv    = detectOBVDivergence(closes, volumes);
-  const risk   = detectRiskSignal(ohlcv);
+  const cross   = detectGoldenCross(closes);
+  const rsi     = detectRSISignal(closes);
+  const macdS   = detectMACDCross(closes);
+  const bb      = detectBBBreakout(closes);
+  const vol     = detectVolumeSpike(closes, volumes);
+  const obv     = detectOBVDivergence(closes, volumes);
+  const risk    = detectRiskSignal(ohlcv);
+  const hl      = detectHighLowBreakout(closes);
+  const pvDiv   = detectPriceVolumeDivergence(closes, volumes);
 
   // 전체 Alert 통합
   const allAlerts: Alert[] = [
@@ -599,6 +769,8 @@ export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
     ...vol.alerts,
     ...obv.alerts,
     ...risk.alerts,
+    ...hl.alerts,
+    ...pvDiv.alerts,
   ];
 
   // 점수 계산 (scoreAffecting: false 인 정보성 alert 는 제외)
@@ -617,6 +789,8 @@ export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
     atr:       risk.atr,
     stopLoss:  risk.stopLoss,
     mdd:       risk.mdd,
+    high52w:   hl.high52w,
+    low52w:    hl.low52w,
     alerts:    allAlerts,
   };
 }
