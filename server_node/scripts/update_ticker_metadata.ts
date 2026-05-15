@@ -503,9 +503,8 @@ async function main(): Promise<void> {
 
   log(`=== [${config.label}] 티커 메타데이터 업데이트 시작 ===`);
 
-  const allTickers = single ? [single.toUpperCase()] : loadTickers(config);
-  const nameMap    = single ? {} : allTickers.nameMap;
-  const tickers    = single ? [single.toUpperCase()] : allTickers.tickers;
+  const { tickers: allTks, nameMap } = loadTickers(config);
+  const tickers = single ? [single.toUpperCase()] : allTks;
   const batches    = chunk(tickers, CONCURRENCY);
   const stats      = { ok: 0, skipped: 0, error: 0 };
   let done = 0;
