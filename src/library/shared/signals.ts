@@ -39,11 +39,12 @@ export type SignalStrength = "strong" | "normal" | "weak";
 
 /** 개별 Alert (감지된 신호 하나) */
 export interface Alert {
-  type:      string;          // 신호 종류 (e.g. "golden_cross_5_20")
-  direction: SignalDirection;
-  strength:  SignalStrength;
-  label:     string;          // 사람이 읽기 좋은 설명
-  value?:    number;          // 수치 (RSI 값, OBV 변화율 등)
+  type:           string;          // 신호 종류 (e.g. "golden_cross_5_20")
+  direction:      SignalDirection;
+  strength:       SignalStrength;
+  label:          string;          // 사람이 읽기 좋은 설명
+  value?:         number;          // 수치 (RSI 값, OBV 변화율 등)
+  scoreAffecting: boolean;         // false 이면 score 계산에서 제외 (정보성 전용)
 }
 
 // ── 1. 골든크로스 / 데드크로스 ───────────────────────────────────────────────
@@ -104,17 +105,19 @@ export function detectGoldenCross(
 
       if (crossedUp) {
         alerts.push({
-          type:      `golden_cross_${fast}_${slow}`,
-          direction: "bullish",
+          type:           `golden_cross_${fast}_${slow}`,
+          direction:      "bullish",
           strength,
-          label:     `골든크로스 MA${fast}/MA${slow} (${daysAgo === 0 ? "당일" : `${daysAgo}봉 전`})`,
+          label:          `골든크로스 MA${fast}/MA${slow} (${daysAgo === 0 ? "당일" : `${daysAgo}봉 전`})`,
+          scoreAffecting: true,
         });
       } else if (crossedDown) {
         alerts.push({
-          type:      `dead_cross_${fast}_${slow}`,
-          direction: "bearish",
+          type:           `dead_cross_${fast}_${slow}`,
+          direction:      "bearish",
           strength,
-          label:     `데드크로스 MA${fast}/MA${slow} (${daysAgo === 0 ? "당일" : `${daysAgo}봉 전`})`,
+          label:          `데드크로스 MA${fast}/MA${slow} (${daysAgo === 0 ? "당일" : `${daysAgo}봉 전`})`,
+          scoreAffecting: true,
         });
       }
     }
@@ -161,16 +164,24 @@ export function detectRSISignal(
   if (latestRSI !== null) {
     if (latestRSI > 80) {
       alerts.push({ type: "rsi_extreme_overbought", direction: "bearish", strength: "strong",
-        label: `RSI 극단 과매수 (${latestRSI})`, value: latestRSI });
+        label: `RSI 극단 과매수 (${latestRSI},
+          scoreAffecting: true,
+        })`, value: latestRSI });
     } else if (latestRSI > 70) {
       alerts.push({ type: "rsi_overbought", direction: "bearish", strength: "normal",
-        label: `RSI 과매수 (${latestRSI})`, value: latestRSI });
+        label: `RSI 과매수 (${latestRSI},
+          scoreAffecting: true,
+        })`, value: latestRSI });
     } else if (latestRSI < 20) {
       alerts.push({ type: "rsi_extreme_oversold", direction: "bullish", strength: "strong",
-        label: `RSI 극단 과매도 (${latestRSI})`, value: latestRSI });
+        label: `RSI 극단 과매도 (${latestRSI},
+          scoreAffecting: true,
+        })`, value: latestRSI });
     } else if (latestRSI < 30) {
       alerts.push({ type: "rsi_oversold", direction: "bullish", strength: "normal",
-        label: `RSI 과매도 (${latestRSI})`, value: latestRSI });
+        label: `RSI 과매도 (${latestRSI},
+          scoreAffecting: true,
+        })`, value: latestRSI });
     }
   }
 
@@ -194,6 +205,7 @@ export function detectRSISignal(
         alerts.push({
           type: "rsi_bearish_divergence", direction: "bearish", strength: "normal",
           label: `RSI 하락 다이버전스 (가격↑ RSI↓)`, value: latestRSI ?? undefined,
+          scoreAffecting: true,
         });
       }
 
@@ -202,6 +214,7 @@ export function detectRSISignal(
         alerts.push({
           type: "rsi_bullish_divergence", direction: "bullish", strength: "normal",
           label: `RSI 상승 다이버전스 (가격↓ RSI↑)`, value: latestRSI ?? undefined,
+          scoreAffecting: true,
         });
       }
     }
@@ -261,20 +274,22 @@ export function detectMACDCross(
       // 제로선 위에서 골든크로스 → 더 강한 신호
       const strength: SignalStrength = aboveZero ? "strong" : "normal";
       alerts.push({
-        type:      "macd_golden_cross",
-        direction: "bullish",
+        type:           "macd_golden_cross",
+        direction:      "bullish",
         strength,
-        label:     `MACD 골든크로스${aboveZero ? " (제로선 위)" : ""} (${daysAgo === 0 ? "당일" : `${daysAgo}봉 전`})`,
-        value:     mCur,
+        label:          `MACD 골든크로스${aboveZero ? " (제로선 위)" : ""} (${daysAgo === 0 ? "당일" : `${daysAgo}봉 전`})`,
+        value:          mCur,
+        scoreAffecting: true,
       });
     } else if (crossedDown) {
       const strength: SignalStrength = !aboveZero ? "strong" : "normal";
       alerts.push({
-        type:      "macd_dead_cross",
-        direction: "bearish",
+        type:           "macd_dead_cross",
+        direction:      "bearish",
         strength,
-        label:     `MACD 데드크로스${!aboveZero ? " (제로선 아래)" : ""} (${daysAgo === 0 ? "당일" : `${daysAgo}봉 전`})`,
-        value:     mCur,
+        label:          `MACD 데드크로스${!aboveZero ? " (제로선 아래)" : ""} (${daysAgo === 0 ? "당일" : `${daysAgo}봉 전`})`,
+        value:          mCur,
+        scoreAffecting: true,
       });
     }
   }
@@ -328,13 +343,15 @@ export function detectBBBreakout(
 
     if (price > bb.upper) {
       alerts.push({
-        type: "bb_upper_breakout", direction: "bearish", strength: "normal",
-        label: `볼린저밴드 상단 돌파 (${label})`, value: price,
+        type:           "bb_upper_breakout", direction: "bearish", strength: "normal",
+        label:          `볼린저밴드 상단 돌파 (${label})`, value: price,
+        scoreAffecting: true,
       });
     } else if (price < bb.lower) {
       alerts.push({
-        type: "bb_lower_breakout", direction: "bullish", strength: "normal",
-        label: `볼린저밴드 하단 이탈 (${label})`, value: price,
+        type:           "bb_lower_breakout", direction: "bullish", strength: "normal",
+        label:          `볼린저밴드 하단 이탈 (${label})`, value: price,
+        scoreAffecting: true,
       });
     }
   }
@@ -354,6 +371,7 @@ export function detectBBBreakout(
           type: "bb_squeeze", direction: "neutral", strength: "strong",
           label: `볼린저밴드 스퀴즈 (${squeezeWindow}봉 중 최저 밴드폭: ${bandWidth.toFixed(1)}%)`,
           value: bandWidth,
+          scoreAffecting: false,
         });
       }
     }
@@ -403,11 +421,12 @@ export function detectVolumeSpike(
     const strength: SignalStrength   = volRatio >= threshold * 2 ? "strong" : "normal";
 
     alerts.push({
-      type:      `volume_spike_${priceUp ? "up" : "down"}`,
+      type:           `volume_spike_${priceUp ? "up" : "down"}`,
       direction,
       strength,
-      label:     `거래량 급증 ${volRatio.toFixed(1)}배 (${priceUp ? "가격 상승" : "가격 하락"})`,
-      value:     volRatio,
+      label:          `거래량 급증 ${volRatio.toFixed(1)}배 (${priceUp ? "가격 상승" : "가격 하락"})`,
+      value:          volRatio,
+      scoreAffecting: true,
     });
   }
 
@@ -455,13 +474,15 @@ export function detectOBVDivergence(
 
   if (priceUp && obvDown) {
     alerts.push({
-      type: "obv_bearish_divergence", direction: "bearish", strength: "normal",
-      label: `OBV 하락 다이버전스 (가격↑ OBV↓, ${lookback}봉 기준)`,
+      type:           "obv_bearish_divergence", direction: "bearish", strength: "normal",
+      label:          `OBV 하락 다이버전스 (가격↑ OBV↓, ${lookback}봉 기준)`,
+      scoreAffecting: true,
     });
   } else if (priceDown && obvUp) {
     alerts.push({
-      type: "obv_bullish_divergence", direction: "bullish", strength: "normal",
-      label: `OBV 상승 다이버전스 (가격↓ OBV↑, ${lookback}봉 기준)`,
+      type:           "obv_bullish_divergence", direction: "bullish", strength: "normal",
+      label:          `OBV 상승 다이버전스 (가격↓ OBV↑, ${lookback}봉 기준)`,
+      scoreAffecting: true,
     });
   }
 
@@ -510,8 +531,9 @@ export function detectRiskSignal(
 
   if (mdd < mddThreshold) {
     alerts.push({
-      type: "mdd_warning", direction: "bearish", strength: "strong",
-      label: `최대낙폭 경보 (MDD ${mdd}%)`, value: mdd,
+      type:           "mdd_warning", direction: "bearish", strength: "strong",
+      label:          `최대낙폭 경보 (MDD ${mdd}%)`, value: mdd,
+      scoreAffecting: false,
     });
   }
 
@@ -579,8 +601,9 @@ export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
     ...risk.alerts,
   ];
 
-  // 점수 계산
+  // 점수 계산 (scoreAffecting: false 인 정보성 alert 는 제외)
   const score = allAlerts.reduce((sum, a) => {
+    if (!a.scoreAffecting) return sum;
     return sum + SCORE_WEIGHT[a.direction] * STRENGTH_MULTIPLIER[a.strength];
   }, 0);
 
