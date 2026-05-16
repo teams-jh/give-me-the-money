@@ -17,3 +17,6 @@ export type { PositionInput, PositionResult, TargetLevel } from "./position";
 
 export { calcSectorRotation, getQuarterKey } from "./sector";
 export type { StockInput, SectorQuarterStats, RankingRow, QuarterRanking, SectorSeries, SectorRotationResult } from "./sector";
+
+export { calcMarketBreadth, buildSnapshotDates, getMarketCondition } from "./breadth";
+export type { MarketSnapshot, MarketBreadthResult, MarketCondition } from "./breadth";
