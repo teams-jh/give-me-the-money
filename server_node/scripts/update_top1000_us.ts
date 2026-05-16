@@ -75,25 +75,40 @@ interface ScreenerQuote {
 
 async function getYahooCrumb(): Promise<{ crumb: string; cookie: string }> {
   // Step 1: 쿠키 획득
-  const r1 = await axios.get("https://finance.yahoo.com/", {
-    headers: { "User-Agent": UA },
-    maxRedirects: 5,
-    timeout: 15_000,
+  //   - 가벼운 quote 페이지 사용 (홈은 헤더가 너무 큼 → HPE_HEADER_OVERFLOW)
+  //   - maxRedirects: 0 으로 리다이렉트 따라가지 않음 (302 응답의 set-cookie만 필요)
+  //   - validateStatus: 200·302 모두 정상 처리
+  const r1 = await axios.get("https://finance.yahoo.com/quote/AAPL", {
+    headers: {
+      "User-Agent": UA,
+      Accept:       "text/html,application/xhtml+xml,application/xml",
+    },
+    maxRedirects:   0,
+    validateStatus: (status) => status >= 200 && status < 400,
+    timeout:        15_000,
   });
   const cookie = ((r1.headers["set-cookie"] ?? []) as string[])
     .map((c) => c.split(";")[0])
     .join("; ");
+  if (!cookie) throw new Error("Yahoo 쿠키 획득 실패 (set-cookie 헤더 없음)");
 
   // Step 2: crumb 획득
   const r2 = await axios.get(
     "https://query1.finance.yahoo.com/v1/test/getcrumb",
     {
-      headers: { "User-Agent": UA, Cookie: cookie },
+      headers: {
+        "User-Agent": UA,
+        Cookie:       cookie,
+        Origin:       "https://finance.yahoo.com",
+        Referer:      "https://finance.yahoo.com/quote/AAPL",
+        Accept:       "*/*",
+      },
       timeout: 10_000,
     }
   );
-  const crumb = r2.data as string;
-  log(`crumb 획득 완료`);
+  const crumb = String(r2.data ?? "").trim();
+  if (!crumb) throw new Error("crumb 획득 실패 (빈 응답)");
+  log(`crumb 획득 완료 (${crumb.length}자)`);
   return { crumb, cookie };
 }
 
