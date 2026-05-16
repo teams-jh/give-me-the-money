@@ -1,0 +1,138 @@
+name: Daily Update
+
+# KR 장 마감: 15:30 KST = 06:30 UTC  →  07:00 UTC 실행
+# US 장 마감: 16:00 EST = 21:00 UTC  →  22:00 UTC 실행
+# 하나의 job으로 KR→US 순서로 처리 (US 데이터는 KR 실행 중 마감됨)
+on:
+  schedule:
+    - cron: "0 22 * * 1-5"   # 월~금 22:00 UTC (KR 익일 07:00 KST / US 17:00 EST)
+  workflow_dispatch:
+    inputs:
+      market:
+        description: "업데이트할 마켓 (kr / us / all)"
+        required: false
+        default: "all"
+      force:
+        description: "오늘 이미 처리된 파일도 강제 재다운로드 (true/false)"
+        required: false
+        default: "false"
+
+jobs:
+  # ── KR 가격 업데이트 + 신호 재계산 ────────────────────────────────────────
+  daily-kr:
+    name: "KR 일간 업데이트"
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.market == 'kr' || github.event.inputs.market == 'all' || github.event.inputs.market == '' }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Update KR ticker metadata (일봉 1개 추가)
+        working-directory: server_node
+        run: npx tsx scripts/update_ticker_metadata.ts --market kr ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+
+      - name: Update FX rate
+        working-directory: server_node
+        run: npx tsx scripts/update_fx_rate.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+
+      - name: Analyze KR signals
+        run: npx tsx scripts/analyze_signals.ts --market kr
+
+      - name: Commit and push (KR)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/db/kr_tickers/ \
+                  src/db/kr_signals/ \
+                  src/db/fx/ \
+                  src/db/metadata/all_kr_tickers.json
+
+          if git diff --cached --quiet; then
+            echo "KR 변경 없음 — 커밋 건너뜀"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: KR 일간 업데이트 (${TIMESTAMP})"
+            git pull --rebase
+            git push
+          fi
+
+  # ── US 가격 업데이트 + 신호 재계산 ────────────────────────────────────────
+  daily-us:
+    name: "US 일간 업데이트"
+    runs-on: ubuntu-latest
+    needs: daily-kr   # KR 완료 후 실행 (git 충돌 방지)
+    if: |
+      always() &&
+      (github.event_name == 'schedule' ||
+       github.event.inputs.market == 'us' ||
+       github.event.inputs.market == 'all' ||
+       github.event.inputs.market == '')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Update US ticker metadata (일봉 1개 추가)
+        working-directory: server_node
+        run: npx tsx scripts/update_ticker_metadata.ts --market us ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+
+      - name: Analyze US signals
+        run: npx tsx scripts/analyze_signals.ts --market us
+
+      - name: Commit and push (US)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git pull --rebase   # KR 커밋 반영
+
+          git add src/db/us_tickers/ \
+                  src/db/us_signals/ \
+                  src/db/metadata/all_us_tickers.json
+
+          if git diff --cached --quiet; then
+            echo "US 변경 없음 — 커밋 건너뜀"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: US 일간 업데이트 (${TIMESTAMP})"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::일간 업데이트 실패! Actions 로그를 확인하세요."

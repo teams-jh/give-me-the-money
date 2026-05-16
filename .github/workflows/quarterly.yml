@@ -1,0 +1,182 @@
+name: Quarterly Index Update
+
+# 지수 구성종목 변경 일정:
+#   KOSPI300 / KOSDAQ200 : 3·6·9·12월 초 (분기 리밸런싱)
+#   NASDAQ 100           : 연 1회 (12월)
+#   Russell 1000         : 연 1회 (6월)
+#
+# → 3·6·9·12월 1일 03:00 UTC 자동 실행 + 수동 실행 지원
+on:
+  schedule:
+    - cron: "0 3 1 3,6,9,12 *"   # 3·6·9·12월 1일 03:00 UTC
+
+  workflow_dispatch:
+    inputs:
+      market:
+        description: "업데이트할 마켓 (kr / us / all)"
+        required: false
+        default: "all"
+      reason:
+        description: "수동 실행 사유 (예: 리밸런싱 반영)"
+        required: false
+        default: "manual trigger"
+
+jobs:
+  # ── KR 구성종목 업데이트 ──────────────────────────────────────────────────
+  update-kr-index:
+    name: "KR 구성종목 업데이트 (KOSPI300 + KOSDAQ200)"
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.market == 'kr' || github.event.inputs.market == 'all' || github.event.inputs.market == '' }}
+
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Update KR stock tickers (KOSPI300 + KOSDAQ200)
+        working-directory: server_node
+        run: npx tsx scripts/update_kr_stock.ts
+
+      - name: Merge KR tickers
+        working-directory: server_node
+        run: npx tsx scripts/merge_kr_tickers.ts
+
+      - name: Check for changes
+        id: check
+        run: |
+          git diff --quiet src/db/metadata/kospi300_tickers.json \
+                           src/db/metadata/kosdaq200_tickers.json \
+                           src/db/metadata/all_kr_tickers.json \
+          && echo "changed=false" >> $GITHUB_OUTPUT \
+          || echo "changed=true"  >> $GITHUB_OUTPUT
+
+      - name: Commit and push (KR index)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/db/metadata/kospi300_tickers.json \
+                  src/db/metadata/kosdaq200_tickers.json \
+                  src/db/metadata/all_kr_tickers.json
+
+          if git diff --cached --quiet; then
+            echo "KR 구성종목 변경 없음"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: KR 분기 구성종목 업데이트 (${TIMESTAMP})"
+            git pull --rebase
+            git push
+          fi
+
+  # ── US 구성종목 업데이트 ──────────────────────────────────────────────────
+  update-us-index:
+    name: "US 구성종목 업데이트 (NASDAQ100 + Russell1000)"
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'schedule' || github.event.inputs.market == 'us' || github.event.inputs.market == 'all' || github.event.inputs.market == '' }}
+
+    outputs:
+      changed: ${{ steps.check.outputs.changed }}
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Update NASDAQ 100
+        working-directory: server_node
+        run: npx tsx scripts/update_nasdaq100.ts
+
+      - name: Update Russell 1000
+        working-directory: server_node
+        run: npx tsx scripts/update_russell1000.ts
+
+      - name: Merge US tickers
+        working-directory: server_node
+        run: npx tsx scripts/merge_us_tickers.ts
+
+      - name: Check for changes
+        id: check
+        run: |
+          git diff --quiet src/db/metadata/nasdaq100_tickers.json \
+                           src/db/metadata/russell1000_tickers.json \
+                           src/db/metadata/all_us_tickers.json \
+          && echo "changed=false" >> $GITHUB_OUTPUT \
+          || echo "changed=true"  >> $GITHUB_OUTPUT
+
+      - name: Commit and push (US index)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git pull --rebase
+
+          git add src/db/metadata/nasdaq100_tickers.json \
+                  src/db/metadata/russell1000_tickers.json \
+                  src/db/metadata/all_us_tickers.json
+
+          if git diff --cached --quiet; then
+            echo "US 구성종목 변경 없음"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: US 분기 구성종목 업데이트 (${TIMESTAMP})"
+            git pull --rebase
+            git push
+          fi
+
+  # ── 구성종목 변경 시 전체 메타데이터 재수집 트리거 ──────────────────────────
+  trigger-metadata-refresh:
+    name: "메타데이터 전체 재수집 안내"
+    runs-on: ubuntu-latest
+    needs: [update-kr-index, update-us-index]
+    if: always()
+
+    steps:
+      - name: Summary
+        run: |
+          echo "## 분기 구성종목 업데이트 완료" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "구성종목 변경이 있었다면 아래 워크플로우를 수동으로 실행하세요." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 순서 | 워크플로우 | 설명 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-----------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1 | Update KR Ticker Metadata | 신규 편입 종목 데이터 수집 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2 | Update US Ticker Metadata | 신규 편입 종목 데이터 수집 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 3 | Analyze KR/US Signals | 신호 재계산 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 4 | Weekly Analysis | 섹터 로테이션 + Breadth 재계산 |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::분기 구성종목 업데이트 실패! Actions 로그를 확인하세요."

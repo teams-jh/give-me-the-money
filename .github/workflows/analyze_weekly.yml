@@ -1,0 +1,150 @@
+name: Weekly Analysis
+
+on:
+  # 매주 일요일 01:00 UTC (한국시간 10:00)
+  schedule:
+    - cron: "0 1 * * 0"
+
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "수동 실행 사유"
+        required: false
+        default: "manual trigger"
+
+jobs:
+  # ── 섹터 로테이션 분석 (KR + US 병렬) ──────────────────────────────────────
+  sector-rotation:
+    name: "섹터 로테이션 (${{ matrix.market }})"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        market: [kr, us]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Run analyze_sector_rotation (${{ matrix.market }})
+        run: npx tsx scripts/analyze_sector_rotation.ts --market ${{ matrix.market }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sector_${{ matrix.market }}
+          path: src/db/${{ matrix.market }}_sector/rotation.json
+          retention-days: 1
+
+  # ── 시장 breadth 분석 (KR + US × 3m + 1y 병렬) ─────────────────────────────
+  market-breadth:
+    name: "시장 Breadth (${{ matrix.market }} ${{ matrix.period }})"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        market: [kr, us]
+        period: ["3m", "1y"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Run analyze_market_breadth (${{ matrix.market }} ${{ matrix.period }})
+        run: npx tsx scripts/analyze_market_breadth.ts --market ${{ matrix.market }} --period ${{ matrix.period }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: breadth_${{ matrix.market }}_${{ matrix.period }}
+          path: src/db/${{ matrix.market }}_breadth/breadth_${{ matrix.period }}.json
+          retention-days: 1
+
+  # ── 결과 통합 커밋 ─────────────────────────────────────────────────────────
+  commit:
+    name: "결과 커밋"
+    runs-on: ubuntu-latest
+    needs: [sector-rotation, market-breadth]
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download sector artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sector_*
+          merge-multiple: false
+
+      - name: Move sector files
+        run: |
+          mkdir -p src/db/kr_sector src/db/us_sector
+          [ -f sector_kr/rotation.json ] && mv sector_kr/rotation.json src/db/kr_sector/rotation.json
+          [ -f sector_us/rotation.json ] && mv sector_us/rotation.json src/db/us_sector/rotation.json
+
+      - name: Download breadth artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: breadth_*
+          merge-multiple: false
+
+      - name: Move breadth files
+        run: |
+          mkdir -p src/db/kr_breadth src/db/us_breadth
+          for market in kr us; do
+            for period in 3m 1y; do
+              src="breadth_${market}_${period}/breadth_${period}.json"
+              dst="src/db/${market}_breadth/breadth_${period}.json"
+              [ -f "$src" ] && mv "$src" "$dst"
+            done
+          done
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/db/kr_sector/ src/db/us_sector/ \
+                  src/db/kr_breadth/ src/db/us_breadth/
+
+          if git diff --cached --quiet; then
+            echo "변경 없음 — 커밋 건너뜀"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: 주간 분석 업데이트 — 섹터 로테이션 + 시장 breadth (${TIMESTAMP})"
+            git pull --rebase
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::주간 분석 커밋 실패! Actions 로그를 확인하세요."
