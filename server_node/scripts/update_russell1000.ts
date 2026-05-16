@@ -87,8 +87,13 @@ function parseRow(line: string): string[] {
 function parseCsv(raw: string): string[] {
   const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
 
-  // 헤더 행 탐색: "Ticker" 컬럼이 포함된 첫 번째 행
-  const headerIdx = lines.findIndex((l) => l.toLowerCase().startsWith("ticker"));
+  // 헤더 행 탐색: "Ticker" + "Asset Class" 컬럼이 모두 포함된 첫 번째 행
+  // iShares CSV 포맷에 따라 헤더가 Ticker,... 또는 "Ticker",... 형태일 수 있으므로
+  // startsWith 대신 includes로 탐색 (따옴표 유무 무관)
+  const headerIdx = lines.findIndex((l) => {
+    const lower = l.toLowerCase();
+    return lower.includes("ticker") && lower.includes("asset class");
+  });
   if (headerIdx === -1) {
     throw new Error("헤더 행을 찾을 수 없습니다. CSV 포맷이 변경되었을 수 있습니다.");
   }
