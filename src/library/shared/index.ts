@@ -11,3 +11,6 @@ export type { FundamentalData, FundamentalSummary, QuarterlyEarning } from "./fu
 
 export { detectHighLowBreakout, detectPriceVolumeDivergence } from "./signals";
 export type { HighLowSignal, PriceVolumeDivSignal } from "./signals";
+
+export { calcPositionSize } from "./position";
+export type { PositionInput, PositionResult, TargetLevel } from "./position";
