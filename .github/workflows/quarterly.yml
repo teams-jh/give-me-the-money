@@ -82,7 +82,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: KR 분기 구성종목 업데이트 (${TIMESTAMP})"
-            git pull --rebase
+            git pull --rebase --autostash
             git push
           fi
 
@@ -136,7 +136,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git pull --rebase
+          git pull --rebase --autostash
 
           git add src/db/metadata/top1000_us_tickers.json \
                   src/db/metadata/all_us_tickers.json
@@ -146,7 +146,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: US 분기 구성종목 업데이트 (${TIMESTAMP})"
-            git pull --rebase
+            git pull --rebase --autostash
             git push
           fi
 
