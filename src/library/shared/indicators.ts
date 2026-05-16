@@ -5,14 +5,19 @@
  * 외부 라이브러리 없음 — 프론트엔드 / 백엔드 공용.
  *
  * 제공 지표:
- *   - MA    : 단순 이동평균 (SMA)
- *   - EMA   : 지수 이동평균
- *   - RSI   : Relative Strength Index (Wilder 방식)
- *   - MACD  : Moving Average Convergence Divergence
- *   - BB    : Bollinger Bands
- *   - ATR   : Average True Range
- *   - OBV   : On-Balance Volume
- *   - MDD   : Maximum Drawdown
+ *   - MA         : 단순 이동평균 (SMA)
+ *   - EMA        : 지수 이동평균
+ *   - RSI        : Relative Strength Index (Wilder 방식)
+ *   - MACD       : Moving Average Convergence Divergence
+ *   - BB         : Bollinger Bands
+ *   - ATR        : Average True Range
+ *   - OBV        : On-Balance Volume
+ *   - MDD        : Maximum Drawdown
+ *   - Stochastic : Stochastic Oscillator (%K / %D)
+ *   - ADX        : Average Directional Index (+DI / -DI / ADX)
+ *   - ROC        : Rate of Change
+ *   - MFI        : Money Flow Index (거래량 가중 RSI)
+ *   - Supertrend : ATR 기반 동적 추세선
  */
 
 // ── 공용 타입 ─────────────────────────────────────────────────────────────────
@@ -373,4 +378,342 @@ export function calcMDD(closes: number[]): number {
   }
 
   return round(mdd, 2);
+}
+
+// ── 9. Stochastic Oscillator ──────────────────────────────────────────────────
+
+/** Stochastic 한 봉의 계산 결과 */
+export interface StochPoint {
+  k: number | null;   // Fast %K: (종가 - N봉 최저) / (N봉 최고 - N봉 최저) × 100
+  d: number | null;   // Slow %D: %K의 단순 이동평균 (smoothD)
+}
+
+/**
+ * Stochastic Oscillator (%K / %D).
+ *
+ * Fast %K = (Close - Lowest_Low(kPeriod)) / (Highest_High(kPeriod) - Lowest_Low(kPeriod)) × 100
+ * Slow %K = MA(Fast %K, smoothK)   ← 일반적으로 smoothK=3 (Slow Stochastic)
+ * Slow %D = MA(Slow %K, smoothD)
+ *
+ * kPeriod 미만 구간은 null.
+ * 값 범위: 0 ~ 100
+ *
+ * @param ohlcv   - OHLCV 배열 (시간순)
+ * @param kPeriod - Fast %K 계산 기간 (기본 14)
+ * @param smoothK - %K 스무딩 기간 (기본 3, Slow Stochastic)
+ * @param smoothD - %D 스무딩 기간 (기본 3)
+ */
+export function calcStochastic(
+  ohlcv:   OHLCV[],
+  kPeriod: number = 14,
+  smoothK: number = 3,
+  smoothD: number = 3,
+): StochPoint[] {
+  const n = ohlcv.length;
+  const result: StochPoint[] = new Array(n).fill(null).map(() => ({ k: null, d: null }));
+
+  // Fast %K 계산
+  const fastK: (number | null)[] = new Array(n).fill(null);
+  for (let i = kPeriod - 1; i < n; i++) {
+    const window = ohlcv.slice(i - kPeriod + 1, i + 1);
+    const highest = Math.max(...window.map(o => o.high));
+    const lowest  = Math.min(...window.map(o => o.low));
+    const denom   = highest - lowest;
+    const cur     = ohlcv[i] as OHLCV;
+    fastK[i] = denom === 0 ? 50 : round((cur.close - lowest) / denom * 100, 2);
+  }
+
+  // Slow %K = MA(fastK, smoothK)
+  const slowK: (number | null)[] = new Array(n).fill(null);
+  for (let i = kPeriod + smoothK - 2; i < n; i++) {
+    const slice = fastK.slice(i - smoothK + 1, i + 1);
+    const valid = slice.filter((v): v is number => v !== null);
+    if (valid.length === smoothK) {
+      slowK[i] = round(valid.reduce((s, v) => s + v, 0) / smoothK, 2);
+    }
+  }
+
+  // Slow %D = MA(slowK, smoothD)
+  for (let i = kPeriod + smoothK + smoothD - 3; i < n; i++) {
+    const slice = slowK.slice(i - smoothD + 1, i + 1);
+    const valid = slice.filter((v): v is number => v !== null);
+    if (valid.length === smoothD) {
+      const d = round(valid.reduce((s, v) => s + v, 0) / smoothD, 2);
+      result[i] = { k: slowK[i] ?? null, d };
+    } else {
+      result[i] = { k: slowK[i] ?? null, d: null };
+    }
+  }
+
+  return result;
+}
+
+// ── 10. ADX (Average Directional Index) ──────────────────────────────────────
+
+/** ADX 한 봉의 계산 결과 */
+export interface ADXPoint {
+  adx:     number | null;   // Average Directional Index (추세 강도, 0~100)
+  plusDI:  number | null;   // +DI (상승 방향 지수)
+  minusDI: number | null;   // -DI (하락 방향 지수)
+}
+
+/**
+ * ADX (Average Directional Index) — Wilder 스무딩 방식.
+ *
+ * +DM[i] = max(High[i] - High[i-1], 0)  if > max(Low[i-1] - Low[i], 0), else 0
+ * -DM[i] = max(Low[i-1] - Low[i],   0)  if > max(High[i] - High[i-1], 0), else 0
+ * TR[i]  = max(H-L, |H-PC|, |L-PC|)
+ *
+ * 초기값: 첫 period 개의 단순 합산
+ * 이후  : Wilder 스무딩 (이전 × (period-1) + 현재) / period
+ *
+ * +DI = smoothed(+DM) / smoothed(TR) × 100
+ * -DI = smoothed(-DM) / smoothed(TR) × 100
+ * DX  = |+DI - -DI| / (+DI + -DI) × 100
+ * ADX = Wilder_EMA(DX, period)  ← DX가 period 개 쌓인 이후부터
+ *
+ * ADX 해석: <20 횡보, 20~25 추세 형성 중, >25 추세장, >40 강한 추세
+ *
+ * @param ohlcv  - OHLCV 배열 (시간순)
+ * @param period - ADX 기간 (기본 14)
+ */
+export function calcADX(ohlcv: OHLCV[], period: number = 14): ADXPoint[] {
+  const n = ohlcv.length;
+  const result: ADXPoint[] = new Array(n).fill(null).map(() => ({ adx: null, plusDI: null, minusDI: null }));
+
+  if (n < period * 2 + 1) return result;
+
+  // ── 1봉씩 +DM, -DM, TR 계산 ────────────────────────────────────────────
+  const plusDMs:  number[] = [0];
+  const minusDMs: number[] = [0];
+  const trs:      number[] = [0];
+
+  for (let i = 1; i < n; i++) {
+    const cur  = ohlcv[i] as OHLCV;
+    const prev = ohlcv[i - 1] as OHLCV;
+
+    const upMove   = cur.high - prev.high;
+    const downMove = prev.low - cur.low;
+
+    plusDMs.push(upMove > downMove && upMove > 0 ? upMove : 0);
+    minusDMs.push(downMove > upMove && downMove > 0 ? downMove : 0);
+
+    const hl  = cur.high - cur.low;
+    const hpc = Math.abs(cur.high - prev.close);
+    const lpc = Math.abs(cur.low  - prev.close);
+    trs.push(Math.max(hl, hpc, lpc));
+  }
+
+  // ── Wilder 스무딩 초기값: 1~period 단순 합산 ───────────────────────────
+  let smPlusDM  = plusDMs.slice(1, period + 1).reduce((s, v) => s + v, 0);
+  let smMinusDM = minusDMs.slice(1, period + 1).reduce((s, v) => s + v, 0);
+  let smTR      = trs.slice(1, period + 1).reduce((s, v) => s + v, 0);
+
+  // DX 배열 (ADX 계산에 사용)
+  const dxArr: (number | null)[] = new Array(n).fill(null);
+
+  const calcDIandDX = (idx: number): void => {
+    const plusDI  = smTR > 0 ? round(smPlusDM  / smTR * 100, 2) : 0;
+    const minusDI = smTR > 0 ? round(smMinusDM / smTR * 100, 2) : 0;
+    const diSum   = plusDI + minusDI;
+    const dx      = diSum > 0 ? round(Math.abs(plusDI - minusDI) / diSum * 100, 2) : 0;
+    result[idx] = { adx: null, plusDI, minusDI };
+    dxArr[idx]  = dx;
+  };
+
+  calcDIandDX(period);  // 첫 DI 값 (index = period)
+
+  // ── Wilder 스무딩 반복 ──────────────────────────────────────────────────
+  for (let i = period + 1; i < n; i++) {
+    smPlusDM  = smPlusDM  - smPlusDM  / period + (plusDMs[i]  as number);
+    smMinusDM = smMinusDM - smMinusDM / period + (minusDMs[i] as number);
+    smTR      = smTR      - smTR      / period + (trs[i]      as number);
+    calcDIandDX(i);
+  }
+
+  // ── ADX: DX의 Wilder EMA (period 개 쌓인 이후) ─────────────────────────
+  const firstDXIdx = period;                          // DX가 시작되는 인덱스
+  const adxStartIdx = firstDXIdx + period - 1;        // ADX 초기값 인덱스
+
+  if (adxStartIdx >= n) return result;
+
+  // 초기 ADX = 첫 period 개 DX의 단순 평균
+  let adx = 0;
+  for (let i = firstDXIdx; i <= adxStartIdx; i++) {
+    adx += dxArr[i] as number;
+  }
+  adx /= period;
+  (result[adxStartIdx] as ADXPoint).adx = round(adx, 2);
+
+  for (let i = adxStartIdx + 1; i < n; i++) {
+    adx = (adx * (period - 1) + (dxArr[i] as number)) / period;
+    (result[i] as ADXPoint).adx = round(adx, 2);
+  }
+
+  return result;
+}
+
+// ── 11. ROC (Rate of Change) ──────────────────────────────────────────────────
+
+/**
+ * ROC (Rate of Change) — 모멘텀 지표.
+ *
+ * ROC[i] = (close[i] / close[i - period] - 1) × 100
+ *
+ * 양수: 상승 모멘텀, 음수: 하락 모멘텀
+ * period 미만 구간은 null.
+ *
+ * @param closes - 종가 배열 (시간순)
+ * @param period - 비교 기간 (기본 20)
+ * @returns (closes.length) 개의 number | null 배열
+ */
+export function calcROC(closes: number[], period: number = 20): (number | null)[] {
+  const result: (number | null)[] = new Array(closes.length).fill(null);
+
+  for (let i = period; i < closes.length; i++) {
+    const prev = closes[i - period] as number;
+    const cur  = closes[i] as number;
+    if (prev === 0) continue;
+    result[i] = round((cur / prev - 1) * 100, 2);
+  }
+
+  return result;
+}
+
+// ── 12. MFI (Money Flow Index) ────────────────────────────────────────────────
+
+/**
+ * MFI (Money Flow Index) — 거래량 가중 RSI.
+ *
+ * Typical Price (TP) = (High + Low + Close) / 3
+ * Raw Money Flow (MF) = TP × Volume
+ * Positive MF: TP > TP[prev], Negative MF: TP < TP[prev], TP 동일: 무시
+ *
+ * Money Flow Ratio = Σ(Positive MF, period) / Σ(Negative MF, period)
+ * MFI = 100 - 100 / (1 + Money Flow Ratio)
+ *
+ * 값 범위: 0~100. 과매수 > 80, 과매도 < 20
+ * period 미만 구간은 null.
+ *
+ * @param ohlcv  - OHLCV 배열 (시간순)
+ * @param period - MFI 기간 (기본 14)
+ */
+export function calcMFI(ohlcv: OHLCV[], period: number = 14): (number | null)[] {
+  const n = ohlcv.length;
+  const result: (number | null)[] = new Array(n).fill(null);
+
+  // Typical Price, Raw Money Flow 계산
+  const tp: number[] = ohlcv.map(o => (o.high + o.low + o.close) / 3);
+  const mf: number[] = tp.map((t, i) => t * (ohlcv[i] as OHLCV).volume);
+
+  // MF 방향 분류 (TP 기준)
+  const posMF: number[] = new Array(n).fill(0);
+  const negMF: number[] = new Array(n).fill(0);
+  for (let i = 1; i < n; i++) {
+    if ((tp[i] as number) > (tp[i - 1] as number))      posMF[i] = mf[i] as number;
+    else if ((tp[i] as number) < (tp[i - 1] as number)) negMF[i] = mf[i] as number;
+    // TP 동일: 양쪽 모두 0 유지
+  }
+
+  // 슬라이딩 윈도우 합산
+  for (let i = period; i < n; i++) {
+    const posSum = posMF.slice(i - period + 1, i + 1).reduce((s, v) => s + v, 0);
+    const negSum = negMF.slice(i - period + 1, i + 1).reduce((s, v) => s + v, 0);
+
+    if (negSum === 0) {
+      result[i] = 100;
+    } else {
+      const ratio = posSum / negSum;
+      result[i] = round(100 - 100 / (1 + ratio), 2);
+    }
+  }
+
+  return result;
+}
+
+// ── 13. Supertrend ────────────────────────────────────────────────────────────
+
+/** Supertrend 한 봉의 계산 결과 */
+export interface SupertrendPoint {
+  supertrend: number | null;        // 현재 Supertrend 선 값
+  direction:  "bullish" | "bearish" | null;  // 추세 방향
+  upper:      number | null;        // 상단 밴드 (bearish 구간 기준선)
+  lower:      number | null;        // 하단 밴드 (bullish 구간 기준선)
+}
+
+/**
+ * Supertrend — ATR 기반 동적 추세선.
+ *
+ * midpoint   = (High + Low) / 2
+ * upperBand  = midpoint + multiplier × ATR
+ * lowerBand  = midpoint - multiplier × ATR
+ *
+ * 방향 결정 (이전 방향 상태 유지 방식):
+ *   - 이전이 bullish이고 현재 종가 > lowerBand → bullish 유지 (lowerBand = max(lowerBand, prev_lower))
+ *   - 이전이 bullish이고 현재 종가 < lowerBand → bearish 전환
+ *   - 이전이 bearish이고 현재 종가 < upperBand → bearish 유지 (upperBand = min(upperBand, prev_upper))
+ *   - 이전이 bearish이고 현재 종가 > upperBand → bullish 전환
+ *
+ * Supertrend 선:
+ *   bullish  → lowerBand (지지선 역할)
+ *   bearish  → upperBand (저항선 역할)
+ *
+ * ATR 계산 선행 필요 → period 이전 구간은 null.
+ *
+ * @param ohlcv      - OHLCV 배열 (시간순)
+ * @param period     - ATR 기간 (기본 10)
+ * @param multiplier - ATR 배수 (기본 3.0)
+ */
+export function calcSupertrend(
+  ohlcv:      OHLCV[],
+  period:     number = 10,
+  multiplier: number = 3.0,
+): SupertrendPoint[] {
+  const n = ohlcv.length;
+  const empty: SupertrendPoint = { supertrend: null, direction: null, upper: null, lower: null };
+  const result: SupertrendPoint[] = new Array(n).fill(null).map(() => ({ ...empty }));
+
+  const atrArr = calcATR(ohlcv, period);
+
+  let prevUpper: number | null = null;
+  let prevLower: number | null = null;
+  let prevDir:   "bullish" | "bearish" | null = null;
+
+  for (let i = 0; i < n; i++) {
+    const atr = atrArr[i];
+    if (atr === null) continue;
+
+    const cur  = ohlcv[i] as OHLCV;
+    const mid  = (cur.high + cur.low) / 2;
+    let upper  = round(mid + multiplier * atr, 4);
+    let lower  = round(mid - multiplier * atr, 4);
+
+    // 밴드 조정: 이전 밴드보다 안쪽으로 좁아지지 않도록
+    if (prevLower !== null && prevUpper !== null) {
+      lower = (lower > prevLower || (ohlcv[i - 1] as OHLCV).close < prevLower)
+        ? lower : prevLower;
+      upper = (upper < prevUpper || (ohlcv[i - 1] as OHLCV).close > prevUpper)
+        ? upper : prevUpper;
+    }
+
+    // 방향 결정
+    let dir: "bullish" | "bearish";
+    if (prevDir === null) {
+      dir = cur.close > upper ? "bullish" : "bearish";
+    } else if (prevDir === "bullish") {
+      dir = cur.close < lower ? "bearish" : "bullish";
+    } else {
+      dir = cur.close > upper ? "bullish" : "bearish";
+    }
+
+    const supertrend = dir === "bullish" ? lower : upper;
+
+    result[i] = { supertrend: round(supertrend, 4), direction: dir, upper, lower };
+
+    prevUpper = upper;
+    prevLower = lower;
+    prevDir   = dir;
+  }
+
+  return result;
 }
