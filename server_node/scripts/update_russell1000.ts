@@ -85,25 +85,36 @@ function parseRow(line: string): string[] {
 }
 
 function parseCsv(raw: string): string[] {
-  const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+  // UTF-8 BOM(\uFEFF) 제거
+  const cleaned = raw.replace(/^\uFEFF/, "");
+  const lines   = cleaned.split("\n").map((l) => l.trim()).filter(Boolean);
 
   // 헤더 행 탐색: "Ticker" + "Asset Class" 컬럼이 모두 포함된 첫 번째 행
-  // iShares CSV 포맷에 따라 헤더가 Ticker,... 또는 "Ticker",... 형태일 수 있으므로
-  // startsWith 대신 includes로 탐색 (따옴표 유무 무관)
   const headerIdx = lines.findIndex((l) => {
     const lower = l.toLowerCase();
     return lower.includes("ticker") && lower.includes("asset class");
   });
   if (headerIdx === -1) {
+    // 디버깅: 앞 10행 출력
+    log(`[DEBUG] CSV 앞 10행:\n${lines.slice(0, 10).map((l, i) => `  [${i}] ${l}`).join("\n")}`);
     throw new Error("헤더 행을 찾을 수 없습니다. CSV 포맷이 변경되었을 수 있습니다.");
   }
 
   const headerLine = lines[headerIdx];
   if (headerLine === undefined) throw new Error("헤더 행이 비어 있습니다.");
 
-  const headers       = parseRow(headerLine).map((h) => h.toLowerCase().trim());
-  const tickerIdx     = headers.indexOf("ticker");
-  const assetClassIdx = headers.indexOf("asset class");
+  const headers = parseRow(headerLine).map((h) => h.toLowerCase().trim());
+
+  // 디버깅: 실제 파싱된 헤더 컬럼 출력
+  log(`[DEBUG] 파싱된 헤더 컬럼 (${headers.length}개): ${JSON.stringify(headers)}`);
+
+  // 유연한 컬럼 탐색: 정확 일치 우선, 없으면 includes fallback
+  const tickerIdx = headers.indexOf("ticker") !== -1
+    ? headers.indexOf("ticker")
+    : headers.findIndex((h) => h.includes("ticker"));
+  const assetClassIdx = headers.indexOf("asset class") !== -1
+    ? headers.indexOf("asset class")
+    : headers.findIndex((h) => h.includes("asset") && h.includes("class"));
 
   log(`헤더 인덱스 — ticker:${tickerIdx}, asset class:${assetClassIdx}`);
 
