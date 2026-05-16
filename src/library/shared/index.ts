@@ -14,3 +14,6 @@ export type { HighLowSignal, PriceVolumeDivSignal } from "./signals";
 
 export { calcPositionSize } from "./position";
 export type { PositionInput, PositionResult, TargetLevel } from "./position";
+
+export { calcSectorRotation, getQuarterKey } from "./sector";
+export type { StockInput, SectorQuarterStats, RankingRow, QuarterRanking, SectorSeries, SectorRotationResult } from "./sector";
