@@ -72,6 +72,8 @@ export interface CombinedSignalResult {
   rsi: number | null; macd: number | null; bandWidth: number | null;
   volRatio: number | null; atr: number | null; stopLoss: number | null;
   mdd: number; high52w: number | null; low52w: number | null;
+  stochK: number | null; roc20: number | null; mfi: number | null;
+  adx: number | null; supertrendDir: "bullish" | "bearish" | null;
   pe: number | null; pb: number | null; roe: number | null;
   insiderPct: number | null; shortRatio: number | null; earningsTrend: string;
   alerts: SignalSummary["alerts"];
@@ -179,6 +181,8 @@ function main(): void {
       rsi: techSum.rsi, macd: techSum.macd, bandWidth: techSum.bandWidth,
       volRatio: techSum.volRatio, atr: techSum.atr, stopLoss: techSum.stopLoss,
       mdd: techSum.mdd, high52w: techSum.high52w, low52w: techSum.low52w,
+      stochK: techSum.stochK, roc20: techSum.roc20, mfi: techSum.mfi,
+      adx: techSum.adx, supertrendDir: techSum.supertrendDir,
       pe: fundSum.pe, pb: fundSum.pb, roe: fundSum.roe,
       insiderPct: fundSum.insiderPct, shortRatio: fundSum.shortRatio,
       earningsTrend: fundSum.earningsTrend,

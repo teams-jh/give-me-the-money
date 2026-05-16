@@ -6,14 +6,18 @@
  * 외부 라이브러리 없음 — 프론트엔드 / 백엔드 공용.
  *
  * 제공 신호:
- *   - GoldenCross  : MA 골든/데드크로스
- *   - RSISignal    : 과매수 / 과매도 / 다이버전스
- *   - MACDCross    : MACD 시그널선 교차
- *   - BBSignal     : 볼린저밴드 돌파 / 스퀴즈
- *   - VolumeSignal : 거래량 급증
- *   - OBVSignal    : 가격-OBV 다이버전스
- *   - RiskSignal   : ATR 손절가 / MDD
- *   - analyzeSignals: 위 전체 통합 → SignalSummary
+ *   - GoldenCross       : MA 골든/데드크로스
+ *   - RSISignal         : 과매수 / 과매도 / 다이버전스
+ *   - MACDCross         : MACD 시그널선 교차
+ *   - BBSignal          : 볼린저밴드 돌파 / 스퀴즈
+ *   - VolumeSignal      : 거래량 급증
+ *   - OBVSignal         : 가격-OBV 다이버전스
+ *   - RiskSignal        : ATR 손절가 / MDD
+ *   - StochasticSignal  : Stochastic 과매수/과매도/교차/다이버전스
+ *   - ROCSignal         : 단기·중기·장기 모멘텀 합산
+ *   - MFISignal         : Money Flow Index 과매수/과매도
+ *   - SupertrendSignal  : 추세 방향 전환 감지
+ *   - analyzeSignals    : 위 전체 통합 → SignalSummary (ADX 강도 필터 내장)
  */
 
 import {
@@ -27,6 +31,11 @@ import {
   calcATR,
   calcOBV,
   calcMDD,
+  calcStochastic,
+  calcADX,
+  calcROC,
+  calcMFI,
+  calcSupertrend,
 } from "./indicators.ts";
 
 // ── 공용 타입 ─────────────────────────────────────────────────────────────────
@@ -706,6 +715,342 @@ export function detectPriceVolumeDivergence(
   };
 }
 
+// ── 10. Stochastic 신호 ──────────────────────────────────────────────────────
+
+/** Stochastic 감지 결과 */
+export interface StochasticSignal {
+  k:      number | null;   // 최신 %K 값
+  d:      number | null;   // 최신 %D 값
+  alerts: Alert[];
+}
+
+/**
+ * Stochastic Oscillator 신호 감지.
+ *
+ * 과매수/과매도:
+ *   %K > 90  → strong bearish  (극단 과매수)
+ *   %K > 80  → normal bearish  (과매수)
+ *   %K < 10  → strong bullish  (극단 과매도)
+ *   %K < 20  → normal bullish  (과매도)
+ *
+ * %K / %D 교차 (lookback 봉 이내):
+ *   %K가 %D를 상향 돌파 → bullish  (ADX 필터 대상)
+ *   %K가 %D를 하향 돌파 → bearish  (ADX 필터 대상)
+ *   교차가 과매도 영역(<20)에서 발생 → strong, 그 외 → normal
+ *
+ * 다이버전스 (lookback 봉):
+ *   가격 신고가 + %K 하락 → bearish normal
+ *   가격 신저가 + %K 상승 → bullish normal
+ *
+ * @param ohlcv    - OHLCV 배열 (시간순)
+ * @param lookback - 교차 탐지 범위 (기본 5봉)
+ * @param divLook  - 다이버전스 탐지 범위 (기본 20봉)
+ */
+export function detectStochasticSignal(
+  ohlcv:    OHLCV[],
+  lookback: number = 5,
+  divLook:  number = 20,
+): StochasticSignal {
+  const alerts: Alert[] = [];
+  const stoch = calcStochastic(ohlcv);
+  const n     = ohlcv.length;
+
+  const last  = stoch[n - 1];
+  const latestK = last?.k ?? null;
+  const latestD = last?.d ?? null;
+
+  // ── 과매수 / 과매도 ────────────────────────────────────────────────────
+  if (latestK !== null) {
+    if (latestK > 90) {
+      alerts.push({ type: "stoch_extreme_overbought", direction: "bearish", strength: "strong",
+        label: `Stochastic 극단 과매수 (%K ${latestK})`, value: latestK, scoreAffecting: true });
+    } else if (latestK > 80) {
+      alerts.push({ type: "stoch_overbought", direction: "bearish", strength: "normal",
+        label: `Stochastic 과매수 (%K ${latestK})`, value: latestK, scoreAffecting: true });
+    } else if (latestK < 10) {
+      alerts.push({ type: "stoch_extreme_oversold", direction: "bullish", strength: "strong",
+        label: `Stochastic 극단 과매도 (%K ${latestK})`, value: latestK, scoreAffecting: true });
+    } else if (latestK < 20) {
+      alerts.push({ type: "stoch_oversold", direction: "bullish", strength: "normal",
+        label: `Stochastic 과매도 (%K ${latestK})`, value: latestK, scoreAffecting: true });
+    }
+  }
+
+  // ── %K / %D 교차 ───────────────────────────────────────────────────────
+  for (let i = Math.max(1, n - lookback); i < n; i++) {
+    const cur  = stoch[i];
+    const prev = stoch[i - 1];
+    if (!cur || !prev) continue;
+    const { k: kCur, d: dCur } = cur;
+    const { k: kPrev, d: dPrev } = prev;
+    if (kCur === null || dCur === null || kPrev === null || dPrev === null) continue;
+
+    const crossUp   = kPrev <= dPrev && kCur > dCur;
+    const crossDown = kPrev >= dPrev && kCur < dCur;
+    const daysAgo   = n - 1 - i;
+    const label     = daysAgo === 0 ? "당일" : `${daysAgo}봉 전`;
+
+    if (crossUp) {
+      const inOversold = kCur < 20;
+      alerts.push({ type: "stoch_golden_cross", direction: "bullish",
+        strength: inOversold ? "strong" : "normal",
+        label: `Stochastic 골든크로스${inOversold ? " (과매도 영역)" : ""} (${label})`,
+        value: kCur, scoreAffecting: true });
+    } else if (crossDown) {
+      const inOverbought = kCur > 80;
+      alerts.push({ type: "stoch_dead_cross", direction: "bearish",
+        strength: inOverbought ? "strong" : "normal",
+        label: `Stochastic 데드크로스${inOverbought ? " (과매수 영역)" : ""} (${label})`,
+        value: kCur, scoreAffecting: true });
+    }
+  }
+
+  // ── 다이버전스 ─────────────────────────────────────────────────────────
+  if (n >= divLook + 14) {
+    const priceWin = ohlcv.slice(n - divLook).map(o => o.close);
+    const kWin     = stoch.slice(n - divLook).map(s => s.k).filter((v): v is number => v !== null);
+
+    if (kWin.length >= 4) {
+      const priceEnd   = priceWin[priceWin.length - 1] as number;
+      const priceMax   = Math.max(...priceWin);
+      const priceMin   = Math.min(...priceWin);
+      const kStart     = kWin[0] as number;
+      const kEnd       = kWin[kWin.length - 1] as number;
+
+      if (priceEnd >= priceMax * 0.99 && kEnd < kStart - 5) {
+        alerts.push({ type: "stoch_bearish_divergence", direction: "bearish", strength: "normal",
+          label: `Stochastic 하락 다이버전스 (가격↑ %K↓)`, value: latestK ?? undefined,
+          scoreAffecting: true });
+      }
+      if (priceEnd <= priceMin * 1.01 && kEnd > kStart + 5) {
+        alerts.push({ type: "stoch_bullish_divergence", direction: "bullish", strength: "normal",
+          label: `Stochastic 상승 다이버전스 (가격↓ %K↑)`, value: latestK ?? undefined,
+          scoreAffecting: true });
+      }
+    }
+  }
+
+  return { k: latestK, d: latestD, alerts };
+}
+
+// ── 11. ROC 모멘텀 신호 ───────────────────────────────────────────────────────
+
+/** ROC 감지 결과 */
+export interface ROCSignal {
+  roc5:  number | null;   // 단기 ROC(5)
+  roc20: number | null;   // 중기 ROC(20)
+  roc60: number | null;   // 장기 ROC(60)
+  alerts: Alert[];
+}
+
+/**
+ * 단기(5) / 중기(20) / 장기(60) ROC 합산 모멘텀 신호.
+ *
+ * 3개 양수 → bullish strong  (전 구간 상승 모멘텀)
+ * 2개 양수 → bullish normal
+ * 2개 음수 → bearish normal
+ * 3개 음수 → bearish strong  (전 구간 하락 모멘텀)
+ * 혼재(1:2 이하) → 신호 없음
+ *
+ * @param closes - 종가 배열 (시간순)
+ */
+export function detectROCSignal(closes: number[]): ROCSignal {
+  const alerts: Alert[] = [];
+  const n = closes.length;
+
+  const roc5Arr  = calcROC(closes, 5);
+  const roc20Arr = calcROC(closes, 20);
+  const roc60Arr = calcROC(closes, 60);
+
+  const roc5  = roc5Arr[n - 1]  ?? null;
+  const roc20 = roc20Arr[n - 1] ?? null;
+  const roc60 = roc60Arr[n - 1] ?? null;
+
+  const directions = [roc5, roc20, roc60].filter((v): v is number => v !== null)
+    .map(v => (v > 0 ? 1 : v < 0 ? -1 : 0));
+
+  if (directions.length < 2) return { roc5, roc20, roc60, alerts };
+
+  const bullCount = directions.filter(d => d === 1).length;
+  const bearCount = directions.filter(d => d === -1).length;
+  const total     = directions.length;
+
+  if (bullCount === total) {
+    alerts.push({ type: "roc_strong_bullish", direction: "bullish", strength: "strong",
+      label: `ROC 전 구간 상승 모멘텀 (5d:+${roc5?.toFixed(1)}% 20d:+${roc20?.toFixed(1)}% 60d:+${roc60?.toFixed(1)}%)`,
+      scoreAffecting: true });
+  } else if (bullCount === total - 1 && bearCount <= 1) {
+    const desc = [roc5 !== null ? `5d:${roc5 > 0 ? "+" : ""}${roc5.toFixed(1)}%` : "",
+                  roc20 !== null ? `20d:${roc20 > 0 ? "+" : ""}${roc20.toFixed(1)}%` : "",
+                  roc60 !== null ? `60d:${roc60 > 0 ? "+" : ""}${roc60.toFixed(1)}%` : ""].filter(Boolean).join(" ");
+    alerts.push({ type: "roc_bullish", direction: "bullish", strength: "normal",
+      label: `ROC 상승 모멘텀 (${desc})`, scoreAffecting: true });
+  } else if (bearCount === total) {
+    alerts.push({ type: "roc_strong_bearish", direction: "bearish", strength: "strong",
+      label: `ROC 전 구간 하락 모멘텀 (5d:${roc5?.toFixed(1)}% 20d:${roc20?.toFixed(1)}% 60d:${roc60?.toFixed(1)}%)`,
+      scoreAffecting: true });
+  } else if (bearCount === total - 1 && bullCount <= 1) {
+    const desc = [roc5 !== null ? `5d:${roc5 > 0 ? "+" : ""}${roc5.toFixed(1)}%` : "",
+                  roc20 !== null ? `20d:${roc20 > 0 ? "+" : ""}${roc20.toFixed(1)}%` : "",
+                  roc60 !== null ? `60d:${roc60 > 0 ? "+" : ""}${roc60.toFixed(1)}%` : ""].filter(Boolean).join(" ");
+    alerts.push({ type: "roc_bearish", direction: "bearish", strength: "normal",
+      label: `ROC 하락 모멘텀 (${desc})`, scoreAffecting: true });
+  }
+
+  return { roc5, roc20, roc60, alerts };
+}
+
+// ── 12. MFI 신호 ─────────────────────────────────────────────────────────────
+
+/** MFI 감지 결과 */
+export interface MFISignal {
+  mfi:    number | null;   // 최신 MFI 값
+  alerts: Alert[];
+}
+
+/**
+ * Money Flow Index 과매수/과매도 감지.
+ *
+ * MFI > 90  → strong bearish  (극단 과매수)
+ * MFI > 80  → normal bearish  (과매수)
+ * MFI < 10  → strong bullish  (극단 과매도)
+ * MFI < 20  → normal bullish  (과매도)
+ *
+ * RSI 괴리: |MFI - RSI| > 20 → 거래량 불일치 경보 (scoreAffecting: false)
+ *   MFI > RSI + 20 : 거래량 대비 가격 상승 부족 → 잠재 상승 여력
+ *   MFI < RSI - 20 : 거래량 대비 가격 상승 과도 → 거래량 확인 필요
+ *
+ * @param ohlcv  - OHLCV 배열 (시간순)
+ * @param rsiArr - 미리 계산된 RSI 배열 (없으면 내부 계산)
+ */
+export function detectMFISignal(
+  ohlcv:  OHLCV[],
+  rsiArr?: (number | null)[],
+): MFISignal {
+  const alerts: Alert[] = [];
+  const mfiArr = calcMFI(ohlcv);
+  const n      = ohlcv.length;
+
+  const latestMFI = mfiArr[n - 1] ?? null;
+
+  // ── 과매수 / 과매도 ────────────────────────────────────────────────────
+  if (latestMFI !== null) {
+    if (latestMFI > 90) {
+      alerts.push({ type: "mfi_extreme_overbought", direction: "bearish", strength: "strong",
+        label: `MFI 극단 과매수 (${latestMFI})`, value: latestMFI, scoreAffecting: true });
+    } else if (latestMFI > 80) {
+      alerts.push({ type: "mfi_overbought", direction: "bearish", strength: "normal",
+        label: `MFI 과매수 (${latestMFI})`, value: latestMFI, scoreAffecting: true });
+    } else if (latestMFI < 10) {
+      alerts.push({ type: "mfi_extreme_oversold", direction: "bullish", strength: "strong",
+        label: `MFI 극단 과매도 (${latestMFI})`, value: latestMFI, scoreAffecting: true });
+    } else if (latestMFI < 20) {
+      alerts.push({ type: "mfi_oversold", direction: "bullish", strength: "normal",
+        label: `MFI 과매도 (${latestMFI})`, value: latestMFI, scoreAffecting: true });
+    }
+
+    // ── RSI 괴리 감지 ─────────────────────────────────────────────────
+    const closes  = ohlcv.map(o => o.close);
+    const rsiVals = rsiArr ?? calcRSI(closes);
+    const latestRSI = rsiVals[n - 1] ?? null;
+
+    if (latestRSI !== null) {
+      const diff = latestMFI - latestRSI;
+      if (diff > 20) {
+        alerts.push({ type: "mfi_rsi_positive_gap", direction: "bullish", strength: "weak",
+          label: `MFI-RSI 괴리 +${diff.toFixed(1)} (거래량 대비 가격 상승 부족)`,
+          value: diff, scoreAffecting: false });
+      } else if (diff < -20) {
+        alerts.push({ type: "mfi_rsi_negative_gap", direction: "bearish", strength: "weak",
+          label: `MFI-RSI 괴리 ${diff.toFixed(1)} (거래량 없는 가격 상승)`,
+          value: diff, scoreAffecting: false });
+      }
+    }
+  }
+
+  return { mfi: latestMFI, alerts };
+}
+
+// ── 13. Supertrend 신호 ───────────────────────────────────────────────────────
+
+/** Supertrend 감지 결과 */
+export interface SupertrendSignal {
+  direction: "bullish" | "bearish" | null;   // 현재 추세 방향
+  supertrend: number | null;                 // 현재 Supertrend 선 값
+  alerts: Alert[];
+}
+
+/**
+ * Supertrend 방향 전환 감지.
+ *
+ * lookback 봉 이내 방향 전환:
+ *   당일 bullish 전환  → bullish strong
+ *   당일 bearish 전환  → bearish strong
+ *   1~(lookback-1)봉 전 전환 → bullish/bearish normal
+ *
+ * 전환 없이 방향 유지:
+ *   bullish 유지 → bullish weak  (추세 확인 정보)
+ *   bearish 유지 → bearish weak
+ *
+ * @param ohlcv    - OHLCV 배열 (시간순)
+ * @param lookback - 전환 탐지 범위 (기본 3봉)
+ */
+export function detectSupertrendSignal(
+  ohlcv:    OHLCV[],
+  lookback: number = 3,
+): SupertrendSignal {
+  const alerts: Alert[] = [];
+  const st = calcSupertrend(ohlcv);
+  const n  = ohlcv.length;
+
+  const last     = st[n - 1];
+  const curDir   = last?.direction ?? null;
+  const curST    = last?.supertrend ?? null;
+
+  if (curDir === null) return { direction: null, supertrend: null, alerts };
+
+  // lookback 내 방향 전환 탐지
+  let flipDaysAgo: number | null = null;
+  let flipDir: "bullish" | "bearish" | null = null;
+
+  for (let i = n - 1; i >= Math.max(1, n - lookback); i--) {
+    const cur  = st[i];
+    const prev = st[i - 1];
+    if (!cur || !prev || cur.direction === null || prev.direction === null) continue;
+    if (cur.direction !== prev.direction) {
+      flipDaysAgo = n - 1 - i;
+      flipDir     = cur.direction;
+      break;
+    }
+  }
+
+  if (flipDir !== null && flipDaysAgo !== null) {
+    const label  = flipDaysAgo === 0 ? "당일" : `${flipDaysAgo}봉 전`;
+    const strength = flipDaysAgo === 0 ? "strong" : "normal";
+    const emoji  = flipDir === "bullish" ? "↑" : "↓";
+    alerts.push({
+      type:           `supertrend_${flipDir}_flip`,
+      direction:      flipDir,
+      strength,
+      label:          `Supertrend ${flipDir === "bullish" ? "상승" : "하락"} 전환${emoji} (${label}, 선: ${curST?.toLocaleString()})`,
+      value:          curST ?? undefined,
+      scoreAffecting: true,
+    });
+  } else {
+    // 전환 없음 → 현재 방향 유지 weak 신호
+    alerts.push({
+      type:           `supertrend_${curDir}_hold`,
+      direction:      curDir,
+      strength:       "weak",
+      label:          `Supertrend ${curDir === "bullish" ? "상승" : "하락"} 추세 유지 (선: ${curST?.toLocaleString()})`,
+      value:          curST ?? undefined,
+      scoreAffecting: true,
+    });
+  }
+
+  return { direction: curDir, supertrend: curST, alerts };
+}
+
 // ── 통합 분석 ─────────────────────────────────────────────────────────────────
 
 /** 종목별 전체 신호 요약 */
@@ -721,6 +1066,12 @@ export interface SignalSummary {
   mdd:       number;
   high52w:   number | null;
   low52w:    number | null;
+  // 신규
+  stochK:       number | null;                    // 최신 Stochastic %K
+  roc20:        number | null;                    // 중기 ROC(20)
+  mfi:          number | null;                    // 최신 MFI
+  adx:          number | null;                    // 최신 ADX (추세 강도)
+  supertrendDir: "bullish" | "bearish" | null;    // 현재 Supertrend 방향
   alerts:    Alert[];
 }
 
@@ -742,16 +1093,21 @@ const STRENGTH_MULTIPLIER: Record<SignalStrength, number> = {
  * 각 감지기를 실행하고 Alert 를 합산,
  * score = Σ(방향가중치 × 강도배수) 로 매수/매도 강도를 수치화.
  *
+ * ADX 필터:
+ *   ADX < 20 (횡보장) 이면 크로스 계열 alert 강도 한 단계 하향
+ *   (strong→normal, normal→weak). 이미 weak 이면 유지.
+ *
  * @param ticker - 티커 심볼
  * @param ohlcv  - OHLCV 배열 (시간순, 최소 60봉 이상 권장)
  */
 export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
   const closes  = ohlcv.map(o => o.close);
   const volumes = ohlcv.map(o => o.volume);
+  const n       = ohlcv.length;
 
-  // 각 신호 감지
+  // ── 기존 신호 감지 ──────────────────────────────────────────────────────
   const cross   = detectGoldenCross(closes);
-  const rsi     = detectRSISignal(closes);
+  const rsiSig  = detectRSISignal(closes);
   const macdS   = detectMACDCross(closes);
   const bb      = detectBBBreakout(closes);
   const vol     = detectVolumeSpike(closes, volumes);
@@ -760,10 +1116,33 @@ export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
   const hl      = detectHighLowBreakout(closes);
   const pvDiv   = detectPriceVolumeDivergence(closes, volumes);
 
-  // 전체 Alert 통합
+  // ── 신규 신호 감지 ──────────────────────────────────────────────────────
+  const stochSig = detectStochasticSignal(ohlcv);
+  const rocSig   = detectROCSignal(closes);
+  const mfiSig   = detectMFISignal(ohlcv, calcRSI(closes));
+  const stSig    = detectSupertrendSignal(ohlcv);
+
+  // ── ADX 계산 (필터용) ───────────────────────────────────────────────────
+  const adxArr    = calcADX(ohlcv);
+  const lastADX   = adxArr[n - 1];
+  const latestADX = lastADX?.adx ?? null;
+  const isRanging = latestADX !== null && latestADX < 20;
+
+  // 크로스 계열 alert 타입 (ADX 필터 적용 대상)
+  const CROSS_TYPES = new Set([
+    "golden_cross_5_20", "golden_cross_20_60", "golden_cross_60_120", "golden_cross_20_120",
+    "dead_cross_5_20",   "dead_cross_20_60",   "dead_cross_60_120",   "dead_cross_20_120",
+    "macd_golden_cross", "macd_dead_cross",
+    "stoch_golden_cross", "stoch_dead_cross",
+  ]);
+
+  const downgrade = (s: SignalStrength): SignalStrength =>
+    s === "strong" ? "normal" : s === "normal" ? "weak" : "weak";
+
+  // ── 전체 Alert 통합 + ADX 필터 적용 ────────────────────────────────────
   const allAlerts: Alert[] = [
     ...cross.alerts,
-    ...rsi.alerts,
+    ...rsiSig.alerts,
     ...macdS.alerts,
     ...bb.alerts,
     ...vol.alerts,
@@ -771,9 +1150,18 @@ export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
     ...risk.alerts,
     ...hl.alerts,
     ...pvDiv.alerts,
-  ];
+    ...stochSig.alerts,
+    ...rocSig.alerts,
+    ...mfiSig.alerts,
+    ...stSig.alerts,
+  ].map(a => {
+    if (isRanging && CROSS_TYPES.has(a.type) && a.scoreAffecting) {
+      return { ...a, strength: downgrade(a.strength) };
+    }
+    return a;
+  });
 
-  // 점수 계산 (scoreAffecting: false 인 정보성 alert 는 제외)
+  // ── 점수 계산 ───────────────────────────────────────────────────────────
   const score = allAlerts.reduce((sum, a) => {
     if (!a.scoreAffecting) return sum;
     return sum + SCORE_WEIGHT[a.direction] * STRENGTH_MULTIPLIER[a.strength];
@@ -781,16 +1169,21 @@ export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
 
   return {
     ticker,
-    score:     Math.round(score * 10) / 10,
-    rsi:       rsi.rsi,
-    macd:      macdS.macd,
-    bandWidth: bb.bandWidth,
-    volRatio:  vol.volRatio,
-    atr:       risk.atr,
-    stopLoss:  risk.stopLoss,
-    mdd:       risk.mdd,
-    high52w:   hl.high52w,
-    low52w:    hl.low52w,
-    alerts:    allAlerts,
+    score:        Math.round(score * 10) / 10,
+    rsi:          rsiSig.rsi,
+    macd:         macdS.macd,
+    bandWidth:    bb.bandWidth,
+    volRatio:     vol.volRatio,
+    atr:          risk.atr,
+    stopLoss:     risk.stopLoss,
+    mdd:          risk.mdd,
+    high52w:      hl.high52w,
+    low52w:       hl.low52w,
+    stochK:       stochSig.k,
+    roc20:        rocSig.roc20,
+    mfi:          mfiSig.mfi,
+    adx:          latestADX,
+    supertrendDir: stSig.direction,
+    alerts:       allAlerts,
   };
 }
