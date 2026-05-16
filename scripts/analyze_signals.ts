@@ -60,8 +60,9 @@ interface RawTicker {
   info:   { name: string; kr_name?: string; sector: string; };
   market: { price: number; fifty_two_week_high: number; fifty_two_week_low: number; beta: number | null; };
   liquidity: { avg_daily_volume_3m: number; avg_daily_volume_10d: number; };
-  valuation:    { trailing_pe: number | null; price_to_book: number | null; };
-  profitability: { roe: number | null; operating_margins: number | null; revenue_growth: number | null; quarterly_earnings: { quarter: string; net_income: number }[]; };
+  valuation:    { trailing_pe: number | null; price_to_book: number | null; peg_ratio: number | null; };
+  profitability: { roe: number | null; roa: number | null; operating_margins: number | null; profit_margins: number | null; revenue_growth: number | null; quarterly_earnings: { quarter: string; net_income: number }[]; };
+  dividend:     { yield: number | null; payout_ratio: number | null; };
   ownership:    { held_pct_insiders: number | null; held_pct_institutions: number | null; short_ratio: number | null; };
   prices: RawPrice[];
 }
@@ -75,6 +76,7 @@ export interface CombinedSignalResult {
   stochK: number | null; roc20: number | null; mfi: number | null;
   adx: number | null; supertrendDir: "bullish" | "bearish" | null;
   pe: number | null; pb: number | null; roe: number | null;
+  roa: number | null; dividendYield: number | null;
   insiderPct: number | null; shortRatio: number | null; earningsTrend: string;
   alerts: SignalSummary["alerts"];
 }
@@ -118,9 +120,14 @@ function toOHLCV(raw: RawTicker): OHLCV[] {
 function toFundamentalData(raw: RawTicker): FundamentalData {
   return {
     pe: raw.valuation.trailing_pe, pb: raw.valuation.price_to_book,
-    roe: raw.profitability.roe, operatingMargin: raw.profitability.operating_margins,
+    pegRatio: raw.valuation.peg_ratio,
+    roe: raw.profitability.roe, roa: raw.profitability.roa,
+    operatingMargin: raw.profitability.operating_margins,
+    profitMargins: raw.profitability.profit_margins,
     revenueGrowth: raw.profitability.revenue_growth,
     quarterlyEarnings: (raw.profitability.quarterly_earnings ?? []) as QuarterlyEarning[],
+    dividendYield: raw.dividend?.yield ?? null,
+    payoutRatio: raw.dividend?.payout_ratio ?? null,
     insiderPct: raw.ownership.held_pct_insiders,
     institutionPct: raw.ownership.held_pct_institutions,
     shortRatio: raw.ownership.short_ratio,
@@ -184,6 +191,7 @@ function main(): void {
       stochK: techSum.stochK, roc20: techSum.roc20, mfi: techSum.mfi,
       adx: techSum.adx, supertrendDir: techSum.supertrendDir,
       pe: fundSum.pe, pb: fundSum.pb, roe: fundSum.roe,
+      roa: fundSum.roa, dividendYield: fundSum.dividendYield,
       insiderPct: fundSum.insiderPct, shortRatio: fundSum.shortRatio,
       earningsTrend: fundSum.earningsTrend,
       alerts: allAlerts,
