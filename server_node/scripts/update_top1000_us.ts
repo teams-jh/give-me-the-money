@@ -37,22 +37,11 @@ const DWS_SOURCES = [
 const PAGE_SIZE = 250;
 /** 목표 선정 종목 수 */
 const TARGET    = 1000;
-/** Yahoo Finance exchange 코드 → DWS exchange 코드 매핑 */
-const EXCHANGE_MAP: Record<string, string> = {
-  NYQ: "NYS",
-  NMS: "NAS",
-  NGM: "NAS",
-  NCM: "NAS",
-  ASE: "AMS",
-};
-
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
 interface TickerRow {
-  symbol:     string;
-  knam:       string;
-  exchange:   string;
-  market_cap: number;
+  symbol: string;
+  knam:   string;
 }
 
 interface OutputJson {
@@ -77,7 +66,6 @@ function sleep(ms: number): Promise<void> {
 interface ScreenerQuote {
   symbol:     string;
   marketCap?: number;
-  exchange?:  string;
   longName?:  string;
 }
 
@@ -196,22 +184,20 @@ function buildAndSave(quotes: ScreenerQuote[], knamMap: Map<string, string>): vo
     .filter((q) => q.symbol && q.marketCap && q.marketCap > 0)
     .slice(0, TARGET)
     .map((q) => ({
-      symbol:     q.symbol,
-      knam:       knamMap.get(q.symbol) ?? q.longName ?? q.symbol,
-      exchange:   EXCHANGE_MAP[q.exchange ?? ""] ?? q.exchange ?? "",
-      market_cap: q.marketCap!,
+      symbol: q.symbol,
+      knam:   knamMap.get(q.symbol) ?? q.longName ?? q.symbol,
     }));
 
   log(`최종 저장 종목 수: ${tickers.length}개`);
   if (tickers.length > 0) {
-    log(`1위:    ${tickers[0].symbol} (${tickers[0].knam}) — $${(tickers[0].market_cap / 1e12).toFixed(2)}T`);
-    log(`1000위: ${tickers[tickers.length-1].symbol} (${tickers[tickers.length-1].knam}) — $${(tickers[tickers.length-1].market_cap / 1e9).toFixed(1)}B`);
+    log(`1위:    ${tickers[0].symbol} (${tickers[0].knam})`);
+    log(`1000위: ${tickers[tickers.length-1].symbol} (${tickers[tickers.length-1].knam})`);
   }
 
   fs.mkdirSync(DB_DIR, { recursive: true });
   const output: OutputJson = {
     updated_at:  new Date().toISOString(),
-    source:      "Yahoo Finance 스크리너 (NYS/NAS/AMS 시총 기준) + DWS 한글명",
+    source:      "Yahoo Finance 스크리너 (NYS/NAS/AMS 시총 기준) + DWS 한글명 (KIS 마스터 데이터)",
     total_count: tickers.length,
     tickers,
   };
