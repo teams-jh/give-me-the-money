@@ -1,10 +1,7 @@
 name: Update US Stock Tickers
 
+# 자동 스케줄 제거됨: 분기 워크플로우(quarterly.yml)로 이동 — 수동 실행만 유지
 on:
-  schedule:
-    # 매주 토요일 02:00 KST = 금요일 17:00 UTC
-    - cron: "0 17 * * 5"
-
   workflow_dispatch:
     inputs:
       reason:

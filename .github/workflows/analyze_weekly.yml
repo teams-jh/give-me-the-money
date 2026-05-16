@@ -13,6 +13,79 @@ on:
         default: "manual trigger"
 
 jobs:
+
+  # ── 추세 분석 KR (n × period 매트릭스 병렬 실행) ─────────────────────────
+  kr-trends:
+    name: "KR 추세 분석 (n=${{ matrix.n }} ${{ matrix.period }})"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        n:      [100, 200, 500]
+        period: ["3m", "1y", "2y", "3y"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Run analyze_trends (KR)
+        run: npx tsx server_node/scripts/analyze_trends.ts --market kr -n ${{ matrix.n }} --period ${{ matrix.period }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kr_trend_${{ matrix.n }}_${{ matrix.period }}
+          path: src/db/kr_trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
+          retention-days: 1
+
+  # ── 추세 분석 US (n × period 매트릭스 병렬 실행) ─────────────────────────
+  us-trends:
+    name: "US 추세 분석 (n=${{ matrix.n }} ${{ matrix.period }})"
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        n:      [100, 200, 500]
+        period: ["3m", "1y", "2y", "3y"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Run analyze_trends (US)
+        run: npx tsx server_node/scripts/analyze_trends.ts --market us -n ${{ matrix.n }} --period ${{ matrix.period }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: us_trend_${{ matrix.n }}_${{ matrix.period }}
+          path: src/db/us_trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
+          retention-days: 1
+
   # ── 섹터 로테이션 분석 (KR + US 병렬) ──────────────────────────────────────
   sector-rotation:
     name: "섹터 로테이션 (${{ matrix.market }})"
@@ -88,7 +161,7 @@ jobs:
   commit:
     name: "결과 커밋"
     runs-on: ubuntu-latest
-    needs: [sector-rotation, market-breadth]
+    needs: [sector-rotation, market-breadth, kr-trends, us-trends]
 
     permissions:
       contents: write
@@ -128,19 +201,39 @@ jobs:
             done
           done
 
+      - name: Download trend artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "*_trend_*"
+          merge-multiple: false
+
+      - name: Move trend files
+        run: |
+          mkdir -p src/db/kr_trend src/db/us_trend
+          for market in kr us; do
+            for n in 100 200 500; do
+              for period in 3m 1y 2y 3y; do
+                src="${market}_trend_${n}_${period}/trend_${n}_${period}.json"
+                dst="src/db/${market}_trend/trend_${n}_${period}.json"
+                [ -f "$src" ] && mv "$src" "$dst"
+              done
+            done
+          done
+
       - name: Commit and push
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
           git add src/db/kr_sector/ src/db/us_sector/ \
-                  src/db/kr_breadth/ src/db/us_breadth/
+                  src/db/kr_breadth/ src/db/us_breadth/ \
+                  src/db/kr_trend/   src/db/us_trend/
 
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 건너뜀"
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
-            git commit -m "data: 주간 분석 업데이트 — 섹터 로테이션 + 시장 breadth (${TIMESTAMP})"
+            git commit -m "data: 주간 분석 업데이트 — 추세 + 섹터 로테이션 + 시장 breadth (${TIMESTAMP})"
             git pull --rebase
             git push
           fi
