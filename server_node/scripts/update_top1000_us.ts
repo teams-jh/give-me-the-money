@@ -128,7 +128,7 @@ async function fetchTop1000FromScreener(): Promise<ScreenerQuote[]> {
     const body = {
       offset,
       size:      PAGE_SIZE,
-      sortField: "marketcap",
+      sortField: "intradaymarketcap",   // Yahoo Finance 스크리너 표준 필드명
       sortType:  "DESC",
       quoteType: "EQUITY",
       query: {
@@ -136,8 +136,14 @@ async function fetchTop1000FromScreener(): Promise<ScreenerQuote[]> {
         operands: [
           { operator: "eq",  operands: ["region", "us"] },
           {
-            operator: "in",
-            operands: ["exchange", ["NYQ", "NMS", "NGM", "NCM", "ASE"]],
+            operator: "or",
+            operands: [
+              { operator: "eq", operands: ["exchange", "NYQ"] },
+              { operator: "eq", operands: ["exchange", "NMS"] },
+              { operator: "eq", operands: ["exchange", "NGM"] },
+              { operator: "eq", operands: ["exchange", "NCM"] },
+              { operator: "eq", operands: ["exchange", "ASE"] },
+            ],
           },
         ],
       },
@@ -145,18 +151,29 @@ async function fetchTop1000FromScreener(): Promise<ScreenerQuote[]> {
       userIdType: "guid",
     };
 
-    const resp = await axios.post(
-      `${SCREENER_URL}?crumb=${encodeURIComponent(crumb)}`,
-      body,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "User-Agent":   UA,
-          Cookie:         cookie,
-        },
-        timeout: 30_000,
-      }
-    );
+    let resp;
+    try {
+      resp = await axios.post(
+        `${SCREENER_URL}?crumb=${encodeURIComponent(crumb)}`,
+        body,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "User-Agent":   UA,
+            Cookie:         cookie,
+            Origin:         "https://finance.yahoo.com",
+            Referer:        "https://finance.yahoo.com/screener/",
+          },
+          timeout: 30_000,
+        }
+      );
+    } catch (err: any) {
+      // Yahoo의 실제 에러 응답을 로그로 출력
+      const status = err?.response?.status;
+      const respBody = JSON.stringify(err?.response?.data ?? {}, null, 2);
+      log(`[ERROR] 스크리너 응답 ${status}:\n${respBody}`);
+      throw err;
+    }
 
     const quotes: ScreenerQuote[] =
       resp.data?.finance?.result?.[0]?.quotes ?? [];
