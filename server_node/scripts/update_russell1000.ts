@@ -24,7 +24,7 @@ const DB_DIR = path.resolve(__dirname, "../../src/db/metadata");
 const OUTPUT = path.join(DB_DIR, "russell1000_tickers.json");
 
 const IWB_CSV_URL =
-  "https://www.ishares.com/us/products/239707/ISHARES-RUSSELL-1000-ETF/1467271812596.ajax?tab=holdings&fileType=csv";
+  "https://www.ishares.com/us/products/239707/ISHARES-RUSSELL-1000-ETF/1467271812596.ajax?fileType=csv&fileName=IWB_holdings&dataType=fund";
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
@@ -52,13 +52,24 @@ async function downloadCsv(): Promise<string> {
   const { data } = await axios.get<string>(IWB_CSV_URL, {
     headers: {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-      "Accept":     "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept":     "text/csv,application/csv,text/plain,*/*;q=0.8",
+      "Referer":    "https://www.ishares.com/us/products/239707/ishares-russell-1000-etf",
     },
     responseType: "text",
     timeout:      30_000,
   });
 
   log(`CSV 다운로드 완료 (${data.length.toLocaleString()} bytes)`);
+
+  // HTML 응답 감지: URL이 CSV가 아닌 웹페이지를 반환하는 경우를 방어
+  const trimmed = data.trimStart();
+  if (trimmed.startsWith("<") || trimmed.toLowerCase().includes("<!doctype")) {
+    throw new Error(
+      "서버가 CSV 대신 HTML을 반환했습니다. " +
+      "iShares CSV 다운로드 URL이 변경되었을 수 있습니다."
+    );
+  }
+
   return data;
 }
 
