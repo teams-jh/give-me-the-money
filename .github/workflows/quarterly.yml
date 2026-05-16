@@ -123,6 +123,10 @@ jobs:
         working-directory: server_node
         run: npx tsx scripts/update_russell1000.ts
 
+      - name: Update Top 1000 US (시총 기준)
+        working-directory: server_node
+        run: npx tsx scripts/update_top1000_us.ts
+
       - name: Merge US tickers
         working-directory: server_node
         run: npx tsx scripts/merge_us_tickers.ts
@@ -132,6 +136,7 @@ jobs:
         run: |
           git diff --quiet src/db/metadata/nasdaq100_tickers.json \
                            src/db/metadata/russell1000_tickers.json \
+                           src/db/metadata/top1000_us_tickers.json \
                            src/db/metadata/all_us_tickers.json \
           && echo "changed=false" >> $GITHUB_OUTPUT \
           || echo "changed=true"  >> $GITHUB_OUTPUT
@@ -145,6 +150,7 @@ jobs:
 
           git add src/db/metadata/nasdaq100_tickers.json \
                   src/db/metadata/russell1000_tickers.json \
+                  src/db/metadata/top1000_us_tickers.json \
                   src/db/metadata/all_us_tickers.json
 
           if git diff --cached --quiet; then
