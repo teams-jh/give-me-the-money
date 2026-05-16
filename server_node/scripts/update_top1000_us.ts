@@ -39,16 +39,12 @@ const PAGE_SIZE = 250;
 const TARGET    = 1000;
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
-interface TickerRow {
-  symbol: string;
-  knam:   string;
-}
-
 interface OutputJson {
   updated_at:  string;
   source:      string;
   total_count: number;
-  tickers:     TickerRow[];
+  tickers:     string[];
+  name_map:    Record<string, string>;
 }
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
@@ -180,18 +176,20 @@ async function buildKnamMap(): Promise<Map<string, string>> {
 // ── 3단계: 결합 & 저장 ───────────────────────────────────────────────────────
 
 function buildAndSave(quotes: ScreenerQuote[], knamMap: Map<string, string>): void {
-  const tickers: TickerRow[] = quotes
+  const filtered = quotes
     .filter((q) => q.symbol && q.marketCap && q.marketCap > 0)
-    .slice(0, TARGET)
-    .map((q) => ({
-      symbol: q.symbol,
-      knam:   knamMap.get(q.symbol) ?? q.longName ?? q.symbol,
-    }));
+    .slice(0, TARGET);
+
+  const tickers:  string[]              = filtered.map((q) => q.symbol);
+  const name_map: Record<string, string> = {};
+  for (const q of filtered) {
+    name_map[q.symbol] = knamMap.get(q.symbol) ?? q.longName ?? q.symbol;
+  }
 
   log(`최종 저장 종목 수: ${tickers.length}개`);
   if (tickers.length > 0) {
-    log(`1위:    ${tickers[0].symbol} (${tickers[0].knam})`);
-    log(`1000위: ${tickers[tickers.length-1].symbol} (${tickers[tickers.length-1].knam})`);
+    log(`1위:    ${tickers[0]} (${name_map[tickers[0]]})`);
+    log(`1000위: ${tickers[tickers.length-1]} (${name_map[tickers[tickers.length-1]]})`);
   }
 
   fs.mkdirSync(DB_DIR, { recursive: true });
@@ -200,6 +198,7 @@ function buildAndSave(quotes: ScreenerQuote[], knamMap: Map<string, string>): vo
     source:      "Yahoo Finance 스크리너 (NYS/NAS/AMS 시총 기준) + DWS 한글명 (KIS 마스터 데이터)",
     total_count: tickers.length,
     tickers,
+    name_map,
   };
   fs.writeFileSync(OUTPUT, JSON.stringify(output, null, 2), "utf-8");
   log(`저장 완료: ${OUTPUT}`);
