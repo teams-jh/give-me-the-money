@@ -58,6 +58,14 @@ function sleep(ms: number): Promise<void> {
 }
 
 // ── 1단계: Yahoo Finance 스크리너로 시총 상위 1000 조회 ───────────────────────
+//
+// Yahoo Finance 스크리너는 crumb 인증 토큰이 필요합니다.
+// 1) finance.yahoo.com 방문 → 쿠키 획득
+// 2) /v1/test/getcrumb → crumb 획득
+// 3) 스크리너 요청 시 쿠키 + crumb 포함
+// ─────────────────────────────────────────────────────────────────────────────
+
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0 Safari/537.36";
 
 interface ScreenerQuote {
   symbol:     string;
@@ -65,9 +73,35 @@ interface ScreenerQuote {
   longName?:  string;
 }
 
+async function getYahooCrumb(): Promise<{ crumb: string; cookie: string }> {
+  // Step 1: 쿠키 획득
+  const r1 = await axios.get("https://finance.yahoo.com/", {
+    headers: { "User-Agent": UA },
+    maxRedirects: 5,
+    timeout: 15_000,
+  });
+  const cookie = ((r1.headers["set-cookie"] ?? []) as string[])
+    .map((c) => c.split(";")[0])
+    .join("; ");
+
+  // Step 2: crumb 획득
+  const r2 = await axios.get(
+    "https://query1.finance.yahoo.com/v1/test/getcrumb",
+    {
+      headers: { "User-Agent": UA, Cookie: cookie },
+      timeout: 10_000,
+    }
+  );
+  const crumb = r2.data as string;
+  log(`crumb 획득 완료`);
+  return { crumb, cookie };
+}
+
 async function fetchTop1000FromScreener(): Promise<ScreenerQuote[]> {
-  const SCREENER_URL =
-    "https://query1.finance.yahoo.com/v1/finance/screener";
+  const SCREENER_URL = "https://query1.finance.yahoo.com/v1/finance/screener";
+
+  // crumb 인증 토큰 획득
+  const { crumb, cookie } = await getYahooCrumb();
 
   const results: ScreenerQuote[] = [];
   const pages = Math.ceil(TARGET / PAGE_SIZE);
@@ -96,14 +130,18 @@ async function fetchTop1000FromScreener(): Promise<ScreenerQuote[]> {
       userIdType: "guid",
     };
 
-    const resp = await axios.post(SCREENER_URL, body, {
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-      },
-      timeout: 30_000,
-    });
+    const resp = await axios.post(
+      `${SCREENER_URL}?crumb=${encodeURIComponent(crumb)}`,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":   UA,
+          Cookie:         cookie,
+        },
+        timeout: 30_000,
+      }
+    );
 
     const quotes: ScreenerQuote[] =
       resp.data?.finance?.result?.[0]?.quotes ?? [];
