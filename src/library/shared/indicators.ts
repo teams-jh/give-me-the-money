@@ -717,3 +717,65 @@ export function calcSupertrend(
 
   return result;
 }
+
+// ── 14. Envelope ──────────────────────────────────────────────────────────────
+
+/** 엔벨로프 한 봉의 계산 결과 */
+export interface EnvPoint {
+  upper: number | null;
+  mid:   number | null;
+  lower: number | null;
+}
+
+/**
+ * 엔벨로프 (SMA ± percent).
+ *
+ * @param closes - 종가 배열 (시간순)
+ * @param period - SMA 기간 (기본 20)
+ * @param percent - 비율 (기본 0.1, 10%)
+ * @returns (closes.length) 개의 EnvPoint 배열
+ */
+export function calcEnvelope(
+  closes: number[],
+  period: number = 20,
+  percent: number = 0.1,
+): EnvPoint[] {
+  const sma = calcMA(closes, period);
+  return closes.map((_, i) => {
+    const mid = sma[i];
+    if (mid === null) return { upper: null, mid: null, lower: null };
+    const upper = round(mid * (1 + percent), 4);
+    const lower = round(mid * (1 - percent), 4);
+    return { upper, mid, lower };
+  });
+}
+
+// ── 15. Donchian Channels ──────────────────────────────────────────────────────
+
+/** 돈천 채널 한 봉의 계산 결과 */
+export interface DonchianPoint {
+  upper: number | null;
+  mid:   number | null;
+  lower: number | null;
+}
+
+/**
+ * 돈천 채널 (기간 내 최고가 및 최저가).
+ *
+ * @param closes - 종가 배열 (시간순)
+ * @param period - 기간 (기본 20)
+ * @returns (closes.length) 개의 DonchianPoint 배열
+ */
+export function calcDonchianChannels(
+  closes: number[],
+  period: number = 20,
+): DonchianPoint[] {
+  return closes.map((_, i) => {
+    if (i < period - 1) return { upper: null, mid: null, lower: null };
+    const slice = closes.slice(i - period + 1, i + 1);
+    const upper = Math.max(...slice);
+    const lower = Math.min(...slice);
+    const mid = round((upper + lower) / 2, 4);
+    return { upper: round(upper, 4), mid, lower: round(lower, 4) };
+  });
+}

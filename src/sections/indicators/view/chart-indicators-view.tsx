@@ -22,9 +22,9 @@ import { MarketPeriodSelector } from 'src/components/market-period-selector';
 
 import { DiagnosticCard } from '../components/diagnostic-card';
 import {
-  calculateSMA, calculateRSI, calculateBollingerBands,
-  calculateMACD, calculateEnvelope, calculateDonchianChannels,
-} from '../utils/technical-calculations';
+  calcMA, calcRSI, calcBollingerBands,
+  calcMACD, calcEnvelope, calcDonchianChannels,
+} from 'src/library/shared/indicators';
 
 // ----------------------------------------------------------------------
 
@@ -152,18 +152,42 @@ export function ChartIndicatorsView() {
     const dailyChange = currentPrice - prevPrice;
     const dailyChangePct = prevPrice !== 0 ? (dailyChange / prevPrice) * 100 : 0;
 
-    // Technical computations
-    const sma5 = calculateSMA(prices, 5);
-    const sma20 = calculateSMA(prices, 20);
-    const sma50 = calculateSMA(prices, 50);
-    const sma60 = calculateSMA(prices, 60);
-    const sma120 = calculateSMA(prices, 120);
-    const sma240 = calculateSMA(prices, 240);
-    const rsi = calculateRSI(prices, 14);
-    const macd = calculateMACD(prices);
-    const bb = calculateBollingerBands(prices, 20);
-    const env = calculateEnvelope(prices, 20, 0.1);
-    const donchian = calculateDonchianChannels(prices, 20);
+    // Technical computations using shared library
+    const sma5 = calcMA(prices, 5).map((val, idx) => val ?? prices[idx]);
+    const sma20 = calcMA(prices, 20).map((val, idx) => val ?? prices[idx]);
+    const sma50 = calcMA(prices, 50).map((val, idx) => val ?? prices[idx]);
+    const sma60 = calcMA(prices, 60).map((val, idx) => val ?? prices[idx]);
+    const sma120 = calcMA(prices, 120).map((val, idx) => val ?? prices[idx]);
+    const sma240 = calcMA(prices, 240).map((val, idx) => val ?? prices[idx]);
+    const rsi = calcRSI(prices, 14).map((val) => val ?? 50);
+
+    const macdRaw = calcMACD(prices);
+    const macd = {
+      macdLine: macdRaw.map((pt) => pt.macd ?? 0),
+      signalLine: macdRaw.map((pt) => pt.signal ?? 0),
+      histogram: macdRaw.map((pt) => pt.histogram ?? 0),
+    };
+
+    const bbRaw = calcBollingerBands(prices, 20);
+    const bb = {
+      sma: bbRaw.map((pt, idx) => pt.mid ?? prices[idx]),
+      upper: bbRaw.map((pt, idx) => pt.upper ?? prices[idx]),
+      lower: bbRaw.map((pt, idx) => pt.lower ?? prices[idx]),
+    };
+
+    const envRaw = calcEnvelope(prices, 20, 0.1);
+    const env = {
+      sma: envRaw.map((pt, idx) => pt.mid ?? prices[idx]),
+      upper: envRaw.map((pt, idx) => pt.upper ?? prices[idx]),
+      lower: envRaw.map((pt, idx) => pt.lower ?? prices[idx]),
+    };
+
+    const donchianRaw = calcDonchianChannels(prices, 20);
+    const donchian = {
+      upper: donchianRaw.map((pt, idx) => pt.upper ?? prices[idx]),
+      lower: donchianRaw.map((pt, idx) => pt.lower ?? prices[idx]),
+      middle: donchianRaw.map((pt, idx) => pt.mid ?? prices[idx]),
+    };
 
     const latestRsi = rsi[length - 1] || 50;
     const latestSma20 = sma20[length - 1] || currentPrice;
