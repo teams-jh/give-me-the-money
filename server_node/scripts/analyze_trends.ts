@@ -19,19 +19,8 @@
 import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { createRequire } from "module";
+import { classifyTrend } from "../../src/library/shared/classifyTrend.js";
 import type { PriceSeries, TrendResult, TrendType } from "../../src/library/shared/classifyTrend.js";
-
-// ── CJS / ESM 경계 우회 ───────────────────────────────────────────────────────
-// src/ 는 루트 package.json ("type" 필드 없음) 관할 → tsx 4.x 가 CJS 로 컴파일.
-// ESM(server_node) 에서 CJS named import 를 static 으로 쓰면 Node.js v22 링크
-// 타임에 "does not provide an export named 'classifyTrend'" 오류가 발생한다.
-// createRequire 를 쓰면 CJS require 훅을 통해 .ts → CJS 변환 후 exports 객체를
-// 그대로 받아오므로 named property 접근이 항상 안전하다.
-const _require = createRequire(import.meta.url);
-const { classifyTrend } = _require("../../src/library/shared/classifyTrend.js") as {
-  classifyTrend: (series: PriceSeries, minPts: number) => TrendResult | null;
-};
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
