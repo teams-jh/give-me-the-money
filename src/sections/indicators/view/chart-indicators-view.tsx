@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import type { PeriodKey } from 'src/sections/top100/types';
+
+import { useState, useMemo, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
@@ -9,8 +11,6 @@ import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Autocomplete from '@mui/material/Autocomplete';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import LinearProgress from '@mui/material/LinearProgress';
 import { alpha, useTheme } from '@mui/material/styles';
 
@@ -18,111 +18,15 @@ import ChartApex from 'react-apexcharts';
 
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { MarketPeriodSelector } from 'src/components/market-period-selector';
+
+import { DiagnosticCard } from '../components/diagnostic-card';
+import {
+  calculateSMA, calculateRSI, calculateBollingerBands,
+  calculateMACD, calculateEnvelope, calculateDonchianChannels,
+} from '../utils/technical-calculations';
 
 // ----------------------------------------------------------------------
-
-type PeriodKey = '3m' | '1y' | '2y' | '3y';
-
-const PERIOD_OPTIONS: { value: PeriodKey; label: string }[] = [
-  { value: '3m', label: '3개월' },
-  { value: '1y', label: '1년' },
-  { value: '2y', label: '2년' },
-  { value: '3y', label: '3년' },
-];
-
-// Technical Indicators Helper Math Functions
-function calculateSMA(data: number[], period: number): number[] {
-  const sma: number[] = [];
-  for (let i = 0; i < data.length; i++) {
-    if (i < period - 1) {
-      sma.push(data[i]); // Not enough data, fallback to close price
-    } else {
-      const sum = data.slice(i - period + 1, i + 1).reduce((a, b) => a + b, 0);
-      sma.push(Number((sum / period).toFixed(2)));
-    }
-  }
-  return sma;
-}
-
-function calculateRSI(data: number[], period: number = 14): number[] {
-  const rsi: number[] = [];
-  const gains: number[] = [];
-  const losses: number[] = [];
-
-  for (let i = 0; i < data.length; i++) {
-    if (i === 0) {
-      rsi.push(50);
-      continue;
-    }
-
-    const diff = data[i] - data[i - 1];
-    gains.push(diff > 0 ? diff : 0);
-    losses.push(diff < 0 ? -diff : 0);
-
-    if (i < period) {
-      rsi.push(50);
-    } else {
-      const avgGain = gains.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
-      const avgLoss = losses.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
-
-      if (avgLoss === 0) {
-        rsi.push(100);
-      } else {
-        const rs = avgGain / avgLoss;
-        rsi.push(Number((100 - 100 / (1 + rs)).toFixed(2)));
-      }
-    }
-  }
-  return rsi;
-}
-
-function calculateBollingerBands(data: number[], period: number = 20, multiplier: number = 2) {
-  const sma = calculateSMA(data, period);
-  const upper: number[] = [];
-  const lower: number[] = [];
-
-  for (let i = 0; i < data.length; i++) {
-    if (i < period - 1) {
-      upper.push(data[i]);
-      lower.push(data[i]);
-    } else {
-      const slice = data.slice(i - period + 1, i + 1);
-      const mean = sma[i];
-      const variance = slice.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / period;
-      const stdDev = Math.sqrt(variance);
-
-      upper.push(Number((mean + multiplier * stdDev).toFixed(2)));
-      lower.push(Number((mean - multiplier * stdDev).toFixed(2)));
-    }
-  }
-
-  return { sma, upper, lower };
-}
-
-function calculateMACD(data: number[], shortPeriod = 12, longPeriod = 26, signalPeriod = 9) {
-  const calculateEMA = (arr: number[], length: number): number[] => {
-    const ema: number[] = [];
-    const k = 2 / (length + 1);
-    let prevEma = arr[0] || 0;
-    ema.push(prevEma);
-
-    for (let i = 1; i < arr.length; i++) {
-      const curEma = arr[i] * k + prevEma * (1 - k);
-      ema.push(curEma);
-      prevEma = curEma;
-    }
-    return ema;
-  };
-
-  const ema12 = calculateEMA(data, shortPeriod);
-  const ema26 = calculateEMA(data, longPeriod);
-  
-  const macdLine = ema12.map((val, idx) => Number((val - ema26[idx]).toFixed(2)));
-  const signalLine = calculateEMA(macdLine, signalPeriod).map(val => Number(val.toFixed(2)));
-  const histogram = macdLine.map((val, idx) => Number((val - signalLine[idx]).toFixed(2)));
-
-  return { macdLine, signalLine, histogram };
-}
 
 export function ChartIndicatorsView() {
   const theme = useTheme();
@@ -134,9 +38,29 @@ export function ChartIndicatorsView() {
   // Active Single Selected Ticker States
   const [usTicker, setUsTicker] = useState<string>('AAPL');
   const [krTicker, setKrTicker] = useState<string>('005930.KS');
-  const [inputValue, setInputValue] = useState('');
+
+  // Dynamic chart lines on/off states
+  const [showSma5, setShowSma5] = useState(false);
+  const [showSma20, setShowSma20] = useState(true);
+  const [showSma60, setShowSma60] = useState(false);
+  const [showSma120, setShowSma120] = useState(false);
+  const [showSma240, setShowSma240] = useState(false);
+  const [showBb, setShowBb] = useState(false);
+  const [showRsi, setShowRsi] = useState(true);
+  const [showMacd, setShowMacd] = useState(true);
+  const [showEnv, setShowEnv] = useState(false);
+  const [showFib, setShowFib] = useState(false);
+  const [showDonchian, setShowDonchian] = useState(false);
+
+  // Dynamic visible chart range (for highest/lowest calculations on zoom)
+  const [visibleRange, setVisibleRange] = useState<{ min: number; max: number } | null>(null);
 
   const currentTicker = market === 'US' ? usTicker : krTicker;
+
+  // Reset visibleRange when ticker or period changes
+  useEffect(() => {
+    setVisibleRange(null);
+  }, [currentTicker, period]);
 
   // Filter Autocomplete Ticker Options based on Market
   const tickerOptions = useMemo(() => {
@@ -180,10 +104,16 @@ export function ChartIndicatorsView() {
     const slice = allPrices.slice(-days);
 
     const closePrices = slice.map((p) => p.close);
+    const openPrices = slice.map((p) => p.open || p.close);
+    const highPrices = slice.map((p) => p.high || p.close);
+    const lowPrices = slice.map((p) => p.low || p.close);
     const dates = slice.map((p) => p.date);
 
     return {
       closePrices,
+      openPrices,
+      highPrices,
+      lowPrices,
       dates,
     };
   }, [currentTicker, period]);
@@ -203,18 +133,23 @@ export function ChartIndicatorsView() {
     const dailyChangePct = prevPrice !== 0 ? (dailyChange / prevPrice) * 100 : 0;
 
     // Technical computations
+    const sma5 = calculateSMA(prices, 5);
     const sma20 = calculateSMA(prices, 20);
     const sma50 = calculateSMA(prices, 50);
+    const sma60 = calculateSMA(prices, 60);
     const sma120 = calculateSMA(prices, 120);
+    const sma240 = calculateSMA(prices, 240);
     const rsi = calculateRSI(prices, 14);
     const macd = calculateMACD(prices);
     const bb = calculateBollingerBands(prices, 20);
+    const env = calculateEnvelope(prices, 20, 0.1);
+    const donchian = calculateDonchianChannels(prices, 20);
 
     const latestRsi = rsi[length - 1] || 50;
     const latestSma20 = sma20[length - 1] || currentPrice;
     const latestSma50 = sma50[length - 1] || currentPrice;
     const latestSma120 = sma120[length - 1] || currentPrice;
-    
+
     const latestMacd = macd.macdLine[length - 1] || 0;
     const latestSignal = macd.signalLine[length - 1] || 0;
     const latestHist = macd.histogram[length - 1] || 0;
@@ -222,6 +157,34 @@ export function ChartIndicatorsView() {
     const latestBbUpper = bb.upper[length - 1] || currentPrice;
     const latestBbLower = bb.lower[length - 1] || currentPrice;
     const latestBbSma = bb.sma[length - 1] || currentPrice;
+
+    const latestEnvUpper = env.upper[length - 1] || currentPrice;
+    const latestEnvLower = env.lower[length - 1] || currentPrice;
+
+    const latestDonchianUpper = donchian.upper[length - 1] || currentPrice;
+    const latestDonchianLower = donchian.lower[length - 1] || currentPrice;
+
+    const highPrices = activeStockDataSlice.highPrices;
+    const lowPrices = activeStockDataSlice.lowPrices;
+    const maxPrice = Math.max(...highPrices);
+    const minPrice = Math.min(...lowPrices);
+    const diff = maxPrice - minPrice;
+
+    const maxIndex = highPrices.indexOf(maxPrice);
+    const minIndex = lowPrices.indexOf(minPrice);
+    const maxDate = new Date(dates[maxIndex]).getTime();
+    const minDate = new Date(dates[minIndex]).getTime();
+
+    const fibonacci = {
+      max: maxPrice,
+      min: minPrice,
+      maxDate,
+      minDate,
+      fib236: maxPrice - diff * 0.236,
+      fib382: maxPrice - diff * 0.382,
+      fib500: maxPrice - diff * 0.5,
+      fib618: maxPrice - diff * 0.618,
+    };
 
     // Overall Score Calculation (0 - 100)
     let score = 50;
@@ -254,56 +217,165 @@ export function ChartIndicatorsView() {
       latestBbUpper,
       latestBbLower,
       latestBbSma,
+      latestEnvUpper,
+      latestEnvLower,
+      latestDonchianUpper,
+      latestDonchianLower,
       score,
       // Arrays for chart
+      sma5,
       sma20,
+      sma60,
+      sma120,
+      sma240,
       bbUpper: bb.upper,
       bbLower: bb.lower,
+      envUpper: env.upper,
+      envLower: env.lower,
+      donchianUpper: donchian.upper,
+      donchianLower: donchian.lower,
+      donchianMiddle: donchian.middle,
+      fibonacci,
     };
   }, [activeStockDataSlice]);
 
   // Chart configuration for selected ticker
-  const chartSeries = useMemo(() => {
-    if (!activeStockDataSlice || !techAnalysis) return [];
-    
-    return [
+  const chartData = useMemo(() => {
+    if (!activeStockDataSlice || !techAnalysis) {
+      return {
+        series: [],
+        colors: [],
+        stroke: { curve: 'smooth' as const, width: [], dashArray: [] },
+      };
+    }
+
+    const series = [
       {
-        name: '종가 (Close)',
-        type: 'line',
+        name: '주가 (OHLC)',
+        type: 'candlestick',
         data: activeStockDataSlice.closePrices.map((val, idx) => ({
           x: new Date(activeStockDataSlice.dates[idx]).getTime(),
-          y: val,
+          y: [
+            activeStockDataSlice.openPrices[idx] || val,
+            activeStockDataSlice.highPrices[idx] || val,
+            activeStockDataSlice.lowPrices[idx] || val,
+            val
+          ],
         })),
       },
-      {
-        name: 'SMA (20일선)',
-        type: 'line',
-        data: techAnalysis.sma20.map((val, idx) => ({
-          x: new Date(activeStockDataSlice.dates[idx]).getTime(),
-          y: val,
-        })),
-      },
-      {
+    ];
+
+    const colors = [theme.palette.primary.main];
+    const widths = [1];
+    const dashes = [0];
+
+    if (showSma5) {
+      series.push({
+        name: 'SMA (5일선)', type: 'line',
+        data: techAnalysis.sma5.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.secondary.main); widths.push(1); dashes.push(0);
+    }
+
+    if (showSma20) {
+      series.push({
+        name: 'SMA (20일선)', type: 'line',
+        data: techAnalysis.sma20.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.warning.main); widths.push(2); dashes.push(0);
+    }
+
+    if (showSma60) {
+      series.push({
+        name: 'SMA (60일선)', type: 'line',
+        data: techAnalysis.sma60.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.info.main); widths.push(1); dashes.push(0);
+    }
+
+    if (showSma120) {
+      series.push({
+        name: 'SMA (120일선)', type: 'line',
+        data: techAnalysis.sma120.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.error.main); widths.push(1); dashes.push(0);
+    }
+
+    if (showSma240) {
+      series.push({
+        name: 'SMA (240일선)', type: 'line',
+        data: techAnalysis.sma240.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.text.disabled); widths.push(1); dashes.push(0);
+    }
+
+    if (showBb) {
+      series.push({
         name: '볼린저 밴드 상단',
         type: 'line',
         data: techAnalysis.bbUpper.map((val, idx) => ({
           x: new Date(activeStockDataSlice.dates[idx]).getTime(),
           y: val,
         })),
-      },
-      {
+      });
+      colors.push(theme.palette.success.main);
+      widths.push(1);
+      dashes.push(6);
+
+      series.push({
         name: '볼린저 밴드 하단',
         type: 'line',
         data: techAnalysis.bbLower.map((val, idx) => ({
           x: new Date(activeStockDataSlice.dates[idx]).getTime(),
           y: val,
         })),
+      });
+      colors.push(theme.palette.error.main);
+      widths.push(1);
+      dashes.push(6);
+    }
+
+    if (showEnv) {
+      series.push({
+        name: '엔벨로프 상단 (10%)', type: 'line',
+        data: techAnalysis.envUpper.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.secondary.light); widths.push(1); dashes.push(4);
+
+      series.push({
+        name: '엔벨로프 하단 (10%)', type: 'line',
+        data: techAnalysis.envLower.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.secondary.light); widths.push(1); dashes.push(4);
+    }
+
+    if (showDonchian) {
+      series.push({
+        name: '돈천 채널 상단', type: 'line',
+        data: techAnalysis.donchianUpper.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.info.light); widths.push(1); dashes.push(0);
+
+      series.push({
+        name: '돈천 채널 하단', type: 'line',
+        data: techAnalysis.donchianLower.map((val, idx) => ({ x: new Date(activeStockDataSlice.dates[idx]).getTime(), y: val }))
+      });
+      colors.push(theme.palette.info.light); widths.push(1); dashes.push(0);
+    }
+
+    return {
+      series,
+      colors,
+      stroke: {
+        curve: 'smooth' as const,
+        width: widths,
+        dashArray: dashes,
       },
-    ];
-  }, [activeStockDataSlice, techAnalysis]);
+    };
+  }, [activeStockDataSlice, techAnalysis, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, theme]);
 
   const currencySymbol = market === 'US' ? '$' : '₩';
-  
+
   const formatMoney = (val: number) => {
     if (market === 'US') {
       return `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -311,55 +383,157 @@ export function ChartIndicatorsView() {
     return `${val.toLocaleString()}원`;
   };
 
-  const chartOptions = useMemo<any>(() => ({
-    chart: {
-      toolbar: { show: true },
-      zoom: { enabled: true },
-      background: 'transparent',
-      fontFamily: theme.typography.fontFamily,
-    },
-    xaxis: {
-      type: 'datetime',
-      labels: { style: { colors: theme.palette.text.secondary } },
-    },
-    yaxis: {
-      title: {
-        text: `가격 (${market === 'US' ? 'USD' : 'KRW'})`,
-        style: { color: theme.palette.text.secondary, fontWeight: 600 },
+  // Compute visible high/low based on visibleRange
+  const visibleHighLow = useMemo(() => {
+    if (!activeStockDataSlice) return null;
+    const { dates, highPrices, lowPrices } = activeStockDataSlice;
+
+    let indices: number[] = [];
+    if (visibleRange) {
+      dates.forEach((d, idx) => {
+        const time = new Date(d).getTime();
+        if (time >= visibleRange.min && time <= visibleRange.max) {
+          indices.push(idx);
+        }
+      });
+    }
+    if (indices.length === 0) {
+      indices = dates.map((_, idx) => idx);
+    }
+
+    const highs = indices.map(i => highPrices[i]);
+    const lows = indices.map(i => lowPrices[i]);
+    const max = Math.max(...highs);
+    const min = Math.min(...lows);
+    const maxIdx = indices[highs.indexOf(max)];
+    const minIdx = indices[lows.indexOf(min)];
+
+    return {
+      max, min,
+      maxDate: new Date(dates[maxIdx]).getTime(),
+      minDate: new Date(dates[minIdx]).getTime(),
+    };
+  }, [activeStockDataSlice, visibleRange]);
+
+  const chartOptions = useMemo<any>(() => {
+    const annotations: any = { yaxis: [], points: [] };
+
+    if (visibleHighLow) {
+      const { max, min, maxDate, minDate } = visibleHighLow;
+      annotations.points.push(
+        {
+          x: maxDate, y: max,
+          marker: { size: 5, fillColor: theme.palette.error.main, strokeColor: '#fff', strokeWidth: 2 },
+          label: {
+            borderColor: theme.palette.error.main, offsetY: -10,
+            style: { color: '#fff', background: theme.palette.error.main, fontWeight: 700, fontSize: '11px' },
+            text: `최고가: ${formatMoney(max)}`
+          }
+        },
+        {
+          x: minDate, y: min,
+          marker: { size: 5, fillColor: theme.palette.info.main, strokeColor: '#fff', strokeWidth: 2 },
+          label: {
+            borderColor: theme.palette.info.main, offsetY: 10,
+            style: { color: '#fff', background: theme.palette.info.main, fontWeight: 700, fontSize: '11px' },
+            text: `최저가: ${formatMoney(min)}`
+          }
+        }
+      );
+    }
+
+    if (showFib && visibleHighLow) {
+      const { max, min } = visibleHighLow;
+      const diff = max - min;
+      const fibColors = theme.palette.grey[500];
+      annotations.yaxis.push(
+        { y: max, borderColor: theme.palette.error.main, label: { text: '100% (High)', style: { color: '#fff', background: theme.palette.error.main } } },
+        { y: max - diff * 0.236, borderColor: fibColors, strokeDashArray: 2, label: { text: '23.6%', style: { color: '#fff', background: fibColors } } },
+        { y: max - diff * 0.382, borderColor: fibColors, strokeDashArray: 2, label: { text: '38.2%', style: { color: '#fff', background: fibColors } } },
+        { y: max - diff * 0.5, borderColor: fibColors, strokeDashArray: 2, label: { text: '50.0%', style: { color: '#fff', background: fibColors } } },
+        { y: max - diff * 0.618, borderColor: fibColors, strokeDashArray: 2, label: { text: '61.8%', style: { color: '#fff', background: fibColors } } },
+        { y: min, borderColor: theme.palette.success.main, label: { text: '0% (Low)', style: { color: '#fff', background: theme.palette.success.main } } }
+      );
+    }
+
+    return {
+      chart: {
+        id: 'indicators-chart',
+        toolbar: { show: true },
+        zoom: { enabled: true },
+        background: 'transparent',
+        fontFamily: theme.typography.fontFamily,
+        events: {
+          zoomed: (_chartContext: unknown, { xaxis }: { xaxis: { min?: number; max?: number } }) => {
+            if (xaxis?.min && xaxis?.max) {
+              setVisibleRange({ min: Math.round(xaxis.min), max: Math.round(xaxis.max) });
+            } else {
+              setVisibleRange(null);
+            }
+          },
+          beforeResetZoom: () => {
+            setVisibleRange(null);
+          },
+        }
       },
-      labels: {
-        style: { colors: theme.palette.text.secondary },
-        formatter: (value: number) => formatMoney(value),
+      plotOptions: {
+        candlestick: {
+          colors: {
+            upward: theme.palette.error.main,
+            downward: theme.palette.info.main
+          },
+          wick: { useFillColor: true }
+        }
       },
-    },
-    stroke: {
-      curve: 'smooth',
-      width: [3, 2, 1, 1],
-      dashArray: [0, 4, 6, 6],
-    },
-    colors: [
-      theme.palette.primary.main,     // Stock price
-      theme.palette.warning.main,     // SMA 20
-      theme.palette.success.main,     // BB Upper
-      theme.palette.error.main,       // BB Lower
-    ],
-    legend: {
-      position: 'bottom',
-      horizontalAlign: 'center',
-      labels: { colors: theme.palette.text.secondary },
-    },
-    tooltip: {
-      theme: theme.palette.mode,
-      x: { format: 'yyyy-MM-dd' },
-      y: {
-        formatter: (value: number) => formatMoney(value),
+      annotations,
+      xaxis: {
+        type: 'datetime',
+        labels: { style: { colors: theme.palette.text.secondary } },
       },
-    },
-    grid: {
-      borderColor: alpha(theme.palette.grey[500], 0.1),
-      strokeDashArray: 3,
-    },
-  }), [theme, market]);
+      yaxis: {
+        title: {
+          text: `가격 (${market === 'US' ? 'USD' : 'KRW'})`,
+          style: { color: theme.palette.text.secondary, fontWeight: 600 },
+        },
+        labels: {
+          style: { colors: theme.palette.text.secondary },
+          formatter: (value: number) => formatMoney(value),
+        },
+      },
+      stroke: chartData.stroke,
+      colors: chartData.colors,
+      legend: {
+        position: 'bottom',
+        horizontalAlign: 'center',
+        labels: { colors: theme.palette.text.secondary },
+      },
+      tooltip: {
+        theme: theme.palette.mode,
+        x: { format: 'yyyy-MM-dd' },
+        custom: ({ seriesIndex, dataPointIndex, w }: { seriesIndex: number; dataPointIndex: number; w: unknown }) => {
+          const series = (w as any).config.series[seriesIndex];
+          if (series?.type === 'candlestick') {
+            const point = series.data[dataPointIndex];
+            const [o, h, l, c] = point.y as number[];
+            const date = new Date(point.x).toLocaleDateString('ko-KR');
+            return `<div style="padding:8px 12px;font-size:12px;line-height:1.6">
+              <b>${date}</b><br/>
+              <span>시가(O): ${formatMoney(o)}</span><br/>
+              <span>고가(H): ${formatMoney(h)}</span><br/>
+              <span>저가(L): ${formatMoney(l)}</span><br/>
+              <span>종가(C): ${formatMoney(c)}</span>
+            </div>`;
+          }
+          const val = (w as any).config.series[seriesIndex].data[dataPointIndex]?.y;
+          return `<div style="padding:6px 10px;font-size:12px">${series.name}: ${formatMoney(val)}</div>`;
+        },
+      },
+      grid: {
+        borderColor: alpha(theme.palette.grey[500], 0.1),
+        strokeDashArray: 3,
+      },
+    };
+  }, [theme, market, chartData, showFib, visibleHighLow]);
 
   const handleTickerChange = (newValue: { ticker: string; name: string } | null) => {
     if (newValue) {
@@ -369,7 +543,6 @@ export function ChartIndicatorsView() {
         setKrTicker(newValue.ticker);
       }
     }
-    setInputValue('');
   };
 
   const handleMarketChange = (newMarket: 'US' | 'KR') => {
@@ -447,52 +620,39 @@ export function ChartIndicatorsView() {
             </Typography>
           </Box>
 
-          <Stack direction="row" spacing={2} alignItems="center" alignSelf={{ xs: 'stretch', md: 'auto' }}>
-            <ToggleButtonGroup
-              value={market}
-              exclusive
-              onChange={(e, v) => v && handleMarketChange(v)}
-              color="primary"
-              size="medium"
-            >
-              <ToggleButton value="US" sx={{ px: 3, fontWeight: 800 }}>
-                US 미국
-              </ToggleButton>
-              <ToggleButton value="KR" sx={{ px: 3, fontWeight: 800 }}>
-                KR 한국
-              </ToggleButton>
-            </ToggleButtonGroup>
-
-            <ToggleButtonGroup
-              value={period}
-              exclusive
-              onChange={(e, v) => v && setPeriod(v)}
-              size="medium"
-              color="primary"
-            >
-              {PERIOD_OPTIONS.map((option) => (
-                <ToggleButton key={option.value} value={option.value} sx={{ px: 2, fontWeight: 700 }}>
-                  {option.label}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Stack>
+          <MarketPeriodSelector
+            market={market}
+            period={period}
+            onMarketChange={handleMarketChange}
+            onPeriodChange={setPeriod}
+          />
         </Stack>
 
         {/* 1. Single Ticker Selection Card */}
         <Card sx={{ p: 3, boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}` }}>
           <Grid container spacing={3} alignItems="center">
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 8.5 }}>
               <Autocomplete
                 fullWidth
+                selectOnFocus
+                clearOnBlur
+                handleHomeEndKeys
                 options={tickerOptions}
                 getOptionLabel={(option) => `${option.name} (${option.ticker})`}
                 value={selectedStockMeta ? { ticker: selectedStockMeta.ticker, name: selectedStockMeta.name } : null}
                 onChange={(e, v) => handleTickerChange(v)}
-                inputValue={inputValue}
-                onInputChange={(e, v) => setInputValue(v)}
                 filterOptions={(options, state) => {
-                  const query = state.inputValue.toLowerCase();
+                  const query = state.inputValue.toLowerCase().trim();
+                  if (!query) return options;
+
+                  // If the query is exactly the label of the currently selected stock, show all options
+                  if (
+                    selectedStockMeta &&
+                    `${selectedStockMeta.name} (${selectedStockMeta.ticker})`.toLowerCase() === query
+                  ) {
+                    return options;
+                  }
+
                   return options.filter(
                     (opt) =>
                       opt.ticker.toLowerCase().includes(query) ||
@@ -521,7 +681,7 @@ export function ChartIndicatorsView() {
 
             {/* Current Active Single Selection Details */}
             {selectedStockMeta && techAnalysis && (
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid size={{ xs: 12, md: 3.5 }}>
                 <Stack direction="row" spacing={3} alignItems="center" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
                   <Box>
                     <Typography variant="overline" sx={{ color: 'text.disabled', fontWeight: 800 }}>
@@ -590,8 +750,8 @@ export function ChartIndicatorsView() {
                       {techAnalysis.score >= 70
                         ? '긍정적 매수 세력 유입세 🚀'
                         : techAnalysis.score <= 35
-                        ? '하방 압력 가중, 비중 조절 주의 ⚠️'
-                        : '수렴구간, 중립 횡보 및 탐색 ⚖️'}
+                          ? '하방 압력 가중, 비중 조절 주의 ⚠️'
+                          : '수렴구간, 중립 횡보 및 탐색 ⚖️'}
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                       RSI {techAnalysis.latestRsi.toFixed(1)} 수준과 MACD 오실레이터, 이동평균선의 정합성을 바탕으로 도출한 {selectedStockMeta.name}({selectedStockMeta.ticker})의 기술적 모멘텀 점수는{' '}
@@ -626,6 +786,76 @@ export function ChartIndicatorsView() {
               </Card>
             </Grid>
 
+            {/* 💡 Interactive Technical Indicators Toggle Controller */}
+            <Grid size={{ xs: 12 }} sx={{ mb: 1 }}>
+              <Card sx={{ p: 2.5, boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}` }}>
+                <Stack
+                  direction={{ xs: 'column', md: 'row' }}
+                  alignItems={{ xs: 'flex-start', md: 'center' }}
+                  justifyContent="space-between"
+                  spacing={2}
+                >
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+                      🛠️ 기술적 분석 지표 활성화 필터
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      원하는 보조지표를 활성화하면 차트에 선이 실시간으로 표기되고 우측 진단 설명 보드가 생성됩니다.
+                    </Typography>
+                  </Box>
+                  <Stack direction="row" spacing={1.5} sx={{ flexWrap: 'wrap', gap: 1.5 }}>
+                    <Chip label="MA 5" color={showSma5 ? 'secondary' : 'default'} variant={showSma5 ? 'filled' : 'outlined'} onClick={() => setShowSma5(!showSma5)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+                    <Chip label="MA 20" color={showSma20 ? 'warning' : 'default'} variant={showSma20 ? 'filled' : 'outlined'} onClick={() => setShowSma20(!showSma20)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+                    <Chip label="MA 60" color={showSma60 ? 'info' : 'default'} variant={showSma60 ? 'filled' : 'outlined'} onClick={() => setShowSma60(!showSma60)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+                    <Chip label="MA 120" color={showSma120 ? 'error' : 'default'} variant={showSma120 ? 'filled' : 'outlined'} onClick={() => setShowSma120(!showSma120)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+                    <Chip label="MA 240" color={showSma240 ? 'default' : 'default'} variant={showSma240 ? 'filled' : 'outlined'} onClick={() => setShowSma240(!showSma240)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+                    <Chip
+                      label="볼린저 밴드 (Bollinger)"
+                      color={showBb ? 'success' : 'default'}
+                      variant={showBb ? 'filled' : 'outlined'}
+                      onClick={() => setShowBb(!showBb)}
+                      sx={{ fontWeight: 700, cursor: 'pointer' }}
+                    />
+                    <Chip
+                      label="엔벨로프 (Envelope)"
+                      color={showEnv ? 'secondary' : 'default'}
+                      variant={showEnv ? 'filled' : 'outlined'}
+                      onClick={() => setShowEnv(!showEnv)}
+                      sx={{ fontWeight: 700, cursor: 'pointer' }}
+                    />
+                    <Chip
+                      label="피보나치 (Fibonacci)"
+                      color={showFib ? 'error' : 'default'}
+                      variant={showFib ? 'filled' : 'outlined'}
+                      onClick={() => setShowFib(!showFib)}
+                      sx={{ fontWeight: 700, cursor: 'pointer' }}
+                    />
+                    <Chip
+                      label="돈천 채널 (Donchian)"
+                      color={showDonchian ? 'info' : 'default'}
+                      variant={showDonchian ? 'filled' : 'outlined'}
+                      onClick={() => setShowDonchian(!showDonchian)}
+                      sx={{ fontWeight: 700, cursor: 'pointer' }}
+                    />
+                    <Chip
+                      label="RSI (14)"
+                      color={showRsi ? 'primary' : 'default'}
+                      variant={showRsi ? 'filled' : 'outlined'}
+                      onClick={() => setShowRsi(!showRsi)}
+                      sx={{ fontWeight: 700, cursor: 'pointer' }}
+                    />
+                    <Chip
+                      label="MACD"
+                      color={showMacd ? 'info' : 'default'}
+                      variant={showMacd ? 'filled' : 'outlined'}
+                      onClick={() => setShowMacd(!showMacd)}
+                      sx={{ fontWeight: 700, cursor: 'pointer' }}
+                    />
+                  </Stack>
+                </Stack>
+              </Card>
+            </Grid>
+
             {/* Apex Technical Chart (Left 8 Columns) */}
             <Grid size={{ xs: 12, lg: 8 }}>
               <Card sx={{ p: 3, height: 600, boxShadow: theme.customShadows?.card }}>
@@ -641,7 +871,7 @@ export function ChartIndicatorsView() {
                 <Box sx={{ height: 500 }}>
                   <ChartApex
                     options={chartOptions}
-                    series={chartSeries}
+                    series={chartData.series}
                     type="line"
                     height="100%"
                   />
@@ -653,9 +883,10 @@ export function ChartIndicatorsView() {
             <Grid size={{ xs: 12, lg: 4 }}>
               <Stack spacing={3} sx={{ height: '100%' }}>
                 {/* 1. MA Diagnostic Card */}
-                {maDiag && (
+                {/* 1. MA Diagnostic Card */}
+                {(showSma5 || showSma20 || showSma60 || showSma120 || showSma240) && maDiag && (
                   <DiagnosticCard
-                    title="이동평균선 (SMA)"
+                    title="이동평균선 (MA)"
                     label={maDiag.label}
                     status={maDiag.status}
                     desc={maDiag.desc}
@@ -664,7 +895,7 @@ export function ChartIndicatorsView() {
                 )}
 
                 {/* 2. RSI Diagnostic Card */}
-                {rsiDiag && (
+                {showRsi && rsiDiag && (
                   <DiagnosticCard
                     title="상대강도지수 (RSI)"
                     label={rsiDiag.label}
@@ -675,7 +906,7 @@ export function ChartIndicatorsView() {
                 )}
 
                 {/* 3. MACD Diagnostic Card */}
-                {macdDiag && (
+                {showMacd && macdDiag && (
                   <DiagnosticCard
                     title="MACD (12, 26, 9)"
                     label={macdDiag.label}
@@ -686,7 +917,7 @@ export function ChartIndicatorsView() {
                 )}
 
                 {/* 4. Bollinger Bands Diagnostic Card */}
-                {bbDiag && (
+                {showBb && bbDiag && (
                   <DiagnosticCard
                     title="볼린저 밴드"
                     label={bbDiag.label}
@@ -694,6 +925,67 @@ export function ChartIndicatorsView() {
                     desc={bbDiag.desc}
                     value={`Upper Band: ${formatMoney(techAnalysis.latestBbUpper)}`}
                   />
+                )}
+
+                {/* 5. Envelope Diagnostic Card */}
+                {showEnv && (
+                  <DiagnosticCard
+                    title="엔벨로프 (Envelope 10%)"
+                    label="단기 과매도/과매수 반등 타점 📏"
+                    status="Neutral"
+                    desc="주가가 밴드 하단을 뚫고 터치하면 과매도로 기술적 반등 매수 타점, 상단은 저항선으로 판단합니다."
+                    value={`Upper: ${formatMoney(techAnalysis.latestEnvUpper)}`}
+                  />
+                )}
+
+                {/* 6. Fibonacci Diagnostic Card */}
+                {showFib && (
+                  <DiagnosticCard
+                    title="피보나치 조정대"
+                    label="지지선 및 저항선 예측 📐"
+                    status="Neutral"
+                    desc="상승 후 조정 시 38.2% 또는 61.8% 비율에서 강력한 지지를 받고 반등할 확률이 높습니다."
+                    value={`38.2%: ${formatMoney(techAnalysis.fibonacci.fib382)}`}
+                  />
+                )}
+
+                {/* 7. Donchian Channels Diagnostic Card */}
+                {showDonchian && (
+                  <DiagnosticCard
+                    title="돈천 채널 (가격 채널)"
+                    label="돌파 매매 추세 확인 🚀"
+                    status="Neutral"
+                    desc="주가가 상단선을 돌파하면 강력한 상승 추세의 시작, 하단 이탈 시 하락 추세 시작으로 해석합니다."
+                    value={`Upper: ${formatMoney(techAnalysis.latestDonchianUpper)}`}
+                  />
+                )}
+
+                {/* Fallback empty state when all indicators are toggled off */}
+                {!showSma5 && !showSma20 && !showSma60 && !showSma120 && !showSma240 && !showBb && !showRsi && !showMacd && !showEnv && !showFib && !showDonchian && (
+                  <Card
+                    sx={{
+                      p: 4,
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      bgcolor: alpha(theme.palette.background.neutral || theme.palette.grey[200], 0.4),
+                      border: `1px dashed ${theme.palette.divider}`,
+                      borderRadius: 2,
+                    }}
+                  >
+                    <Typography variant="h3" sx={{ mb: 1.5 }}>
+                      💡
+                    </Typography>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 0.5 }}>
+                      활성화된 보조지표 진단이 없습니다
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', maxWidth: 240 }}>
+                      차트 종합 분석 지수 아래의 필터를 선택하여 차트 분석을 진행해 보세요!
+                    </Typography>
+                  </Card>
                 )}
               </Stack>
             </Grid>
@@ -704,59 +996,3 @@ export function ChartIndicatorsView() {
   );
 }
 
-// Inline Sub-Component for Diagnostic Card
-interface DiagnosticCardProps {
-  title: string;
-  label: string;
-  status: 'Bullish' | 'Bearish' | 'Neutral';
-  desc: string;
-  value: string;
-}
-
-function DiagnosticCard({ title, label, status, desc, value }: DiagnosticCardProps) {
-  const theme = useTheme();
-
-  const getStatusColor = () => {
-    if (status === 'Bullish') return theme.palette.success.main;
-    if (status === 'Bearish') return theme.palette.error.main;
-    return theme.palette.warning.main;
-  };
-
-  const activeColor = getStatusColor();
-
-  return (
-    <Card
-      sx={{
-        p: 2.5,
-        border: `1px solid ${theme.palette.divider}`,
-        transition: 'border-color 0.2s',
-        '&:hover': {
-          borderColor: activeColor,
-        },
-      }}
-    >
-      <Stack spacing={1.5}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 800 }}>
-            {title}
-          </Typography>
-          <Chip
-            label={value}
-            size="small"
-            variant="soft"
-            sx={{ fontWeight: 800, fontSize: '0.72rem' }}
-          />
-        </Stack>
-
-        <Box>
-          <Typography variant="subtitle2" sx={{ fontWeight: 800, color: activeColor, mb: 0.5 }}>
-            {label}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.82rem', lineHeight: 1.4 }}>
-            {desc}
-          </Typography>
-        </Box>
-      </Stack>
-    </Card>
-  );
-}
