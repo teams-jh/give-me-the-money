@@ -42,8 +42,7 @@ interface TechnicalDiagnosticsPanelProps {
   showEnv: boolean;
   showFib: boolean;
   showDonchian: boolean;
-  showSupport: boolean;
-  showResistance: boolean;
+  showAutoTrend: boolean;
   techAnalysis: TechAnalysisData;
   formatMoney: (val: number) => string;
 }
@@ -60,8 +59,7 @@ export function TechnicalDiagnosticsPanel({
   showEnv,
   showFib,
   showDonchian,
-  showSupport,
-  showResistance,
+  showAutoTrend,
   techAnalysis,
   formatMoney,
 }: TechnicalDiagnosticsPanelProps) {
@@ -179,8 +177,7 @@ export function TechnicalDiagnosticsPanel({
     showEnv ||
     showFib ||
     showDonchian ||
-    showSupport ||
-    showResistance;
+    showAutoTrend;
 
   return (
     <Grid size={{ xs: 12, lg: 4 }}>
@@ -255,24 +252,23 @@ export function TechnicalDiagnosticsPanel({
           />
         )}
 
-        {showSupport && (
-          <DiagnosticCard
-            title="지지선 (Support)"
-            label="매수 타점 및 반등 지지대 🟢"
-            status="Bullish"
-            desc="주가가 하락할 때 지지를 받아 더 이상 떨어지지 않고 지탱해 준 캔들 몸통 기준의 가격대입니다. 이 부근은 저점 매수 대기층이 강하게 작용하여 반등 기회로 작용합니다."
-            value={`최근 지지 가격: ${formatMoney(techAnalysis.latestSupport ?? 0)}`}
-          />
-        )}
-
-        {showResistance && (
-          <DiagnosticCard
-            title="저항선 (Resistance)"
-            label="매도 타점 및 차익 실현 저항대 🔴"
-            status="Bearish"
-            desc="주가가 상승할 때 매도세가 출현하여 돌파하지 못하고 꺾였던 캔들 몸통 기준의 고점 가격대입니다. 돌파하지 못할 경우 단기 고점(차익 실현) 기회로 고려됩니다."
-            value={`최근 저항 가격: ${formatMoney(techAnalysis.latestResistance ?? 0)}`}
-          />
+        {showAutoTrend && (
+          <>
+            <DiagnosticCard
+              title="실시간 자동 지지선 (Auto Support)"
+              label="매수 타점 및 반등 지지대 🟢"
+              status="Bullish"
+              desc="수학적 추세 채널 또는 피크 탐색 알고리즘을 기반으로 주가의 반등 지지층을 실시간으로 추정한 가격대입니다."
+              value={`지지 가격: ${formatMoney(techAnalysis.latestSupport ?? 0)}`}
+            />
+            <DiagnosticCard
+              title="실시간 자동 저항선 (Auto Resistance)"
+              label="매도 타점 및 차익 실현 저항대 🔴"
+              status="Bearish"
+              desc="수학적 추세 채널 또는 피크 탐색 알고리즘을 기반으로 주가의 차익 실현 대기 매도벽을 실시간으로 추정한 가격대입니다."
+              value={`저항 가격: ${formatMoney(techAnalysis.latestResistance ?? 0)}`}
+            />
+          </>
         )}
 
 

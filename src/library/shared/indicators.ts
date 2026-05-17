@@ -962,3 +962,158 @@ export function calcTrendlines(
 
   return result;
 }
+
+// ── 18. Auto Trendlines (자동 추세선 알고리즘 추가) ───────────────────────────
+
+/**
+ * 선형 회귀 채널 (Linear Regression Channel) 연산 함수.
+ * 종가 데이터를 바탕으로 최소자승법(Least Squares)을 통해 중심선 기울기를 구하고,
+ * 표준편차 배수를 적용해 평행한 상하한 저항/지지 채널을 도출합니다.
+ */
+export function calcLinearRegressionChannel(
+  prices: number[],
+  stdDevMultiplier: number = 2.0
+): SRPoint[] {
+  const n = prices.length;
+  const result: SRPoint[] = [];
+  if (n === 0) return result;
+
+  // 1. 선형 회귀식(y = mx + c) 도출을 위한 누적 합 계산
+  let sumX = 0;
+  let sumY = 0;
+  let sumXY = 0;
+  let sumXX = 0;
+
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += prices[i];
+    sumXY += i * prices[i];
+    sumXX += i * i;
+  }
+
+  const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX || 1);
+  const c = (sumY - m * sumX) / n;
+
+  // 2. 잔차 및 표준편차 산출
+  let sumResidualSquares = 0;
+  const midValues = [];
+
+  for (let i = 0; i < n; i++) {
+    const midVal = m * i + c;
+    midValues.push(midVal);
+    const residual = prices[i] - midVal;
+    sumResidualSquares += residual * residual;
+  }
+
+  const stdDev = Math.sqrt(sumResidualSquares / (n || 1));
+  const channelOffset = stdDevMultiplier * stdDev;
+
+  // 3. 지지선(하한 채널) 및 저항선(상한 채널) 생성
+  for (let i = 0; i < n; i++) {
+    result.push({
+      support: midValues[i] - channelOffset,
+      resistance: midValues[i] + channelOffset,
+    });
+  }
+
+  return result;
+}
+
+/**
+ * 지그재그(ZigZag) 기반 지지/저항선 연산 함수.
+ * 주가가 직전 고점/저점 대비 설정 비율(%) 이상 반전할 때만 꼭짓점을 잡은 후,
+ * 최근에 잡힌 두 스윙 고점/저점을 각각 연결하여 추세 지지/저항선을 형성합니다.
+ */
+export function calcZigZagSupportResistance(
+  highs: number[],
+  lows: number[],
+  closes: number[],
+  opens: number[],
+  reversalPercent: number = 3
+): SRPoint[] {
+  const n = highs.length;
+  const result: SRPoint[] = [];
+  if (n === 0) return result;
+
+  const bodyHighs = closes.map((c, i) => Math.max(c, opens[i] ?? c));
+  const bodyLows = closes.map((c, i) => Math.min(c, opens[i] ?? c));
+
+  const threshold = reversalPercent / 100;
+  const zzPeaks: { idx: number; val: number }[] = [];
+  const zzTroughs: { idx: number; val: number }[] = [];
+
+  let lastVal = closes[0];
+  let lastIdx = 0;
+  let dir: 'up' | 'down' | null = null;
+
+  for (let i = 1; i < n; i++) {
+    const change = (closes[i] - lastVal) / lastVal;
+    if (dir === null) {
+      if (change >= threshold) {
+        dir = 'up';
+        lastVal = closes[i];
+        lastIdx = i;
+      } else if (change <= -threshold) {
+        dir = 'down';
+        lastVal = closes[i];
+        lastIdx = i;
+      }
+    } else if (dir === 'up') {
+      if (closes[i] > lastVal) {
+        lastVal = closes[i];
+        lastIdx = i;
+      } else if (change <= -threshold) {
+        zzPeaks.push({ idx: lastIdx, val: bodyHighs[lastIdx] });
+        dir = 'down';
+        lastVal = closes[i];
+        lastIdx = i;
+      }
+    } else if (dir === 'down') {
+      if (closes[i] < lastVal) {
+        lastVal = closes[i];
+        lastIdx = i;
+      } else if (change >= threshold) {
+        zzTroughs.push({ idx: lastIdx, val: bodyLows[lastIdx] });
+        dir = 'up';
+        lastVal = closes[i];
+        lastIdx = i;
+      }
+    }
+  }
+
+  if (dir === 'up') {
+    zzPeaks.push({ idx: lastIdx, val: bodyHighs[lastIdx] });
+  } else if (dir === 'down') {
+    zzTroughs.push({ idx: lastIdx, val: bodyLows[lastIdx] });
+  }
+
+  if (zzPeaks.length < 2) {
+    zzPeaks.push({ idx: 0, val: bodyHighs[0] });
+    zzPeaks.push({ idx: Math.max(0, n - 1), val: bodyHighs[Math.max(0, n - 1)] });
+  }
+  if (zzTroughs.length < 2) {
+    zzTroughs.push({ idx: 0, val: bodyLows[0] });
+    zzTroughs.push({ idx: Math.max(0, n - 1), val: bodyLows[Math.max(0, n - 1)] });
+  }
+
+  const p2 = zzPeaks[zzPeaks.length - 1];
+  const p1 = zzPeaks[zzPeaks.length - 2] || p2;
+
+  const t2 = zzTroughs[zzTroughs.length - 1];
+  const t1 = zzTroughs[zzTroughs.length - 2] || t2;
+
+  const mResistance = (p2.val - p1.val) / (p2.idx - p1.idx || 1);
+  const cResistance = p1.val - mResistance * p1.idx;
+
+  const mSupport = (t2.val - t1.val) / (t2.idx - t1.idx || 1);
+  const cSupport = t1.val - mSupport * t1.idx;
+
+  for (let i = 0; i < n; i++) {
+    result.push({
+      support: mSupport * i + cSupport,
+      resistance: mResistance * i + cResistance,
+    });
+  }
+
+  return result;
+}

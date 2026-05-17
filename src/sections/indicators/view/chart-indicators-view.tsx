@@ -5,6 +5,8 @@ import type { PeriodKey } from 'src/sections/top100/types';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -16,6 +18,7 @@ import {
   calcMA, calcRSI, calcMACD,
   calcEnvelope, calcBollingerBands,
   calcDonchianChannels, calcSupportResistance,
+  calcLinearRegressionChannel, calcZigZagSupportResistance,
 } from 'src/library/shared/indicators';
 
 import { MarketPeriodSelector } from 'src/components/market-period-selector';
@@ -65,8 +68,12 @@ export function ChartIndicatorsView() {
   const [showEnv, setShowEnv] = useState(false);
   const [showFib, setShowFib] = useState(false);
   const [showDonchian, setShowDonchian] = useState(false);
-  const [showSupport, setShowSupport] = useState(false);
-  const [showResistance, setShowResistance] = useState(false);
+  // Auto Trendlines option states
+  const [showAutoTrend, setShowAutoTrend] = useState(false);
+  const [trendBase, setTrendBase] = useState<'highlow' | 'close' | 'open'>('highlow');
+  const [trendAlgo, setTrendAlgo] = useState<'swing' | 'zigzag' | 'regression'>('swing');
+  const [zigzagThreshold, setZigzagThreshold] = useState<number>(3);
+  const [regressionStdDev, setRegressionStdDev] = useState<number>(2.0);
 
   // Dynamic visible chart range (for highest/lowest calculations on zoom)
   const [visibleRange, setVisibleRange] = useState<{ min: number; max: number } | null>(null);
@@ -387,7 +394,22 @@ export function ChartIndicatorsView() {
     const visCloses = visibleIndices.map(i => closePrices[i]);
     const visOpens = visibleIndices.map(i => openPrices[i] || closePrices[i]);
 
-    const srRaw = calcSupportResistance(visHighs, visLows, visCloses, visOpens);
+    // Apply selected price base
+    const currentHighs = trendBase === 'close' ? visCloses : (trendBase === 'open' ? visOpens : visHighs);
+    const currentLows = trendBase === 'close' ? visCloses : (trendBase === 'open' ? visOpens : visLows);
+    const currentCloses = trendBase === 'close' ? visCloses : (trendBase === 'open' ? visOpens : visCloses);
+    const currentOpens = trendBase === 'close' ? visCloses : (trendBase === 'open' ? visOpens : visOpens);
+
+    let srRaw: { support: number | null; resistance: number | null }[] = [];
+
+    if (trendAlgo === 'regression') {
+      srRaw = calcLinearRegressionChannel(currentCloses, regressionStdDev);
+    } else if (trendAlgo === 'zigzag') {
+      srRaw = calcZigZagSupportResistance(currentHighs, currentLows, currentCloses, currentOpens, zigzagThreshold);
+    } else {
+      // Default: swing
+      srRaw = calcSupportResistance(currentHighs, currentLows, currentCloses, currentOpens);
+    }
 
     const supportData = srRaw.map((pt, idx) => ({
       x: new Date(dates[visibleIndices[idx]]).getTime(),
@@ -405,7 +427,7 @@ export function ChartIndicatorsView() {
       latestSupport: srRaw[srRaw.length - 1]?.support ?? null,
       latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
     };
-  }, [activeStockDataSlice, visibleHighLow]);
+  }, [activeStockDataSlice, visibleHighLow, trendBase, trendAlgo, zigzagThreshold, regressionStdDev]);
 
   // Chart configuration for selected ticker
   const chartData = useMemo(() => {
@@ -531,20 +553,18 @@ export function ChartIndicatorsView() {
       colors.push(theme.palette.info.light); widths.push(1); dashes.push(0);
     }
 
-    if (showSupport && dynamicLines) {
+    if (showAutoTrend && dynamicLines) {
       series.push({
-        name: '지지선 (Support)',
+        name: '자동 지지선 (Support)',
         type: 'line',
         data: dynamicLines.supportData,
       });
       colors.push(theme.palette.success.main);
       widths.push(2);
       dashes.push(4);
-    }
 
-    if (showResistance && dynamicLines) {
       series.push({
-        name: '저항선 (Resistance)',
+        name: '자동 저항선 (Resistance)',
         type: 'line',
         data: dynamicLines.resistanceData,
       });
@@ -562,7 +582,7 @@ export function ChartIndicatorsView() {
         dashArray: dashes,
       },
     };
-  }, [activeStockDataSlice, techAnalysis, dynamicLines, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, showSupport, showResistance, theme]);
+  }, [activeStockDataSlice, techAnalysis, dynamicLines, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, showAutoTrend, theme]);
 
   const formatMoney = useCallback((val: number) => {
     if (market === 'US') {
@@ -859,11 +879,143 @@ export function ChartIndicatorsView() {
               setShowRsi={setShowRsi}
               showMacd={showMacd}
               setShowMacd={setShowMacd}
-              showSupport={showSupport}
-              setShowSupport={setShowSupport}
-              showResistance={showResistance}
-              setShowResistance={setShowResistance}
             />
+
+            {/* 📈 자동 추세선 (Auto Trendline) 전용 컨트롤러 카드 */}
+            <Grid size={{ xs: 12 }}>
+              <Card
+                sx={{
+                  p: 3,
+                  boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}`,
+                  border: `1px solid ${theme.palette.divider}`,
+                  borderRadius: 2,
+                  background: `linear-gradient(135deg, ${alpha(theme.palette.background.paper, 0.9)} 0%, ${alpha(theme.palette.background.neutral || theme.palette.grey[100], 0.8)} 100%)`,
+                }}
+              >
+                <Stack spacing={3}>
+                  {/* Header & Main Toggle */}
+                  <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems="center" spacing={2}>
+                    <Box>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
+                        ✨ 실시간 자동 추세선 설정 (Auto Trendline Controller)
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        화면에 노출된 캔들 범위 내에서 수학적 알고리즘을 통해 자동으로 최적의 지지선(Support)과 저항선(Resistance)을 실시간 작도합니다.
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Chip
+                        label={showAutoTrend ? "자동 추세선 ON" : "자동 추세선 OFF"}
+                        color={showAutoTrend ? "primary" : "default"}
+                        onClick={() => setShowAutoTrend(!showAutoTrend)}
+                        sx={{ fontWeight: 800, px: 2, py: 2.2, fontSize: '0.9rem', cursor: 'pointer', borderRadius: 1.5 }}
+                      />
+                    </Box>
+                  </Stack>
+
+                  {showAutoTrend && (
+                    <Grid container spacing={3}>
+                      {/* 1. 기준 가격 선택 */}
+                      <Grid size={{ xs: 12, md: 4 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                          🎯 분석 기준 가격 (Price Base)
+                        </Typography>
+                        <Stack direction="row" spacing={1}>
+                          {(['highlow', 'close', 'open'] as const).map((base) => {
+                            const labelMap = { highlow: '고점/저점', close: '종가 기준', open: '시가 기준' };
+                            const isActive = trendBase === base;
+                            return (
+                              <Chip
+                                key={base}
+                                label={labelMap[base]}
+                                color={isActive ? "primary" : "default"}
+                                variant={isActive ? "filled" : "outlined"}
+                                onClick={() => setTrendBase(base)}
+                                sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
+                              />
+                            );
+                          })}
+                        </Stack>
+                      </Grid>
+
+                      {/* 2. 알고리즘 선택 */}
+                      <Grid size={{ xs: 12, md: 5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                          ⚙️ 추세 분석 알고리즘 (Algorithm)
+                        </Typography>
+                        <Stack direction="row" spacing={1}>
+                          {(['swing', 'zigzag', 'regression'] as const).map((algo) => {
+                            const labelMap = { swing: '스윙 극점 연결', zigzag: '지그재그 반전', regression: '선형회귀 채널' };
+                            const isActive = trendAlgo === algo;
+                            return (
+                              <Chip
+                                key={algo}
+                                label={labelMap[algo]}
+                                color={isActive ? "warning" : "default"}
+                                variant={isActive ? "filled" : "outlined"}
+                                onClick={() => setTrendAlgo(algo)}
+                                sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
+                              />
+                            );
+                          })}
+                        </Stack>
+                      </Grid>
+
+                      {/* 3. 알고리즘 상세 파라미터 튜닝 */}
+                      <Grid size={{ xs: 12, md: 3 }}>
+                        {trendAlgo === 'zigzag' && (
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                              ⚡ 지그재그 반전 비율: <span style={{ color: theme.palette.warning.main }}>{zigzagThreshold}%</span>
+                            </Typography>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <input
+                                type="range"
+                                min="1"
+                                max="10"
+                                value={zigzagThreshold}
+                                onChange={(e) => setZigzagThreshold(Number(e.target.value))}
+                                style={{ width: '100%', cursor: 'pointer', accentColor: theme.palette.warning.main }}
+                              />
+                            </Stack>
+                          </Box>
+                        )}
+
+                        {trendAlgo === 'regression' && (
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                              ⚡ 표준편차 채널 배수: <span style={{ color: theme.palette.warning.main }}>{regressionStdDev.toFixed(1)}x</span>
+                            </Typography>
+                            <Stack direction="row" spacing={1} alignItems="center">
+                              <input
+                                type="range"
+                                min="1.0"
+                                max="3.0"
+                                step="0.1"
+                                value={regressionStdDev}
+                                onChange={(e) => setRegressionStdDev(Number(e.target.value))}
+                                style={{ width: '100%', cursor: 'pointer', accentColor: theme.palette.warning.main }}
+                              />
+                            </Stack>
+                          </Box>
+                        )}
+
+                        {trendAlgo === 'swing' && (
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.primary', mb: 0.5 }}>
+                              ⚡ 스윙 극점 필터링
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                              화면 내 스윙 고점과 저점 상위극점을 연결하여 안정적인 수평 채널을 확인합니다.
+                            </Typography>
+                          </Box>
+                        )}
+                      </Grid>
+                    </Grid>
+                  )}
+                </Stack>
+              </Card>
+            </Grid>
 
             {/* Apex Technical Chart (Left 8 Columns) */}
             <TechnicalApexChart
@@ -886,8 +1038,7 @@ export function ChartIndicatorsView() {
               showEnv={showEnv}
               showFib={showFib}
               showDonchian={showDonchian}
-              showSupport={showSupport}
-              showResistance={showResistance}
+              showAutoTrend={showAutoTrend}
               techAnalysis={{
                 ...techAnalysis,
                 latestSupport: dynamicLines?.latestSupport ?? techAnalysis.latestSupport,
