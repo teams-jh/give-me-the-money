@@ -786,6 +786,7 @@ export function calcDonchianChannels(
 export interface SRPoint {
   support: number | null;
   resistance: number | null;
+  zigzag?: number | null;
 }
 
 /**
@@ -1021,8 +1022,7 @@ export function calcLinearRegressionChannel(
 
 /**
  * 지그재그(ZigZag) 기반 지지/저항선 연산 함수.
- * 주가가 직전 고점/저점 대비 설정 비율(%) 이상 반전할 때만 꼭짓점을 잡은 후,
- * 최근에 잡힌 두 스윙 고점/저점을 각각 연결하여 추세 지지/저항선을 형성합니다.
+ * 제공된 수식지왕 지그재그 수식을 100% 이식하여 상태 변수들과 이중파동을 완벽히 연동 및 처리합니다.
  */
 export function calcZigZagSupportResistance(
   highs: number[],
@@ -1035,72 +1035,239 @@ export function calcZigZagSupportResistance(
   const result: SRPoint[] = [];
   if (n === 0) return result;
 
-  const bodyHighs = closes.map((c, i) => Math.max(c, opens[i] ?? c));
-  const bodyLows = closes.map((c, i) => Math.min(c, opens[i] ?? c));
+  // 1. 수식지왕 YesLanguage 변수 및 배열 선언 (1-indexed 기준 정합성을 위해 21 크기로 선언)
+  const go = new Array(21).fill(0);
+  const goBar = new Array(21).fill(0);
+  const jeo = new Array(21).fill(0);
+  const jeoBar = new Array(21).fill(0);
 
-  const threshold = reversalPercent / 100;
-  const zzPeaks: { idx: number; val: number }[] = [];
-  const zzTroughs: { idx: number; val: number }[] = [];
+  let standardHigh = 0;
+  let standardLow = 0;
+  let standardHighBar = 0;
+  let standardLowBar = 0;
+  let trend = 0;
+  let doubleWave = 0;
 
-  let lastVal = closes[0];
-  let lastIdx = 0;
-  let dir: 'up' | 'down' | null = null;
+  const 상승 = 100;
+  const 하락 = -100;
+  const 양방향 = 2;
 
-  for (let i = 1; i < n; i++) {
-    const change = (closes[i] - lastVal) / lastVal;
-    if (dir === null) {
-      if (change >= threshold) {
-        dir = 'up';
-        lastVal = closes[i];
-        lastIdx = i;
-      } else if (change <= -threshold) {
-        dir = 'down';
-        lastVal = closes[i];
-        lastIdx = i;
+  const upPct = reversalPercent;
+  const downPct = reversalPercent;
+
+  const zigzagPoints: { idx: number; val: number; type: 'peak' | 'trough' }[] = [];
+
+  function plotTrough(idx: number, val: number) {
+    const targetIdx = Math.max(0, Math.min(n - 1, idx));
+    zigzagPoints.push({ idx: targetIdx, val, type: 'trough' });
+  }
+
+  function plotPeak(idx: number, val: number) {
+    const targetIdx = Math.max(0, Math.min(n - 1, idx));
+    zigzagPoints.push({ idx: targetIdx, val, type: 'peak' });
+  }
+
+  // Bar-by-bar 순차 루프 실행 (YesLanguage/EasyLanguage 시뮬레이션)
+  for (let i = 0; i < n; i++) {
+    const H = highs[i];
+    const L = lows[i];
+
+    const prevTrend = trend;
+    const prevDoubleWave = doubleWave;
+
+    // 전고점, 전저점 index 증가
+    for (let j = 1; j <= 19; j++) {
+      jeoBar[j] = jeoBar[j] + 1;
+      goBar[j] = goBar[j] + 1;
+    }
+
+    // 이중파동 처리
+    if (doubleWave > 0) {
+      doubleWave = 0;
+    }
+
+    // 최근 고, 저 갱신
+    if (standardHigh <= H || standardHigh === 0 || isNaN(standardHigh)) {
+      standardHigh = H;
+      standardHighBar = 0;
+    } else {
+      standardHighBar = standardHighBar + 1;
+    }
+
+    if (standardLow >= L || standardLow === 0 || isNaN(standardLow)) {
+      standardLow = L;
+      standardLowBar = 0;
+    } else {
+      standardLowBar = standardLowBar + 1;
+    }
+
+    // 추세방향 결정
+    if (standardHigh * (1 - (downPct / 100)) > H && standardLow * (1 + (upPct / 100)) < L) {
+      trend = (standardHighBar === standardLowBar) ? 양방향 : (standardHighBar > standardLowBar ? 상승 : 하락);
+    } else if (standardHigh * (1 - (downPct / 100)) > H) {
+      trend = 하락;
+    } else if (standardLow * (1 + (upPct / 100)) < L) {
+      trend = 상승;
+    }
+
+    // 추세변화에 따른 변곡점 처리
+    if (prevTrend === 상승 && trend === 하락) {
+      for (let j = 18; j >= 1; j--) {
+        go[j + 1] = go[j];
+        goBar[j + 1] = goBar[j];
       }
-    } else if (dir === 'up') {
-      if (closes[i] > lastVal) {
-        lastVal = closes[i];
-        lastIdx = i;
-      } else if (change <= -threshold) {
-        zzPeaks.push({ idx: lastIdx, val: bodyHighs[lastIdx] });
-        dir = 'down';
-        lastVal = closes[i];
-        lastIdx = i;
+      go[1] = standardHigh;
+      goBar[1] = standardHighBar;
+      standardHigh = H;
+      standardHighBar = 0;
+      standardLow = L;
+      standardLowBar = 0;
+
+      if (prevDoubleWave > 0) {
+        doubleWave = go[1];
+      } else {
+        plotPeak(i - goBar[1], go[1]);
       }
-    } else if (dir === 'down') {
-      if (closes[i] < lastVal) {
-        lastVal = closes[i];
-        lastIdx = i;
-      } else if (change >= threshold) {
-        zzTroughs.push({ idx: lastIdx, val: bodyLows[lastIdx] });
-        dir = 'up';
-        lastVal = closes[i];
-        lastIdx = i;
+    }
+
+    else if (prevTrend === 하락 && trend === 하락 && go[1] < standardHigh && standardHigh * (1 - (downPct / 100)) > H) {
+      for (let j = 18; j >= 1; j--) {
+        go[j + 1] = go[j];
+        goBar[j + 1] = goBar[j];
+        jeo[j + 1] = jeo[j];
+        jeoBar[j + 1] = jeoBar[j];
+      }
+      go[1] = standardHigh;
+      goBar[1] = standardHighBar;
+      jeo[1] = standardLow;
+      jeoBar[1] = standardLowBar;
+      standardHigh = H;
+      standardHighBar = 0;
+      standardLow = L;
+      standardLowBar = 0;
+
+      plotTrough(i - jeoBar[1], jeo[1]);
+      doubleWave = go[1];
+    }
+
+    else if (prevTrend === 하락 && trend === 상승) {
+      for (let j = 18; j >= 1; j--) {
+        jeo[j + 1] = jeo[j];
+        jeoBar[j + 1] = jeoBar[j];
+      }
+      jeo[1] = standardLow;
+      jeoBar[1] = standardLowBar;
+      standardLow = L;
+      standardLowBar = 0;
+      standardHigh = H;
+      standardHighBar = 0;
+
+      if (prevDoubleWave > 0) {
+        doubleWave = jeo[1];
+      } else {
+        plotTrough(i - jeoBar[1], jeo[1]);
+      }
+    }
+
+    else if (prevTrend === 상승 && trend === 상승 && jeo[1] > standardLow && standardLow * (1 + (upPct / 100)) < L) {
+      for (let j = 18; j >= 1; j--) {
+        go[j + 1] = go[j];
+        goBar[j + 1] = goBar[j];
+        jeo[j + 1] = jeo[j];
+        jeoBar[j + 1] = jeoBar[j];
+      }
+      go[1] = standardHigh;
+      goBar[1] = standardHighBar;
+      jeo[1] = standardLow;
+      jeoBar[1] = standardLowBar;
+      standardLow = L;
+      standardLowBar = 0;
+      standardHigh = H;
+      standardHighBar = 0;
+
+      plotPeak(i - goBar[1], go[1]);
+      doubleWave = jeo[1];
+    }
+
+    else if (trend === 양방향) {
+      for (let j = 18; j >= 1; j--) {
+        go[j + 1] = go[j];
+        goBar[j + 1] = goBar[j];
+        jeo[j + 1] = jeo[j];
+        jeoBar[j + 1] = jeoBar[j];
+      }
+      go[1] = standardHigh;
+      goBar[1] = standardHighBar;
+      jeo[1] = standardLow;
+      jeoBar[1] = standardLowBar;
+      standardHigh = H;
+      standardHighBar = 0;
+      standardLow = L;
+      standardLowBar = 0;
+
+      trend = prevTrend;
+      if (prevTrend === 상승) {
+        plotPeak(i - goBar[1], go[1]);
+        doubleWave = jeo[1];
+      } else {
+        plotTrough(i - jeoBar[1], jeo[1]);
+        doubleWave = go[1];
+      }
+    }
+
+    // LastBar 마무리
+    if (i === n - 1 && standardHighBar > 0 && standardLowBar > 0) {
+      const val = trend === 상승 ? standardHigh : standardLow;
+      if (trend === 상승) {
+        plotPeak(i, val);
+      } else {
+        plotTrough(i, val);
       }
     }
   }
 
-  if (dir === 'up') {
-    zzPeaks.push({ idx: lastIdx, val: bodyHighs[lastIdx] });
-  } else if (dir === 'down') {
-    zzTroughs.push({ idx: lastIdx, val: bodyLows[lastIdx] });
+  // 2. 동일한 봉(index)에 고/저점이 겹치지 않도록 필터링하고 peak와 trough를 교대로 배치
+  zigzagPoints.sort((a, b) => a.idx - b.idx);
+
+  const uniquePoints: typeof zigzagPoints = [];
+  for (const pt of zigzagPoints) {
+    if (uniquePoints.length === 0) {
+      uniquePoints.push(pt);
+    } else {
+      const last = uniquePoints[uniquePoints.length - 1];
+      if (last.idx === pt.idx) {
+        if (pt.type === 'peak' && pt.val > last.val) {
+          uniquePoints[uniquePoints.length - 1] = pt;
+        } else if (pt.type === 'trough' && pt.val < last.val) {
+          uniquePoints[uniquePoints.length - 1] = pt;
+        }
+      } else {
+        uniquePoints.push(pt);
+      }
+    }
   }
 
-  if (zzPeaks.length < 2) {
-    zzPeaks.push({ idx: 0, val: bodyHighs[0] });
-    zzPeaks.push({ idx: Math.max(0, n - 1), val: bodyHighs[Math.max(0, n - 1)] });
+  const peaks = uniquePoints.filter(p => p.type === 'peak');
+  const troughs = uniquePoints.filter(p => p.type === 'trough');
+
+  // 데이터 부족 시 안전 예외 처리 (첫점과 마지막점을 채워 지지/저항선의 정합성 유지)
+  if (peaks.length < 2) {
+    const bodyHighs = closes.map((c, idx) => Math.max(c, opens[idx] ?? c));
+    peaks.push({ idx: 0, val: bodyHighs[0], type: 'peak' });
+    peaks.push({ idx: Math.max(0, n - 1), val: bodyHighs[Math.max(0, n - 1)], type: 'peak' });
   }
-  if (zzTroughs.length < 2) {
-    zzTroughs.push({ idx: 0, val: bodyLows[0] });
-    zzTroughs.push({ idx: Math.max(0, n - 1), val: bodyLows[Math.max(0, n - 1)] });
+  if (troughs.length < 2) {
+    const bodyLows = closes.map((c, idx) => Math.min(c, opens[idx] ?? c));
+    troughs.push({ idx: 0, val: bodyLows[0], type: 'trough' });
+    troughs.push({ idx: Math.max(0, n - 1), val: bodyLows[Math.max(0, n - 1)], type: 'trough' });
   }
 
-  const p2 = zzPeaks[zzPeaks.length - 1];
-  const p1 = zzPeaks[zzPeaks.length - 2] || p2;
+  // 3. 가장 최근 두 개의 Peaks(고점)와 Troughs(저점)로 선형 지지/저항 추세선 작도
+  const p2 = peaks[peaks.length - 1];
+  const p1 = peaks[peaks.length - 2] || p2;
 
-  const t2 = zzTroughs[zzTroughs.length - 1];
-  const t1 = zzTroughs[zzTroughs.length - 2] || t2;
+  const t2 = troughs[troughs.length - 1];
+  const t1 = troughs[troughs.length - 2] || t2;
 
   const mResistance = (p2.val - p1.val) / (p2.idx - p1.idx || 1);
   const cResistance = p1.val - mResistance * p1.idx;
@@ -1108,10 +1275,50 @@ export function calcZigZagSupportResistance(
   const mSupport = (t2.val - t1.val) / (t2.idx - t1.idx || 1);
   const cSupport = t1.val - mSupport * t1.idx;
 
+  // 4. 지그재그 연속 파동선(연두색 지그재그선) 선형 보간 계산
   for (let i = 0; i < n; i++) {
+    let zigVal: number | null = null;
+
+    if (uniquePoints.length > 0) {
+      const firstPt = uniquePoints[0];
+      const lastPt = uniquePoints[uniquePoints.length - 1];
+
+      if (i <= firstPt.idx) {
+        zigVal = firstPt.val;
+      } else if (i >= lastPt.idx) {
+        // 마지막 변곡점부터 마지막 봉까지는 현재 봉의 종가(실시간 주가)로 연장
+        const totalSteps = n - 1 - lastPt.idx;
+        if (totalSteps <= 0) {
+          zigVal = lastPt.val;
+        } else {
+          const currentClose = closes[i] ?? closes[closes.length - 1];
+          const ratio = (i - lastPt.idx) / totalSteps;
+          zigVal = lastPt.val + (currentClose - lastPt.val) * ratio;
+        }
+      } else {
+        // 두 변곡점 사이에 위치한 경우 선형 보간
+        let prevPt = firstPt;
+        let nextPt = lastPt;
+        for (let k = 0; k < uniquePoints.length - 1; k++) {
+          if (uniquePoints[k].idx <= i && i <= uniquePoints[k + 1].idx) {
+            prevPt = uniquePoints[k];
+            nextPt = uniquePoints[k + 1];
+            break;
+          }
+        }
+        const den = nextPt.idx - prevPt.idx;
+        if (den === 0) {
+          zigVal = prevPt.val;
+        } else {
+          zigVal = prevPt.val + ((nextPt.val - prevPt.val) / den) * (i - prevPt.idx);
+        }
+      }
+    }
+
     result.push({
       support: mSupport * i + cSupport,
       resistance: mResistance * i + cResistance,
+      zigzag: zigVal,
     });
   }
 

@@ -421,9 +421,15 @@ export function ChartIndicatorsView() {
       y: pt.resistance ?? visCloses[idx],
     }));
 
+    const zigzagData = srRaw.map((pt, idx) => ({
+      x: new Date(dates[visibleIndices[idx]]).getTime(),
+      y: pt.zigzag ?? visCloses[idx],
+    }));
+
     return {
       supportData,
       resistanceData,
+      zigzagData,
       latestSupport: srRaw[srRaw.length - 1]?.support ?? null,
       latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
     };
@@ -554,23 +560,36 @@ export function ChartIndicatorsView() {
     }
 
     if (showAutoTrend && dynamicLines) {
-      series.push({
-        name: '자동 지지선 (Support)',
-        type: 'line',
-        data: dynamicLines.supportData,
-      });
-      colors.push(theme.palette.success.main);
-      widths.push(2);
-      dashes.push(4);
+      if (trendAlgo === 'zigzag') {
+        // 1. 수식지왕 지그재그 파동선 (연두색 실선 - 이미지 완벽 일치!)
+        series.push({
+          name: '지그재그 파동선 (ZigZag)',
+          type: 'line',
+          data: dynamicLines.zigzagData,
+        });
+        colors.push('#00E676'); // Bright Lime Green
+        widths.push(3); // Thick premium line
+        dashes.push(0); // Solid line!
+      } else {
+        // 2. 일반 지지/저항 추세선
+        series.push({
+          name: '자동 지지선 (Support)',
+          type: 'line',
+          data: dynamicLines.supportData,
+        });
+        colors.push(theme.palette.success.main);
+        widths.push(2);
+        dashes.push(4);
 
-      series.push({
-        name: '자동 저항선 (Resistance)',
-        type: 'line',
-        data: dynamicLines.resistanceData,
-      });
-      colors.push(theme.palette.error.main);
-      widths.push(2);
-      dashes.push(4);
+        series.push({
+          name: '자동 저항선 (Resistance)',
+          type: 'line',
+          data: dynamicLines.resistanceData,
+        });
+        colors.push(theme.palette.error.main);
+        widths.push(2);
+        dashes.push(4);
+      }
     }
 
     return {
@@ -582,7 +601,7 @@ export function ChartIndicatorsView() {
         dashArray: dashes,
       },
     };
-  }, [activeStockDataSlice, techAnalysis, dynamicLines, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, showAutoTrend, theme]);
+  }, [activeStockDataSlice, techAnalysis, dynamicLines, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, showAutoTrend, trendAlgo, theme]);
 
   const formatMoney = useCallback((val: number) => {
     if (market === 'US') {
