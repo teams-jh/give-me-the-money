@@ -9,8 +9,8 @@
  *   - --force 플래그로 강제 재다운로드 가능
  *
  * 실행:
- *   npx tsx server_node/scripts/update_fx_rate.ts
- *   npx tsx server_node/scripts/update_fx_rate.ts --force
+ *   npx tsx scripts/fetch/update_fx_rate.ts
+ *   npx tsx scripts/fetch/update_fx_rate.ts --force
  */
 
 import fs   from "fs";

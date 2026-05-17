@@ -7,7 +7,7 @@
  *   3. src/db/russell1000_tickers.json 저장
  *
  * 실행:
- *   npx tsx server_node/scripts/update_russell1000.ts
+ *   npx tsx scripts/fetch/update_russell1000.ts
  */
 
 import fs   from "fs";

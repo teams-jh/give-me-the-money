@@ -16,7 +16,7 @@
  * 파싱 구조 참고: https://github.com/Junghyun99/ticker-map
  *
  * 실행:
- *   npx tsx server_node/scripts/update_kr_stock.ts
+ *   npx tsx scripts/fetch/update_kr_stock.ts
  */
 
 import fs    from "fs";

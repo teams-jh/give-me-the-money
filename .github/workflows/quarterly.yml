@@ -53,11 +53,11 @@ jobs:
 
       - name: Update KR stock tickers (KOSPI300 + KOSDAQ200)
         working-directory: server_node
-        run: npx tsx scripts/update_kr_stock.ts
+        run: npx tsx scripts/fetch/update_kr_stock.ts
 
       - name: Merge KR tickers
         working-directory: server_node
-        run: npx tsx scripts/merge_kr_tickers.ts
+        run: npx tsx scripts/merge/merge_kr_tickers.ts
 
       - name: Check for changes
         id: check
@@ -117,11 +117,11 @@ jobs:
 
       - name: Update Top 1000 US (시총 기준)
         working-directory: server_node
-        run: npx tsx scripts/update_top1000_us.ts
+        run: npx tsx scripts/fetch/update_top1000_us.ts
 
       - name: Merge US tickers
         working-directory: server_node
-        run: npx tsx scripts/merge_us_tickers.ts
+        run: npx tsx scripts/merge/merge_us_tickers.ts
 
       - name: Check for changes
         id: check
