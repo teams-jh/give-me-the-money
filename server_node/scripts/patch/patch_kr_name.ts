@@ -5,7 +5,7 @@
  * 기존 kr_tickers/*.json 파일에 info.kr_name 필드를 추가한다.
  *
  * 실행:
- *   npx tsx server_node/scripts/patch_kr_name.ts
+ *   npx tsx scripts/patch/patch_kr_name.ts
  */
 
 import fs   from "fs";

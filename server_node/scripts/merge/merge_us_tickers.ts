@@ -5,7 +5,7 @@
  * 출력: src/db/metadata/all_us_tickers.json
  *
  * 실행:
- *   npx tsx server_node/scripts/merge_us_tickers.ts
+ *   npx tsx scripts/merge/merge_us_tickers.ts
  */
 
 import path from "path";

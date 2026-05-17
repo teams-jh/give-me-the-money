@@ -8,7 +8,7 @@
  *   4. src/db/metadata/top1000_us_tickers.json 저장
  *
  * 실행:
- *   npx tsx server_node/scripts/update_top1000_us.ts
+ *   npx tsx scripts/fetch/update_top1000_us.ts
  */
 
 import fs   from "fs";
