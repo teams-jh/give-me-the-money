@@ -70,7 +70,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: KR 일간 업데이트 (${TIMESTAMP})"
-            git pull --rebase
+            git pull --rebase --autostash
             git push
           fi
 
@@ -118,7 +118,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git pull --rebase   # KR 커밋 반영
+          git pull --rebase --autostash   # KR 커밋 반영
 
           git add src/db/us_tickers/ \
                   src/db/us_signals/ \
@@ -129,7 +129,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: US 일간 업데이트 (${TIMESTAMP})"
-            git pull --rebase
+            git pull --rebase --autostash
             git push
           fi
 
