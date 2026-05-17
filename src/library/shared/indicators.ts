@@ -1275,42 +1275,21 @@ export function calcZigZagSupportResistance(
   const mSupport = (t2.val - t1.val) / (t2.idx - t1.idx || 1);
   const cSupport = t1.val - mSupport * t1.idx;
 
-  // 4. 지그재그 연속 파동선(연두색 지그재그선) 선형 보간 계산
+  // 4. 지그재그 연속 파동선(연두색 지그재그선) 매핑
+  // 보간을 제거하고 실제 변곡점(Peak, Trough)과 현재 실시간 주가(마지막 인덱스)에만 값을 할당합니다.
+  // 이렇게 해야 datetime X축 상에서 휴일이 생략되어도 ApexCharts가 두 점 사이를 완벽한 수학적 직선으로 잇게 됩니다.
   for (let i = 0; i < n; i++) {
     let zigVal: number | null = null;
 
     if (uniquePoints.length > 0) {
-      const firstPt = uniquePoints[0];
-      const lastPt = uniquePoints[uniquePoints.length - 1];
-
-      if (i <= firstPt.idx) {
-        zigVal = firstPt.val;
-      } else if (i >= lastPt.idx) {
+      const pt = uniquePoints.find((p) => p.idx === i);
+      if (pt) {
+        zigVal = pt.val;
+      } else if (i === n - 1) {
         // 마지막 변곡점부터 마지막 봉까지는 현재 봉의 종가(실시간 주가)로 연장
-        const totalSteps = n - 1 - lastPt.idx;
-        if (totalSteps <= 0) {
-          zigVal = lastPt.val;
-        } else {
-          const currentClose = closes[i] ?? closes[closes.length - 1];
-          const ratio = (i - lastPt.idx) / totalSteps;
-          zigVal = lastPt.val + (currentClose - lastPt.val) * ratio;
-        }
-      } else {
-        // 두 변곡점 사이에 위치한 경우 선형 보간
-        let prevPt = firstPt;
-        let nextPt = lastPt;
-        for (let k = 0; k < uniquePoints.length - 1; k++) {
-          if (uniquePoints[k].idx <= i && i <= uniquePoints[k + 1].idx) {
-            prevPt = uniquePoints[k];
-            nextPt = uniquePoints[k + 1];
-            break;
-          }
-        }
-        const den = nextPt.idx - prevPt.idx;
-        if (den === 0) {
-          zigVal = prevPt.val;
-        } else {
-          zigVal = prevPt.val + ((nextPt.val - prevPt.val) / den) * (i - prevPt.idx);
+        const lastPt = uniquePoints[uniquePoints.length - 1];
+        if (i > lastPt.idx) {
+          zigVal = closes[i] ?? closes[closes.length - 1];
         }
       }
     }

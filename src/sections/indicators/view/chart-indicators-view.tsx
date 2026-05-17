@@ -74,6 +74,7 @@ export function ChartIndicatorsView() {
   const [trendAlgo, setTrendAlgo] = useState<'swing' | 'zigzag' | 'regression'>('swing');
   const [zigzagThreshold, setZigzagThreshold] = useState<number>(3);
   const [regressionStdDev, setRegressionStdDev] = useState<number>(2.0);
+  const [lineCurve, setLineCurve] = useState<'straight' | 'smooth'>('straight');
 
   // Dynamic visible chart range (for highest/lowest calculations on zoom)
   const [visibleRange, setVisibleRange] = useState<{ min: number; max: number } | null>(null);
@@ -411,20 +412,26 @@ export function ChartIndicatorsView() {
       srRaw = calcSupportResistance(currentHighs, currentLows, currentCloses, currentOpens);
     }
 
-    const supportData = srRaw.map((pt, idx) => ({
-      x: new Date(dates[visibleIndices[idx]]).getTime(),
-      y: pt.support ?? visCloses[idx],
-    }));
+    const supportData = srRaw
+      .map((pt, idx) => ({
+        x: new Date(dates[visibleIndices[idx]]).getTime(),
+        y: pt.support,
+      }))
+      .filter((pt, idx) => pt.y !== null && (idx === 0 || idx === srRaw.length - 1));
 
-    const resistanceData = srRaw.map((pt, idx) => ({
-      x: new Date(dates[visibleIndices[idx]]).getTime(),
-      y: pt.resistance ?? visCloses[idx],
-    }));
+    const resistanceData = srRaw
+      .map((pt, idx) => ({
+        x: new Date(dates[visibleIndices[idx]]).getTime(),
+        y: pt.resistance,
+      }))
+      .filter((pt, idx) => pt.y !== null && (idx === 0 || idx === srRaw.length - 1));
 
-    const zigzagData = srRaw.map((pt, idx) => ({
-      x: new Date(dates[visibleIndices[idx]]).getTime(),
-      y: pt.zigzag ?? visCloses[idx],
-    }));
+    const zigzagData = srRaw
+      .map((pt, idx) => ({
+        x: new Date(dates[visibleIndices[idx]]).getTime(),
+        y: pt.zigzag,
+      }))
+      .filter((pt) => pt.y !== null && pt.y !== undefined);
 
     return {
       supportData,
@@ -441,7 +448,7 @@ export function ChartIndicatorsView() {
       return {
         series: [],
         colors: [],
-        stroke: { curve: 'smooth' as const, width: [], dashArray: [] },
+        stroke: { curve: lineCurve as const, width: [], dashArray: [] },
       };
     }
 
@@ -592,16 +599,18 @@ export function ChartIndicatorsView() {
       }
     }
 
+    const curves = series.map((s) => (s.type === 'line' ? lineCurve : 'straight'));
+
     return {
       series,
       colors,
       stroke: {
-        curve: 'smooth' as const,
+        curve: curves as any,
         width: widths,
         dashArray: dashes,
       },
     };
-  }, [activeStockDataSlice, techAnalysis, dynamicLines, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, showAutoTrend, trendAlgo, theme]);
+  }, [activeStockDataSlice, techAnalysis, dynamicLines, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, showAutoTrend, trendAlgo, lineCurve, theme]);
 
   const formatMoney = useCallback((val: number) => {
     if (market === 'US') {
@@ -701,7 +710,7 @@ export function ChartIndicatorsView() {
 
     return {
       chart: {
-        id: 'indicators-chart',
+        id: `indicators-chart-${lineCurve}`,
         toolbar: {
           show: true,
           offsetX: -10,
@@ -799,7 +808,7 @@ export function ChartIndicatorsView() {
         },
       },
     };
-  }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, visibleRange]);
+  }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, lineCurve, visibleRange]);
 
   const handleTickerChange = (newValue: { ticker: string; name: string } | null) => {
     if (newValue) {
@@ -935,7 +944,7 @@ export function ChartIndicatorsView() {
                   {showAutoTrend && (
                     <Grid container spacing={3}>
                       {/* 1. 기준 가격 선택 */}
-                      <Grid size={{ xs: 12, md: 4 }}>
+                      <Grid size={{ xs: 12, md: 3 }}>
                         <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
                           🎯 분석 기준 가격 (Price Base)
                         </Typography>
@@ -958,7 +967,7 @@ export function ChartIndicatorsView() {
                       </Grid>
 
                       {/* 2. 알고리즘 선택 */}
-                      <Grid size={{ xs: 12, md: 5 }}>
+                      <Grid size={{ xs: 12, md: 4 }}>
                         <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
                           ⚙️ 추세 분석 알고리즘 (Algorithm)
                         </Typography>
@@ -980,7 +989,32 @@ export function ChartIndicatorsView() {
                         </Stack>
                       </Grid>
 
-                      {/* 3. 알고리즘 상세 파라미터 튜닝 */}
+                      {/* 3. 작도 선 스타일 선택 */}
+                      <Grid size={{ xs: 12, md: 2 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                          📈 선 스타일 (Style)
+                        </Typography>
+                        <Stack direction="row" spacing={1}>
+                          {([
+                            { key: 'straight', label: '직선' },
+                            { key: 'smooth', label: '곡선' }
+                          ] as const).map((style) => {
+                            const isActive = lineCurve === style.key;
+                            return (
+                              <Chip
+                                key={style.key}
+                                label={style.label}
+                                color={isActive ? "info" : "default"}
+                                variant={isActive ? "filled" : "outlined"}
+                                onClick={() => setLineCurve(style.key)}
+                                sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
+                              />
+                            );
+                          })}
+                        </Stack>
+                      </Grid>
+
+                      {/* 4. 알고리즘 상세 파라미터 튜닝 */}
                       <Grid size={{ xs: 12, md: 3 }}>
                         {trendAlgo === 'zigzag' && (
                           <Box>
