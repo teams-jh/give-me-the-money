@@ -24,4 +24,9 @@ export const paths = {
   top100: '/top100',
   chartAnalysis: '/chart-analysis',
   detailedAnalysis: '/detailed-analysis',
+  indicators: {
+    root: '/indicators',
+    chart: '/indicators/chart',
+    macro: '/indicators/macro',
+  },
 };

@@ -7,13 +7,19 @@ import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
 import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import HeadphonesRoundedIcon from '@mui/icons-material/HeadphonesRounded';
-import TimelineRoundedIcon from '@mui/icons-material/TimelineRounded';
+import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded';
+import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
+import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
+import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 
 const ICONS = {
   folder: <FolderRoundedIcon fontSize="small" />,
   practice: <AssignmentRoundedIcon fontSize="small" />,
   listening: <HeadphonesRoundedIcon fontSize="small" />,
-  analytics: <TimelineRoundedIcon fontSize="small" />,
+  top100: <LeaderboardRoundedIcon fontSize="small" />,
+  chart: <ShowChartRoundedIcon fontSize="small" />,
+  detailed: <AnalyticsRoundedIcon fontSize="small" />,
+  indicators: <TrendingUpRoundedIcon fontSize="small" />,
 
   home: <HomeRoundedIcon fontSize="small" />,
 };
@@ -65,17 +71,26 @@ export const navData: NavSectionProps['data'] = [
       {
         title: '미국 TOP 100 추세 분석',
         path: paths.top100,
-        icon: ICONS.analytics,
+        icon: ICONS.top100,
       },
       {
         title: '차트 분석',
         path: paths.chartAnalysis,
-        icon: ICONS.analytics,
+        icon: ICONS.chart,
       },
       {
         title: '상세 분석',
         path: paths.detailedAnalysis,
-        icon: ICONS.analytics,
+        icon: ICONS.detailed,
+      },
+      {
+        title: '지표',
+        path: paths.indicators.root,
+        icon: ICONS.indicators,
+        children: [
+          { title: '차트 지표', path: paths.indicators.chart },
+          { title: '매크로 지표', path: paths.indicators.macro },
+        ],
       },
     ],
   },
@@ -126,16 +141,30 @@ export const mainNavData: NavMainProps['data'] = [
   {
     title: '미국 TOP 100 추세 분석',
     path: paths.top100,
-    icon: <TimelineRoundedIcon sx={{ width: 22, height: 22 }} />,
+    icon: <LeaderboardRoundedIcon sx={{ width: 22, height: 22 }} />,
   },
   {
     title: '차트 분석',
     path: paths.chartAnalysis,
-    icon: <TimelineRoundedIcon sx={{ width: 22, height: 22 }} />,
+    icon: <ShowChartRoundedIcon sx={{ width: 22, height: 22 }} />,
   },
   {
     title: '상세 분석',
     path: paths.detailedAnalysis,
-    icon: <TimelineRoundedIcon sx={{ width: 22, height: 22 }} />,
+    icon: <AnalyticsRoundedIcon sx={{ width: 22, height: 22 }} />,
+  },
+  {
+    title: '지표',
+    path: paths.indicators.root,
+    icon: <TrendingUpRoundedIcon sx={{ width: 22, height: 22 }} />,
+    children: [
+      {
+        subheader: '지표',
+        items: [
+          { title: '차트 지표', path: paths.indicators.chart },
+          { title: '매크로 지표', path: paths.indicators.macro },
+        ],
+      },
+    ],
   },
 ];

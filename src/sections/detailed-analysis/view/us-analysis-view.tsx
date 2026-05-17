@@ -18,7 +18,6 @@ import { alpha, useTheme } from '@mui/material/styles';
 
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 
-import { transformTickerToStock } from 'src/sections/top100/top100-utils';
 
 // ----------------------------------------------------------------------
 
