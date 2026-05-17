@@ -5,6 +5,7 @@ import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
@@ -73,15 +74,25 @@ export function IndicatorFilterChips({
               🛠️ 기술적 분석 지표 활성화 필터
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              원하는 보조지표를 활성화하면 차트에 선이 실시간으로 표기되고 우측 진단 설명 보드가 생성됩니다.
+              원하는 보조지표를 활성화하면 차트에 선이 실시간으로 표기되고 우측 진단 설명 보드가 생성됩니다. (이동평균선은 종가 기준 단순 이동평균 SMA = (P1 + ... + Pn) / N 방식으로 계산됩니다.)
             </Typography>
           </Box>
           <Stack direction="row" spacing={1.5} sx={{ flexWrap: 'wrap', gap: 1.5 }}>
-            <Chip label="MA 5" color={showSma5 ? 'secondary' : 'default'} variant={showSma5 ? 'filled' : 'outlined'} onClick={() => setShowSma5(!showSma5)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-            <Chip label="MA 20" color={showSma20 ? 'warning' : 'default'} variant={showSma20 ? 'filled' : 'outlined'} onClick={() => setShowSma20(!showSma20)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-            <Chip label="MA 60" color={showSma60 ? 'info' : 'default'} variant={showSma60 ? 'filled' : 'outlined'} onClick={() => setShowSma60(!showSma60)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-            <Chip label="MA 120" color={showSma120 ? 'error' : 'default'} variant={showSma120 ? 'filled' : 'outlined'} onClick={() => setShowSma120(!showSma120)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-            <Chip label="MA 240" color={showSma240 ? 'default' : 'default'} variant={showSma240 ? 'filled' : 'outlined'} onClick={() => setShowSma240(!showSma240)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+            <Tooltip title="5일 단순 이동평균 (SMA): 종가 기준 최근 5일간의 가격 합산을 5로 나눈 평균값. SMA = (P1 + ... + P5) / 5" arrow>
+              <Chip label="MA 5" color={showSma5 ? 'secondary' : 'default'} variant={showSma5 ? 'filled' : 'outlined'} onClick={() => setShowSma5(!showSma5)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+            </Tooltip>
+            <Tooltip title="20일 단순 이동평균 (SMA): 종가 기준 최근 20일간의 가격 합산을 20으로 나눈 평균값. SMA = (P1 + ... + P20) / 20" arrow>
+              <Chip label="MA 20" color={showSma20 ? 'warning' : 'default'} variant={showSma20 ? 'filled' : 'outlined'} onClick={() => setShowSma20(!showSma20)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+            </Tooltip>
+            <Tooltip title="60일 단순 이동평균 (SMA): 종가 기준 최근 60일간의 가격 합산을 60으로 나눈 평균값. SMA = (P1 + ... + P60) / 60" arrow>
+              <Chip label="MA 60" color={showSma60 ? 'info' : 'default'} variant={showSma60 ? 'filled' : 'outlined'} onClick={() => setShowSma60(!showSma60)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+            </Tooltip>
+            <Tooltip title="120일 단순 이동평균 (SMA): 종가 기준 최근 120일간의 가격 합산을 120으로 나눈 평균값. SMA = (P1 + ... + P120) / 120" arrow>
+              <Chip label="MA 120" color={showSma120 ? 'error' : 'default'} variant={showSma120 ? 'filled' : 'outlined'} onClick={() => setShowSma120(!showSma120)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+            </Tooltip>
+            <Tooltip title="240일 단순 이동평균 (SMA): 종가 기준 최근 240일간의 가격 합산을 240으로 나눈 평균값. SMA = (P1 + ... + P240) / 240" arrow>
+              <Chip label="MA 240" color={showSma240 ? 'default' : 'default'} variant={showSma240 ? 'filled' : 'outlined'} onClick={() => setShowSma240(!showSma240)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
+            </Tooltip>
             <Chip
               label="볼린저 밴드 (Bollinger)"
               color={showBb ? 'success' : 'default'}

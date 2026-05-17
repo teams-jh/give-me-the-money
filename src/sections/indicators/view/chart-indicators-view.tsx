@@ -141,6 +141,7 @@ export function ChartIndicatorsView() {
   const techAnalysis = useMemo(() => {
     if (!activeStockDataSlice || activeStockDataSlice.closePrices.length === 0) return null;
 
+    // 종가(Close)를 기준으로 기술적 분석 지표 연산 수행
     const prices = activeStockDataSlice.closePrices;
     const dates = activeStockDataSlice.dates;
     const length = prices.length;
@@ -151,7 +152,7 @@ export function ChartIndicatorsView() {
     const dailyChange = currentPrice - prevPrice;
     const dailyChangePct = prevPrice !== 0 ? (dailyChange / prevPrice) * 100 : 0;
 
-    // Technical computations using shared library
+    // 단순 이동평균(Simple Moving Average, SMA) 계산 공식 적용: SMA = (P1 + ... + Pn) / N
     const sma5 = calcMA(prices, 5).map((val, idx) => val ?? prices[idx]);
     const sma20 = calcMA(prices, 20).map((val, idx) => val ?? prices[idx]);
     const sma50 = calcMA(prices, 50).map((val, idx) => val ?? prices[idx]);
