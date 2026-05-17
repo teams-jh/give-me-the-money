@@ -114,7 +114,7 @@ export function ChartIndicatorsView() {
 
     const allPrices = rawData.prices || [];
     const daysMap = { '3m': 63, '1y': 252, '2y': 504, '3y': 756 };
-    
+
     let slice;
     if (period === 'custom' && startDate && endDate) {
       slice = allPrices.filter((p) => p.date >= startDate && p.date <= endDate);
@@ -690,7 +690,7 @@ export function ChartIndicatorsView() {
         {/* 1. Single Ticker Selection Card */}
         <Card sx={{ p: 3, boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}` }}>
           <Grid container spacing={3} alignItems="center">
-            <Grid size={{ xs: 12, md: 8.5 }}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <Autocomplete
                 fullWidth
                 selectOnFocus
@@ -740,34 +740,47 @@ export function ChartIndicatorsView() {
 
             {/* Current Active Single Selection Details */}
             {selectedStockMeta && techAnalysis && (
-              <Grid size={{ xs: 12, md: 3.5 }}>
-                <Stack direction="row" spacing={3} alignItems="center" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
-                  <Box>
-                    <Typography variant="overline" sx={{ color: 'text.disabled', fontWeight: 800 }}>
+              <Grid size={{ xs: 12, md: 5 }} sx={{ minWidth: 0 }}>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent={{ xs: 'flex-start', md: 'flex-end' }}
+                  sx={{ minWidth: 0 }}
+                >
+                  <Box sx={{ minWidth: 0, flexShrink: 1 }}>
+                    <Typography variant="overline" sx={{ color: 'text.disabled', fontWeight: 800, display: 'block' }}>
                       현재 선택된 종목
                     </Typography>
-                    <Stack direction="row" spacing={1} alignItems="center">
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
                       <Chip
                         label={selectedStockMeta.ticker}
                         color="primary"
                         variant="soft"
-                        sx={{ fontWeight: 800 }}
+                        sx={{ fontWeight: 800, flexShrink: 0 }}
                       />
-                      <Typography variant="h6" sx={{ fontWeight: 800, whiteSpace: 'nowrap' }}>
+                      <Typography
+                        variant="subtitle1"
+                        noWrap
+                        sx={{ fontWeight: 800 }}
+                        title={selectedStockMeta.name}
+                      >
                         {selectedStockMeta.name}
                       </Typography>
                     </Stack>
                   </Box>
 
-                  <Box sx={{ textAlign: 'right' }}>
-                    <Typography variant="h4" sx={{ fontWeight: 900 }}>
+                  <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 900, whiteSpace: 'nowrap' }}>
                       {formatMoney(techAnalysis.currentPrice)}
                     </Typography>
                     <Typography
-                      variant="subtitle2"
+                      variant="caption"
                       sx={{
                         fontWeight: 700,
                         color: techAnalysis.dailyChange >= 0 ? 'error.main' : 'success.main',
+                        whiteSpace: 'nowrap',
+                        display: 'block',
                       }}
                     >
                       {techAnalysis.dailyChange >= 0 ? '▲' : '▼'}{' '}
