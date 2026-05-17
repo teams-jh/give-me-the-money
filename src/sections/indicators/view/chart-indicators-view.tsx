@@ -504,11 +504,21 @@ export function ChartIndicatorsView() {
       chart: {
         id: 'indicators-chart',
         toolbar: { show: true },
-        zoom: { enabled: true },
+        zoom: {
+          enabled: true,
+          autoScaleYaxis: true,
+        },
         background: 'transparent',
         fontFamily: theme.typography.fontFamily,
         events: {
           zoomed: (_chartContext: unknown, { xaxis }: { xaxis: { min?: number; max?: number } }) => {
+            if (xaxis?.min && xaxis?.max) {
+              setVisibleRange({ min: Math.round(xaxis.min), max: Math.round(xaxis.max) });
+            } else {
+              setVisibleRange(null);
+            }
+          },
+          scrolled: (_chartContext: unknown, { xaxis }: { xaxis: { min?: number; max?: number } }) => {
             if (xaxis?.min && xaxis?.max) {
               setVisibleRange({ min: Math.round(xaxis.min), max: Math.round(xaxis.max) });
             } else {
@@ -533,6 +543,7 @@ export function ChartIndicatorsView() {
       xaxis: {
         type: 'datetime',
         labels: { style: { colors: theme.palette.text.secondary } },
+        ...(visibleRange ? { min: visibleRange.min, max: visibleRange.max } : {}),
       },
       yaxis: {
         title: {
