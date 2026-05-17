@@ -139,55 +139,95 @@ export function ChartIndicatorsView() {
 
   // Dynamic Technical Calculations
   const techAnalysis = useMemo(() => {
-    if (!activeStockDataSlice || activeStockDataSlice.closePrices.length === 0) return null;
+    const rawData = allTickersData[currentTicker];
+    if (!rawData || !activeStockDataSlice || activeStockDataSlice.closePrices.length === 0) return null;
 
-    // 종가(Close)를 기준으로 기술적 분석 지표 연산 수행
+    const allPrices = rawData.prices || [];
+    const fullCloses = allPrices.map((p) => p.close);
+    const fullHighs = allPrices.map((p) => p.high || p.close);
+    const fullLows = allPrices.map((p) => p.low || p.close);
+    const fullDates = allPrices.map((p) => p.date);
+
+    // Find start and end indices of activeStockDataSlice.dates in fullDates to slice indicators correctly
+    const sliceDates = activeStockDataSlice.dates;
+    if (sliceDates.length === 0) return null;
+
+    const startDateStr = sliceDates[0];
+    const endDateStr = sliceDates[sliceDates.length - 1];
+
+    const startIndex = fullDates.indexOf(startDateStr);
+    const endIndex = fullDates.indexOf(endDateStr);
+
+    if (startIndex === -1 || endIndex === -1) return null;
+
+    // Calculate indicators on the FULL historical dataset to avoid truncation/fallback drops
+    const fullSma5 = calcMA(fullCloses, 5);
+    const fullSma20 = calcMA(fullCloses, 20);
+    const fullSma50 = calcMA(fullCloses, 50);
+    const fullSma60 = calcMA(fullCloses, 60);
+    const fullSma120 = calcMA(fullCloses, 120);
+    const fullSma240 = calcMA(fullCloses, 240);
+    const fullRsi = calcRSI(fullCloses, 14);
+    const fullMacdRaw = calcMACD(fullCloses);
+    const fullBbRaw = calcBollingerBands(fullCloses, 20);
+    const fullEnvRaw = calcEnvelope(fullCloses, 20, 0.1);
+    const fullDonchianRaw = calcDonchianChannels(fullCloses, 20);
+
+    // Slice indicators to match active stock data slice
+    const sliceSma5 = fullSma5.slice(startIndex, endIndex + 1);
+    const sliceSma20 = fullSma20.slice(startIndex, endIndex + 1);
+    const sliceSma50 = fullSma50.slice(startIndex, endIndex + 1);
+    const sliceSma60 = fullSma60.slice(startIndex, endIndex + 1);
+    const sliceSma120 = fullSma120.slice(startIndex, endIndex + 1);
+    const sliceSma240 = fullSma240.slice(startIndex, endIndex + 1);
+    const sliceRsi = fullRsi.slice(startIndex, endIndex + 1);
+
     const prices = activeStockDataSlice.closePrices;
     const dates = activeStockDataSlice.dates;
     const length = prices.length;
+
+    // Fall back to price only if full history itself is not long enough
+    const sma5 = sliceSma5.map((val, idx) => val ?? prices[idx]);
+    const sma20 = sliceSma20.map((val, idx) => val ?? prices[idx]);
+    const sma50 = sliceSma50.map((val, idx) => val ?? prices[idx]);
+    const sma60 = sliceSma60.map((val, idx) => val ?? prices[idx]);
+    const sma120 = sliceSma120.map((val, idx) => val ?? prices[idx]);
+    const sma240 = sliceSma240.map((val, idx) => val ?? prices[idx]);
+    const rsi = sliceRsi.map((val) => val ?? 50);
+
+    const sliceMacdRaw = fullMacdRaw.slice(startIndex, endIndex + 1);
+    const macd = {
+      macdLine: sliceMacdRaw.map((pt) => pt.macd ?? 0),
+      signalLine: sliceMacdRaw.map((pt) => pt.signal ?? 0),
+      histogram: sliceMacdRaw.map((pt) => pt.histogram ?? 0),
+    };
+
+    const sliceBbRaw = fullBbRaw.slice(startIndex, endIndex + 1);
+    const bb = {
+      sma: sliceBbRaw.map((pt, idx) => pt.mid ?? prices[idx]),
+      upper: sliceBbRaw.map((pt, idx) => pt.upper ?? prices[idx]),
+      lower: sliceBbRaw.map((pt, idx) => pt.lower ?? prices[idx]),
+    };
+
+    const sliceEnvRaw = fullEnvRaw.slice(startIndex, endIndex + 1);
+    const env = {
+      sma: sliceEnvRaw.map((pt, idx) => pt.mid ?? prices[idx]),
+      upper: sliceEnvRaw.map((pt, idx) => pt.upper ?? prices[idx]),
+      lower: sliceEnvRaw.map((pt, idx) => pt.lower ?? prices[idx]),
+    };
+
+    const sliceDonchianRaw = fullDonchianRaw.slice(startIndex, endIndex + 1);
+    const donchian = {
+      upper: sliceDonchianRaw.map((pt, idx) => pt.upper ?? prices[idx]),
+      lower: sliceDonchianRaw.map((pt, idx) => pt.lower ?? prices[idx]),
+      middle: sliceDonchianRaw.map((pt, idx) => pt.mid ?? prices[idx]),
+    };
 
     // Last values (current status)
     const currentPrice = prices[length - 1] || 0;
     const prevPrice = prices[length - 2] || currentPrice;
     const dailyChange = currentPrice - prevPrice;
     const dailyChangePct = prevPrice !== 0 ? (dailyChange / prevPrice) * 100 : 0;
-
-    // 단순 이동평균(Simple Moving Average, SMA) 계산 공식 적용: SMA = (P1 + ... + Pn) / N
-    const sma5 = calcMA(prices, 5).map((val, idx) => val ?? prices[idx]);
-    const sma20 = calcMA(prices, 20).map((val, idx) => val ?? prices[idx]);
-    const sma50 = calcMA(prices, 50).map((val, idx) => val ?? prices[idx]);
-    const sma60 = calcMA(prices, 60).map((val, idx) => val ?? prices[idx]);
-    const sma120 = calcMA(prices, 120).map((val, idx) => val ?? prices[idx]);
-    const sma240 = calcMA(prices, 240).map((val, idx) => val ?? prices[idx]);
-    const rsi = calcRSI(prices, 14).map((val) => val ?? 50);
-
-    const macdRaw = calcMACD(prices);
-    const macd = {
-      macdLine: macdRaw.map((pt) => pt.macd ?? 0),
-      signalLine: macdRaw.map((pt) => pt.signal ?? 0),
-      histogram: macdRaw.map((pt) => pt.histogram ?? 0),
-    };
-
-    const bbRaw = calcBollingerBands(prices, 20);
-    const bb = {
-      sma: bbRaw.map((pt, idx) => pt.mid ?? prices[idx]),
-      upper: bbRaw.map((pt, idx) => pt.upper ?? prices[idx]),
-      lower: bbRaw.map((pt, idx) => pt.lower ?? prices[idx]),
-    };
-
-    const envRaw = calcEnvelope(prices, 20, 0.1);
-    const env = {
-      sma: envRaw.map((pt, idx) => pt.mid ?? prices[idx]),
-      upper: envRaw.map((pt, idx) => pt.upper ?? prices[idx]),
-      lower: envRaw.map((pt, idx) => pt.lower ?? prices[idx]),
-    };
-
-    const donchianRaw = calcDonchianChannels(prices, 20);
-    const donchian = {
-      upper: donchianRaw.map((pt, idx) => pt.upper ?? prices[idx]),
-      lower: donchianRaw.map((pt, idx) => pt.lower ?? prices[idx]),
-      middle: donchianRaw.map((pt, idx) => pt.mid ?? prices[idx]),
-    };
 
     const latestRsi = rsi[length - 1] || 50;
     const latestSma20 = sma20[length - 1] || currentPrice;
@@ -281,7 +321,7 @@ export function ChartIndicatorsView() {
       donchianMiddle: donchian.middle,
       fibonacci,
     };
-  }, [activeStockDataSlice]);
+  }, [activeStockDataSlice, currentTicker]);
 
   // Chart configuration for selected ticker
   const chartData = useMemo(() => {
@@ -454,20 +494,68 @@ export function ChartIndicatorsView() {
       max, min,
       maxDate: new Date(dates[maxIdx]).getTime(),
       minDate: new Date(dates[minIdx]).getTime(),
+      maxIdx,
+      minIdx,
+      visibleIndices: indices,
     };
   }, [activeStockDataSlice, visibleRange]);
 
   const chartOptions = useMemo<any>(() => {
     const annotations: any = { yaxis: [], points: [] };
 
+    const yMin = visibleHighLow
+      ? (visibleHighLow.max === visibleHighLow.min
+          ? visibleHighLow.min * 0.95
+          : visibleHighLow.min - (visibleHighLow.max - visibleHighLow.min) * 0.05)
+      : undefined;
+
+    const yMax = visibleHighLow
+      ? (visibleHighLow.max === visibleHighLow.min
+          ? visibleHighLow.max * 1.05
+          : visibleHighLow.max + (visibleHighLow.max - visibleHighLow.min) * 0.08)
+      : undefined;
+
     if (visibleHighLow) {
-      const { max, min, maxDate, minDate } = visibleHighLow;
+      const { max, min, maxDate, minDate, maxIdx, minIdx, visibleIndices } = visibleHighLow;
+
+      const maxPos = visibleIndices.length > 1
+        ? visibleIndices.indexOf(maxIdx) / (visibleIndices.length - 1)
+        : 0.5;
+
+      const minPos = visibleIndices.length > 1
+        ? visibleIndices.indexOf(minIdx) / (visibleIndices.length - 1)
+        : 0.5;
+
+      // Adjust textAnchor and offsetX to prevent clipping at boundaries (left/right edges)
+      let maxAnchor = 'middle';
+      let maxOffsetX = 0;
+      if (maxPos > 0.85) {
+        maxAnchor = 'end';
+        maxOffsetX = -10;
+      } else if (maxPos < 0.15) {
+        maxAnchor = 'start';
+        maxOffsetX = 10;
+      }
+
+      let minAnchor = 'middle';
+      let minOffsetX = 0;
+      if (minPos > 0.85) {
+        minAnchor = 'end';
+        minOffsetX = -10;
+      } else if (minPos < 0.15) {
+        minAnchor = 'start';
+        minOffsetX = 10;
+      }
+
       annotations.points.push(
         {
           x: maxDate, y: max,
           marker: { size: 5, fillColor: theme.palette.error.main, strokeColor: '#fff', strokeWidth: 2 },
           label: {
-            borderColor: theme.palette.error.main, offsetY: -10,
+            borderColor: theme.palette.error.main,
+            offsetY: -10,
+            offsetX: maxOffsetX,
+            textAnchor: maxAnchor,
             style: { color: '#fff', background: theme.palette.error.main, fontWeight: 700, fontSize: '11px' },
             text: `최고가: ${formatMoney(max)}`
           }
@@ -476,7 +564,10 @@ export function ChartIndicatorsView() {
           x: minDate, y: min,
           marker: { size: 5, fillColor: theme.palette.info.main, strokeColor: '#fff', strokeWidth: 2 },
           label: {
-            borderColor: theme.palette.info.main, offsetY: 10,
+            borderColor: theme.palette.info.main,
+            offsetY: 10,
+            offsetX: minOffsetX,
+            textAnchor: minAnchor,
             style: { color: '#fff', background: theme.palette.info.main, fontWeight: 700, fontSize: '11px' },
             text: `최저가: ${formatMoney(min)}`
           }
@@ -501,7 +592,11 @@ export function ChartIndicatorsView() {
     return {
       chart: {
         id: 'indicators-chart',
-        toolbar: { show: true },
+        toolbar: {
+          show: true,
+          offsetX: -10,
+          offsetY: -5,
+        },
         zoom: {
           enabled: true,
           autoScaleYaxis: true,
@@ -552,6 +647,8 @@ export function ChartIndicatorsView() {
           style: { colors: theme.palette.text.secondary },
           formatter: (value: number) => formatMoney(value),
         },
+        min: yMin,
+        max: yMax,
       },
       stroke: chartData.stroke,
       colors: chartData.colors,
@@ -584,6 +681,12 @@ export function ChartIndicatorsView() {
       grid: {
         borderColor: alpha(theme.palette.grey[500], 0.1),
         strokeDashArray: 3,
+        padding: {
+          top: 15,
+          right: 25,
+          bottom: 0,
+          left: 10,
+        },
       },
     };
   }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, visibleRange]);
