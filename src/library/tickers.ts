@@ -10,6 +10,7 @@ export interface TickerData {
   updated_at: string;
   info: {
     name: string;
+    kr_name?: string;
     exchange: string;
     currency: string;
     sector: string;
