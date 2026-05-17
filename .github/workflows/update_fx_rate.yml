@@ -53,7 +53,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: USD/KRW 환율 업데이트 (${TIMESTAMP})"
-            git pull --rebase
+            git pull --rebase --autostash
             git push
           fi
 

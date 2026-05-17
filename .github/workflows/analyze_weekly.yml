@@ -234,7 +234,7 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: 주간 분석 업데이트 — 추세 + 섹터 로테이션 + 시장 breadth (${TIMESTAMP})"
-            git pull --rebase
+            git pull --rebase --autostash
             git push
           fi
 
