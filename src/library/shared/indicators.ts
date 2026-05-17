@@ -779,3 +779,186 @@ export function calcDonchianChannels(
     return { upper: round(upper, 4), mid, lower: round(lower, 4) };
   });
 }
+
+// ── 16. Support & Resistance (지지선 & 저항선) ──────────────────────────────
+
+/** 지지선 & 저항선 한 봉의 계산 결과 */
+export interface SRPoint {
+  support: number | null;
+  resistance: number | null;
+}
+
+/**
+ * 지지선 및 저항선 연산 함수 (Swing High / Swing Low 검출 및 연장 방식).
+ * 긴 꼬리로 인한 지저분함을 방지하기 위해 캔들의 몸통(종가/시가) 기준 극점을 활용합니다.
+ *
+ * @param highs - 고가 배열
+ * @param lows - 저가 배열
+ * @param closes - 종가 배열
+ * @param opens - 시가 배열
+ * @returns (highs.length) 개의 SRPoint 배열
+ */
+export function calcSupportResistance(
+  highs: number[],
+  lows: number[],
+  closes: number[],
+  opens: number[]
+): SRPoint[] {
+  const n = highs.length;
+  const result: SRPoint[] = [];
+  if (n === 0) return result;
+
+  // Use body extremes for clean, noise-reduced signals
+  const bodyHighs = closes.map((c, i) => Math.max(c, opens[i] ?? c));
+  const bodyLows = closes.map((c, i) => Math.min(c, opens[i] ?? c));
+
+  if (n < 10) {
+    // Fallback for very small data slices
+    return bodyHighs.map((_, i) => ({
+      support: bodyLows[i],
+      resistance: bodyHighs[i],
+    }));
+  }
+
+  // 1. Find all local peaks and troughs (Swing Highs / Lows)
+  const peaks: { idx: number; val: number }[] = [];
+  const troughs: { idx: number; val: number }[] = [];
+
+  const windowSize = Math.max(2, Math.floor(n * 0.03)); // Adaptive local window
+
+  for (let i = windowSize; i < n - windowSize; i++) {
+    let isPeak = true;
+    let isTrough = true;
+    for (let w = -windowSize; w <= windowSize; w++) {
+      if (w === 0) continue;
+      if (bodyHighs[i] < (bodyHighs[i + w] ?? 0)) isPeak = false;
+      if (bodyLows[i] > (bodyLows[i + w] ?? Infinity)) isTrough = false;
+    }
+    if (isPeak) peaks.push({ idx: i, val: bodyHighs[i] });
+    if (isTrough) troughs.push({ idx: i, val: bodyLows[i] });
+  }
+
+  // If we don't have enough peaks/troughs, fall back to simple extremes
+  if (peaks.length < 2) {
+    peaks.push({ idx: 0, val: bodyHighs[0] });
+    peaks.push({ idx: n - 1, val: bodyHighs[n - 1] });
+  }
+  if (troughs.length < 2) {
+    troughs.push({ idx: 0, val: bodyLows[0] });
+    troughs.push({ idx: n - 1, val: bodyLows[n - 1] });
+  }
+
+  // 2. Select the two most dominant peaks for Resistance
+  // First, sort by value descending to find the absolute highest peaks
+  const sortedPeaks = [...peaks].sort((a, b) => b.val - a.val);
+  const p1 = sortedPeaks[0];
+  // Find the next highest peak that is at least 20% of the chart width away
+  const minDistance = n * 0.2;
+  let p2 = sortedPeaks.find(p => Math.abs(p.idx - p1.idx) >= minDistance);
+  if (!p2) {
+    p2 = sortedPeaks[1] || p1;
+  }
+
+  // 3. Select the two most dominant troughs for Support
+  // Sort by value ascending to find the absolute lowest troughs
+  const sortedTroughs = [...troughs].sort((a, b) => a.val - b.val);
+  const t1 = sortedTroughs[0];
+  let t2 = sortedTroughs.find(t => Math.abs(t.idx - t1.idx) >= minDistance);
+  if (!t2) {
+    t2 = sortedTroughs[1] || t1;
+  }
+
+  // 4. Compute slope and intercept for Resistance Line
+  const mResistance = (p2.val - p1.val) / (p2.idx - p1.idx || 1);
+  const cResistance = p1.val - mResistance * p1.idx;
+
+  // 5. Compute slope and intercept for Support Line
+  const mSupport = (t2.val - t1.val) / (t2.idx - t1.idx || 1);
+  const cSupport = t1.val - mSupport * t1.idx;
+
+  // 6. Generate the straight lines across all indices
+  for (let i = 0; i < n; i++) {
+    result.push({
+      support: mSupport * i + cSupport,
+      resistance: mResistance * i + cResistance,
+    });
+  }
+
+  return result;
+}
+
+// ── 17. Trendlines (추세선) ──────────────────────────────────────────────────
+
+/** 추세선 한 봉의 계산 결과 */
+export interface TrendlinePoint {
+  up: number | null;
+  down: number | null;
+}
+
+/**
+ * 추세선 연산 함수 (Convex Hull 기반의 동적 추세선)
+ * - 상승 추세선: 보여지는 범위 내 최저점부터 시작하여 가격 하락을 허용하지 않는 (가장 완만한) 저점들을 연결
+ * - 하락 추세선: 보여지는 범위 내 최고점부터 시작하여 가격 돌파를 허용하지 않는 (가장 완만한) 고점들을 연결
+ */
+export function calcTrendlines(
+  highs: number[],
+  lows: number[]
+): TrendlinePoint[] {
+  const n = highs.length;
+  const result: TrendlinePoint[] = Array.from({ length: n }, () => ({ up: null, down: null }));
+  if (n < 2) return result;
+
+  // 1. 상승 추세선 (Up Trendline - Lower Convex Hull)
+  let minIdx = 0;
+  for (let i = 1; i < n; i++) {
+    if (lows[i] < lows[minIdx]) minIdx = i;
+  }
+
+  let currentIdx = minIdx;
+  result[currentIdx].up = lows[currentIdx];
+
+  while (currentIdx < n - 1) {
+    let nextIdx = currentIdx + 1;
+    let minSlope = Infinity; // 최저 기울기 (모든 캔들이 선 위에 있도록 보장)
+    for (let j = currentIdx + 1; j < n; j++) {
+      const slope = (lows[j] - lows[currentIdx]) / (j - currentIdx);
+      if (slope < minSlope) {
+        minSlope = slope;
+        nextIdx = j;
+      }
+    }
+    // 구간 채우기
+    for (let k = currentIdx + 1; k <= nextIdx; k++) {
+      result[k].up = lows[currentIdx] + minSlope * (k - currentIdx);
+    }
+    currentIdx = nextIdx;
+  }
+
+  // 2. 하락 추세선 (Down Trendline - Upper Convex Hull)
+  let maxIdx = 0;
+  for (let i = 1; i < n; i++) {
+    if (highs[i] > highs[maxIdx]) maxIdx = i;
+  }
+
+  currentIdx = maxIdx;
+  result[currentIdx].down = highs[currentIdx];
+
+  while (currentIdx < n - 1) {
+    let nextIdx = currentIdx + 1;
+    let maxSlope = -Infinity; // 최고 기울기 (모든 캔들이 선 아래에 있도록 보장)
+    for (let j = currentIdx + 1; j < n; j++) {
+      const slope = (highs[j] - highs[currentIdx]) / (j - currentIdx);
+      if (slope > maxSlope) {
+        maxSlope = slope;
+        nextIdx = j;
+      }
+    }
+    // 구간 채우기
+    for (let k = currentIdx + 1; k <= nextIdx; k++) {
+      result[k].down = highs[currentIdx] + maxSlope * (k - currentIdx);
+    }
+    currentIdx = nextIdx;
+  }
+
+  return result;
+}

@@ -32,6 +32,10 @@ interface IndicatorFilterChipsProps {
   setShowRsi: (val: boolean) => void;
   showMacd: boolean;
   setShowMacd: (val: boolean) => void;
+  showSupport: boolean;
+  setShowSupport: (val: boolean) => void;
+  showResistance: boolean;
+  setShowResistance: (val: boolean) => void;
 }
 
 export function IndicatorFilterChips({
@@ -57,6 +61,10 @@ export function IndicatorFilterChips({
   setShowRsi,
   showMacd,
   setShowMacd,
+  showSupport,
+  setShowSupport,
+  showResistance,
+  setShowResistance,
 }: IndicatorFilterChipsProps) {
   const theme = useTheme();
 
@@ -135,6 +143,25 @@ export function IndicatorFilterChips({
               onClick={() => setShowMacd(!showMacd)}
               sx={{ fontWeight: 700, cursor: 'pointer' }}
             />
+            <Tooltip title="지지선 (Support): 주가가 하락할 때 지지를 받고 멈추었던 이전의 수평 저점 구간입니다. 주가가 근접하면 매수 타점(반등)으로 작용할 가능성이 큽니다." arrow>
+              <Chip
+                label="지지선 (Support)"
+                color={showSupport ? 'success' : 'default'}
+                variant={showSupport ? 'filled' : 'outlined'}
+                onClick={() => setShowSupport(!showSupport)}
+                sx={{ fontWeight: 700, cursor: 'pointer' }}
+              />
+            </Tooltip>
+            <Tooltip title="저항선 (Resistance): 주가가 상승할 때 저항을 맞고 꺾였던 이전의 수평 고점 구간입니다. 주가가 근접하면 매도 타점(차익 실현)으로 작용할 가능성이 큽니다." arrow>
+              <Chip
+                label="저항선 (Resistance)"
+                color={showResistance ? 'error' : 'default'}
+                variant={showResistance ? 'filled' : 'outlined'}
+                onClick={() => setShowResistance(!showResistance)}
+                sx={{ fontWeight: 700, cursor: 'pointer' }}
+              />
+            </Tooltip>
+
           </Stack>
         </Stack>
       </Card>

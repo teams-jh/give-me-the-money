@@ -14,7 +14,8 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 import {
   calcMA, calcRSI, calcMACD,
-  calcEnvelope, calcBollingerBands, calcDonchianChannels,
+  calcEnvelope, calcBollingerBands,
+  calcDonchianChannels, calcSupportResistance,
 } from 'src/library/shared/indicators';
 
 import { MarketPeriodSelector } from 'src/components/market-period-selector';
@@ -64,6 +65,8 @@ export function ChartIndicatorsView() {
   const [showEnv, setShowEnv] = useState(false);
   const [showFib, setShowFib] = useState(false);
   const [showDonchian, setShowDonchian] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
+  const [showResistance, setShowResistance] = useState(false);
 
   // Dynamic visible chart range (for highest/lowest calculations on zoom)
   const [visibleRange, setVisibleRange] = useState<{ min: number; max: number } | null>(null);
@@ -148,6 +151,8 @@ export function ChartIndicatorsView() {
     const fullLows = allPrices.map((p) => p.low || p.close);
     const fullDates = allPrices.map((p) => p.date);
 
+    const fullOpens = allPrices.map((p) => p.open || p.close);
+
     // Find start and end indices of activeStockDataSlice.dates in fullDates to slice indicators correctly
     const sliceDates = activeStockDataSlice.dates;
     if (sliceDates.length === 0) return null;
@@ -172,6 +177,7 @@ export function ChartIndicatorsView() {
     const fullBbRaw = calcBollingerBands(fullCloses, 20);
     const fullEnvRaw = calcEnvelope(fullCloses, 20, 0.1);
     const fullDonchianRaw = calcDonchianChannels(fullCloses, 20);
+    const fullSrRaw = calcSupportResistance(fullHighs, fullLows, fullCloses, fullOpens);
 
     // Slice indicators to match active stock data slice
     const sliceSma5 = fullSma5.slice(startIndex, endIndex + 1);
@@ -181,6 +187,7 @@ export function ChartIndicatorsView() {
     const sliceSma120 = fullSma120.slice(startIndex, endIndex + 1);
     const sliceSma240 = fullSma240.slice(startIndex, endIndex + 1);
     const sliceRsi = fullRsi.slice(startIndex, endIndex + 1);
+    const sliceSrRaw = fullSrRaw.slice(startIndex, endIndex + 1);
 
     const prices = activeStockDataSlice.closePrices;
     const dates = activeStockDataSlice.dates;
@@ -194,6 +201,8 @@ export function ChartIndicatorsView() {
     const sma120 = sliceSma120.map((val, idx) => val ?? prices[idx]);
     const sma240 = sliceSma240.map((val, idx) => val ?? prices[idx]);
     const rsi = sliceRsi.map((val) => val ?? 50);
+    const support = sliceSrRaw.map((pt, idx) => pt.support ?? prices[idx]);
+    const resistance = sliceSrRaw.map((pt, idx) => pt.resistance ?? prices[idx]);
 
     const sliceMacdRaw = fullMacdRaw.slice(startIndex, endIndex + 1);
     const macd = {
@@ -223,6 +232,8 @@ export function ChartIndicatorsView() {
       middle: sliceDonchianRaw.map((pt, idx) => pt.mid ?? prices[idx]),
     };
 
+
+
     // Last values (current status)
     const currentPrice = prices[length - 1] || 0;
     const prevPrice = prices[length - 2] || currentPrice;
@@ -247,6 +258,9 @@ export function ChartIndicatorsView() {
 
     const latestDonchianUpper = donchian.upper[length - 1] || currentPrice;
     const latestDonchianLower = donchian.lower[length - 1] || currentPrice;
+
+    const latestSupport = support[length - 1] || currentPrice;
+    const latestResistance = resistance[length - 1] || currentPrice;
 
     const highPrices = activeStockDataSlice.highPrices;
     const lowPrices = activeStockDataSlice.lowPrices;
@@ -305,6 +319,8 @@ export function ChartIndicatorsView() {
       latestEnvLower,
       latestDonchianUpper,
       latestDonchianLower,
+      latestSupport,
+      latestResistance,
       score,
       // Arrays for chart
       sma5,
@@ -312,6 +328,8 @@ export function ChartIndicatorsView() {
       sma60,
       sma120,
       sma240,
+      support,
+      resistance,
       bbUpper: bb.upper,
       bbLower: bb.lower,
       envUpper: env.upper,
@@ -322,6 +340,72 @@ export function ChartIndicatorsView() {
       fibonacci,
     };
   }, [activeStockDataSlice, currentTicker]);
+
+  // Compute visible high/low based on visibleRange
+  const visibleHighLow = useMemo(() => {
+    if (!activeStockDataSlice) return null;
+    const { dates, highPrices, lowPrices } = activeStockDataSlice;
+
+    let indices: number[] = [];
+    if (visibleRange) {
+      dates.forEach((d, idx) => {
+        const time = new Date(d).getTime();
+        if (time >= visibleRange.min && time <= visibleRange.max) {
+          indices.push(idx);
+        }
+      });
+    }
+    if (indices.length === 0) {
+      indices = dates.map((_, idx) => idx);
+    }
+
+    const highs = indices.map(i => highPrices[i]);
+    const lows = indices.map(i => lowPrices[i]);
+    const max = Math.max(...highs);
+    const min = Math.min(...lows);
+    const maxIdx = indices[highs.indexOf(max)];
+    const minIdx = indices[lows.indexOf(min)];
+
+    return {
+      max, min,
+      maxDate: new Date(dates[maxIdx]).getTime(),
+      minDate: new Date(dates[minIdx]).getTime(),
+      maxIdx,
+      minIdx,
+      visibleIndices: indices,
+    };
+  }, [activeStockDataSlice, visibleRange]);
+
+  const dynamicLines = useMemo(() => {
+    if (!activeStockDataSlice || !visibleHighLow) return null;
+
+    const { visibleIndices } = visibleHighLow;
+    const { highPrices, lowPrices, closePrices, openPrices, dates } = activeStockDataSlice;
+
+    const visHighs = visibleIndices.map(i => highPrices[i]);
+    const visLows = visibleIndices.map(i => lowPrices[i]);
+    const visCloses = visibleIndices.map(i => closePrices[i]);
+    const visOpens = visibleIndices.map(i => openPrices[i] || closePrices[i]);
+
+    const srRaw = calcSupportResistance(visHighs, visLows, visCloses, visOpens);
+
+    const supportData = srRaw.map((pt, idx) => ({
+      x: new Date(dates[visibleIndices[idx]]).getTime(),
+      y: pt.support ?? visCloses[idx],
+    }));
+
+    const resistanceData = srRaw.map((pt, idx) => ({
+      x: new Date(dates[visibleIndices[idx]]).getTime(),
+      y: pt.resistance ?? visCloses[idx],
+    }));
+
+    return {
+      supportData,
+      resistanceData,
+      latestSupport: srRaw[srRaw.length - 1]?.support ?? null,
+      latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
+    };
+  }, [activeStockDataSlice, visibleHighLow]);
 
   // Chart configuration for selected ticker
   const chartData = useMemo(() => {
@@ -447,6 +531,28 @@ export function ChartIndicatorsView() {
       colors.push(theme.palette.info.light); widths.push(1); dashes.push(0);
     }
 
+    if (showSupport && dynamicLines) {
+      series.push({
+        name: '지지선 (Support)',
+        type: 'line',
+        data: dynamicLines.supportData,
+      });
+      colors.push(theme.palette.success.main);
+      widths.push(2);
+      dashes.push(4);
+    }
+
+    if (showResistance && dynamicLines) {
+      series.push({
+        name: '저항선 (Resistance)',
+        type: 'line',
+        data: dynamicLines.resistanceData,
+      });
+      colors.push(theme.palette.error.main);
+      widths.push(2);
+      dashes.push(4);
+    }
+
     return {
       series,
       colors,
@@ -456,7 +562,7 @@ export function ChartIndicatorsView() {
         dashArray: dashes,
       },
     };
-  }, [activeStockDataSlice, techAnalysis, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, theme]);
+  }, [activeStockDataSlice, techAnalysis, dynamicLines, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, showSupport, showResistance, theme]);
 
   const formatMoney = useCallback((val: number) => {
     if (market === 'US') {
@@ -464,41 +570,6 @@ export function ChartIndicatorsView() {
     }
     return `${val.toLocaleString()}원`;
   }, [market]);
-
-  // Compute visible high/low based on visibleRange
-  const visibleHighLow = useMemo(() => {
-    if (!activeStockDataSlice) return null;
-    const { dates, highPrices, lowPrices } = activeStockDataSlice;
-
-    let indices: number[] = [];
-    if (visibleRange) {
-      dates.forEach((d, idx) => {
-        const time = new Date(d).getTime();
-        if (time >= visibleRange.min && time <= visibleRange.max) {
-          indices.push(idx);
-        }
-      });
-    }
-    if (indices.length === 0) {
-      indices = dates.map((_, idx) => idx);
-    }
-
-    const highs = indices.map(i => highPrices[i]);
-    const lows = indices.map(i => lowPrices[i]);
-    const max = Math.max(...highs);
-    const min = Math.min(...lows);
-    const maxIdx = indices[highs.indexOf(max)];
-    const minIdx = indices[lows.indexOf(min)];
-
-    return {
-      max, min,
-      maxDate: new Date(dates[maxIdx]).getTime(),
-      minDate: new Date(dates[minIdx]).getTime(),
-      maxIdx,
-      minIdx,
-      visibleIndices: indices,
-    };
-  }, [activeStockDataSlice, visibleRange]);
 
   const chartOptions = useMemo<any>(() => {
     const annotations: any = { yaxis: [], points: [] };
@@ -788,6 +859,10 @@ export function ChartIndicatorsView() {
               setShowRsi={setShowRsi}
               showMacd={showMacd}
               setShowMacd={setShowMacd}
+              showSupport={showSupport}
+              setShowSupport={setShowSupport}
+              showResistance={showResistance}
+              setShowResistance={setShowResistance}
             />
 
             {/* Apex Technical Chart (Left 8 Columns) */}
@@ -811,7 +886,13 @@ export function ChartIndicatorsView() {
               showEnv={showEnv}
               showFib={showFib}
               showDonchian={showDonchian}
-              techAnalysis={techAnalysis}
+              showSupport={showSupport}
+              showResistance={showResistance}
+              techAnalysis={{
+                ...techAnalysis,
+                latestSupport: dynamicLines?.latestSupport ?? techAnalysis.latestSupport,
+                latestResistance: dynamicLines?.latestResistance ?? techAnalysis.latestResistance,
+              }}
               formatMoney={formatMoney}
             />
           </Grid>
