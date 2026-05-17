@@ -28,12 +28,26 @@ import {
 
 // ----------------------------------------------------------------------
 
+const getLocalDateString = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
 export function ChartIndicatorsView() {
   const theme = useTheme();
 
   // Navigation states
   const [market, setMarket] = useState<'US' | 'KR'>('US');
-  const [period, setPeriod] = useState<PeriodKey>('1y');
+  const [period, setPeriod] = useState<PeriodKey | 'custom'>('1y');
+
+  const today = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(today.getMonth() - 1);
+
+  const [startDate, setStartDate] = useState<string>(getLocalDateString(oneMonthAgo));
+  const [endDate, setEndDate] = useState<string>(getLocalDateString(today));
 
   // Active Single Selected Ticker States
   const [usTicker, setUsTicker] = useState<string>('AAPL');
@@ -100,8 +114,14 @@ export function ChartIndicatorsView() {
 
     const allPrices = rawData.prices || [];
     const daysMap = { '3m': 63, '1y': 252, '2y': 504, '3y': 756 };
-    const days = daysMap[period];
-    const slice = allPrices.slice(-days);
+    
+    let slice;
+    if (period === 'custom' && startDate && endDate) {
+      slice = allPrices.filter((p) => p.date >= startDate && p.date <= endDate);
+    } else {
+      const days = daysMap[period === 'custom' ? '1y' : period];
+      slice = allPrices.slice(-days);
+    }
 
     const closePrices = slice.map((p) => p.close);
     const openPrices = slice.map((p) => p.open || p.close);
@@ -116,7 +136,7 @@ export function ChartIndicatorsView() {
       lowPrices,
       dates,
     };
-  }, [currentTicker, period]);
+  }, [currentTicker, period, startDate, endDate]);
 
   // Dynamic Technical Calculations
   const techAnalysis = useMemo(() => {
@@ -602,7 +622,7 @@ export function ChartIndicatorsView() {
 
   return (
     <DashboardContent maxWidth="xl">
-      <Stack spacing={4}>
+      <Stack spacing={2}>
         {/* Header with Market Selector & Period Selection */}
         <Stack
           direction={{ xs: 'column', md: 'row' }}
@@ -623,8 +643,12 @@ export function ChartIndicatorsView() {
           <MarketPeriodSelector
             market={market}
             period={period}
+            startDate={startDate}
+            endDate={endDate}
             onMarketChange={handleMarketChange}
             onPeriodChange={setPeriod}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
           />
         </Stack>
 
@@ -723,63 +747,80 @@ export function ChartIndicatorsView() {
 
         {/* 2. Technical Diagnostics & Price Action Chart */}
         {techAnalysis && selectedStockMeta && (
-          <Grid container spacing={4}>
+          <Grid container spacing={2}>
             {/* Real-time Technical Score Banner */}
             <Grid size={{ xs: 12 }}>
               <Card
                 sx={{
-                  p: 3,
+                  p: 2,
                   background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.12)} 0%, ${alpha(theme.palette.info.light, 0.08)} 100%)`,
                   border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
                   borderRadius: 2,
                 }}
               >
-                <Grid container spacing={3} alignItems="center">
-                  <Grid size={{ xs: 12, md: 8 }}>
-                    <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mb: 1.5 }}>
-                      <Chip
-                        label="차트 종합 분석 지수"
-                        color="primary"
-                        sx={{ fontWeight: 800, borderRadius: 1 }}
-                      />
-                      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                        동적 알고리즘 기준 스캔 완료
+                <Grid container spacing={2} alignItems="center">
+                  <Grid size={{ xs: 12, md: 8.5 }}>
+                    <Stack spacing={1}>
+                      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexWrap: 'wrap', gap: 1 }}>
+                        <Chip
+                          label="차트 종합 분석 지수"
+                          color="primary"
+                          size="small"
+                          sx={{ fontWeight: 800, borderRadius: 0.5 }}
+                        />
+                        <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary' }}>
+                          {techAnalysis.score >= 70
+                            ? '긍정적 매수 세력 유입세 🚀'
+                            : techAnalysis.score <= 35
+                              ? '하방 압력 가중, 비중 조절 주의 ⚠️'
+                              : '수렴구간, 중립 횡보 및 탐색 ⚖️'}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                          • 동적 알고리즘 스캔 완료
+                        </Typography>
+                      </Stack>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.4 }}>
+                        RSI {techAnalysis.latestRsi.toFixed(1)} 수준과 MACD 오실레이터, 이동평균선의 정합성을 바탕으로 도출한 {selectedStockMeta.name}({selectedStockMeta.ticker})의 기술적 모멘텀 점수는{' '}
+                        <b>{techAnalysis.score}점</b>입니다.
                       </Typography>
                     </Stack>
-                    <Typography variant="h4" sx={{ fontWeight: 900, mb: 1 }}>
-                      {techAnalysis.score >= 70
-                        ? '긍정적 매수 세력 유입세 🚀'
-                        : techAnalysis.score <= 35
-                          ? '하방 압력 가중, 비중 조절 주의 ⚠️'
-                          : '수렴구간, 중립 횡보 및 탐색 ⚖️'}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      RSI {techAnalysis.latestRsi.toFixed(1)} 수준과 MACD 오실레이터, 이동평균선의 정합성을 바탕으로 도출한 {selectedStockMeta.name}({selectedStockMeta.ticker})의 기술적 모멘텀 점수는{' '}
-                      <b>{techAnalysis.score}점</b>입니다.
-                    </Typography>
                   </Grid>
 
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <Stack direction="column" alignItems="center" sx={{ p: 2, bgcolor: alpha(theme.palette.background.paper, 0.8), borderRadius: 1.5 }}>
-                      <Typography variant="overline" sx={{ color: 'text.disabled', fontWeight: 800 }}>
-                        종합 분석 강도
-                      </Typography>
-                      <Typography
-                        variant="h3"
-                        sx={{
-                          fontWeight: 900,
-                          color: techAnalysis.score >= 70 ? 'success.main' : techAnalysis.score <= 35 ? 'error.main' : 'warning.main',
-                          my: 1,
-                        }}
-                      >
-                        {techAnalysis.score} / 100
-                      </Typography>
-                      <LinearProgress
-                        variant="determinate"
-                        value={techAnalysis.score}
-                        color={techAnalysis.score >= 70 ? 'success' : techAnalysis.score <= 35 ? 'error' : 'warning'}
-                        sx={{ width: '100%', height: 6, borderRadius: 3 }}
-                      />
+                  <Grid size={{ xs: 12, md: 3.5 }}>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      spacing={2}
+                      sx={{
+                        p: 1.5,
+                        bgcolor: alpha(theme.palette.background.paper, 0.8),
+                        borderRadius: 1.5,
+                        border: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
+                      }}
+                    >
+                      <Box sx={{ minWidth: 80, textAlign: 'center' }}>
+                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, display: 'block', mb: 0.2 }}>
+                          종합 점수
+                        </Typography>
+                        <Typography
+                          variant="h5"
+                          sx={{
+                            fontWeight: 900,
+                            color: techAnalysis.score >= 70 ? 'success.main' : techAnalysis.score <= 35 ? 'error.main' : 'warning.main',
+                            lineHeight: 1,
+                          }}
+                        >
+                          {techAnalysis.score} / 100
+                        </Typography>
+                      </Box>
+                      <Box sx={{ flexGrow: 1 }}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={techAnalysis.score}
+                          color={techAnalysis.score >= 70 ? 'success' : techAnalysis.score <= 35 ? 'error' : 'warning'}
+                          sx={{ height: 6, borderRadius: 3 }}
+                        />
+                      </Box>
                     </Stack>
                   </Grid>
                 </Grid>
@@ -787,8 +828,8 @@ export function ChartIndicatorsView() {
             </Grid>
 
             {/* 💡 Interactive Technical Indicators Toggle Controller */}
-            <Grid size={{ xs: 12 }} sx={{ mb: 1 }}>
-              <Card sx={{ p: 2.5, boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}` }}>
+            <Grid size={{ xs: 12 }}>
+              <Card sx={{ p: 2, boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}` }}>
                 <Stack
                   direction={{ xs: 'column', md: 'row' }}
                   alignItems={{ xs: 'flex-start', md: 'center' }}

@@ -24,10 +24,12 @@ import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 const DAILY_INVESTMENT = 10000; // 매일 1만원
 
 interface KrAnalysisViewProps {
-  period: PeriodKey;
+  period: PeriodKey | 'custom';
+  startDate?: string;
+  endDate?: string;
 }
 
-export function KrAnalysisView({ period }: KrAnalysisViewProps) {
+export function KrAnalysisView({ period, startDate, endDate }: KrAnalysisViewProps) {
   const theme = useTheme();
   const [selectedTickers, setSelectedTickers] = useState<string[]>(['005930.KS', '000660.KS', '035420.KS']);
   const [inputValue, setInputValue] = useState('');
@@ -35,7 +37,6 @@ export function KrAnalysisView({ period }: KrAnalysisViewProps) {
 
   const rawChartData = useMemo(() => {
     const daysMap = { '3m': 63, '1y': 252, '2y': 504, '3y': 756 };
-    const days = daysMap[period];
 
     return selectedTickers
       .map((ticker) => {
@@ -43,7 +44,13 @@ export function KrAnalysisView({ period }: KrAnalysisViewProps) {
         if (!rawData) return null;
 
         const allPrices = rawData.prices || [];
-        const slice = allPrices.slice(-days);
+        let slice;
+        if (period === 'custom' && startDate && endDate) {
+          slice = allPrices.filter((p) => p.date >= startDate && p.date <= endDate);
+        } else {
+          const days = daysMap[period === 'custom' ? '1y' : period];
+          slice = allPrices.slice(-days);
+        }
 
         const chart_data = slice.map((p) => p.close);
         const chart_labels = slice.map((p) => p.date);
@@ -56,7 +63,7 @@ export function KrAnalysisView({ period }: KrAnalysisViewProps) {
         };
       })
       .filter((item): item is NonNullable<typeof item> => item !== null);
-  }, [selectedTickers, period]);
+  }, [selectedTickers, period, startDate, endDate]);
 
   const comparisonSeries = useMemo(() => rawChartData.map((item) => ({
       name: item.companyName,
@@ -85,7 +92,7 @@ export function KrAnalysisView({ period }: KrAnalysisViewProps) {
       const finalValue = history[history.length - 1]?.y || 0;
       const totalInvestedAmount = totalInvested;
       const profit = finalValue - totalInvestedAmount;
-      const profitPct = (profit / totalInvestedAmount) * 100;
+      const profitPct = totalInvestedAmount > 0 ? (profit / totalInvestedAmount) * 100 : 0;
 
       return {
         ticker: item.ticker,

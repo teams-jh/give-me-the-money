@@ -16,9 +16,23 @@ import { KrAnalysisView } from './kr-analysis-view';
 
 // ----------------------------------------------------------------------
 
+const getLocalDateString = (date: Date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
 export function DetailedAnalysisView() {
   const [market, setMarket] = useState<'US' | 'KR'>('US');
-  const [period, setPeriod] = useState<PeriodKey>('1y');
+  const [period, setPeriod] = useState<PeriodKey | 'custom'>('1y');
+
+  const today = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(today.getMonth() - 1);
+
+  const [startDate, setStartDate] = useState<string>(getLocalDateString(oneMonthAgo));
+  const [endDate, setEndDate] = useState<string>(getLocalDateString(today));
 
   return (
     <DashboardContent maxWidth="xl">
@@ -42,15 +56,19 @@ export function DetailedAnalysisView() {
           <MarketPeriodSelector
             market={market}
             period={period}
+            startDate={startDate}
+            endDate={endDate}
             onMarketChange={setMarket}
             onPeriodChange={setPeriod}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
           />
         </Stack>
 
         {market === 'US' ? (
-          <UsAnalysisView period={period} />
+          <UsAnalysisView period={period} startDate={startDate} endDate={endDate} />
         ) : (
-          <KrAnalysisView period={period} />
+          <KrAnalysisView period={period} startDate={startDate} endDate={endDate} />
         )}
       </Stack>
     </DashboardContent>
