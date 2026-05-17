@@ -46,11 +46,11 @@ jobs:
 
       - name: Update KR ticker metadata (일봉 1개 추가)
         working-directory: server_node
-        run: npx tsx scripts/update_ticker_metadata.ts --market kr ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+        run: npx tsx scripts/fetch/update_ticker_metadata.ts --market kr ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Update FX rate
         working-directory: server_node
-        run: npx tsx scripts/update_fx_rate.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+        run: npx tsx scripts/fetch/update_fx_rate.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Analyze KR signals
         run: npx tsx scripts/analyze_signals.ts --market kr
@@ -108,7 +108,7 @@ jobs:
 
       - name: Update US ticker metadata (일봉 1개 추가)
         working-directory: server_node
-        run: npx tsx scripts/update_ticker_metadata.ts --market us ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+        run: npx tsx scripts/fetch/update_ticker_metadata.ts --market us ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Analyze US signals
         run: npx tsx scripts/analyze_signals.ts --market us

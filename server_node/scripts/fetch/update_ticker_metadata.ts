@@ -8,15 +8,15 @@
  *   4. 완료 후 all_{market}_tickers.json 을 시총 기준 재정렬
  *
  * 실행:
- *   npx tsx server_node/scripts/update_ticker_metadata.ts --market us          # 미국 전체
- *   npx tsx server_node/scripts/update_ticker_metadata.ts --market kr          # 국내 전체
- *   npx tsx server_node/scripts/update_ticker_metadata.ts --market us --force  # 강제 재다운로드
- *   npx tsx server_node/scripts/update_ticker_metadata.ts --market us --ticker AAPL
- *   npx tsx server_node/scripts/update_ticker_metadata.ts --market kr --ticker 005930.KS
+ *   npx tsx scripts/fetch/update_ticker_metadata.ts --market us          # 미국 전체
+ *   npx tsx scripts/fetch/update_ticker_metadata.ts --market kr          # 국내 전체
+ *   npx tsx scripts/fetch/update_ticker_metadata.ts --market us --force  # 강제 재다운로드
+ *   npx tsx scripts/fetch/update_ticker_metadata.ts --market us --ticker AAPL
+ *   npx tsx scripts/fetch/update_ticker_metadata.ts --market kr --ticker 005930.KS
  *
  * 사전 조건:
- *   npx tsx server_node/scripts/merge_us_tickers.ts   # --market us
- *   npx tsx server_node/scripts/merge_kr_tickers.ts   # --market kr
+ *   npx tsx scripts/merge/merge_us_tickers.ts   # --market us
+ *   npx tsx scripts/merge/merge_kr_tickers.ts   # --market kr
  */
 
 import fs   from "fs";

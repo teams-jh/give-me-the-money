@@ -11,7 +11,7 @@
  *   Fastly CDN 레벨에서 차단(HTTP 406)하므로 Wikipedia로 소스 변경.
  *
  * 실행:
- *   npx tsx server_node/scripts/update_nasdaq100.ts
+ *   npx tsx scripts/fetch/update_nasdaq100.ts
  */
 
 import fs   from "fs";
