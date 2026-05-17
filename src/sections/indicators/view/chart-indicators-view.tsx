@@ -2,29 +2,28 @@
 
 import type { PeriodKey } from 'src/sections/top100/types';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-import Chip from '@mui/material/Chip';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import Autocomplete from '@mui/material/Autocomplete';
-import LinearProgress from '@mui/material/LinearProgress';
 import { alpha, useTheme } from '@mui/material/styles';
 
-import ChartApex from 'react-apexcharts';
-
-import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
+import {
+  calcMA, calcRSI, calcMACD,
+  calcEnvelope, calcBollingerBands, calcDonchianChannels,
+} from 'src/library/shared/indicators';
+
 import { MarketPeriodSelector } from 'src/components/market-period-selector';
 
-import { DiagnosticCard } from '../components/diagnostic-card';
-import {
-  calcMA, calcRSI, calcBollingerBands,
-  calcMACD, calcEnvelope, calcDonchianChannels,
-} from 'src/library/shared/indicators';
+import { TechnicalApexChart } from '../components/technical-apex-chart';
+import { TickerSelectionCard } from '../components/ticker-selection-card';
+import { TechnicalScoreBanner } from '../components/technical-score-banner';
+import { IndicatorFilterChips } from '../components/indicator-filter-chips';
+import { TechnicalDiagnosticsPanel } from '../components/technical-diagnostics-panel';
 
 // ----------------------------------------------------------------------
 
@@ -418,14 +417,12 @@ export function ChartIndicatorsView() {
     };
   }, [activeStockDataSlice, techAnalysis, showSma5, showSma20, showSma60, showSma120, showSma240, showBb, showEnv, showDonchian, theme]);
 
-  const currencySymbol = market === 'US' ? '$' : '₩';
-
-  const formatMoney = (val: number) => {
+  const formatMoney = useCallback((val: number) => {
     if (market === 'US') {
       return `$${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
     return `${val.toLocaleString()}원`;
-  };
+  }, [market]);
 
   // Compute visible high/low based on visibleRange
   const visibleHighLow = useMemo(() => {
@@ -588,7 +585,7 @@ export function ChartIndicatorsView() {
         strokeDashArray: 3,
       },
     };
-  }, [theme, market, chartData, showFib, visibleHighLow]);
+  }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, visibleRange]);
 
   const handleTickerChange = (newValue: { ticker: string; name: string } | null) => {
     if (newValue) {
@@ -609,51 +606,6 @@ export function ChartIndicatorsView() {
       setKrTicker('005930.KS');
     }
   };
-
-  const getRsiDiagnostic = (val: number) => {
-    if (val >= 70) return { status: 'Bearish', label: '과매수 (Overbought) ⚠️', desc: '상승 에너지가 과도하게 팽창하여 단기 조정을 경계해야 하는 영역입니다.' };
-    if (val <= 30) return { status: 'Bullish', label: '과매도 (Oversold) 🟢', desc: '과도한 투매로 기술적 반등 및 바닥 형성 기대감이 증가하는 국면입니다.' };
-    if (val >= 50) return { status: 'Neutral', label: '강세 유지 (Neutral-Bullish) 👍', desc: '매수 거래량이 우위를 지키며 안정적인 상승 동력을 이어가는 상태입니다.' };
-    return { status: 'Neutral', label: '약세 우려 (Neutral-Bearish) 👎', desc: '상승세가 다소 둔화되어 단기적인 매수 대기 상태를 유지하는 것이 적합합니다.' };
-  };
-
-  const getMaDiagnostic = (price: number, sma20: number, sma50: number) => {
-    if (price > sma20 && sma20 > sma50) {
-      return { status: 'Bullish', label: '정배열 강세 상승 🚀', desc: '단기/장기 이동평균선이 정배열 상태를 이루어 전형적인 강세 상승 국면에 진입했습니다.' };
-    }
-    if (price < sma20 && sma20 < sma50) {
-      return { status: 'Bearish', label: '역배열 추세 약세 📉', desc: '모든 이동평균선 아래로 주가가 이탈하여 하락 추세가 장기화될 우려가 있는 리스크 구간입니다.' };
-    }
-    return { status: 'Neutral', label: '추세 전환 횡보 ⚖️', desc: '주가와 이동평균선이 수렴하여 에너지를 응축하며 새로운 방향성을 저울질하는 단계입니다.' };
-  };
-
-  const getMacdDiagnostic = (hist: number, line: number, sig: number) => {
-    if (hist > 0 && line > sig) {
-      return { status: 'Bullish', label: '골든크로스 상승 🟢', desc: 'MACD 라인이 시그널 선을 돌파한 후 오실레이터가 상승을 이어가며 강력한 매수 모멘텀을 형성 중입니다.' };
-    }
-    if (hist < 0 && line < sig) {
-      return { status: 'Bearish', label: '데드크로스 하락 🔴', desc: 'MACD 라인이 시그널 아래로 꺾이며 하향 침체 구간으로 진입, 조정 모멘텀이 강화되고 있습니다.' };
-    }
-    return { status: 'Neutral', label: '수렴 변곡점 형성 ⚖️', desc: '추세 강도의 모멘텀 차이가 미미하며 조만간 돌파 방향이 확정될 변곡점에 위치해 있습니다.' };
-  };
-
-  const getBbDiagnostic = (price: number, upper: number, lower: number, middle: number) => {
-    const range = upper - lower;
-    const pos = range !== 0 ? (price - lower) / range : 0.5;
-
-    if (price >= upper * 0.98) {
-      return { status: 'Bearish', label: '상단 밴드 저항 돌파 ⚠️', desc: '볼린저 밴드 상단선을 돌파 혹은 근접하여 가격이 변동성 한계치에 이르렀으므로 저항 매물을 주의해야 합니다.' };
-    }
-    if (price <= lower * 1.02) {
-      return { status: 'Bullish', label: '하단 밴드 과매수 기회 🟢', desc: '밴드 하단을 건드리며 단기 낙폭 과대 현상이 나타났고, 지지 반등 가능성이 열려있는 지점입니다.' };
-    }
-    return { status: 'Neutral', label: '중앙 지지선 안착 ⚖️', desc: '밴드 내 중심 평균선(SMA 20) 부근에서 가격 안정성을 다지며 매물 소화 과정을 거치는 중입니다.' };
-  };
-
-  const rsiDiag = techAnalysis ? getRsiDiagnostic(techAnalysis.latestRsi) : null;
-  const maDiag = techAnalysis ? getMaDiagnostic(techAnalysis.currentPrice, techAnalysis.latestSma20, techAnalysis.latestSma50) : null;
-  const macdDiag = techAnalysis ? getMacdDiagnostic(techAnalysis.latestHist, techAnalysis.latestMacd, techAnalysis.latestSignal) : null;
-  const bbDiag = techAnalysis ? getBbDiagnostic(techAnalysis.currentPrice, techAnalysis.latestBbUpper, techAnalysis.latestBbLower, techAnalysis.latestBbSma) : null;
 
   return (
     <DashboardContent maxWidth="xl">
@@ -688,396 +640,76 @@ export function ChartIndicatorsView() {
         </Stack>
 
         {/* 1. Single Ticker Selection Card */}
-        <Card sx={{ p: 3, boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}` }}>
-          <Grid container spacing={3} alignItems="center">
-            <Grid size={{ xs: 12, md: 7 }}>
-              <Autocomplete
-                fullWidth
-                selectOnFocus
-                clearOnBlur
-                handleHomeEndKeys
-                options={tickerOptions}
-                getOptionLabel={(option) => `${option.name} (${option.ticker})`}
-                value={selectedStockMeta ? { ticker: selectedStockMeta.ticker, name: selectedStockMeta.name } : null}
-                onChange={(e, v) => handleTickerChange(v)}
-                filterOptions={(options, state) => {
-                  const query = state.inputValue.toLowerCase().trim();
-                  if (!query) return options;
-
-                  // If the query is exactly the label of the currently selected stock, show all options
-                  if (
-                    selectedStockMeta &&
-                    `${selectedStockMeta.name} (${selectedStockMeta.ticker})`.toLowerCase() === query
-                  ) {
-                    return options;
-                  }
-
-                  return options.filter(
-                    (opt) =>
-                      opt.ticker.toLowerCase().includes(query) ||
-                      opt.name.toLowerCase().includes(query)
-                  );
-                }}
-                renderOption={(props, option) => (
-                  <Box component="li" {...props} key={option.ticker}>
-                    <Stack>
-                      <Typography variant="subtitle2">{option.name}</Typography>
-                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                        {option.ticker}
-                      </Typography>
-                    </Stack>
-                  </Box>
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={market === 'US' ? '미국 분석 종목 선택' : '한국 분석 종목 선택'}
-                    placeholder="티커 또는 회사명 검색..."
-                  />
-                )}
-              />
-            </Grid>
-
-            {/* Current Active Single Selection Details */}
-            {selectedStockMeta && techAnalysis && (
-              <Grid size={{ xs: 12, md: 5 }} sx={{ minWidth: 0 }}>
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  alignItems="center"
-                  justifyContent={{ xs: 'flex-start', md: 'flex-end' }}
-                  sx={{ minWidth: 0 }}
-                >
-                  <Box sx={{ minWidth: 0, flexShrink: 1 }}>
-                    <Typography variant="overline" sx={{ color: 'text.disabled', fontWeight: 800, display: 'block' }}>
-                      현재 선택된 종목
-                    </Typography>
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-                      <Chip
-                        label={selectedStockMeta.ticker}
-                        color="primary"
-                        variant="soft"
-                        sx={{ fontWeight: 800, flexShrink: 0 }}
-                      />
-                      <Typography
-                        variant="subtitle1"
-                        noWrap
-                        sx={{ fontWeight: 800 }}
-                        title={selectedStockMeta.name}
-                      >
-                        {selectedStockMeta.name}
-                      </Typography>
-                    </Stack>
-                  </Box>
-
-                  <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 900, whiteSpace: 'nowrap' }}>
-                      {formatMoney(techAnalysis.currentPrice)}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontWeight: 700,
-                        color: techAnalysis.dailyChange >= 0 ? 'error.main' : 'success.main',
-                        whiteSpace: 'nowrap',
-                        display: 'block',
-                      }}
-                    >
-                      {techAnalysis.dailyChange >= 0 ? '▲' : '▼'}{' '}
-                      {formatMoney(Math.abs(techAnalysis.dailyChange))} ({techAnalysis.dailyChangePct.toFixed(2)}%)
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Grid>
-            )}
-          </Grid>
-        </Card>
+        <TickerSelectionCard
+          market={market}
+          tickerOptions={tickerOptions}
+          selectedStockMeta={selectedStockMeta}
+          techAnalysis={techAnalysis}
+          handleTickerChange={handleTickerChange}
+          formatMoney={formatMoney}
+        />
 
         {/* 2. Technical Diagnostics & Price Action Chart */}
         {techAnalysis && selectedStockMeta && (
           <Grid container spacing={2}>
             {/* Real-time Technical Score Banner */}
-            <Grid size={{ xs: 12 }}>
-              <Card
-                sx={{
-                  p: 2,
-                  background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.12)} 0%, ${alpha(theme.palette.info.light, 0.08)} 100%)`,
-                  border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
-                  borderRadius: 2,
-                }}
-              >
-                <Grid container spacing={2} alignItems="center">
-                  <Grid size={{ xs: 12, md: 8.5 }}>
-                    <Stack spacing={1}>
-                      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexWrap: 'wrap', gap: 1 }}>
-                        <Chip
-                          label="차트 종합 분석 지수"
-                          color="primary"
-                          size="small"
-                          sx={{ fontWeight: 800, borderRadius: 0.5 }}
-                        />
-                        <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary' }}>
-                          {techAnalysis.score >= 70
-                            ? '긍정적 매수 세력 유입세 🚀'
-                            : techAnalysis.score <= 35
-                              ? '하방 압력 가중, 비중 조절 주의 ⚠️'
-                              : '수렴구간, 중립 횡보 및 탐색 ⚖️'}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                          • 동적 알고리즘 스캔 완료
-                        </Typography>
-                      </Stack>
-                      <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.4 }}>
-                        RSI {techAnalysis.latestRsi.toFixed(1)} 수준과 MACD 오실레이터, 이동평균선의 정합성을 바탕으로 도출한 {selectedStockMeta.name}({selectedStockMeta.ticker})의 기술적 모멘텀 점수는{' '}
-                        <b>{techAnalysis.score}점</b>입니다.
-                      </Typography>
-                    </Stack>
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 3.5 }}>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      spacing={2}
-                      sx={{
-                        p: 1.5,
-                        bgcolor: alpha(theme.palette.background.paper, 0.8),
-                        borderRadius: 1.5,
-                        border: `1px solid ${alpha(theme.palette.divider, 0.6)}`,
-                      }}
-                    >
-                      <Box sx={{ minWidth: 80, textAlign: 'center' }}>
-                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, display: 'block', mb: 0.2 }}>
-                          종합 점수
-                        </Typography>
-                        <Typography
-                          variant="h5"
-                          sx={{
-                            fontWeight: 900,
-                            color: techAnalysis.score >= 70 ? 'success.main' : techAnalysis.score <= 35 ? 'error.main' : 'warning.main',
-                            lineHeight: 1,
-                          }}
-                        >
-                          {techAnalysis.score} / 100
-                        </Typography>
-                      </Box>
-                      <Box sx={{ flexGrow: 1 }}>
-                        <LinearProgress
-                          variant="determinate"
-                          value={techAnalysis.score}
-                          color={techAnalysis.score >= 70 ? 'success' : techAnalysis.score <= 35 ? 'error' : 'warning'}
-                          sx={{ height: 6, borderRadius: 3 }}
-                        />
-                      </Box>
-                    </Stack>
-                  </Grid>
-                </Grid>
-              </Card>
-            </Grid>
+            <TechnicalScoreBanner
+              score={techAnalysis.score}
+              stockName={selectedStockMeta.name}
+              stockTicker={selectedStockMeta.ticker}
+              latestRsi={techAnalysis.latestRsi}
+            />
 
             {/* 💡 Interactive Technical Indicators Toggle Controller */}
-            <Grid size={{ xs: 12 }}>
-              <Card sx={{ p: 2, boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}` }}>
-                <Stack
-                  direction={{ xs: 'column', md: 'row' }}
-                  alignItems={{ xs: 'flex-start', md: 'center' }}
-                  justifyContent="space-between"
-                  spacing={2}
-                >
-                  <Box>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
-                      🛠️ 기술적 분석 지표 활성화 필터
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                      원하는 보조지표를 활성화하면 차트에 선이 실시간으로 표기되고 우측 진단 설명 보드가 생성됩니다.
-                    </Typography>
-                  </Box>
-                  <Stack direction="row" spacing={1.5} sx={{ flexWrap: 'wrap', gap: 1.5 }}>
-                    <Chip label="MA 5" color={showSma5 ? 'secondary' : 'default'} variant={showSma5 ? 'filled' : 'outlined'} onClick={() => setShowSma5(!showSma5)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-                    <Chip label="MA 20" color={showSma20 ? 'warning' : 'default'} variant={showSma20 ? 'filled' : 'outlined'} onClick={() => setShowSma20(!showSma20)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-                    <Chip label="MA 60" color={showSma60 ? 'info' : 'default'} variant={showSma60 ? 'filled' : 'outlined'} onClick={() => setShowSma60(!showSma60)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-                    <Chip label="MA 120" color={showSma120 ? 'error' : 'default'} variant={showSma120 ? 'filled' : 'outlined'} onClick={() => setShowSma120(!showSma120)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-                    <Chip label="MA 240" color={showSma240 ? 'default' : 'default'} variant={showSma240 ? 'filled' : 'outlined'} onClick={() => setShowSma240(!showSma240)} sx={{ fontWeight: 700, cursor: 'pointer' }} />
-                    <Chip
-                      label="볼린저 밴드 (Bollinger)"
-                      color={showBb ? 'success' : 'default'}
-                      variant={showBb ? 'filled' : 'outlined'}
-                      onClick={() => setShowBb(!showBb)}
-                      sx={{ fontWeight: 700, cursor: 'pointer' }}
-                    />
-                    <Chip
-                      label="엔벨로프 (Envelope)"
-                      color={showEnv ? 'secondary' : 'default'}
-                      variant={showEnv ? 'filled' : 'outlined'}
-                      onClick={() => setShowEnv(!showEnv)}
-                      sx={{ fontWeight: 700, cursor: 'pointer' }}
-                    />
-                    <Chip
-                      label="피보나치 (Fibonacci)"
-                      color={showFib ? 'error' : 'default'}
-                      variant={showFib ? 'filled' : 'outlined'}
-                      onClick={() => setShowFib(!showFib)}
-                      sx={{ fontWeight: 700, cursor: 'pointer' }}
-                    />
-                    <Chip
-                      label="돈천 채널 (Donchian)"
-                      color={showDonchian ? 'info' : 'default'}
-                      variant={showDonchian ? 'filled' : 'outlined'}
-                      onClick={() => setShowDonchian(!showDonchian)}
-                      sx={{ fontWeight: 700, cursor: 'pointer' }}
-                    />
-                    <Chip
-                      label="RSI (14)"
-                      color={showRsi ? 'primary' : 'default'}
-                      variant={showRsi ? 'filled' : 'outlined'}
-                      onClick={() => setShowRsi(!showRsi)}
-                      sx={{ fontWeight: 700, cursor: 'pointer' }}
-                    />
-                    <Chip
-                      label="MACD"
-                      color={showMacd ? 'info' : 'default'}
-                      variant={showMacd ? 'filled' : 'outlined'}
-                      onClick={() => setShowMacd(!showMacd)}
-                      sx={{ fontWeight: 700, cursor: 'pointer' }}
-                    />
-                  </Stack>
-                </Stack>
-              </Card>
-            </Grid>
+            <IndicatorFilterChips
+              showSma5={showSma5}
+              setShowSma5={setShowSma5}
+              showSma20={showSma20}
+              setShowSma20={setShowSma20}
+              showSma60={showSma60}
+              setShowSma60={setShowSma60}
+              showSma120={showSma120}
+              setShowSma120={setShowSma120}
+              showSma240={showSma240}
+              setShowSma240={setShowSma240}
+              showBb={showBb}
+              setShowBb={setShowBb}
+              showEnv={showEnv}
+              setShowEnv={setShowEnv}
+              showFib={showFib}
+              setShowFib={setShowFib}
+              showDonchian={showDonchian}
+              setShowDonchian={setShowDonchian}
+              showRsi={showRsi}
+              setShowRsi={setShowRsi}
+              showMacd={showMacd}
+              setShowMacd={setShowMacd}
+            />
 
             {/* Apex Technical Chart (Left 8 Columns) */}
-            <Grid size={{ xs: 12, lg: 8 }}>
-              <Card sx={{ p: 3, height: 600, boxShadow: theme.customShadows?.card }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                    {selectedStockMeta.name} 주가 및 지표 추이 ({period.toUpperCase()})
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 600 }}>
-                    실선: 주가 | 점선: 볼린저 밴드 & SMA 20
-                  </Typography>
-                </Stack>
-
-                <Box sx={{ height: 500 }}>
-                  <ChartApex
-                    options={chartOptions}
-                    series={chartData.series}
-                    type="line"
-                    height="100%"
-                  />
-                </Box>
-              </Card>
-            </Grid>
+            <TechnicalApexChart
+              selectedStockMetaName={selectedStockMeta.name}
+              period={period}
+              chartOptions={chartOptions}
+              chartSeries={chartData.series}
+            />
 
             {/* Real-time calculated Diagnostic Cards (Right 4 Columns) */}
-            <Grid size={{ xs: 12, lg: 4 }}>
-              <Stack spacing={3} sx={{ height: '100%' }}>
-                {/* 1. MA Diagnostic Card */}
-                {/* 1. MA Diagnostic Card */}
-                {(showSma5 || showSma20 || showSma60 || showSma120 || showSma240) && maDiag && (
-                  <DiagnosticCard
-                    title="이동평균선 (MA)"
-                    label={maDiag.label}
-                    status={maDiag.status}
-                    desc={maDiag.desc}
-                    value={`SMA20: ${formatMoney(techAnalysis.latestSma20)}`}
-                  />
-                )}
-
-                {/* 2. RSI Diagnostic Card */}
-                {showRsi && rsiDiag && (
-                  <DiagnosticCard
-                    title="상대강도지수 (RSI)"
-                    label={rsiDiag.label}
-                    status={rsiDiag.status}
-                    desc={rsiDiag.desc}
-                    value={`RSI(14): ${techAnalysis.latestRsi.toFixed(1)}`}
-                  />
-                )}
-
-                {/* 3. MACD Diagnostic Card */}
-                {showMacd && macdDiag && (
-                  <DiagnosticCard
-                    title="MACD (12, 26, 9)"
-                    label={macdDiag.label}
-                    status={macdDiag.status}
-                    desc={macdDiag.desc}
-                    value={`Oscillator: ${techAnalysis.latestHist.toFixed(2)}`}
-                  />
-                )}
-
-                {/* 4. Bollinger Bands Diagnostic Card */}
-                {showBb && bbDiag && (
-                  <DiagnosticCard
-                    title="볼린저 밴드"
-                    label={bbDiag.label}
-                    status={bbDiag.status}
-                    desc={bbDiag.desc}
-                    value={`Upper Band: ${formatMoney(techAnalysis.latestBbUpper)}`}
-                  />
-                )}
-
-                {/* 5. Envelope Diagnostic Card */}
-                {showEnv && (
-                  <DiagnosticCard
-                    title="엔벨로프 (Envelope 10%)"
-                    label="단기 과매도/과매수 반등 타점 📏"
-                    status="Neutral"
-                    desc="주가가 밴드 하단을 뚫고 터치하면 과매도로 기술적 반등 매수 타점, 상단은 저항선으로 판단합니다."
-                    value={`Upper: ${formatMoney(techAnalysis.latestEnvUpper)}`}
-                  />
-                )}
-
-                {/* 6. Fibonacci Diagnostic Card */}
-                {showFib && (
-                  <DiagnosticCard
-                    title="피보나치 조정대"
-                    label="지지선 및 저항선 예측 📐"
-                    status="Neutral"
-                    desc="상승 후 조정 시 38.2% 또는 61.8% 비율에서 강력한 지지를 받고 반등할 확률이 높습니다."
-                    value={`38.2%: ${formatMoney(techAnalysis.fibonacci.fib382)}`}
-                  />
-                )}
-
-                {/* 7. Donchian Channels Diagnostic Card */}
-                {showDonchian && (
-                  <DiagnosticCard
-                    title="돈천 채널 (가격 채널)"
-                    label="돌파 매매 추세 확인 🚀"
-                    status="Neutral"
-                    desc="주가가 상단선을 돌파하면 강력한 상승 추세의 시작, 하단 이탈 시 하락 추세 시작으로 해석합니다."
-                    value={`Upper: ${formatMoney(techAnalysis.latestDonchianUpper)}`}
-                  />
-                )}
-
-                {/* Fallback empty state when all indicators are toggled off */}
-                {!showSma5 && !showSma20 && !showSma60 && !showSma120 && !showSma240 && !showBb && !showRsi && !showMacd && !showEnv && !showFib && !showDonchian && (
-                  <Card
-                    sx={{
-                      p: 4,
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      textAlign: 'center',
-                      bgcolor: alpha(theme.palette.background.neutral || theme.palette.grey[200], 0.4),
-                      border: `1px dashed ${theme.palette.divider}`,
-                      borderRadius: 2,
-                    }}
-                  >
-                    <Typography variant="h3" sx={{ mb: 1.5 }}>
-                      💡
-                    </Typography>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 0.5 }}>
-                      활성화된 보조지표 진단이 없습니다
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', maxWidth: 240 }}>
-                      차트 종합 분석 지수 아래의 필터를 선택하여 차트 분석을 진행해 보세요!
-                    </Typography>
-                  </Card>
-                )}
-              </Stack>
-            </Grid>
+            <TechnicalDiagnosticsPanel
+              showSma5={showSma5}
+              showSma20={showSma20}
+              showSma60={showSma60}
+              showSma120={showSma120}
+              showSma240={showSma240}
+              showBb={showBb}
+              showRsi={showRsi}
+              showMacd={showMacd}
+              showEnv={showEnv}
+              showFib={showFib}
+              showDonchian={showDonchian}
+              techAnalysis={techAnalysis}
+              formatMoney={formatMoney}
+            />
           </Grid>
         )}
       </Stack>
