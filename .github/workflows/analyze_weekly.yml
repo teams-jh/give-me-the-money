@@ -41,7 +41,7 @@ jobs:
         run: npm ci
 
       - name: Run analyze_trends (KR)
-        run: npx tsx server_node/scripts/analyze_trends.ts --market kr -n ${{ matrix.n }} --period ${{ matrix.period }}
+        run: npx tsx scripts/analyze_trends.ts --market kr -n ${{ matrix.n }} --period ${{ matrix.period }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -77,7 +77,7 @@ jobs:
         run: npm ci
 
       - name: Run analyze_trends (US)
-        run: npx tsx server_node/scripts/analyze_trends.ts --market us -n ${{ matrix.n }} --period ${{ matrix.period }}
+        run: npx tsx scripts/analyze_trends.ts --market us -n ${{ matrix.n }} --period ${{ matrix.period }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

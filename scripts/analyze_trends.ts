@@ -10,23 +10,23 @@
  *   4. src/db/{market}_trend/trend_{n}_{period}.json 저장
  *
  * 실행 예:
- *   npx tsx server_node/scripts/analyze_trends.ts --market us
- *   npx tsx server_node/scripts/analyze_trends.ts --market kr -n 100
- *   npx tsx server_node/scripts/analyze_trends.ts --market us --period 1y
- *   npx tsx server_node/scripts/analyze_trends.ts --market kr -n 50 --period 3m
+ *   npx tsx scripts/analyze_trends.ts --market us
+ *   npx tsx scripts/analyze_trends.ts --market kr -n 100
+ *   npx tsx scripts/analyze_trends.ts --market us --period 1y
+ *   npx tsx scripts/analyze_trends.ts --market kr -n 50 --period 3m
  */
 
 import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { classifyTrend } from "../../src/library/shared/classifyTrend.js";
-import type { PriceSeries, TrendResult, TrendType } from "../../src/library/shared/classifyTrend.js";
+import { classifyTrend } from "../src/library/shared/classifyTrend.ts";
+import type { PriceSeries, TrendResult, TrendType } from "../src/library/shared/classifyTrend.ts";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
-const DB_DIR = path.resolve(__dirname, "../../src/db");
+const DB_DIR = path.resolve(__dirname, "../src/db");
 
 // ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
