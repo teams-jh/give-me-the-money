@@ -23,12 +23,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'AL is well',
-  description: 'AL is well PWA Application',
+  title: '돈 내놔',
+  description: 'Give me the money PWA Application',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'AL is well',
+    title: '돈 내놔',
   },
   formatDetection: {
     telephone: false,
