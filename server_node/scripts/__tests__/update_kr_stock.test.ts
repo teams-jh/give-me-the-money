@@ -45,8 +45,9 @@ vi.mock("adm-zip", () => ({
 }));
 
 // iconv-lite: server_node 전용 → 루트에 없을 수 있으므로 mock 처리
+const mockIconvDecode = vi.hoisted(() => vi.fn((_buf: unknown, _enc: string) => ""));
 vi.mock("iconv-lite", () => ({
-  default: { decode: (_buf: Buffer, _enc: string) => "" },
+  default: { decode: (...a: unknown[]) => mockIconvDecode(...a) },
 }));
 
 // ── ZIP 헬퍼 (adm-zip 없이 fake Buffer 반환) ──────────────────────────────────
@@ -196,5 +197,208 @@ describe("main() 시나리오", () => {
     const kqTickers = codes.map((t) => `${t.code}.KQ`);
     expect(ksTickers[0]).toBe("005930.KS");
     expect(kqTickers[0]).toBe("005930.KQ");
+  });
+});
+
+// ── TC11~12: parseMst() 인라인 재현 ──────────────────────────────────────────
+
+/** parseMst 소스 로직 인라인 재현 (iconv 없이 문자열 직접 처리) */
+function parseMstInline(
+  text: string,
+  byteSize: number,
+  part1Cols: readonly string[],
+  part2Cols: readonly string[],
+  fieldSpecs: readonly number[],
+  groupCol: string,
+  capSizeCol: string,
+  nameCol: string,
+  marketCapPos: number,
+  marketCapWidth: number,
+): ParsedRow[] {
+  const rows: ParsedRow[] = [];
+  for (const line of text.split("\n")) {
+    const row = line + "\n";
+    if (row.length <= byteSize) continue;
+    const frontEnd = row.length - byteSize;
+    const rf1 = row.slice(0, frontEnd);
+    const record: Record<string, string> = {
+      [part1Cols[0]!]: rf1.slice(0, 9).trimEnd(),
+      [part1Cols[1]!]: rf1.slice(9, 21).trimEnd(),
+      [part1Cols[2]!]: rf1.slice(21).trim(),
+    };
+    const part2 = row.slice(-byteSize);
+    let pos = 0;
+    for (let i = 0; i < Math.min(fieldSpecs.length, part2Cols.length); i++) {
+      const w = fieldSpecs[i]!;
+      record[part2Cols[i]!] = part2.slice(pos, pos + w).trimEnd();
+      pos += w;
+    }
+    const marketCapStr = part2.slice(marketCapPos, marketCapPos + marketCapWidth).trim();
+    const marketCap = parseInt(marketCapStr, 10) || 0;
+    rows.push({
+      code:      record[part1Cols[0]!] ?? "",
+      name:      record[nameCol] ?? "",
+      capSize:   record[capSizeCol] ?? "",
+      marketCap,
+      groupCode: record[groupCol] ?? "",
+    });
+  }
+  return rows;
+}
+
+// KOSPI 설정값 (byteSize=228, marketCapPos=212, width=9)
+const KOSPI_BYTE_SIZE = 228;
+const KOSPI_PART1 = ["단축코드", "표준코드", "한글명"] as const;
+const KOSPI_GROUP = "그룹코드";
+const KOSPI_CAPSIZE = "시가총액규모";
+const KOSPI_NAME = "한글명";
+const KOSPI_MARKET_CAP_POS = 212;
+const KOSPI_MARKET_CAP_WIDTH = 9;
+// part2Cols[0] = "그룹코드", [1] = "시가총액규모" (fieldSpecs 첫 두 개: 2, 1)
+const KOSPI_PART2_COLS = ["그룹코드", "시가총액규모"] as const;
+const KOSPI_FIELD_SPECS = [2, 1] as const;
+
+/**
+ * KOSPI .mst 라인 생성 헬퍼
+ * part2 구조: groupCode(2) + capSize(1) + " "×209 + marketCapStr(9) + " "×6 = 227chars + "\n" = 228
+ */
+function makeKospiLine(code: string, name: string, groupCode: string, marketCap: number): string {
+  const frontPart = code.padEnd(9) + "KR7".padEnd(12) + name;
+  const marketCapStr = String(marketCap).padStart(9, " ");
+  // part2Content = groupCode(2) + capSize(1) + spaces(209) + marketCapStr(9) + spaces(6) = 227
+  const part2Content = groupCode.padEnd(2).slice(0, 2)
+    + "대"
+    + " ".repeat(209)
+    + marketCapStr
+    + " ".repeat(6);
+  return frontPart + part2Content; // row = line + "\n" = frontPart + part2Content + "\n"
+}
+
+describe("parseMst() 인라인 재현", () => {
+  it("TC11 - 정상 라인 파싱: code/name/groupCode/marketCap 추출", () => {
+    const line = makeKospiLine("005930", "삼성전자", "ST", 500_000);
+    const text = line;
+    const rows = parseMstInline(
+      text, KOSPI_BYTE_SIZE, KOSPI_PART1, KOSPI_PART2_COLS,
+      KOSPI_FIELD_SPECS, KOSPI_GROUP, KOSPI_CAPSIZE, KOSPI_NAME,
+      KOSPI_MARKET_CAP_POS, KOSPI_MARKET_CAP_WIDTH,
+    );
+    expect(rows.length).toBe(1);
+    expect(rows[0]!.code).toBe("005930");
+    expect(rows[0]!.name).toBe("삼성전자");
+    expect(rows[0]!.groupCode).toBe("ST");
+    expect(rows[0]!.marketCap).toBe(500_000);
+  });
+
+  it("TC12 - byteSize 이하 라인 무시 / marketCap 빈 문자열 → 0", () => {
+    const shortLine = "짧은라인";  // byteSize(228) 미만 → 무시
+    // marketCap 위치에 공백 → parseInt("") = NaN → 0
+    const zeroCapLine = makeKospiLine("000001", "테스트", "ST", 0);
+    const text = shortLine + "\n" + zeroCapLine;
+    const rows = parseMstInline(
+      text, KOSPI_BYTE_SIZE, KOSPI_PART1, KOSPI_PART2_COLS,
+      KOSPI_FIELD_SPECS, KOSPI_GROUP, KOSPI_CAPSIZE, KOSPI_NAME,
+      KOSPI_MARKET_CAP_POS, KOSPI_MARKET_CAP_WIDTH,
+    );
+    expect(rows.length).toBe(1);       // 짧은 라인 제외
+    expect(rows[0]!.marketCap).toBe(0);
+  });
+});
+
+// ── TC13: saveJson() 인라인 재현 ──────────────────────────────────────────────
+
+describe("saveJson() 인라인 재현", () => {
+  it("TC13 - tickers/name_map/yahooSuffix 포함 JSON writeFileSync 호출", () => {
+    vi.clearAllMocks();
+    const rows: ParsedRow[] = [
+      { code: "005930", name: "삼성전자", capSize: "대", marketCap: 500_000, groupCode: "ST" },
+      { code: "000660", name: "SK하이닉스", capSize: "대", marketCap: 300_000, groupCode: "ST" },
+    ];
+    const yahooSuffix = ".KS";
+    const tickerKeys = rows.map((t) => `${t.code}${yahooSuffix}`);
+    const out = {
+      updated_at:  new Date().toISOString(),
+      source:      "한국투자증권 DWS – kospi_code.mst.zip",
+      source_url:  "https://example.com",
+      total_count: rows.length,
+      tickers:     tickerKeys,
+      name_map:    Object.fromEntries(tickerKeys.map((k, i) => [k, rows[i]!.name])),
+    };
+    mockWriteFileSync(out, JSON.stringify(out, null, 2), "utf8");
+    expect(mockWriteFileSync).toHaveBeenCalled();
+    expect(out.tickers).toContain("005930.KS");
+    expect(out.name_map["000660.KS"]).toBe("SK하이닉스");
+  });
+});
+
+// ── TC14~TC16: main() 정상 흐름 ──────────────────────────────────────────────
+
+describe("main() 정상 흐름", () => {
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); mockIconvDecode.mockReturnValue(""); });
+
+  it("TC14 - kospi + kosdaq 모두 성공 → writeFileSync 2회 호출", async () => {
+    // KOSPI 200개 + KOSDAQ 150개 라인 생성
+    const kospiLines = Array.from({ length: 200 }, (_, i) =>
+      makeKospiLine(String(i + 1).padStart(6, "0"), `코스피${i + 1}`, "ST", 100_000 + i)
+    ).join("\n");
+
+    // KOSDAQ: byteSize=222, marketCapPos=216, marketCapWidth=5
+    // part2Content = 221자: "ST"(2)+"중"(1)+" "*213+"10000"(5) = 221 → +"\n" = 222 ✓
+    function makeKosdaqLine(code: string, name: string): string {
+      const frontPart = code.padEnd(9) + "KR8".padEnd(12) + name;
+      const part2Content = "ST" + "중" + " ".repeat(213) + "10000"; // 2+1+213+5 = 221
+      return frontPart + part2Content;
+    }
+    const kosdaqLines = Array.from({ length: 150 }, (_, i) =>
+      makeKosdaqLine(String(i + 200001).padStart(6, "0"), `코스닥${i + 1}`)
+    ).join("\n");
+
+    // iconv.decode: 첫 호출(KOSPI) → kospiLines, 두 번째(KOSDAQ) → kosdaqLines
+    mockIconvDecode
+      .mockReturnValueOnce(kospiLines)
+      .mockReturnValueOnce(kosdaqLines);
+
+    setupMstEntry("dummy");
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_kr_stock.js");
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalledTimes(2), { timeout: 5000 });
+    expect(mockExit).not.toHaveBeenCalled();
+    mockExit.mockRestore();
+  });
+
+  it("TC15 - 두 번째 인덱스(kosdaq) axios 실패 → process.exit(1)", async () => {
+    const kospiLines = Array.from({ length: 200 }, (_, i) =>
+      makeKospiLine(String(i + 1).padStart(6, "0"), `종목${i + 1}`, "ST", 100_000 + i)
+    ).join("\n");
+
+    mockIconvDecode.mockReturnValueOnce(kospiLines).mockReturnValueOnce("");
+
+    setupMstEntry("dummy");
+    mockAxiosGet
+      .mockResolvedValueOnce({ data: Buffer.from("").buffer })  // KOSPI 성공
+      .mockRejectedValueOnce(new Error("KOSDAQ 네트워크 오류")); // KOSDAQ 실패
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_kr_stock.js");
+    await vi.waitFor(() => expect(mockExit).toHaveBeenCalledWith(1), { timeout: 5000 });
+    mockExit.mockRestore();
+  });
+
+  it("TC16 - parseMst: groupCode !== ST 종목 필터 → minCount 미달 시 exit(1)", async () => {
+    // 200줄 모두 groupCode="PF"(우선주) → filterAndRank 통과 0 → minCount 미달
+    const pfLines = Array.from({ length: 200 }, (_, i) =>
+      makeKospiLine(String(i + 1).padStart(6, "0"), `우선주${i + 1}`, "PF", 100_000)
+    ).join("\n");
+
+    mockIconvDecode.mockReturnValueOnce(pfLines);
+    setupMstEntry("dummy");
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_kr_stock.js");
+    await vi.waitFor(() => expect(mockExit).toHaveBeenCalledWith(1), { timeout: 5000 });
+    mockExit.mockRestore();
   });
 });

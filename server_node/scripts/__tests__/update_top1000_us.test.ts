@@ -15,6 +15,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import AdmZipMod from "adm-zip";
 // adm-zip 은 server_node 전용 dependency → 테스트에서 직접 import 불가.
 // 소스 파일의 adm-zip 호출은 아래 vi.mock() 으로 대체.
 
@@ -76,13 +77,15 @@ vi.mock("axios", () => ({
 // adm-zip mock: .cod 엔트리 없음으로 처리 (한글명 맵 빈 상태)
 vi.mock("adm-zip", () => ({
   default: vi.fn().mockImplementation(() => ({
-    getEntries: () => [],  // .cod 엔트리 없음 → buildKnamMap 스킵
+    getEntries: () => [],            // .cod 엔트리 없음 → buildKnamMap 스킵
+    readFile:   vi.fn(() => Buffer.from("")),
   })),
 }));
 
-// iconv-lite mock
+// iconv-lite mock: vi.fn()으로 per-test 제어 가능하게
+const mockIconvDecode = vi.hoisted(() => vi.fn((_buf: unknown, _enc: string) => ""));
 vi.mock("iconv-lite", () => ({
-  default: { decode: (_buf: Buffer, _enc: string) => "" },
+  default: { decode: (...a: unknown[]) => mockIconvDecode(...a) },
 }));
 
 // ── TC01~07: buildAndSave() ───────────────────────────────────────────────────
@@ -227,5 +230,104 @@ describe("main() 시나리오", () => {
     await import("../fetch/update_top1000_us.js");
     // main()은 fire-and-forget → vi.waitFor로 writeFileSync 완료 대기
     await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 5000 });
+  });
+});
+
+// ── TC11~TC13: 복수 페이지 / buildKnamMap .cod 파싱 ──────────────────────────
+
+describe("fetchTop1000FromScreener + buildKnamMap 추가 시나리오", () => {
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); mockIconvDecode.mockReturnValue(""); });
+
+  it("TC11 - 복수 페이지: 첫 페이지 가득 참(PAGE_SIZE=250) → sleep 후 두 번째 페이지", async () => {
+    // crumb 획득
+    mockAxiosGet.mockResolvedValueOnce({ headers: { "set-cookie": ["A=1; Path=/"] }, data: "" });
+    mockAxiosGet.mockResolvedValueOnce({ data: "testcrumb123" });
+    // DWS zip × 3 (buildKnamMap - .cod 없음)
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
+
+    // PAGE_SIZE = 250 → 첫 페이지 가득 참 → sleep(300) 호출 후 다음 페이지
+    const fullPage = Array.from({ length: 250 }, (_, i) => ({
+      symbol: `T${String(i).padStart(3, "0")}`, marketCap: 1_000_000_000 + i,
+    }));
+    mockAxiosPost
+      .mockResolvedValueOnce({ data: { finance: { result: [{ quotes: fullPage }] } } })
+      .mockResolvedValueOnce({ data: { finance: { result: [{ quotes: [{ symbol: "LAST", marketCap: 1e8 }] }] } } });
+
+    await import("../fetch/update_top1000_us.js");
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 6000 });
+    expect(mockAxiosPost).toHaveBeenCalledTimes(2);
+  });
+
+  it("TC12 - buildKnamMap: .cod 엔트리 존재 + TSV 파싱 → knamMap에 한글명 포함", async () => {
+    // crumb 획득
+    mockAxiosGet.mockResolvedValueOnce({ headers: { "set-cookie": ["A=1; Path=/"] }, data: "" });
+    mockAxiosGet.mockResolvedValueOnce({ data: "testcrumb123" });
+    // DWS zip × 3: .cod 엔트리 있음
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
+
+    // COD_COLUMNS: ncod exid excd exnm symb rsym knam enam ...
+    const codLine = ["001", "01", "NAS", "NASDAQ", "AAPL", "NAAPL", "애플", "Apple Inc"]
+      .concat(Array(16).fill("")).join("\t");
+
+    // adm-zip: .cod 엔트리 반환 (regular function 필수 - Vitest v4 new 호환)
+    vi.mocked(AdmZipMod).mockImplementation(
+      function() {
+        return {
+          getEntries: () => [{ entryName: "nasd.cod", getData: () => Buffer.from("") }],
+          readFile:   () => Buffer.from(codLine),
+        };
+      } as never,
+    );
+
+    // iconv.decode: codLine 반환 (1개 유효 엔트리)
+    mockIconvDecode.mockReturnValue(codLine + "\n");
+
+    // Screener: 1개 종목
+    mockAxiosPost.mockResolvedValue({
+      data: { finance: { result: [{ quotes: [{ symbol: "AAPL", marketCap: 3e12 }] }] } },
+    });
+
+    await import("../fetch/update_top1000_us.js");
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 5000 });
+
+    // 저장된 JSON에 name_map["AAPL"] = "애플" 포함 확인
+    const savedJson = JSON.parse(mockWriteFileSync.mock.calls[0]?.[1] as string) as {
+      name_map: Record<string, string>;
+    };
+    expect(savedJson.name_map["AAPL"]).toBe("애플");
+  });
+
+  it("TC13 - buildKnamMap: symb/knam 없는 라인 무시 → map 크기 0", async () => {
+    mockAxiosGet.mockResolvedValueOnce({ headers: { "set-cookie": ["A=1; Path=/"] }, data: "" });
+    mockAxiosGet.mockResolvedValueOnce({ data: "testcrumb123" });
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
+
+    // symb(4번째)와 knam(6번째)이 비어있는 라인
+    const emptyCodLine = ["001", "01", "NAS", "NASDAQ", "", "RSYM", "", "Ename"]
+      .concat(Array(16).fill("")).join("\t");
+
+    vi.mocked(AdmZipMod).mockImplementation(
+      function() {
+        return {
+          getEntries: () => [{ entryName: "nasd.cod", getData: () => Buffer.from("") }],
+          readFile:   () => Buffer.from(emptyCodLine),
+        };
+      } as never,
+    );
+    mockIconvDecode.mockReturnValue(emptyCodLine + "\n");
+
+    mockAxiosPost.mockResolvedValue({
+      data: { finance: { result: [{ quotes: [{ symbol: "MSFT", marketCap: 2e12 }] }] } },
+    });
+
+    await import("../fetch/update_top1000_us.js");
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 5000 });
+
+    // symb 없어서 knamMap 비어있음 → name_map["MSFT"] = longName or symbol fallback
+    const savedJson = JSON.parse(mockWriteFileSync.mock.calls[0]?.[1] as string) as {
+      name_map: Record<string, string>;
+    };
+    // knamMap 없으므로 longName(없음) → symbol fallback
+    expect(savedJson.name_map["MSFT"]).toBe("MSFT");
   });
 });

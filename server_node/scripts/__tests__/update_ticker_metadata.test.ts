@@ -258,6 +258,18 @@ describe("isUpdatedToday()", () => {
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
     expect(isUpdatedToday("/fake/nonexistent.json")).toBe(false);
   });
+
+  it("TC21 - updated_at 필드 없음 → false", () => {
+    mockReadFileSync.mockReturnValue(JSON.stringify({}));
+    expect(isUpdatedToday("/fake/ticker.json")).toBe(false);
+  });
+
+  it("TC22 - 어제 날짜 → false", () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: yesterday.toISOString() }));
+    expect(isUpdatedToday("/fake/ticker.json")).toBe(false);
+  });
 });
 
 // ── TC15~18: buildTickerJson() ────────────────────────────────────────────────
@@ -322,6 +334,165 @@ describe("main() 시나리오", () => {
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
     await import("../fetch/update_ticker_metadata.js");
     expect(mockExit).toHaveBeenCalledWith(1);
+    mockExit.mockRestore();
+    process.argv = ["node", "script.ts"];
+  });
+});
+
+// ── TC23~TC28: main() 정상 흐름 ───────────────────────────────────────────────
+
+describe("main() 정상 흐름 시나리오", () => {
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
+
+  it("TC23 - 정상 흐름: 1개 티커 처리 → writeFileSync + sortAllTickersByMarketCap 호출", async () => {
+    process.argv = ["node", "script.ts", "--market", "us"];
+
+    // existsSync 순서: loadTickers(true), processTicker(false=신규), sortAllTickersByMarketCap(true=존재)
+    mockExistsSync
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+
+    // readFileSync 순서: loadTickers, sortSort×tickersJson, sortSort×AAPL.json
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
+      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 3_000_000_000_000 } }));
+
+    mockHistorical.mockResolvedValue([{
+      date: new Date("2024-01-02"), open: 180, high: 185, low: 175,
+      close: 182, adjClose: 182, volume: 1_000_000,
+    }]);
+    mockQuoteSummary.mockResolvedValue({
+      price: { longName: "Apple Inc", currency: "USD", regularMarketPrice: 182, marketState: "REGULAR" },
+      incomeStatementHistoryQuarterly: {
+        incomeStatementHistory: [
+          { endDate: new Date("2024-03-31"), netIncome: 2e10 },
+        ],
+      },
+    });
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_ticker_metadata.js");
+
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 5000 });
+    expect(mockExit).not.toHaveBeenCalled();
+    mockExit.mockRestore();
+    process.argv = ["node", "script.ts"];
+  });
+
+  it("TC24 - force=false, 오늘 날짜 파일 존재 → skipped (yahooFinance 미호출)", async () => {
+    process.argv = ["node", "script.ts", "--market", "us"];
+
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockImplementation((p: string) => {
+      if (String(p).includes("all_us_tickers.json")) {
+        return JSON.stringify({ tickers: ["AAPL"], name_map: {} });
+      }
+      return JSON.stringify({ updated_at: new Date().toISOString(), market: { market_cap: 3e12 } });
+    });
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_ticker_metadata.js");
+
+    // skipped → yahooFinance 미호출, sortAllTickersByMarketCap은 실행(writeFileSync)
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 5000 });
+    expect(mockHistorical).not.toHaveBeenCalled();
+    expect(mockExit).not.toHaveBeenCalled();
+    mockExit.mockRestore();
+    process.argv = ["node", "script.ts"];
+  });
+
+  it("TC25 - --force 플래그: 오늘 날짜 파일 있어도 강제 재처리", async () => {
+    process.argv = ["node", "script.ts", "--market", "us", "--force"];
+
+    mockExistsSync
+      .mockReturnValueOnce(true)   // loadTickers
+      .mockReturnValueOnce(true)   // processTicker: 파일 있지만 force=true → skip 안 함
+      .mockReturnValueOnce(true);  // sortAllTickersByMarketCap
+
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
+      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 3e12 } }));
+
+    mockHistorical.mockResolvedValue([]);
+    mockQuoteSummary.mockResolvedValue({ price: { longName: "Apple Inc" } });
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_ticker_metadata.js");
+
+    await vi.waitFor(() => expect(mockQuoteSummary).toHaveBeenCalled(), { timeout: 5000 });
+    mockExit.mockRestore();
+    process.argv = ["node", "script.ts"];
+  });
+
+  it("TC26 - yahooFinance 에러 → error 카운트 (process.exit 없음)", async () => {
+    process.argv = ["node", "script.ts", "--market", "us"];
+
+    mockExistsSync
+      .mockReturnValueOnce(true)   // loadTickers
+      .mockReturnValueOnce(false); // processTicker: 파일 없음
+
+    mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }));
+
+    mockQuoteSummary.mockRejectedValue(new Error("Yahoo API timeout"));
+    mockHistorical.mockResolvedValue([]);
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_ticker_metadata.js");
+
+    await new Promise((r) => setTimeout(r, 500));
+    expect(mockExit).not.toHaveBeenCalled();
+    mockExit.mockRestore();
+    process.argv = ["node", "script.ts"];
+  });
+
+  it("TC27 - --ticker 단일 지정 → sortAllTickersByMarketCap 미호출", async () => {
+    process.argv = ["node", "script.ts", "--market", "us", "--ticker", "AAPL"];
+
+    mockExistsSync
+      .mockReturnValueOnce(true)   // loadTickers
+      .mockReturnValueOnce(false); // processTicker: 파일 없음
+
+    mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL", "MSFT"], name_map: {} }));
+    mockHistorical.mockResolvedValue([]);
+    mockQuoteSummary.mockResolvedValue({ price: { longName: "Apple Inc" } });
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_ticker_metadata.js");
+
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 5000 });
+    // --ticker 있으면 sortAllTickersByMarketCap 미호출 → readFileSync 1번(loadTickers)만
+    expect(mockReadFileSync).toHaveBeenCalledTimes(1);
+    mockExit.mockRestore();
+    process.argv = ["node", "script.ts"];
+  });
+
+  it("TC28 - kr 마켓: name_map 한글명 processTicker에 주입", async () => {
+    process.argv = ["node", "script.ts", "--market", "kr"];
+
+    mockExistsSync
+      .mockReturnValueOnce(true)   // loadTickers: all_kr_tickers.json
+      .mockReturnValueOnce(false)  // processTicker
+      .mockReturnValueOnce(true);  // sortAllTickersByMarketCap
+
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["005930.KS"], name_map: { "005930.KS": "삼성전자" } }))
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["005930.KS"], name_map: { "005930.KS": "삼성전자" } }))
+      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 5e14 } }));
+
+    mockHistorical.mockResolvedValue([]);
+    mockQuoteSummary.mockResolvedValue({ price: { longName: "Samsung Electronics" } });
+
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_ticker_metadata.js");
+
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 5000 });
+    const writtenJson = JSON.parse(mockWriteFileSync.mock.calls[0]?.[1] as string) as {
+      info: { kr_name: string };
+    };
+    expect(writtenJson.info.kr_name).toBe("삼성전자");
     mockExit.mockRestore();
     process.argv = ["node", "script.ts"];
   });
