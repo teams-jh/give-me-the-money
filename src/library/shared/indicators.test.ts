@@ -332,3 +332,220 @@ describe('calcROC', () => {
     expect(result[5]).toBe(-50);
   });
 });
+
+// ── calcStochastic ────────────────────────────────────────────────────────────
+
+import { calcStochastic, calcADX, calcMFI, calcSupertrend } from './indicators.ts';
+
+describe('calcStochastic', () => {
+  it('결과 배열 길이는 입력과 동일하다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 25 }, (_, i) => 100 + i));
+    const result = calcStochastic(ohlcv);
+    expect(result).toHaveLength(ohlcv.length);
+  });
+
+  it('kPeriod 미만 구간은 k, d 모두 null이다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 25 }, (_, i) => 100 + i));
+    const result = calcStochastic(ohlcv, 14, 3, 3);
+    expect(result[0]!.k).toBeNull();
+    expect(result[0]!.d).toBeNull();
+  });
+
+  it('k, d 값은 0 ~ 100 범위다', () => {
+    const ohlcv = makeOHLCV(
+      Array.from({ length: 40 }, (_, i) => 100 + Math.sin(i / 4) * 20)
+    );
+    const result = calcStochastic(ohlcv, 14, 3, 3);
+    result.forEach(pt => {
+      if (pt.k !== null) { expect(pt.k).toBeGreaterThanOrEqual(0); expect(pt.k).toBeLessThanOrEqual(100); }
+      if (pt.d !== null) { expect(pt.d).toBeGreaterThanOrEqual(0); expect(pt.d).toBeLessThanOrEqual(100); }
+    });
+  });
+
+  it('고가=저가인 봉은 k=50을 반환한다 (분모 0 처리)', () => {
+    // 모든 봉의 high=low=close → 분모 0
+    const flatOHLCV: OHLCV[] = Array.from({ length: 25 }, (_, i) => ({
+      date: `2024-01-${String(i + 1).padStart(2, '0')}`,
+      open: 100, high: 100, low: 100, close: 100, volume: 1000,
+    }));
+    const result = calcStochastic(flatOHLCV, 14, 1, 1);
+    const valid = result.filter(pt => pt.k !== null);
+    valid.forEach(pt => expect(pt.k).toBe(50));
+  });
+});
+
+// ── calcADX ───────────────────────────────────────────────────────────────────
+
+describe('calcADX', () => {
+  it('결과 배열 길이는 입력과 동일하다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 40 }, (_, i) => 100 + i));
+    expect(calcADX(ohlcv, 14)).toHaveLength(ohlcv.length);
+  });
+
+  it('데이터가 period*2+1 미만이면 전부 null이다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 10 }, () => 100));
+    const result = calcADX(ohlcv, 14);
+    result.forEach(pt => {
+      expect(pt.adx).toBeNull();
+      expect(pt.plusDI).toBeNull();
+      expect(pt.minusDI).toBeNull();
+    });
+  });
+
+  it('강한 상승 추세에서 +DI > -DI이다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 50 }, (_, i) => 100 + i * 3));
+    const result = calcADX(ohlcv, 14);
+    const last = result[result.length - 1]!;
+    if (last.plusDI !== null && last.minusDI !== null) {
+      expect(last.plusDI).toBeGreaterThan(last.minusDI);
+    }
+  });
+
+  it('ADX 값은 0 ~ 100 범위다', () => {
+    const ohlcv = makeOHLCV(
+      Array.from({ length: 50 }, (_, i) => 100 + Math.sin(i / 3) * 15 + i * 0.5)
+    );
+    const result = calcADX(ohlcv, 14);
+    result.forEach(pt => {
+      if (pt.adx !== null) {
+        expect(pt.adx).toBeGreaterThanOrEqual(0);
+        expect(pt.adx).toBeLessThanOrEqual(100);
+      }
+    });
+  });
+});
+
+// ── calcMFI ───────────────────────────────────────────────────────────────────
+
+describe('calcMFI', () => {
+  it('결과 배열 길이는 입력과 동일하다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 20 }, (_, i) => 100 + i));
+    expect(calcMFI(ohlcv, 14)).toHaveLength(ohlcv.length);
+  });
+
+  it('period 미만 구간은 null이다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 20 }, (_, i) => 100 + i));
+    const result = calcMFI(ohlcv, 14);
+    for (let i = 0; i < 14; i++) expect(result[i]).toBeNull();
+  });
+
+  it('MFI 값은 0 ~ 100 범위다', () => {
+    const ohlcv = makeOHLCV(
+      Array.from({ length: 30 }, (_, i) => 100 + Math.sin(i / 3) * 10)
+    );
+    const result = calcMFI(ohlcv, 14);
+    result.forEach(v => {
+      if (v !== null) {
+        expect(v).toBeGreaterThanOrEqual(0);
+        expect(v).toBeLessThanOrEqual(100);
+      }
+    });
+  });
+
+  it('음의 거래량이 0이면 MFI = 100이다', () => {
+    // 모든 봉이 상승 → negMF = 0 → MFI = 100
+    const ohlcv: OHLCV[] = Array.from({ length: 20 }, (_, i) => ({
+      date:   `2024-01-${String(i + 1).padStart(2, '0')}`,
+      open:   100 + i, high: 101 + i, low: 99 + i,
+      close:  100 + i + 1, volume: 1000,
+    }));
+    const result = calcMFI(ohlcv, 14);
+    const last = result[result.length - 1];
+    expect(last).toBe(100);
+  });
+});
+
+// ── calcSupertrend ────────────────────────────────────────────────────────────
+
+describe('calcSupertrend', () => {
+  it('결과 배열 길이는 입력과 동일하다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 25 }, (_, i) => 100 + i));
+    expect(calcSupertrend(ohlcv, 10, 3)).toHaveLength(ohlcv.length);
+  });
+
+  it('ATR period 이전 구간은 supertrend가 null이다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 25 }, (_, i) => 100 + i));
+    const result = calcSupertrend(ohlcv, 10, 3);
+    expect(result[0]!.supertrend).toBeNull();
+    expect(result[9]!.supertrend).toBeNull();
+  });
+
+  it('direction은 bullish 또는 bearish 중 하나다', () => {
+    const ohlcv = makeOHLCV(
+      Array.from({ length: 40 }, (_, i) => 100 + Math.sin(i / 5) * 15)
+    );
+    const result = calcSupertrend(ohlcv, 10, 3);
+    result.forEach(pt => {
+      if (pt.direction !== null) {
+        expect(['bullish', 'bearish']).toContain(pt.direction);
+      }
+    });
+  });
+
+  it('강한 상승 추세에서 direction은 bullish이다', () => {
+    const ohlcv = makeOHLCV(Array.from({ length: 40 }, (_, i) => 100 + i * 5));
+    const result = calcSupertrend(ohlcv, 10, 3);
+    const last = result[result.length - 1]!;
+    expect(last.direction).toBe('bullish');
+  });
+});
+
+// ── calcEnvelope, calcDonchianChannels ────────────────────────────────────────
+
+import { calcEnvelope, calcDonchianChannels } from './indicators.ts';
+
+describe('calcEnvelope', () => {
+  it('period 미만 구간은 null이다', () => {
+    const closes = Array.from({ length: 25 }, (_, i) => 100 + i);
+    const result = calcEnvelope(closes, 20);
+    expect(result[0]).toEqual({ upper: null, mid: null, lower: null });
+  });
+
+  it('upper > mid > lower 순서를 유지한다', () => {
+    const closes = Array.from({ length: 25 }, (_, i) => 100 + i);
+    const result = calcEnvelope(closes, 20, 0.1);
+    result.forEach(pt => {
+      if (pt.upper !== null && pt.mid !== null && pt.lower !== null) {
+        expect(pt.upper).toBeGreaterThan(pt.mid);
+        expect(pt.mid).toBeGreaterThan(pt.lower);
+      }
+    });
+  });
+
+  it('percent=0.1이면 upper = mid * 1.1이다', () => {
+    const closes = Array.from({ length: 25 }, () => 100);
+    const result = calcEnvelope(closes, 20, 0.1);
+    const last = result[result.length - 1];
+    expect(last.upper).toBeCloseTo(110, 1);
+    expect(last.lower).toBeCloseTo(90, 1);
+  });
+});
+
+describe('calcDonchianChannels', () => {
+  it('period 미만 구간은 null이다', () => {
+    const closes = Array.from({ length: 25 }, (_, i) => 100 + i);
+    const result = calcDonchianChannels(closes, 20);
+    expect(result[0]).toEqual({ upper: null, mid: null, lower: null });
+  });
+
+  it('upper는 기간 내 최고가, lower는 최저가다', () => {
+    // 21개 데이터, period=20 → 마지막 슬라이스 [1..20] = 95~190, lower=95
+    const closes = [90, 95, 100, 105, 110, 115, 120, 125, 130, 135,
+                    140, 145, 150, 155, 160, 165, 170, 175, 180, 185, 190];
+    const result = calcDonchianChannels(closes, 20);
+    const last = result[result.length - 1];
+    expect(last.upper).toBe(190);
+    expect(last.lower).toBe(95); // index 1~20 슬라이스의 최솟값
+  });
+
+  it('upper >= mid >= lower 순서를 유지한다', () => {
+    const closes = Array.from({ length: 30 }, (_, i) => 100 + Math.sin(i) * 10);
+    const result = calcDonchianChannels(closes, 20);
+    result.forEach(pt => {
+      if (pt.upper !== null && pt.mid !== null && pt.lower !== null) {
+        expect(pt.upper).toBeGreaterThanOrEqual(pt.mid);
+        expect(pt.mid).toBeGreaterThanOrEqual(pt.lower);
+      }
+    });
+  });
+});
