@@ -46,11 +46,9 @@ jobs:
       - name: Run tests
         run: npm run test:run
 
-      # 커버리지는 정보용 — 테스트 미작성 파일로 인한 미달은 논블로킹
-      # 파일별 80% 목표: 테스트 추가할수록 자동으로 충족됨
+      # 커버리지 임계값(80%) 미달 시 CI 실패
       - name: Coverage report
         run: npm run test:ci
-        continue-on-error: true
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
