@@ -31,6 +31,12 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
+      # server_node 의존성 설치 (cheerio, adm-zip, iconv-lite 등)
+      # 루트 vitest가 server_node/scripts/**/*.ts 를 import할 때 필요
+      - name: Install server_node dependencies
+        working-directory: server_node
+        run: npm ci
+
       # 전체 프로젝트 tsc는 OOM 발생 → 백엔드/공용 로직만 체크
       - name: Type check (shared + scripts)
         run: npm run typecheck:check
