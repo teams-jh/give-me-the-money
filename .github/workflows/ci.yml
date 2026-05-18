@@ -9,6 +9,7 @@ on:
       - 'scripts/**'
       - 'server_node/**'
       - 'vitest.config.ts'
+      - 'tsconfig.check.json'
       - 'package.json'
   pull_request:
     branches: [main, develop]
@@ -31,8 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Type check
-        run: npm run typecheck
+      # 전체 프로젝트 tsc는 OOM 발생 → 백엔드/공용 로직만 체크
+      - name: Type check (shared + scripts)
+        run: npm run typecheck:check
 
       - name: Run tests
         run: npm run test:ci

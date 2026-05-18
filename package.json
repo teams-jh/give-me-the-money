@@ -28,6 +28,7 @@
     "tsc:watch": "tsc --noEmit --watch",
     "tsc:print": "npx tsc --showConfig",
     "typecheck": "tsc --noEmit",
+    "typecheck:check": "tsc --noEmit -p tsconfig.check.json",
     "test": "vitest",
     "test:run": "vitest run",
     "test:ci": "vitest run --coverage",

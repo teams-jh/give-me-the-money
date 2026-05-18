@@ -173,24 +173,20 @@ export function detectRSISignal(
   if (latestRSI !== null) {
     if (latestRSI > 80) {
       alerts.push({ type: "rsi_extreme_overbought", direction: "bearish", strength: "strong",
-        label: `RSI 극단 과매수 (${latestRSI},
-          scoreAffecting: true,
-        })`, value: latestRSI });
+        label: `RSI 극단 과매수 (${latestRSI})`,
+        value: latestRSI, scoreAffecting: true });
     } else if (latestRSI > 70) {
       alerts.push({ type: "rsi_overbought", direction: "bearish", strength: "normal",
-        label: `RSI 과매수 (${latestRSI},
-          scoreAffecting: true,
-        })`, value: latestRSI });
+        label: `RSI 과매수 (${latestRSI})`,
+        value: latestRSI, scoreAffecting: true });
     } else if (latestRSI < 20) {
       alerts.push({ type: "rsi_extreme_oversold", direction: "bullish", strength: "strong",
-        label: `RSI 극단 과매도 (${latestRSI},
-          scoreAffecting: true,
-        })`, value: latestRSI });
+        label: `RSI 극단 과매도 (${latestRSI})`,
+        value: latestRSI, scoreAffecting: true });
     } else if (latestRSI < 30) {
       alerts.push({ type: "rsi_oversold", direction: "bullish", strength: "normal",
-        label: `RSI 과매도 (${latestRSI},
-          scoreAffecting: true,
-        })`, value: latestRSI });
+        label: `RSI 과매도 (${latestRSI})`,
+        value: latestRSI, scoreAffecting: true });
     }
   }
 
