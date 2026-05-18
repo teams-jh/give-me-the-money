@@ -400,7 +400,10 @@ describe('loadTicker', () => {
 
 // ── main() TC ────────────────────────────────────────────────────────────────
 
-const SCRIPT_PATH_SIGNALS = '/home/claude/give-me-the-money/scripts/analyze_signals.ts';
+import { fileURLToPath } from 'url';
+import { dirname, resolve as resolvePath } from 'path';
+const __testDir = dirname(fileURLToPath(import.meta.url));
+const SCRIPT_PATH_SIGNALS = resolvePath(__testDir, 'analyze_signals.ts');
 
 /** 30개 이상 가격 데이터를 포함한 유효 티커 픽스처 */
 function makeSignalTicker(priceCount = 35): object {

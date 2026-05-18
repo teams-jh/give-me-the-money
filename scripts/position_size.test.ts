@@ -332,7 +332,10 @@ describe('bar()', () => {
 
 // ── main() TC ────────────────────────────────────────────────────────────────
 
-const SCRIPT_PATH_POS = '/home/claude/give-me-the-money/scripts/position_size.ts';
+import { fileURLToPath } from 'url';
+import { dirname, resolve as resolvePath } from 'path';
+const __testDir = dirname(fileURLToPath(import.meta.url));
+const SCRIPT_PATH_POS = resolvePath(__testDir, 'position_size.ts');
 
 const POSITION_RESULT = {
   totalCapital:    10_000_000,

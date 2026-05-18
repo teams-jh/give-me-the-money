@@ -250,7 +250,10 @@ describe('loadStocks', () => {
 
 // ── main() TC ────────────────────────────────────────────────────────────────
 
-const SCRIPT_PATH_SECTOR = '/home/claude/give-me-the-money/scripts/analyze_sector_rotation.ts';
+import { fileURLToPath } from 'url';
+import { dirname, resolve as resolvePath } from 'path';
+const __testDir = dirname(fileURLToPath(import.meta.url));
+const SCRIPT_PATH_SECTOR = resolvePath(__testDir, 'analyze_sector_rotation.ts');
 
 // 픽스처: 2분기 × 2섹터 (bigRiser/bigFaller, 수익률 vs 강도 비교 모두 커버)
 const ROTATION_RESULT = {

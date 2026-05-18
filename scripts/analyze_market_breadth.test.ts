@@ -353,7 +353,10 @@ describe('main() 통합', () => {
 
 // ── main() TC ────────────────────────────────────────────────────────────────
 
-const SCRIPT_PATH_BREADTH = '/home/claude/give-me-the-money/scripts/analyze_market_breadth.ts';
+import { fileURLToPath } from 'url';
+import { dirname, resolve as resolvePath } from 'path';
+const __testDir = dirname(fileURLToPath(import.meta.url));
+const SCRIPT_PATH_BREADTH = resolvePath(__testDir, 'analyze_market_breadth.ts');
 
 const makeWeekdaysLocal = (n: number, start = '2023-01-02') => {
   const dates: string[] = [];

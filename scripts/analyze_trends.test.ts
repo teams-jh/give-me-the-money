@@ -500,7 +500,10 @@ describe('loadPrices', () => {
 
 // ── main() TC ────────────────────────────────────────────────────────────────
 
-const SCRIPT_PATH_TRENDS = '/home/claude/give-me-the-money/scripts/analyze_trends.ts';
+import { fileURLToPath } from 'url';
+import { dirname, resolve as resolvePath } from 'path';
+const __testDir = dirname(fileURLToPath(import.meta.url));
+const SCRIPT_PATH_TRENDS = resolvePath(__testDir, 'analyze_trends.ts');
 
 const TICKERS_JSON_TREND = JSON.stringify({ tickers: ['AAPL'] });
 
