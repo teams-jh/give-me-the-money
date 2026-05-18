@@ -32,14 +32,21 @@ function filterAndRank(rows: ParsedRow[], topN: number): ParsedRow[] {
 }
 
 // ── adm-zip 모킹 ──────────────────────────────────────────────────────────────
+// vi.mock() 팩토리는 hoisting → const 변수는 TDZ → vi.hoisted() 로 먼저 선언
 
-const mockGetEntries = vi.fn();
-const mockGetData    = vi.fn(() => Buffer.from(""));
+const mockGetEntries = vi.hoisted(() => vi.fn<[], { entryName: string; getData: () => Buffer }[]>(() => []));
 
 vi.mock("adm-zip", () => ({
-  default: vi.fn().mockImplementation(() => ({
-    getEntries: mockGetEntries,
-  })),
+  // class 사용: arrow function은 new 불가 → "is not a constructor" 에러 방지
+  default: class MockAdmZip {
+    constructor(_buf: unknown) {}
+    getEntries() { return mockGetEntries(); }
+  },
+}));
+
+// iconv-lite: server_node 전용 → 루트에 없을 수 있으므로 mock 처리
+vi.mock("iconv-lite", () => ({
+  default: { decode: (_buf: Buffer, _enc: string) => "" },
 }));
 
 // ── ZIP 헬퍼 (adm-zip 없이 fake Buffer 반환) ──────────────────────────────────
@@ -163,7 +170,7 @@ describe("main() 시나리오", () => {
     mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
     await import("../fetch/update_kr_stock.js");
-    expect(mockExit).toHaveBeenCalledWith(1);
+    await vi.waitFor(() => expect(mockExit).toHaveBeenCalledWith(1), { timeout: 5000 });
     mockExit.mockRestore();
   });
 
