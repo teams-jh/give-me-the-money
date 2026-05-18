@@ -10,14 +10,32 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
 
+// ── vi.hoisted: 동적 import 후에도 동일 참조 유지 ──────────────────────────
+const mockReaddirSync   = vi.hoisted(() => vi.fn());
+const mockReadFileSync  = vi.hoisted(() => vi.fn());
+const mockWriteFileSync = vi.hoisted(() => vi.fn());
+const mockMkdirSync     = vi.hoisted(() => vi.fn());
+const mockExistsSync    = vi.hoisted(() => vi.fn());
+
+const mockCalcATR          = vi.hoisted(() => vi.fn());
+const mockCalcPositionSize = vi.hoisted(() => vi.fn());
+
 vi.mock('fs', () => ({
   default: {
-    readdirSync:   vi.fn(),
-    readFileSync:  vi.fn(),
-    writeFileSync: vi.fn(),
-    mkdirSync:     vi.fn(),
-    existsSync:    vi.fn(),
+    readdirSync:   mockReaddirSync,
+    readFileSync:  mockReadFileSync,
+    writeFileSync: mockWriteFileSync,
+    mkdirSync:     mockMkdirSync,
+    existsSync:    mockExistsSync,
   },
+}));
+
+// ── indicators / position 라이브러리 mock ─────────────────────────────────────
+vi.mock('../src/library/shared/indicators.ts', () => ({
+  calcATR: mockCalcATR,
+}));
+vi.mock('../src/library/shared/position.ts', () => ({
+  calcPositionSize: mockCalcPositionSize,
 }));
 
 import fs from 'fs';
@@ -285,3 +303,136 @@ describe('loadTicker', () => {
     exitSpy.mockRestore();
   });
 });
+
+// ── bar() ─────────────────────────────────────────────────────────────────────
+
+describe('bar()', () => {
+  it('0% → 전부 빈 블록(░)', () => {
+    expect(bar(0)).toBe('░'.repeat(30));
+  });
+
+  it('100% → 전부 채운 블록(█)', () => {
+    expect(bar(100)).toBe('█'.repeat(30));
+  });
+
+  it('50% → 절반씩', () => {
+    const result = bar(50);
+    expect(result).toBe('█'.repeat(15) + '░'.repeat(15));
+  });
+
+  it('max 파라미터 동작', () => {
+    expect(bar(100, 10)).toBe('█'.repeat(10));
+    expect(bar(0, 5)).toBe('░'.repeat(5));
+  });
+
+  it('100 초과 pct → 100으로 클리핑', () => {
+    expect(bar(150, 10)).toBe('█'.repeat(10));
+  });
+});
+
+// ── main() TC ────────────────────────────────────────────────────────────────
+
+const SCRIPT_PATH_POS = '/home/claude/give-me-the-money/scripts/position_size.ts';
+
+const POSITION_RESULT = {
+  totalCapital:    10_000_000,
+  riskPct:         1,
+  riskAmount:      100_000,
+  currentPrice:    175.5,
+  atrMultiplier:   2,
+  stopLoss:        168.5,
+  stopLossPct:     3.98,
+  lossPerShare:    7.0,
+  shares:          14,
+  totalInvestment: 2_457,
+  capitalUsagePct: 24.57,
+  actualRisk:      98,
+  targets: [
+    { ratio: 1, price: 182.5, returnPct: 4.0,  profit: 98 },
+    { ratio: 2, price: 189.5, returnPct: 8.0,  profit: 196 },
+    { ratio: 3, price: 196.5, returnPct: 12.0, profit: 294 },
+  ],
+  warnings: [],
+};
+
+function makePositionTicker(): object {
+  return {
+    ticker: 'AAPL',
+    info:   { name: 'Apple Inc.', kr_name: '애플', sector: 'Technology' },
+    market: { price: 175.5 },
+    prices: Array.from({ length: 20 }, (_, i) => ({
+      date:      `2024-01-${String(i + 1).padStart(2, '0')}`,
+      open:      170 + i, high: 175 + i, low: 165 + i,
+      close:     170 + i, adj_close: 170 + i, volume: 5_000_000,
+    })),
+  };
+}
+
+describe('main() TC', () => {
+  const origArgv = process.argv;
+
+  afterEach(() => {
+    process.argv = origArgv;
+    vi.clearAllMocks();
+  });
+
+  it('TC_P1 - 정상 실행: ATR 유효 → 결과 출력(console.log)', async () => {
+    process.argv = [
+      'node', SCRIPT_PATH_POS,
+      '--market', 'us', '--ticker', 'AAPL',
+      '--capital', '1000000', '--risk', '1',
+    ];
+    mockReadFileSync.mockReturnValue(JSON.stringify(makePositionTicker()));
+    mockExistsSync.mockReturnValue(true);
+    mockCalcATR.mockReturnValue([3.5]);                    // 유효 ATR
+    mockCalcPositionSize.mockReturnValue(POSITION_RESULT); // 정상 결과
+
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
+    vi.resetModules();
+    await import('./position_size.ts');
+    expect(mockExit).not.toHaveBeenCalled();
+    mockExit.mockRestore();
+  });
+
+  it('TC_P2 - ATR null → process.exit(1)', async () => {
+    process.argv = [
+      'node', SCRIPT_PATH_POS,
+      '--market', 'us', '--ticker', 'AAPL',
+      '--capital', '1000000', '--risk', '1',
+    ];
+    mockReadFileSync.mockReturnValue(JSON.stringify(makePositionTicker()));
+    mockExistsSync.mockReturnValue(true);
+    mockCalcATR.mockReturnValue([null]); // ATR = null → exit(1)
+
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
+    vi.resetModules();
+    await expect(import('./position_size.ts')).rejects.toThrow('exit');
+    expect(mockExit).toHaveBeenCalledWith(1);
+    mockExit.mockRestore();
+  });
+
+  it('TC_P3 - kr 마켓 + 경고 메시지 포함 → warnings 출력 경로 커버', async () => {
+    process.argv = [
+      'node', SCRIPT_PATH_POS,
+      '--market', 'kr', '--ticker', '005930',
+      '--capital', '1000000', '--risk', '5',
+    ];
+    mockReadFileSync.mockReturnValue(JSON.stringify({
+      ...makePositionTicker(),
+      ticker: '005930',
+      market: { price: 70_000 },
+    }));
+    mockExistsSync.mockReturnValue(true);
+    mockCalcATR.mockReturnValue([5_000]);
+    mockCalcPositionSize.mockReturnValue({
+      ...POSITION_RESULT,
+      warnings: ['자본 대비 투자 비중이 높습니다.'],
+    });
+
+    vi.resetModules();
+    await import('./position_size.ts');
+
+    expect(mockCalcPositionSize).toHaveBeenCalledOnce();
+  });
+});
+

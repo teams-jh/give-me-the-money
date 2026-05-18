@@ -10,14 +10,30 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
 
+// ── vi.hoisted: 동적 import 후에도 동일 참조 유지 ──────────────────────────
+const mockReaddirSync   = vi.hoisted(() => vi.fn());
+const mockReadFileSync  = vi.hoisted(() => vi.fn());
+const mockWriteFileSync = vi.hoisted(() => vi.fn());
+const mockMkdirSync     = vi.hoisted(() => vi.fn());
+const mockExistsSync    = vi.hoisted(() => vi.fn());
+
+const mockCalcSectorRotation         = vi.hoisted(() => vi.fn());
+const mockCalcSectorStrengthRotation = vi.hoisted(() => vi.fn());
+
 vi.mock('fs', () => ({
   default: {
-    readdirSync:   vi.fn(),
-    readFileSync:  vi.fn(),
-    writeFileSync: vi.fn(),
-    mkdirSync:     vi.fn(),
-    existsSync:    vi.fn(),
+    readdirSync:   mockReaddirSync,
+    readFileSync:  mockReadFileSync,
+    writeFileSync: mockWriteFileSync,
+    mkdirSync:     mockMkdirSync,
+    existsSync:    mockExistsSync,
   },
+}));
+
+// ── sector 라이브러리 mock ────────────────────────────────────────────────────
+vi.mock('../src/library/shared/sector.ts', () => ({
+  calcSectorRotation:         mockCalcSectorRotation,
+  calcSectorStrengthRotation: mockCalcSectorStrengthRotation,
 }));
 
 import fs from 'fs';
@@ -231,3 +247,125 @@ describe('loadStocks', () => {
     expect(loadStocks('/fake/dir')).toHaveLength(0);
   });
 });
+
+// ── main() TC ────────────────────────────────────────────────────────────────
+
+const SCRIPT_PATH_SECTOR = '/home/claude/give-me-the-money/scripts/analyze_sector_rotation.ts';
+
+// 픽스처: 2분기 × 2섹터 (bigRiser/bigFaller, 수익률 vs 강도 비교 모두 커버)
+const ROTATION_RESULT = {
+  quarters: ['2024Q1', '2024Q2'],
+  sectors:  ['Technology', 'Finance', 'Energy'],
+  rankings: [
+    {
+      quarter: '2024Q1', complete: true,
+      rows: [
+        { rank: 1, sector: 'Technology', avgReturn:  5.0, rankChange: null, stockCount: 3, positiveRatio: 0.8 },
+        { rank: 2, sector: 'Finance',    avgReturn:  2.0, rankChange: null, stockCount: 2, positiveRatio: 0.6 },
+        { rank: 3, sector: 'Energy',     avgReturn: -1.0, rankChange: null, stockCount: 1, positiveRatio: 0.3 },
+      ],
+    },
+    {
+      quarter: '2024Q2', complete: false,
+      rows: [
+        { rank: 1, sector: 'Finance',    avgReturn:  6.0, rankChange:  3, stockCount: 2, positiveRatio: 0.9 }, // bigRiser
+        { rank: 2, sector: 'Energy',     avgReturn:  1.0, rankChange:  1, stockCount: 1, positiveRatio: 0.5 },
+        { rank: 3, sector: 'Technology', avgReturn: -3.0, rankChange: -3, stockCount: 3, positiveRatio: 0.2 }, // bigFaller
+      ],
+    },
+  ],
+  sectorSeries: {
+    'Technology': { returns: [5.0, -3.0], ranks: [1, 3], stockCounts: [3, 3] },
+    'Finance':    { returns: [2.0,  6.0], ranks: [2, 1], stockCounts: [2, 2] },
+    'Energy':     { returns: [-1.0, 1.0], ranks: [3, 2], stockCounts: [1, 1] },
+  },
+};
+
+const STRENGTH_RESULT = {
+  quarters: ['2024Q1', '2024Q2'],
+  sectors:  ['Technology', 'Finance', 'Energy'],
+  rankings: [
+    {
+      quarter: '2024Q1', complete: true,
+      rows: [
+        { rank: 1, sector: 'Energy',     score: 0.9, rankChange: null, stockCount: 1 },
+        { rank: 2, sector: 'Technology', score: 0.7, rankChange: null, stockCount: 3 },
+        { rank: 3, sector: 'Finance',    score: 0.3, rankChange: null, stockCount: 2 },
+      ],
+    },
+    {
+      quarter: '2024Q2', complete: false,
+      rows: [
+        { rank: 1, sector: 'Energy',     score:  0.8, rankChange:  0, stockCount: 1 }, // 강도Top1
+        { rank: 2, sector: 'Technology', score:  0.5, rankChange:  0, stockCount: 3 }, // 강도Top2
+        { rank: 3, sector: 'Finance',    score: -0.2, rankChange: -2, stockCount: 2 }, // 꼴찌
+      ],
+    },
+  ],
+  strengthSeries: {
+    'Technology': { scores: [0.7, 0.5], ranks: [2, 2] },
+    'Finance':    { scores: [0.3, -0.2], ranks: [3, 3] },
+    'Energy':     { scores: [0.9, 0.8], ranks: [1, 1] },
+  },
+};
+
+describe('main() TC', () => {
+  const origArgv = process.argv;
+  const dates15  = Array.from({ length: 15 }, (_, i) => `2023-01-${String(i + 2).padStart(2, '0')}`);
+  const stockJson = JSON.stringify({
+    ticker: 'AAPL',
+    info:   { sector: 'Technology' },
+    prices: dates15.map((date, i) => ({ date, close: 100 + i })),
+  });
+
+  afterEach(() => {
+    process.argv = origArgv;
+    vi.clearAllMocks();
+  });
+
+  it('TC_S1 - 정상 실행: bigRiser/Faller + 비교 인사이트 → writeFileSync 호출', async () => {
+    process.argv = ['node', SCRIPT_PATH_SECTOR, '--market', 'kr'];
+    mockReaddirSync.mockReturnValue(['AAPL.json'] as any);
+    mockReadFileSync.mockReturnValue(stockJson);
+    mockCalcSectorRotation.mockReturnValue(ROTATION_RESULT);
+    mockCalcSectorStrengthRotation.mockReturnValue(STRENGTH_RESULT);
+    mockMkdirSync.mockReturnValue(undefined);
+    mockWriteFileSync.mockReturnValue(undefined);
+
+    vi.resetModules();
+    await import('./analyze_sector_rotation.ts');
+
+    expect(mockWriteFileSync).toHaveBeenCalledOnce();
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as { market: string };
+    expect(written.market).toBe('kr');
+  });
+
+  it('TC_S2 - --quarters 필터 적용 → 최근 N분기만 출력', async () => {
+    process.argv = ['node', SCRIPT_PATH_SECTOR, '--market', 'us', '--quarters', '1'];
+    mockReaddirSync.mockReturnValue(['AAPL.json'] as any);
+    mockReadFileSync.mockReturnValue(stockJson);
+    mockCalcSectorRotation.mockReturnValue(ROTATION_RESULT);
+    mockCalcSectorStrengthRotation.mockReturnValue(STRENGTH_RESULT);
+    mockMkdirSync.mockReturnValue(undefined);
+    mockWriteFileSync.mockReturnValue(undefined);
+
+    vi.resetModules();
+    await import('./analyze_sector_rotation.ts');
+
+    expect(mockWriteFileSync).toHaveBeenCalledOnce();
+  });
+
+  it('TC_S3 - 알 수 없는 마켓 → process.exit(1)', async () => {
+    process.argv = ['node', SCRIPT_PATH_SECTOR, '--market', 'INVALID'];
+    mockReaddirSync.mockReturnValue([] as any);
+    mockCalcSectorRotation.mockReturnValue(ROTATION_RESULT);
+    mockCalcSectorStrengthRotation.mockReturnValue(STRENGTH_RESULT);
+
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
+    vi.resetModules();
+    await expect(import('./analyze_sector_rotation.ts')).rejects.toThrow('exit');
+    expect(mockExit).toHaveBeenCalledWith(1);
+    mockExit.mockRestore();
+  });
+});
+

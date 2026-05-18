@@ -10,15 +10,33 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
 
+// ── vi.hoisted: 동적 import 후에도 동일 참조 유지 ──────────────────────────
+const mockReaddirSync   = vi.hoisted(() => vi.fn());
+const mockReadFileSync  = vi.hoisted(() => vi.fn());
+const mockWriteFileSync = vi.hoisted(() => vi.fn());
+const mockMkdirSync     = vi.hoisted(() => vi.fn());
+const mockExistsSync    = vi.hoisted(() => vi.fn());
+
+const mockCalcMarketBreadth  = vi.hoisted(() => vi.fn());
+const mockBuildSnapshotDates = vi.hoisted(() => vi.fn());
+const mockGetMarketCondition = vi.hoisted(() => vi.fn());
+
 // ── fs mock (모듈 import 전에 선언해야 hoisting 적용) ─────────────────────────
 vi.mock('fs', () => ({
   default: {
-    readdirSync:   vi.fn(),
-    readFileSync:  vi.fn(),
-    writeFileSync: vi.fn(),
-    mkdirSync:     vi.fn(),
-    existsSync:    vi.fn(),
+    readdirSync:   mockReaddirSync,
+    readFileSync:  mockReadFileSync,
+    writeFileSync: mockWriteFileSync,
+    mkdirSync:     mockMkdirSync,
+    existsSync:    mockExistsSync,
   },
+}));
+
+// ── breadth 라이브러리 mock ───────────────────────────────────────────────────
+vi.mock('../src/library/shared/breadth.ts', () => ({
+  calcMarketBreadth:  mockCalcMarketBreadth,
+  buildSnapshotDates: mockBuildSnapshotDates,
+  getMarketCondition: mockGetMarketCondition,
 }));
 
 import fs from 'fs';
@@ -332,3 +350,70 @@ describe('main() 통합', () => {
     expect(stocks).toHaveLength(2);
   });
 });
+
+// ── main() TC ────────────────────────────────────────────────────────────────
+
+const SCRIPT_PATH_BREADTH = '/home/claude/give-me-the-money/scripts/analyze_market_breadth.ts';
+
+const makeWeekdaysLocal = (n: number, start = '2023-01-02') => {
+  const dates: string[] = [];
+  const d = new Date(start);
+  while (dates.length < n) {
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) dates.push(d.toISOString().slice(0, 10));
+    d.setDate(d.getDate() + 1);
+  }
+  return dates;
+};
+
+const SNAP1 = { date: '2024-01-05', bullish: 60, bearish: 20, sideways: 10, recovering: 10, netBreadth:  30, total: 100 };
+const SNAP2 = { date: '2024-01-12', bullish: 30, bearish: 50, sideways: 10, recovering: 10, netBreadth: -20, total: 100 };
+
+describe('main() TC', () => {
+  const origArgv = process.argv;
+  const dates15  = makeWeekdaysLocal(15);
+  const stockJson = JSON.stringify({
+    ticker: 'AAPL',
+    info:   { sector: 'Technology' },
+    prices: dates15.map((date, i) => ({ date, close: 100 + i })),
+  });
+
+  afterEach(() => {
+    process.argv = origArgv;
+    vi.clearAllMocks();
+  });
+
+  it('TC_B1 - 정상 실행: 전환점 포함 → writeFileSync 호출', async () => {
+    process.argv = ['node', SCRIPT_PATH_BREADTH, '--market', 'kr', '--period', '3m', '--step', '5'];
+    mockReaddirSync.mockReturnValue(['AAPL.json']);
+    mockReadFileSync.mockReturnValue(stockJson);
+    mockBuildSnapshotDates.mockReturnValue([SNAP1.date, SNAP2.date]);
+    // 두 스냅샷의 netBreadth 부호가 다름 → 전환점 1개 생성
+    mockCalcMarketBreadth.mockReturnValue({ snapshots: [SNAP1, SNAP2] });
+    mockGetMarketCondition.mockReturnValue('약세');
+    mockMkdirSync.mockReturnValue(undefined);
+    mockWriteFileSync.mockReturnValue(undefined);
+
+    vi.resetModules();
+    await import('./analyze_market_breadth.ts');
+
+    expect(mockWriteFileSync).toHaveBeenCalledOnce();
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as { market: string };
+    expect(written.market).toBe('kr');
+  });
+
+  it('TC_B2 - 스냅샷 없음 → process.exit(1)', async () => {
+    process.argv = ['node', SCRIPT_PATH_BREADTH, '--market', 'us', '--period', '1y', '--step', '10'];
+    mockReaddirSync.mockReturnValue(['AAPL.json']);
+    mockReadFileSync.mockReturnValue(stockJson);
+    mockBuildSnapshotDates.mockReturnValue([]);
+    mockCalcMarketBreadth.mockReturnValue({ snapshots: [] });
+
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
+    vi.resetModules();
+    await expect(import('./analyze_market_breadth.ts')).rejects.toThrow('exit');
+    expect(mockExit).toHaveBeenCalledWith(1);
+    mockExit.mockRestore();
+  });
+});
+

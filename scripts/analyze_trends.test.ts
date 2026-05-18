@@ -17,14 +17,28 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
 
+// ── vi.hoisted: 동적 import 후에도 동일 참조 유지 ──────────────────────────
+const mockReaddirSync   = vi.hoisted(() => vi.fn());
+const mockReadFileSync  = vi.hoisted(() => vi.fn());
+const mockWriteFileSync = vi.hoisted(() => vi.fn());
+const mockMkdirSync     = vi.hoisted(() => vi.fn());
+const mockExistsSync    = vi.hoisted(() => vi.fn());
+
+const mockClassifyTrend = vi.hoisted(() => vi.fn());
+
 vi.mock('fs', () => ({
   default: {
-    readdirSync:   vi.fn(),
-    readFileSync:  vi.fn(),
-    writeFileSync: vi.fn(),
-    mkdirSync:     vi.fn(),
-    existsSync:    vi.fn(),
+    readdirSync:   mockReaddirSync,
+    readFileSync:  mockReadFileSync,
+    writeFileSync: mockWriteFileSync,
+    mkdirSync:     mockMkdirSync,
+    existsSync:    mockExistsSync,
   },
+}));
+
+// ── classifyTrend 라이브러리 mock ─────────────────────────────────────────────
+vi.mock('../src/library/shared/classifyTrend.ts', () => ({
+  classifyTrend: mockClassifyTrend,
 }));
 
 import fs from 'fs';
@@ -483,3 +497,124 @@ describe('loadPrices', () => {
     expect(Object.keys(result![0]!).sort()).toEqual(['close', 'date']);
   });
 });
+
+// ── main() TC ────────────────────────────────────────────────────────────────
+
+const SCRIPT_PATH_TRENDS = '/home/claude/give-me-the-money/scripts/analyze_trends.ts';
+
+const TICKERS_JSON_TREND = JSON.stringify({ tickers: ['AAPL'] });
+
+/** 일봉 데이터 픽스처 (date + close + ohlcv) */
+function makePricesTrend(n = 30): object[] {
+  return Array.from({ length: n }, (_, i) => ({
+    date:      `2024-01-${String(i + 1).padStart(2, '0')}`,
+    open:      100 + i, high: 105 + i, low: 95 + i,
+    close:     100 + i, adj_close: 100 + i, volume: 1_000_000,
+  }));
+}
+
+const TICKER_JSON_TREND = JSON.stringify({
+  ticker: 'AAPL',
+  info:   { sector: 'Technology', name: 'Apple' },
+  prices: makePricesTrend(30),
+});
+
+const TREND_RESULT = {
+  trend:         'bullish' as const,
+  slopePct:       1.5,
+  r2:             0.85,
+  slopeEarlyPct: 1.2,
+  slopeLatePct:  1.8,
+  totalReturn:   15.0,
+};
+
+describe('main() TC', () => {
+  const origArgv = process.argv;
+
+  afterEach(() => {
+    process.argv = origArgv;
+    vi.clearAllMocks();
+  });
+
+  it('TC_T1 - 정상 실행: bullish 1개 → writeFileSync 호출', async () => {
+    process.argv = ['node', SCRIPT_PATH_TRENDS, '--market', 'us'];
+    mockReadFileSync
+      .mockReturnValueOnce(TICKERS_JSON_TREND)  // loadTickers
+      .mockReturnValueOnce(TICKER_JSON_TREND);  // loadPrices
+    mockExistsSync.mockReturnValue(true);
+    mockClassifyTrend.mockReturnValue(TREND_RESULT);
+    mockMkdirSync.mockReturnValue(undefined);
+    mockWriteFileSync.mockReturnValue(undefined);
+
+    vi.resetModules();
+    await import('./analyze_trends.ts');
+
+    expect(mockWriteFileSync).toHaveBeenCalledOnce();
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
+      summary: { bullish: number };
+    };
+    expect(written.summary.bullish).toBe(1);
+  });
+
+  it('TC_T2 - classifyTrend → null: 데이터 부족 SKIP', async () => {
+    process.argv = ['node', SCRIPT_PATH_TRENDS, '--market', 'kr'];
+    mockReadFileSync
+      .mockReturnValueOnce(TICKERS_JSON_TREND)
+      .mockReturnValueOnce(TICKER_JSON_TREND);
+    mockExistsSync.mockReturnValue(true);
+    mockClassifyTrend.mockReturnValue(null); // 데이터 부족
+    mockMkdirSync.mockReturnValue(undefined);
+    mockWriteFileSync.mockReturnValue(undefined);
+
+    vi.resetModules();
+    await import('./analyze_trends.ts');
+
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
+      skipped_count: number;
+    };
+    expect(written.skipped_count).toBe(1);
+  });
+
+  it('TC_T3 - loadPrices → null: 파일 없음 SKIP', async () => {
+    process.argv = ['node', SCRIPT_PATH_TRENDS, '--market', 'us'];
+    mockReadFileSync.mockReturnValueOnce(TICKERS_JSON_TREND);
+    mockExistsSync.mockReturnValue(false); // 이전 테스트 mock 잔류 방지 + 파일 없음 처리
+    mockMkdirSync.mockReturnValue(undefined);
+    mockWriteFileSync.mockReturnValue(undefined);
+
+    vi.resetModules();
+    await import('./analyze_trends.ts');
+
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
+      skipped_count: number;
+    };
+    expect(written.skipped_count).toBe(1);
+  });
+
+  it('TC_T4 - --period 1y --n 1: 기간 커팅 + 다운샘플 경로 → writeFileSync 호출', async () => {
+    process.argv = ['node', SCRIPT_PATH_TRENDS, '--market', 'us', '--period', '1y', '--n', '1'];
+    mockReadFileSync
+      .mockReturnValueOnce(TICKERS_JSON_TREND)
+      .mockReturnValueOnce(TICKER_JSON_TREND);
+    mockExistsSync.mockReturnValue(true);
+    mockClassifyTrend.mockReturnValue(TREND_RESULT);
+    mockMkdirSync.mockReturnValue(undefined);
+    mockWriteFileSync.mockReturnValue(undefined);
+
+    vi.resetModules();
+    await import('./analyze_trends.ts');
+
+    expect(mockWriteFileSync).toHaveBeenCalledOnce();
+  });
+
+  it('TC_T5 - 알 수 없는 마켓 → process.exit(1)', async () => {
+    process.argv = ['node', SCRIPT_PATH_TRENDS, '--market', 'UNKNOWN'];
+
+    const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
+    vi.resetModules();
+    await expect(import('./analyze_trends.ts')).rejects.toThrow('exit');
+    expect(mockExit).toHaveBeenCalledWith(1);
+    mockExit.mockRestore();
+  });
+});
+
