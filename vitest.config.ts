@@ -5,27 +5,31 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
+    include: [
+      'src/library/shared/**/*.test.ts',
+      'scripts/**/*.test.ts',
+      'server_node/scripts/**/*.test.ts',
+    ],
     coverage: {
       provider: 'v8',
-      // 테스트가 작성된 파일만 커버리지 측정
-      // 새 파일 테스트 추가 시 include와 thresholds에 함께 추가할 것
+      // 커버리지 측정 대상: 백엔드 담당 3개 디렉토리의 소스 파일 전체
       include: [
-        'src/library/shared/indicators.ts',
-        'src/library/shared/position.ts',
+        'src/library/shared/**/*.ts',
+        'scripts/**/*.ts',
+        'server_node/scripts/**/*.ts',
       ],
-      exclude: ['src/library/shared/**/*.test.ts'],
+      exclude: [
+        '**/*.test.ts',
+        '**/*.spec.ts',
+      ],
       reporter: ['text', 'lcov'],
+      // 파일별 80% 임계값 — 테스트 미작성 파일은 당연히 미달, 추후 테스트 추가로 해소
+      perFile: true,
       thresholds: {
-        // position.ts — 순수 계산 함수, 높은 커버리지 유지
-        'src/library/shared/position.ts': {
-          lines: 95, functions: 100, branches: 90,
-        },
-        // indicators.ts — SupportResistance/Trendlines 등 복잡한 분석 함수 포함
-        // 핵심 지표(MA,EMA,RSI,MACD,BB,ATR,OBV,MDD,Stochastic,ADX,ROC,MFI,Supertrend,Envelope,Donchian) 커버
-        'src/library/shared/indicators.ts': {
-          lines: 45, functions: 65, branches: 38,
-        },
+        lines:      80,
+        functions:  80,
+        branches:   80,
+        statements: 80,
       },
     },
   },
