@@ -18,6 +18,7 @@ export function transformTickerToStock(data: TickerData): Stock {
     name: data.info.name,
     sector: data.info.sector,
     current_price: data.market.price,
+    market_cap: data.market?.market_cap || 0,
     periods,
   };
 }

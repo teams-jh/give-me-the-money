@@ -17,6 +17,7 @@ export interface Stock {
   name: string;
   sector: string;
   current_price: number;
+  market_cap?: number;
   periods: Record<PeriodKey, PeriodData>;
 }
 
