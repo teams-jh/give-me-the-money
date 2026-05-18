@@ -62,8 +62,8 @@ jobs:
       - name: Check for changes
         id: check
         run: |
-          git diff --quiet src/db/metadata/kospi300_tickers.json \
-                           src/db/metadata/kosdaq200_tickers.json \
+          git diff --quiet src/db/stock_market_index/kospi300_tickers.json \
+                           src/db/stock_market_index/kosdaq200_tickers.json \
                            src/db/metadata/all_kr_tickers.json \
           && echo "changed=false" >> $GITHUB_OUTPUT \
           || echo "changed=true"  >> $GITHUB_OUTPUT
@@ -73,8 +73,8 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/metadata/kospi300_tickers.json \
-                  src/db/metadata/kosdaq200_tickers.json \
+          git add src/db/stock_market_index/kospi300_tickers.json \
+                  src/db/stock_market_index/kosdaq200_tickers.json \
                   src/db/metadata/all_kr_tickers.json
 
           if git diff --cached --quiet; then

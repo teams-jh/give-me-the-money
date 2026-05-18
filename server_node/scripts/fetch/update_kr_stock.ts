@@ -32,8 +32,8 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const DB_DIR      = path.resolve(__dirname, "../../src/db");
-const METADATA_DIR = path.join(DB_DIR, "metadata");
+const DB_DIR           = path.resolve(__dirname, "../../src/db");
+const STOCK_INDEX_DIR  = path.join(DB_DIR, "stock_market_index");
 const DWS_BASE = "https://new.real.download.dws.co.kr/common/master";
 
 // DWS 서버 인증서 체인 이슈로 rejectUnauthorized: false 필요 (ticker-map 동일)
@@ -53,7 +53,7 @@ const INDEXES = [
     marketCapPos:   212,
     marketCapWidth: 9,
     topN:        300,
-    outputFile:  path.join(METADATA_DIR, "kospi300_tickers.json"),
+    outputFile:  path.join(STOCK_INDEX_DIR, "kospi300_tickers.json"),
     minCount:    200,
     yahooSuffix: ".KS",
     fieldSpecs: [
@@ -102,7 +102,7 @@ const INDEXES = [
     marketCapPos:   216,
     marketCapWidth: 5,
     topN:        200,
-    outputFile:  path.join(METADATA_DIR, "kosdaq200_tickers.json"),
+    outputFile:  path.join(STOCK_INDEX_DIR, "kosdaq200_tickers.json"),
     minCount:    150,
     yahooSuffix: ".KQ",
     fieldSpecs: [
@@ -263,7 +263,7 @@ function saveJson(
   outputFile: string,
   yahooSuffix: string,
 ): void {
-  fs.mkdirSync(METADATA_DIR, { recursive: true });
+  fs.mkdirSync(STOCK_INDEX_DIR, { recursive: true });
 
   const tickerKeys = tickers.map((t) => `${t.code}${yahooSuffix}`);
   const out: KrIndexJson = {
