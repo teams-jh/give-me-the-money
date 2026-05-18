@@ -67,7 +67,7 @@ interface RawTicker {
 
 // ── CLI 파싱 ──────────────────────────────────────────────────────────────────
 
-function parseArgs(): CliArgs {
+export function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
   let market     = "";
   let ticker     = "";
@@ -115,7 +115,7 @@ function parseArgs(): CliArgs {
 
 // ── 데이터 로드 ───────────────────────────────────────────────────────────────
 
-function loadTicker(market: string, ticker: string): RawTicker {
+export function loadTicker(market: string, ticker: string): RawTicker {
   const dir  = TICKERS_DIR[market]!;
 
   // KR 티커는 .KS/.KQ suffix가 없는 파일명으로 저장됨
@@ -142,12 +142,12 @@ function loadTicker(market: string, ticker: string): RawTicker {
 
 // ── 출력 헬퍼 ─────────────────────────────────────────────────────────────────
 
-function fmt(n: number, currency: string): string {
+export function fmt(n: number, currency: string): string {
   if (currency === "KRW") return n.toLocaleString("ko-KR") + "원";
   return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function bar(pct: number, max: number = 30): string {
+export function bar(pct: number, max: number = 30): string {
   const filled = Math.round(Math.min(pct, 100) / 100 * max);
   return "█".repeat(filled) + "░".repeat(max - filled);
 }
@@ -248,4 +248,5 @@ function main(): void {
   console.log(`\n${dline}\n`);
 }
 
-main();
+const _isEntryPosition = process.argv[1] !== undefined && path.resolve(process.argv[1]) === __filename;
+if (_isEntryPosition) main();

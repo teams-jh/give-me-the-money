@@ -48,7 +48,7 @@ interface CliArgs {
   step:   number;   // 스냅샷 간격 (거래일)
 }
 
-function parseArgs(): CliArgs {
+export function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
   let market = "kr", period = "3m", step = 5;
 
@@ -68,7 +68,7 @@ function parseArgs(): CliArgs {
 
 // ── 데이터 로드 ───────────────────────────────────────────────────────────────
 
-function loadStocks(tickersDir: string): StockInput[] {
+export function loadStocks(tickersDir: string): StockInput[] {
   const files  = fs.readdirSync(tickersDir).filter(f => f.endsWith(".json"));
   const stocks: StockInput[] = [];
 
@@ -90,7 +90,7 @@ function loadStocks(tickersDir: string): StockInput[] {
 
 // ── 콘솔 출력 헬퍼 ───────────────────────────────────────────────────────────
 
-function colorNet(n: number): string {
+export function colorNet(n: number): string {
   const s = (n >= 0 ? `+${n.toFixed(1)}` : `${n.toFixed(1)}`).padStart(7);
   if (n >  20) return `\x1b[32m${s}\x1b[0m`;
   if (n >   0) return `\x1b[36m${s}\x1b[0m`;
@@ -98,13 +98,13 @@ function colorNet(n: number): string {
   return `\x1b[33m${s}\x1b[0m`;
 }
 
-function sparkBar(pct: number, width = 10): string {
+export function sparkBar(pct: number, width = 10): string {
   const filled = Math.round(pct / 100 * width);
   return "█".repeat(filled) + "░".repeat(width - filled);
 }
 
 // netBreadth 를 ASCII 바 차트로 표시 (중앙 0 기준)
-function netBar(net: number, halfWidth = 15): string {
+export function netBar(net: number, halfWidth = 15): string {
   const pos    = net >= 0;
   const filled = Math.round(Math.min(Math.abs(net), 50) / 50 * halfWidth);
   if (pos) return " ".repeat(halfWidth) + "│" + "\x1b[32m█\x1b[0m".repeat(filled) + " ".repeat(halfWidth - filled);
@@ -221,4 +221,5 @@ function main(): void {
   console.log(`\n📁 저장 완료: ${outFile}  (${result.snapshots.length}개 스냅샷)\n`);
 }
 
-main();
+const _isEntryBreadth = process.argv[1] !== undefined && path.resolve(process.argv[1]) === __filename;
+if (_isEntryBreadth) main();

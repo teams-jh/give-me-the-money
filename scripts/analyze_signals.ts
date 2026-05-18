@@ -87,7 +87,7 @@ interface SignalsJson {
   stocks: CombinedSignalResult[];
 }
 
-function parseArgs(): CliArgs {
+export function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
   let market = "kr"; let n: number | undefined; let minScore = 0;
   for (let i = 0; i < args.length; i++) {
@@ -99,25 +99,25 @@ function parseArgs(): CliArgs {
   return { market, n, minScore };
 }
 
-function loadTickers(config: MarketConfig, n?: number): string[] {
+export function loadTickers(config: MarketConfig, n?: number): string[] {
   const raw  = fs.readFileSync(config.tickersJson, "utf-8");
   const data = JSON.parse(raw) as { tickers: string[] };
   return n !== undefined ? data.tickers.slice(0, n) : data.tickers;
 }
 
-function tickerToFilename(ticker: string): string { return ticker.split(".")[0] ?? ticker; }
+export function tickerToFilename(ticker: string): string { return ticker.split(".")[0] ?? ticker; }
 
-function loadTicker(ticker: string, config: MarketConfig): RawTicker | null {
+export function loadTicker(ticker: string, config: MarketConfig): RawTicker | null {
   const file = path.join(config.tickersDir, `${tickerToFilename(ticker)}.json`);
   if (!fs.existsSync(file)) return null;
   return JSON.parse(fs.readFileSync(file, "utf-8")) as RawTicker;
 }
 
-function toOHLCV(raw: RawTicker): OHLCV[] {
+export function toOHLCV(raw: RawTicker): OHLCV[] {
   return raw.prices.map(p => ({ date: p.date, open: p.open, high: p.high, low: p.low, close: p.close, volume: p.volume }));
 }
 
-function toFundamentalData(raw: RawTicker): FundamentalData {
+export function toFundamentalData(raw: RawTicker): FundamentalData {
   return {
     pe: raw.valuation.trailing_pe, pb: raw.valuation.price_to_book,
     pegRatio: raw.valuation.peg_ratio,
@@ -134,12 +134,12 @@ function toFundamentalData(raw: RawTicker): FundamentalData {
   };
 }
 
-function resolveOutputFile(config: MarketConfig, n?: number): string {
+export function resolveOutputFile(config: MarketConfig, n?: number): string {
   return path.join(config.signalsDir, `signals_${n !== undefined ? String(n) : "all"}.json`);
 }
 
-function nowStr(): string { return new Date().toISOString().slice(0, 16).replace("T", " "); }
-function round1(v: number): number { return Math.round(v * 10) / 10; }
+export function nowStr(): string { return new Date().toISOString().slice(0, 16).replace("T", " "); }
+export function round1(v: number): number { return Math.round(v * 10) / 10; }
 
 function main(): void {
   const args   = parseArgs();
@@ -236,4 +236,5 @@ function main(): void {
   console.log(`\n📁 저장 완료: ${outputFile}`);
 }
 
-main();
+const _isEntrySignals = process.argv[1] !== undefined && path.resolve(process.argv[1]) === __filename;
+if (_isEntrySignals) main();

@@ -130,7 +130,7 @@ const DEFAULT_MIN_PTS  = 8;
  *      -n 500              →  trend_500_all.json
  *      (옵션 없음)          →  trend_all_all.json
  */
-function resolveOutputFile(config: MarketConfig, n: number | undefined, period: PeriodOption | undefined): string {
+export function resolveOutputFile(config: MarketConfig, n: number | undefined, period: PeriodOption | undefined): string {
   const nPart      = n      !== undefined ? String(n) : "all";
   const periodPart = period !== undefined ? period    : "all";
   return path.join(config.trendDir, `trend_${nPart}_${periodPart}.json`);
@@ -138,7 +138,7 @@ function resolveOutputFile(config: MarketConfig, n: number | undefined, period: 
 
 // ── Step 0: CLI 파싱 ──────────────────────────────────────────────────────────
 
-function parseArgs(): CliArgs {
+export function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
   let market: string            = "us";
   let n:      number | undefined      = undefined;
@@ -171,7 +171,7 @@ function parseArgs(): CliArgs {
 
 // ── Step 1: 티커 목록 읽기 ────────────────────────────────────────────────────
 
-function loadTickers(config: MarketConfig, n: number | undefined): string[] {
+export function loadTickers(config: MarketConfig, n: number | undefined): string[] {
   const raw  = fs.readFileSync(config.tickersJson, "utf-8");
   const data = JSON.parse(raw) as { tickers: string[] };
   const all  = data.tickers;
@@ -181,11 +181,11 @@ function loadTickers(config: MarketConfig, n: number | undefined): string[] {
 // ── Step 2: 일봉 prices 읽기 ──────────────────────────────────────────────────
 
 /** Yahoo Finance 티커에서 파일명용 코드 추출 (005930.KS → 005930, AAPL → AAPL) */
-function tickerToFilename(ticker: string): string {
+export function tickerToFilename(ticker: string): string {
   return ticker.split(".")[0] ?? ticker;
 }
 
-function loadPrices(ticker: string, config: MarketConfig): DailyPrice[] | null {
+export function loadPrices(ticker: string, config: MarketConfig): DailyPrice[] | null {
   const file = path.join(config.tickersDir, `${tickerToFilename(ticker)}.json`);
   if (!fs.existsSync(file)) return null;
 
@@ -197,7 +197,7 @@ function loadPrices(ticker: string, config: MarketConfig): DailyPrice[] | null {
 
 // ── Step 3-A: 기간 커팅 ───────────────────────────────────────────────────────
 
-function filterByPeriod(prices: DailyPrice[], period: PeriodOption): DailyPrice[] {
+export function filterByPeriod(prices: DailyPrice[], period: PeriodOption): DailyPrice[] {
   if (prices.length === 0) return prices;
 
   // 마지막 날짜 기준으로 cutoff 계산
@@ -214,7 +214,7 @@ function filterByPeriod(prices: DailyPrice[], period: PeriodOption): DailyPrice[
  * 날짜 문자열에서 ISO 주 키(YYYY-WNN) 반환.
  * 간단하게 월요일 기준 주차를 직접 계산한다.
  */
-function toWeekKey(dateStr: string): string {
+export function toWeekKey(dateStr: string): string {
   const d = new Date(dateStr);
   // 월요일을 주의 시작으로 맞춤
   const day      = (d.getDay() + 6) % 7;          // 0=Mon … 6=Sun
@@ -228,7 +228,7 @@ function toWeekKey(dateStr: string): string {
 }
 
 /** 일봉 배열 → 주봉 (각 주의 마지막 거래일 close) */
-function toWeekly(prices: DailyPrice[]): DailyPrice[] {
+export function toWeekly(prices: DailyPrice[]): DailyPrice[] {
   const map = new Map<string, DailyPrice>();
   for (const p of prices) {
     map.set(toWeekKey(p.date), p);   // 같은 주면 뒤에 오는 값으로 덮어씀
@@ -237,7 +237,7 @@ function toWeekly(prices: DailyPrice[]): DailyPrice[] {
 }
 
 /** 일봉 배열 → 월봉 (각 달의 마지막 거래일 close) */
-function toMonthly(prices: DailyPrice[]): DailyPrice[] {
+export function toMonthly(prices: DailyPrice[]): DailyPrice[] {
   const map = new Map<string, DailyPrice>();
   for (const p of prices) {
     const key = p.date.slice(0, 7);  // "YYYY-MM"
@@ -246,7 +246,7 @@ function toMonthly(prices: DailyPrice[]): DailyPrice[] {
   return Array.from(map.values());
 }
 
-function downsample(
+export function downsample(
   prices: DailyPrice[],
   interval: "weekly" | "monthly",
 ): DailyPrice[] {
@@ -255,7 +255,7 @@ function downsample(
 
 // ── Step 3-C: PriceSeries 변환 ────────────────────────────────────────────────
 
-function toPriceSeries(prices: DailyPrice[]): PriceSeries {
+export function toPriceSeries(prices: DailyPrice[]): PriceSeries {
   return {
     labels: prices.map((p) => p.date),
     values: prices.map((p) => p.close),
@@ -264,7 +264,7 @@ function toPriceSeries(prices: DailyPrice[]): PriceSeries {
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
 
-function now(): string {
+export function now(): string {
   return new Date().toISOString().slice(0, 16).replace("T", " ");
 }
 
@@ -379,4 +379,5 @@ function main(): void {
   log(`📁 저장 완료: ${outputFile}`);
 }
 
-main();
+const _isEntryTrends = process.argv[1] !== undefined && path.resolve(process.argv[1]) === __filename;
+if (_isEntryTrends) main();

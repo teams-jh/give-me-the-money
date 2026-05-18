@@ -44,7 +44,7 @@ interface CliArgs {
   quarters: number | null;   // 최근 N분기만 표시 (null = 전체)
 }
 
-function parseArgs(): CliArgs {
+export function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
   let market   = "kr";
   let quarters: number | null = null;
@@ -62,7 +62,7 @@ function parseArgs(): CliArgs {
 
 // ── 데이터 로드 ───────────────────────────────────────────────────────────────
 
-function loadStocks(tickersDir: string): StockInput[] {
+export function loadStocks(tickersDir: string): StockInput[] {
   const files = fs.readdirSync(tickersDir).filter(f => f.endsWith(".json"));
   const stocks: StockInput[] = [];
 
@@ -90,7 +90,7 @@ function loadStocks(tickersDir: string): StockInput[] {
 // ── 출력 헬퍼 ─────────────────────────────────────────────────────────────────
 
 /** 숫자를 색상 코드로 감싸기 (양수=초록, 음수=빨강) */
-function colorReturn(v: number | null): string {
+export function colorReturn(v: number | null): string {
   if (v === null) return "  N/A  ";
   const str = (v >= 0 ? `+${v.toFixed(1)}` : `${v.toFixed(1)}`).padStart(7);
   if (v > 3)  return `\x1b[32m${str}%\x1b[0m`;   // 초록
@@ -100,7 +100,7 @@ function colorReturn(v: number | null): string {
 }
 
 /** 순위 변동 화살표 */
-function rankChangeMark(change: number | null): string {
+export function rankChangeMark(change: number | null): string {
   if (change === null) return "  ";
   if (change > 0)  return `\x1b[32m▲${change}\x1b[0m`;
   if (change < 0)  return `\x1b[31m▼${Math.abs(change)}\x1b[0m`;
@@ -315,4 +315,5 @@ function main(): void {
   console.log(`   분기 수: ${result.quarters.length}개  /  섹터 수: ${result.sectors.length}개\n`);
 }
 
-main();
+const _isEntrySector = process.argv[1] !== undefined && path.resolve(process.argv[1]) === __filename;
+if (_isEntrySector) main();
