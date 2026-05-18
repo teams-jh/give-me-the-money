@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -12,7 +12,7 @@ import Tabs from '@mui/material/Tabs';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { Stock, PeriodKey } from './types';
-import { BigChart, getTrendColor, getTrendLabel } from './top100-charts';
+import { BigChart, getTrendColor, getTrendLabel } from './stock-market-index-charts';
 
 // ----------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ export function StockDetailModal({ stock, open, onClose, initialPeriod }: Props)
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 800 }}>{stock.ticker} {stock.name}</Typography>
             <Typography variant="body1" sx={{ color: 'text.secondary' }}>
-              {stock.sector} • 현재가 ${stock.current_price.toLocaleString()}
+              {stock.sector} • 현재가 {stock.ticker.endsWith('.KS') || stock.ticker.endsWith('.KQ') ? '₩' : '$'}{stock.current_price.toLocaleString()}
             </Typography>
           </Box>
 
@@ -113,7 +113,7 @@ export function StockDetailModal({ stock, open, onClose, initialPeriod }: Props)
             <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
               분석 기간 동안의 전반부 기울기는 <b>{data.slope_early_pct > 0 ? '▲ +' : '▼ '}{data.slope_early_pct}%</b>이며, 
               후반부 기울기는 <b>{data.slope_late_pct > 0 ? '▲ +' : '▼ '}{data.slope_late_pct}%</b>입니다. 
-              {data.trend === 'recovering' && ' 전반 하락 후 후반에 반등하는 모습을 보이고 있습니다.'}
+              {data.trend === 'recovering' && ' 전반 하락 후 전반에 반등하는 모습을 보이고 있습니다.'}
               {data.trend === 'bullish' && ' 지속적인 상승 추세를 유지하고 있습니다.'}
               {data.trend === 'bearish' && ' 지속적인 하락 압력을 받고 있습니다.'}
             </Typography>

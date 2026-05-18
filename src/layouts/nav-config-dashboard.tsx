@@ -68,9 +68,10 @@ export const navData: NavSectionProps['data'] = [
           { title: 'Live Updates', path: paths.listening.random },
         ],
       },
+
       {
-        title: '미국 TOP 100 추세 분석',
-        path: paths.top100,
+        title: '주가지수',
+        path: paths.stockMarketIndex,
         icon: ICONS.top100,
       },
       {
@@ -138,9 +139,10 @@ export const mainNavData: NavMainProps['data'] = [
       },
     ],
   },
+
   {
-    title: '미국 TOP 100 추세 분석',
-    path: paths.top100,
+    title: '주가지수',
+    path: paths.stockMarketIndex,
     icon: <LeaderboardRoundedIcon sx={{ width: 22, height: 22 }} />,
   },
   {

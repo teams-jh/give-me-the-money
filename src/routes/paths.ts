@@ -21,7 +21,7 @@ export const paths = {
     playlist: `/listening/playlist`,
     random: `/listening/random`,
   },
-  top100: '/top100',
+  stockMarketIndex: '/stock-market-index',
   chartAnalysis: '/chart-analysis',
   detailedAnalysis: '/detailed-analysis',
   indicators: {

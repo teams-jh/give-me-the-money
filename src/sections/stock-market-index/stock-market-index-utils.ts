@@ -2,7 +2,6 @@ import { TickerData } from 'src/library/tickers';
 import { classifyTrend as sharedClassifyTrend, PriceSeries } from '../../library/shared';
 import { Stock, PeriodKey, PeriodData } from './types';
 
-
 /**
  * Transform raw TickerData into the Stock format used in views
  */
@@ -48,26 +47,6 @@ function calculatePeriodData(data: TickerData, days: number): PeriodData {
     };
   }
 
-  // The shared function returns data normalized to 100, 
-  // but we might want the actual price-based regression for some views.
-  // Actually, the current charts seem to use the regression as is.
-  // Let's check how regression was calculated before:
-  // regression = data.map((_, i) => slope * i + intercept);
-  // It was based on original prices.
-  
-  // The shared classifyTrend returns:
-  // chartData: values.map(v => round(v / base * 100, 2))
-  // regression: x.map(i => round((intercept + slopeAll * i) / base * 100, 2))
-  
-  // If we want to keep the UI exactly the same (price based), we might need to denormalize.
-  // However, the user said "use the shared function to draw regression".
-  // If we use the normalized data, the chart will look slightly different but correct relative to itself.
-  
-  // Wait, let's look at BigChart in top100-charts.tsx:
-  // const min = Math.min(...data.chart_data, ...data.regression);
-  // It handles its own min/max, so normalized vs price doesn't matter for the VISUAL result,
-  // AS LONG AS both chart_data and regression are on the same scale.
-  
   return {
     trend: result.trend,
     slope_pct: result.slopePct,

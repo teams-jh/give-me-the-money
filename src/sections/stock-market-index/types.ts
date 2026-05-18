@@ -24,20 +24,3 @@ export interface StockData {
   generated_at: string;
   stocks: Stock[];
 }
-
-export type MainTab = 'trend' | 'screener';
-export type ScreenerSubTab = 'inclusion' | 'exclusion';
-
-export interface ScreenerItem {
-  ticker: string;
-  name: string;
-  sector: string;
-  market_cap_b: number;
-  prof_qtrs?: number;
-  zone?: 'green' | 'watch';
-  float_ratio?: number;
-  passed?: string[];
-  risk_level?: 'high' | 'medium' | 'low';
-  ttm_ni_b?: number;
-  signals?: string[];
-}

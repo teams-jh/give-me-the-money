@@ -11,7 +11,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { alpha, useTheme } from '@mui/material/styles';
 
 import { Stock, PeriodKey } from './types';
-import { Sparkline, getTrendColor, getTrendLabel } from './top100-charts';
+import { Sparkline, getTrendColor, getTrendLabel } from './stock-market-index-charts';
 
 // ----------------------------------------------------------------------
 
@@ -71,7 +71,10 @@ export function StockTableRow({ stock, index, period, onClick }: Props) {
       </TableCell>
 
       <TableCell align="right">
-        <Typography variant="subtitle2">${stock.current_price.toLocaleString()}</Typography>
+        <Typography variant="subtitle2">
+          {stock.ticker.endsWith('.KS') || stock.ticker.endsWith('.KQ') ? '₩' : '$'}
+          {stock.current_price.toLocaleString()}
+        </Typography>
       </TableCell>
 
       <TableCell>
