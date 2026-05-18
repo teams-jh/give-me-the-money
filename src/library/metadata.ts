@@ -8,8 +8,8 @@ import allKrTickersRaw from '../db/metadata/all_kr_tickers.json';
 import allUsTickersRaw from '../db/metadata/all_us_tickers.json';
 import nasdaq100Raw from '../db/metadata/nasdaq100_tickers.json';
 import russell1000Raw from '../db/metadata/russell1000_tickers.json';
-import kospi300Raw from '../db/metadata/kospi300_tickers.json';
-import kosdaq200Raw from '../db/metadata/kosdaq200_tickers.json';
+import kospi300Raw from '../db/stock_market_index/kospi300_tickers.json';
+import kosdaq200Raw from '../db/stock_market_index/kosdaq200_tickers.json';
 
 // ----------------------------------------------------------------------
 
