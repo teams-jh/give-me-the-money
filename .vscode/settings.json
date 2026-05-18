@@ -15,6 +15,20 @@
   "typescript.preferences.autoImportSpecifierExcludeRegexes": [
     "^@mui/[^/]+$"
   ],
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/.venv/**": true,
+    "**/dist/**": true,
+    "**/build/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.venv": true,
+    "**/dist": true,
+    "**/build": true
+  },
   "[typescriptreact]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
   }
