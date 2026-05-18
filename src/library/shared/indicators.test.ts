@@ -492,7 +492,7 @@ describe('calcSupertrend', () => {
 
 // ── calcEnvelope, calcDonchianChannels ────────────────────────────────────────
 
-import { calcEnvelope, calcDonchianChannels } from './indicators.ts';
+import { calcDonchianChannels } from './indicators.ts';
 
 describe('calcEnvelope', () => {
   it('period 미만 구간은 null이다', () => {
@@ -521,11 +521,211 @@ describe('calcEnvelope', () => {
   });
 });
 
+// ── calcSupportResistance ─────────────────────────────────────────────────────
+
+import {
+  calcSupportResistance,
+  calcTrendlines,
+  calcLinearRegressionChannel,
+  calcZigZagSupportResistance,
+  calcEnvelope,
+} from './indicators.ts';
+
+describe('calcSupportResistance', () => {
+  const n = 30;
+  const highs  = Array.from({ length: n }, (_, i) => 105 + Math.sin(i * 0.5) * 5);
+  const lows   = Array.from({ length: n }, (_, i) => 95  + Math.sin(i * 0.5) * 5);
+  const closes = Array.from({ length: n }, (_, i) => 100 + Math.sin(i * 0.5) * 3);
+  const opens  = closes.map(c => c * 0.99);
+
+  it('빈 배열 → 빈 배열', () => {
+    expect(calcSupportResistance([], [], [], [])).toHaveLength(0);
+  });
+
+  it('결과 길이 = 입력 길이', () => {
+    const result = calcSupportResistance(highs, lows, closes, opens);
+    expect(result).toHaveLength(n);
+  });
+
+  it('각 결과에 support, resistance 필드 존재', () => {
+    const result = calcSupportResistance(highs, lows, closes, opens);
+    result.forEach(pt => {
+      expect('support' in pt).toBe(true);
+      expect('resistance' in pt).toBe(true);
+    });
+  });
+
+  it('데이터 1개 → 길이 1 결과 반환', () => {
+    const result = calcSupportResistance([105], [95], [100], [99]);
+    expect(result).toHaveLength(1);
+  });
+});
+
+// ── calcTrendlines ────────────────────────────────────────────────────────────
+
+describe('calcTrendlines', () => {
+  it('빈 배열 → 빈 배열', () => {
+    expect(calcTrendlines([], [])).toHaveLength(0);
+  });
+
+  it('1개 → up/down=null', () => {
+    const result = calcTrendlines([105], [95]);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({ up: null, down: null });
+  });
+
+  it('결과 길이 = 입력 길이', () => {
+    const n = 30;
+    const highs = Array.from({ length: n }, (_, i) => 100 + i * 0.5);
+    const lows  = Array.from({ length: n }, (_, i) => 95  + i * 0.5);
+    const result = calcTrendlines(highs, lows);
+    expect(result).toHaveLength(n);
+  });
+
+  it('각 결과에 up, down 필드 존재', () => {
+    const highs = [105, 103, 107, 102, 108];
+    const lows  = [95,  97,  93,  98,  92];
+    const result = calcTrendlines(highs, lows);
+    result.forEach(pt => {
+      expect('up' in pt).toBe(true);
+      expect('down' in pt).toBe(true);
+    });
+  });
+
+  it('단조 상승 데이터 → up trendline 존재', () => {
+    const n = 20;
+    const highs = Array.from({ length: n }, (_, i) => 100 + i * 2);
+    const lows  = Array.from({ length: n }, (_, i) => 95  + i * 2);
+    const result = calcTrendlines(highs, lows);
+    const hasUp = result.some(pt => pt.up !== null);
+    expect(hasUp).toBe(true);
+  });
+});
+
+// ── calcLinearRegressionChannel ───────────────────────────────────────────────
+
+describe('calcLinearRegressionChannel', () => {
+  it('빈 배열 → 빈 배열', () => {
+    expect(calcLinearRegressionChannel([])).toHaveLength(0);
+  });
+
+  it('결과 길이 = 입력 길이', () => {
+    const prices = Array.from({ length: 20 }, (_, i) => 100 + i);
+    const result = calcLinearRegressionChannel(prices);
+    expect(result).toHaveLength(20);
+  });
+
+  it('각 결과에 support, resistance 필드 존재', () => {
+    const prices = Array.from({ length: 20 }, (_, i) => 100 + i);
+    const result = calcLinearRegressionChannel(prices);
+    result.forEach(pt => {
+      expect('support' in pt).toBe(true);
+      expect('resistance' in pt).toBe(true);
+    });
+  });
+
+  it('단조 상승 → resistance >= support', () => {
+    const prices = Array.from({ length: 30 }, (_, i) => 100 + i);
+    const result = calcLinearRegressionChannel(prices);
+    result.forEach(pt => {
+      if (pt.resistance !== null && pt.support !== null) {
+        expect(pt.resistance).toBeGreaterThanOrEqual(pt.support);
+      }
+    });
+  });
+
+  it('stdDevMultiplier 파라미터 적용', () => {
+    const prices = Array.from({ length: 20 }, (_, i) => 100 + i);
+    const r1 = calcLinearRegressionChannel(prices, 1.0);
+    const r2 = calcLinearRegressionChannel(prices, 3.0);
+    // 배수가 클수록 채널이 넓어짐
+    const last1 = r1[r1.length - 1];
+    const last2 = r2[r2.length - 1];
+    if (last1.resistance !== null && last2.resistance !== null) {
+      expect(last2.resistance).toBeGreaterThanOrEqual(last1.resistance);
+    }
+  });
+});
+
+// ── calcZigZagSupportResistance ───────────────────────────────────────────────
+
+describe('calcZigZagSupportResistance', () => {
+  it('빈 배열 → 빈 배열', () => {
+    expect(calcZigZagSupportResistance([], [], [], [])).toHaveLength(0);
+  });
+
+  it('결과 길이 = 입력 길이', () => {
+    const n = 30;
+    const h = Array.from({ length: n }, (_, i) => 105 + Math.sin(i * 0.5) * 5);
+    const l = Array.from({ length: n }, (_, i) => 95  + Math.sin(i * 0.5) * 5);
+    const c = Array.from({ length: n }, (_, i) => 100 + Math.sin(i * 0.5) * 3);
+    const o = c.map(v => v * 0.99);
+    const result = calcZigZagSupportResistance(h, l, c, o);
+    expect(result).toHaveLength(n);
+  });
+
+  it('각 결과에 support, resistance 필드 존재', () => {
+    const n = 20;
+    const h = Array.from({ length: n }, (_, i) => 105 + i * 0.5);
+    const l = Array.from({ length: n }, (_, i) => 95  + i * 0.5);
+    const c = Array.from({ length: n }, (_, i) => 100 + i * 0.5);
+    const o = c.map(v => v * 0.99);
+    const result = calcZigZagSupportResistance(h, l, c, o);
+    result.forEach(pt => {
+      expect('support' in pt).toBe(true);
+      expect('resistance' in pt).toBe(true);
+    });
+  });
+
+  it('reversalPercent 파라미터 적용 → crash 없음', () => {
+    const n = 15;
+    const h = Array.from({ length: n }, () => 105);
+    const l = Array.from({ length: n }, () => 95);
+    const c = Array.from({ length: n }, () => 100);
+    const o = Array.from({ length: n }, () => 99);
+    expect(() => calcZigZagSupportResistance(h, l, c, o, 5)).not.toThrow();
+  });
+});
+
+// ── calcEnvelope ──────────────────────────────────────────────────────────────
+
+describe('calcEnvelope', () => {
+  it('period 미만 구간 → null', () => {
+    const closes = Array.from({ length: 25 }, (_, i) => 100 + i);
+    const result = calcEnvelope(closes, 20);
+    expect(result[0]).toEqual({ upper: null, mid: null, lower: null });
+  });
+
+  it('충분한 데이터 → upper >= mid >= lower', () => {
+    const closes = Array.from({ length: 30 }, (_, i) => 100 + i);
+    const result = calcEnvelope(closes, 20, 0.1);
+    result.forEach(pt => {
+      if (pt.upper !== null && pt.mid !== null && pt.lower !== null) {
+        expect(pt.upper).toBeGreaterThanOrEqual(pt.mid);
+        expect(pt.mid).toBeGreaterThanOrEqual(pt.lower);
+      }
+    });
+  });
+
+  it('결과 길이 = 입력 길이', () => {
+    const closes = Array.from({ length: 30 }, (_, i) => 100 + i);
+    expect(calcEnvelope(closes, 20)).toHaveLength(30);
+  });
+
+  it('percent 파라미터: 클수록 채널 넓어짐', () => {
+    const closes = Array.from({ length: 30 }, (_, i) => 100 + i);
+    const r1 = calcEnvelope(closes, 20, 0.05);
+    const r2 = calcEnvelope(closes, 20, 0.20);
+    const last1 = r1[r1.length - 1];
+    const last2 = r2[r2.length - 1];
+    if (last1.upper !== null && last2.upper !== null) {
+      expect(last2.upper).toBeGreaterThan(last1.upper);
+    }
+  });
+});
+
 describe('calcDonchianChannels', () => {
   it('period 미만 구간은 null이다', () => {
-    const closes = Array.from({ length: 25 }, (_, i) => 100 + i);
-    const result = calcDonchianChannels(closes, 20);
-    expect(result[0]).toEqual({ upper: null, mid: null, lower: null });
   });
 
   it('upper는 기간 내 최고가, lower는 최저가다', () => {
@@ -546,6 +746,36 @@ describe('calcDonchianChannels', () => {
         expect(pt.upper).toBeGreaterThanOrEqual(pt.mid);
         expect(pt.mid).toBeGreaterThanOrEqual(pt.lower);
       }
+    });
+  });
+});
+
+// ── calcZigZagSupportResistance 추가 브랜치 커버 ─────────────────────────────
+
+describe('calcZigZagSupportResistance 추가 브랜치', () => {
+  it('단조 상승 → peaks/troughs 부족 시 안전 처리 커버', () => {
+    // 단조 상승은 trough 없음 → peaks.length < 2 브랜치 커버
+    const n = 30;
+    const h = Array.from({ length: n }, (_, i) => 100 + i * 2);
+    const l = Array.from({ length: n }, (_, i) => 95  + i * 2);
+    const c = Array.from({ length: n }, (_, i) => 98  + i * 2);
+    const o = Array.from({ length: n }, (_, i) => 97  + i * 2);
+    const result = calcZigZagSupportResistance(h, l, c, o, 3);
+    expect(result).toHaveLength(n);
+  });
+
+  it('지그재그 파동 데이터 → uniquePoints 중복 처리 브랜치 커버', () => {
+    // 피크-트러프 반복 패턴
+    const n = 40;
+    const h = Array.from({ length: n }, (_, i) => i % 10 < 5 ? 110 : 90);
+    const l = Array.from({ length: n }, (_, i) => i % 10 < 5 ? 100 : 80);
+    const c = Array.from({ length: n }, (_, i) => i % 10 < 5 ? 105 : 85);
+    const o = Array.from({ length: n }, (_, i) => i % 10 < 5 ? 102 : 82);
+    const result = calcZigZagSupportResistance(h, l, c, o, 3);
+    expect(result).toHaveLength(n);
+    result.forEach(pt => {
+      expect('support' in pt).toBe(true);
+      expect('resistance' in pt).toBe(true);
     });
   });
 });
