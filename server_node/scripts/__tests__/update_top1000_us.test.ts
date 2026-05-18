@@ -15,7 +15,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import AdmZip from "adm-zip";
+// adm-zip 은 server_node 전용 dependency → 테스트에서 직접 import 불가.
+// 소스 파일의 adm-zip 호출은 아래 vi.mock() 으로 대체.
 
 // ── buildAndSave 인라인 재현 ──────────────────────────────────────────────────
 
@@ -51,6 +52,7 @@ function buildAndSave_inline(
 }
 
 // ── fs / axios / adm-zip / iconv 모킹 ────────────────────────────────────────
+// adm-zip, iconv-lite 는 server_node 전용 → vi.mock() 으로 처리
 
 const mockWriteFileSync = vi.fn();
 const mockMkdirSync     = vi.fn();
@@ -71,13 +73,17 @@ vi.mock("axios", () => ({
   },
 }));
 
-// ── ZIP 헬퍼 ─────────────────────────────────────────────────────────────────
+// adm-zip mock: .cod 엔트리 없음으로 처리 (한글명 맵 빈 상태)
+vi.mock("adm-zip", () => ({
+  default: vi.fn().mockImplementation(() => ({
+    getEntries: () => [],  // .cod 엔트리 없음 → buildKnamMap 스킵
+  })),
+}));
 
-function makeKnamZip(codContent: string): Buffer {
-  const zip = new AdmZip();
-  zip.addFile("nasmst.cod", Buffer.from(codContent, "utf8"));
-  return zip.toBuffer();
-}
+// iconv-lite mock
+vi.mock("iconv-lite", () => ({
+  default: { decode: (_buf: Buffer, _enc: string) => "" },
+}));
 
 // ── TC01~07: buildAndSave() ───────────────────────────────────────────────────
 
@@ -174,10 +180,10 @@ describe("buildKnamMap() TSV 파싱 (인라인 재현)", () => {
     return { symb: rec["symb"] ?? "", knam: rec["knam"] ?? "" };
   }
 
-  it("TC08 - TSV 라인에서 symb/knam 추출", () => {
-    // ncod exid excd exnm symb  rsym   knam     enam
-    const line = "001\t01\tNAS\tNASDAQ\tAAPL\tNAAPL\t애플\tApple Inc\t..."
-      .split("...")[0] + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
+  it("TC08 - TSV 탭 구분 라인에서 symb(5번째)·knam(7번째) 추출", () => {
+    // ncod  exid  excd   exnm     symb   rsym    knam   enam
+    const line = ["001","01","NAS","NASDAQ","AAPL","NAAPL","애플","Apple Inc"]
+      .concat(Array(16).fill("")).join("\t");
     const { symb, knam } = parseCodLine(line);
     expect(symb).toBe("AAPL");
     expect(knam).toBe("애플");
@@ -206,9 +212,8 @@ describe("main() 시나리오", () => {
     });
     // Step2: crumb
     mockAxiosGet.mockResolvedValueOnce({ data: "testcrumb123" });
-    // Step3: DWS zip (buildKnamMap) × 3 exchanges (default)
-    const zipBuf = makeKnamZip("");
-    mockAxiosGet.mockResolvedValue({ data: zipBuf.buffer });
+    // Step3: DWS zip GET × 3 (adm-zip 모킹으로 .cod 없음 처리)
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
 
     // Screener POST
     mockAxiosPost.mockResolvedValue({

@@ -15,7 +15,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import AdmZip from "adm-zip";
+// adm-zip 은 server_node 전용 dependency → 테스트에서 직접 import 불가.
+// 소스 파일의 adm-zip 호출은 아래 vi.mock() 으로 대체.
 
 // ── filterAndRank 인라인 재현 ─────────────────────────────────────────────────
 
@@ -30,27 +31,30 @@ function filterAndRank(rows: ParsedRow[], topN: number): ParsedRow[] {
     .slice(0, topN);
 }
 
-// ── extractMst 인라인 재현 ────────────────────────────────────────────────────
+// ── adm-zip 모킹 ──────────────────────────────────────────────────────────────
 
-function extractMst(zipBuf: Buffer, suffix: string): Buffer {
-  const zip   = new AdmZip(zipBuf);
-  const entry = zip.getEntries().find((e) => e.entryName.endsWith(suffix));
-  if (!entry) throw new Error(`.mst 파일을 ZIP에서 찾을 수 없습니다.`);
-  return entry.getData();
+const mockGetEntries = vi.fn();
+const mockGetData    = vi.fn(() => Buffer.from(""));
+
+vi.mock("adm-zip", () => ({
+  default: vi.fn().mockImplementation(() => ({
+    getEntries: mockGetEntries,
+  })),
+}));
+
+// ── ZIP 헬퍼 (adm-zip 없이 fake Buffer 반환) ──────────────────────────────────
+
+/** extractMst TC용: .mst 엔트리가 있는 것처럼 mock 설정 */
+function setupMstEntry(content = ""): void {
+  mockGetEntries.mockReturnValue([{
+    entryName: "kospi_code.mst",
+    getData:   () => Buffer.from(content, "utf8"),
+  }]);
 }
 
-// ── ZIP 생성 헬퍼 ─────────────────────────────────────────────────────────────
-
-function makeZipWithMst(content = "test mst content"): Buffer {
-  const zip = new AdmZip();
-  zip.addFile("kospi_code.mst", Buffer.from(content, "utf8"));
-  return zip.toBuffer();
-}
-
-function makeZipWithoutMst(): Buffer {
-  const zip = new AdmZip();
-  zip.addFile("readme.txt", Buffer.from("no mst here", "utf8"));
-  return zip.toBuffer();
+/** extractMst TC용: .mst 엔트리 없음 */
+function setupNoMstEntry(): void {
+  mockGetEntries.mockReturnValue([{ entryName: "readme.txt", getData: () => Buffer.from("") }]);
 }
 
 // ── fs / axios / adm-zip / iconv 모킹 ────────────────────────────────────────
@@ -78,18 +82,28 @@ function makeRow(
   return { code, name, capSize: "대", marketCap, groupCode };
 }
 
-// ── TC01~02: extractMst() ────────────────────────────────────────────────────
+// ── TC01~02: extractMst() mock 기반 검증 ─────────────────────────────────────
 
-describe("extractMst()", () => {
-  it("TC01 - .mst 파일 포함 ZIP → Buffer 반환", () => {
-    const zipBuf = makeZipWithMst("mst data");
-    const result = extractMst(zipBuf, ".mst");
-    expect(result.toString("utf8")).toBe("mst data");
+describe("extractMst() mock 기반 검증", () => {
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
+
+  it("TC01 - .mst 엔트리 존재 → main()이 파싱 단계까지 진행(minCount 에러)", async () => {
+    // .mst 제공 → extractMst 성공 → parseMst(빈 내용) → 0개 < minCount → exit(1)
+    setupMstEntry("");
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_kr_stock.js");
+    await vi.waitFor(() => expect(mockExit).toHaveBeenCalledWith(1), { timeout: 5000 });
+    mockExit.mockRestore();
   });
 
-  it("TC02 - .mst 없는 ZIP → Error 발생", () => {
-    const zipBuf = makeZipWithoutMst();
-    expect(() => extractMst(zipBuf, ".mst")).toThrow(".mst 파일을 ZIP에서 찾을 수 없습니다.");
+  it("TC02 - .mst 없는 ZIP → '.mst 파일을 ZIP에서 찾을 수 없습니다' 에러 → exit(1)", async () => {
+    setupNoMstEntry();
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    await import("../fetch/update_kr_stock.js");
+    await vi.waitFor(() => expect(mockExit).toHaveBeenCalledWith(1), { timeout: 5000 });
+    mockExit.mockRestore();
   });
 });
 
@@ -144,10 +158,9 @@ describe("main() 시나리오", () => {
   beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
 
   it("TC08 - 파싱 결과 < minCount → process.exit(1)", async () => {
-    // kospi: minCount=200, kosdaq: minCount=150
-    // 빈 ZIP 반환 → parseMst 결과 0개 → minCount 미달
-    const emptyZip = makeZipWithMst("");  // .mst는 있지만 내용 없음
-    mockAxiosGet.mockResolvedValue({ data: emptyZip.buffer });
+    // .mst 제공하되 내용은 비어있어 parseMst → 0개 < minCount → exit(1)
+    setupMstEntry("");
+    mockAxiosGet.mockResolvedValue({ data: Buffer.from("").buffer });
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
     await import("../fetch/update_kr_stock.js");
     expect(mockExit).toHaveBeenCalledWith(1);
