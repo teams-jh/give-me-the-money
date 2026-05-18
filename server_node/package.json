@@ -7,7 +7,8 @@
     "start": "tsx test.ts",
     "js-start": "node test.cjs",
     "dev": "tsx test.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,8 @@
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",
     "@types/node": "^25.7.0",
-    "tsx": "^4.21.0"
+    "@vitest/coverage-v8": "^4.1.6",
+    "tsx": "^4.21.0",
+    "vitest": "^4.1.6"
   }
 }
