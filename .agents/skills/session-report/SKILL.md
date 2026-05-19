@@ -11,4 +11,3 @@ description: Generate an explorable HTML report of Claude Code session usage (to
 
 - **실제 스킬 가이드 파일 (반드시 아래 파일을 열어서 지침을 따르세요)**:
   - 마크다운 링크: [원본 SKILL.md](../../../.claude/skills/session-report/SKILL.md)
-  - 로컬 절대 경로: `e:/코딩/give-me-the-money/.claude/skills/session-report/SKILL.md`
