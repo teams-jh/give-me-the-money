@@ -120,12 +120,16 @@ async function fetchVix(): Promise<ChartResponse> {
 
 export function buildJson(raw: ChartResponse): VixJson {
   const sorted = [...raw.quotes]
-    .filter((q) => q.close !== null)
+    .filter((q) => q.close != null)
     .map((q) => ({
       date:  q.date.toISOString().slice(0, 10),
       close: q.close as number,
     }))
     .sort((a, b) => a.date.localeCompare(b.date));
+
+  if (sorted.length === 0) {
+    throw new Error("유효한 close 데이터가 없습니다.");
+  }
 
   const latest       = sorted[sorted.length - 1];
   const prevClose    = sorted[sorted.length - 2]  ?? null;
@@ -137,7 +141,7 @@ export function buildJson(raw: ChartResponse): VixJson {
 
   const historical: HistoricalRow[] = sorted.map((row) => ({
     date:   row.date,
-    score:  round(row.close) ?? row.close,
+    score:  round(row.close),
     rating: getVixRating(row.close),
   }));
 
@@ -204,7 +208,14 @@ export async function main(): Promise<void> {
   }
 }
 
-main().catch((e: unknown) => {
-  console.error(e instanceof Error ? e.message : String(e));
-  process.exit(1);
-});
+// 직접 실행될 때만 main() 호출 (import 시에는 자동 실행 안 함)
+const isMain =
+  process.argv[1] !== undefined &&
+  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+
+if (isMain) {
+  main().catch((e: unknown) => {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  });
+}

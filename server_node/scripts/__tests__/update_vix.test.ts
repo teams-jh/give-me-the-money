@@ -21,12 +21,12 @@
  *   TC17  main()           - 정상 경로 → writeFileSync + renameSync 호출
  *   TC18  main()           - 가격 데이터 0개 → process.exit(1)
  *   TC19  main()           - yahooFinance.chart() throw → process.exit(1)
+ *   TC20  buildJson()      - 모든 close가 null → throw Error
  *
  * 설계 결정:
- *   round(), getVixRating()은 소스에서 export되지 않으므로
- *   동일 로직을 인라인으로 재현해 단위 검증한다.
- *   소스 변경 시 이 테스트가 실패하도록 유도하는 역할을 한다.
+ *   round(), getVixRating()은 소스에서 export되므로 직접 import하여 검증한다.
  *   isUpdatedToday()는 main() 호출을 통해 chart 호출 여부로 간접 검증한다.
+ *   update_vix.ts는 진입점 가드(isMain)를 사용하므로 import 시 main()이 자동 실행되지 않는다.
  *
  * 모킹 전략:
  *   - fs: readFileSync / writeFileSync / mkdirSync / renameSync 모킹
@@ -35,6 +35,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { round, getVixRating, buildJson, main } from "../fetch/update_vix.ts";
 
 // ── fs 모킹 ───────────────────────────────────────────────────────────────────
 
@@ -58,25 +59,9 @@ const mockChart = vi.fn();
 
 vi.mock("yahoo-finance2", () => ({
   default: class {
-    chart = mockChart;
+    chart = (...args: unknown[]) => mockChart(...args);
   },
 }));
-
-// ── 순수 함수 로컬 재현 ───────────────────────────────────────────────────────
-// 소스의 round(), getVixRating()과 동일한 로직을 보유하며
-// 소스 변경 시 이 테스트가 실패하도록 유도하는 역할을 함.
-
-function round(v: number | null | undefined): number | null {
-  if (v == null || isNaN(v as number)) return null;
-  return Math.round((v as number) * 100) / 100;
-}
-
-function getVixRating(score: number): string {
-  if (score < 15)  return "low";
-  if (score < 25)  return "moderate";
-  if (score < 35)  return "high";
-  return "extreme";
-}
 
 // ── 헬퍼: 정상 yahooFinance.chart() 응답 ──────────────────────────────────────
 
@@ -145,19 +130,19 @@ describe("update_vix", () => {
       expect(getVixRating(14.99)).toBe("low");
     });
 
-    it("TC06 15 ≤ score < 25 이면 'moderate'를 반환한다", () => {
+    it("TC06 15 이상 25 미만이면 'moderate'를 반환한다", () => {
       expect(getVixRating(15)).toBe("moderate");
       expect(getVixRating(20)).toBe("moderate");
       expect(getVixRating(24.99)).toBe("moderate");
     });
 
-    it("TC07 25 ≤ score < 35 이면 'high'를 반환한다", () => {
+    it("TC07 25 이상 35 미만이면 'high'를 반환한다", () => {
       expect(getVixRating(25)).toBe("high");
       expect(getVixRating(30)).toBe("high");
       expect(getVixRating(34.99)).toBe("high");
     });
 
-    it("TC08 score ≥ 35 이면 'extreme'을 반환한다", () => {
+    it("TC08 score 35 이상이면 'extreme'을 반환한다", () => {
       expect(getVixRating(35)).toBe("extreme");
       expect(getVixRating(50)).toBe("extreme");
       expect(getVixRating(80)).toBe("extreme");
@@ -171,13 +156,12 @@ describe("update_vix", () => {
 
     beforeEach(() => {
       exitSpy = vi.spyOn(process, "exit").mockImplementation((() => {}) as () => never);
-      vi.resetModules();
+      mockChart.mockClear();
       mockChart.mockResolvedValue(makeChartResponse());
     });
 
     afterEach(() => {
       exitSpy.mockRestore();
-      // --force 플래그 정리
       const idx = process.argv.indexOf("--force");
       if (idx !== -1) process.argv.splice(idx, 1);
     });
@@ -186,7 +170,6 @@ describe("update_vix", () => {
       const today = new Date().toISOString();
       mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: today }));
 
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(mockChart).not.toHaveBeenCalled();
@@ -196,7 +179,6 @@ describe("update_vix", () => {
       const yesterday = new Date(Date.now() - 86_400_000).toISOString();
       mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: yesterday }));
 
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(mockChart).toHaveBeenCalled();
@@ -205,7 +187,6 @@ describe("update_vix", () => {
     it("TC11 파일 없음(throw) → main()이 chart를 호출한다", async () => {
       mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
 
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(mockChart).toHaveBeenCalled();
@@ -214,7 +195,6 @@ describe("update_vix", () => {
     it("TC12 updated_at 필드 없음 → main()이 chart를 호출한다", async () => {
       mockReadFileSync.mockReturnValue(JSON.stringify({}));
 
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(mockChart).toHaveBeenCalled();
@@ -224,9 +204,7 @@ describe("update_vix", () => {
   // ── buildJson() ─────────────────────────────────────────────────────────────
 
   describe("buildJson()", () => {
-    it("TC13 정상 입력 → 올바른 JSON 구조를 반환한다", async () => {
-      const { buildJson } = await import("../fetch/update_vix.ts");
-
+    it("TC13 정상 입력 → 올바른 JSON 구조를 반환한다", () => {
       const quotes: QuoteRow[] = [
         { date: new Date("2025-05-18"), open: 17, high: 19, low: 16, close: 18.0,  adjclose: 18.0,  volume: null },
         { date: new Date("2025-05-19"), open: 18, high: 20, low: 17, close: 19.0,  adjclose: 19.0,  volume: null },
@@ -244,12 +222,14 @@ describe("update_vix", () => {
       expect(result.previous_1_month).toBeNull();
       expect(result.previous_1_year).toBeNull();
       expect(Array.isArray(result.historical)).toBe(true);
-      expect(result.historical[0]).toMatchObject({ date: expect.any(String), score: expect.any(Number), rating: expect.any(String) });
+      expect(result.historical[0]).toMatchObject({
+        date:   expect.any(String),
+        score:  expect.any(Number),
+        rating: expect.any(String),
+      });
     });
 
-    it("TC14 히스토리 역순 입력 → 날짜 오름차순으로 정렬된다", async () => {
-      const { buildJson } = await import("../fetch/update_vix.ts");
-
+    it("TC14 히스토리 역순 입력 → 날짜 오름차순으로 정렬된다", () => {
       const quotes: QuoteRow[] = [
         { date: new Date("2025-05-20"), open: 19, high: 21, low: 18, close: 20.0, adjclose: 20.0, volume: null },
         { date: new Date("2025-05-18"), open: 17, high: 19, low: 16, close: 18.0, adjclose: 18.0, volume: null },
@@ -261,6 +241,15 @@ describe("update_vix", () => {
       const dates = result.historical.map((h) => h.date);
       expect(dates).toEqual([...dates].sort());
     });
+
+    it("TC20 모든 close가 null → Error를 throw한다", () => {
+      const quotes: QuoteRow[] = [
+        { date: new Date("2025-05-18"), open: null, high: null, low: null, close: null, adjclose: null, volume: null },
+        { date: new Date("2025-05-19"), open: null, high: null, low: null, close: null, adjclose: null, volume: null },
+      ];
+
+      expect(() => buildJson({ quotes })).toThrow("유효한 close 데이터가 없습니다.");
+    });
   });
 
   // ── main() ──────────────────────────────────────────────────────────────────
@@ -270,7 +259,6 @@ describe("update_vix", () => {
 
     beforeEach(() => {
       exitSpy = vi.spyOn(process, "exit").mockImplementation((() => {}) as () => never);
-      vi.resetModules();
       mockChart.mockClear();
       mockWriteFileSync.mockClear();
       mockRenameSync.mockClear();
@@ -288,7 +276,6 @@ describe("update_vix", () => {
       const today = new Date().toISOString();
       mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: today }));
 
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(mockChart).not.toHaveBeenCalled();
@@ -299,14 +286,12 @@ describe("update_vix", () => {
       mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: today }));
       process.argv.push("--force");
 
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(mockChart).toHaveBeenCalled();
     });
 
     it("TC17 정상 경로 → writeFileSync + renameSync 호출", async () => {
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(mockWriteFileSync).toHaveBeenCalled();
@@ -316,7 +301,6 @@ describe("update_vix", () => {
     it("TC18 가격 데이터 0개 → process.exit(1) 호출", async () => {
       mockChart.mockResolvedValue(makeChartResponse({ empty: true }));
 
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(exitSpy).toHaveBeenCalledWith(1);
@@ -325,7 +309,6 @@ describe("update_vix", () => {
     it("TC19 yahooFinance.chart() throw → process.exit(1) 호출", async () => {
       mockChart.mockRejectedValue(new Error("network error"));
 
-      const { main } = await import("../fetch/update_vix.ts");
       await main();
 
       expect(exitSpy).toHaveBeenCalledWith(1);
