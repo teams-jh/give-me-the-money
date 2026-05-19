@@ -7,18 +7,23 @@
  *   TC03  round()          - NaN → null
  *   TC04  round()          - undefined → null
  *   TC05  round()          - 정수 입력 → 그대로
- *   TC06  isUpdatedToday() - 오늘 날짜 파일 → true
- *   TC07  isUpdatedToday() - 어제 날짜 파일 → false
- *   TC08  isUpdatedToday() - 파일 없음(ENOENT) → false
- *   TC09  isUpdatedToday() - updated_at 필드 없음 → false
+ *   TC06  isUpdatedToday() - 오늘 날짜 파일 → true  (main() 스킵 경로로 간접 검증)
+ *   TC07  isUpdatedToday() - 어제 날짜 파일 → false (chart 호출로 간접 검증)
+ *   TC08  isUpdatedToday() - 파일 없음(ENOENT) → false (chart 호출로 간접 검증)
+ *   TC09  isUpdatedToday() - updated_at 필드 없음 → false (chart 호출로 간접 검증)
  *   TC10  calcMarketInfo() - 빈 배열 → 모든 값 null
  *   TC11  calcMarketInfo() - 1개 → price=close, prev=null
  *   TC12  calcMarketInfo() - 여러 행 → 52주 high/low 정확
  *   TC13  buildJson()      - 반환 구조 ticker·updated_at·info·market·prices 포함
- *   TC14  main()           - 오늘 이미 업데이트 → yahooFinance.historical 미호출
- *   TC15  main()           - --force 플래그 → 업데이트 강제 실행
- *   TC16  main()           - 가격 데이터 < 100개 → Error 발생
+ *   TC14  main()           - 오늘 이미 업데이트 → yahooFinance.chart 미호출
+ *   TC15  main()           - --force 플래그 → 업데이트 강제 실행(chart 호출)
+ *   TC16  main()           - 가격 데이터 < 100개 → process.exit(1) 호출
  *   TC17  main()           - 정상 경로 → writeFileSync 호출 확인
+ *
+ * 모킹 구조:
+ *   소스에서 yahooFinance.chart() 를 직접 호출하므로
+ *   default export를 { chart: mockFn } 형태의 객체로 모킹한다.
+ *   chart() 응답 형식: { quotes: QuoteRow[] }
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -80,11 +85,14 @@ vi.mock("fs", () => ({
 }));
 
 // ── yahoo-finance2 모킹 ──────────────────────────────────────────────────────
+// 소스: import YahooFinance from "yahoo-finance2"  →  new YahooFinance()
+// 인스턴스에서 yahooFinance.chart(ticker, params, options) 호출
+// chart() 응답 형식: { quotes: Array<{ date, open, high, low, close, adjclose, volume }> }
 
-const mockHistorical = vi.fn();
+const mockChart = vi.fn();
 vi.mock("yahoo-finance2", () => ({
   default: class {
-    historical = mockHistorical;
+    chart = mockChart;
   },
 }));
 
@@ -140,49 +148,49 @@ describe("isUpdatedToday() 간접 검증", () => {
     );
     vi.resetModules();
     await import("../fetch/update_fx_rate.js");
-    expect(mockHistorical).not.toHaveBeenCalled();
+    expect(mockChart).not.toHaveBeenCalled();
   });
 
   it("TC07 - 어제 날짜 파일 → 업데이트 실행 시도(yahooFinance 호출)", async () => {
     mockReadFileSync.mockReturnValue(
       JSON.stringify({ updated_at: `${yesterdayStr()}T00:00:00.000Z` })
     );
-    mockHistorical.mockResolvedValue(
-      Array.from({ length: 120 }, (_, i) => ({
+    mockChart.mockResolvedValue({
+      quotes: Array.from({ length: 120 }, (_, i) => ({
         date:     new Date(2024, 0, i + 1),
         open: 1300, high: 1400, low: 1250, close: 1350,
-        adjClose: 1350, volume: 0,
-      }))
-    );
+        adjclose: 1350, volume: 0,
+      })),
+    });
     vi.resetModules();
     await import("../fetch/update_fx_rate.js");
-    expect(mockHistorical).toHaveBeenCalled();
+    expect(mockChart).toHaveBeenCalled();
   });
 
   it("TC08 - 파일 없음(readFileSync throw) → 업데이트 실행", async () => {
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
-    mockHistorical.mockResolvedValue(
-      Array.from({ length: 120 }, (_, i) => ({
+    mockChart.mockResolvedValue({
+      quotes: Array.from({ length: 120 }, (_, i) => ({
         date: new Date(2024, 0, i + 1), open: 1300, high: 1400, low: 1250,
-        close: 1350, adjClose: 1350, volume: 0,
-      }))
-    );
+        close: 1350, adjclose: 1350, volume: 0,
+      })),
+    });
     vi.resetModules();
     await import("../fetch/update_fx_rate.js");
-    expect(mockHistorical).toHaveBeenCalled();
+    expect(mockChart).toHaveBeenCalled();
   });
 
   it("TC09 - updated_at 필드 없음 → 업데이트 실행", async () => {
     mockReadFileSync.mockReturnValue(JSON.stringify({ ticker: "USDKRW" }));
-    mockHistorical.mockResolvedValue(
-      Array.from({ length: 120 }, (_, i) => ({
+    mockChart.mockResolvedValue({
+      quotes: Array.from({ length: 120 }, (_, i) => ({
         date: new Date(2024, 0, i + 1), open: 1300, high: 1400, low: 1250,
-        close: 1350, adjClose: 1350, volume: 0,
-      }))
-    );
+        close: 1350, adjclose: 1350, volume: 0,
+      })),
+    });
     vi.resetModules();
     await import("../fetch/update_fx_rate.js");
-    expect(mockHistorical).toHaveBeenCalled();
+    expect(mockChart).toHaveBeenCalled();
   });
 });
 
@@ -267,33 +275,33 @@ describe("main() 시나리오", () => {
     mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: new Date().toISOString() }));
     vi.resetModules();
     await import("../fetch/update_fx_rate.js");
-    expect(mockHistorical).not.toHaveBeenCalled();
+    expect(mockChart).not.toHaveBeenCalled();
   });
 
   it("TC15 - --force 플래그 → 오늘 업데이트여도 강제 실행", async () => {
     process.argv = ["node", "script.ts", "--force"];
     mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: new Date().toISOString() }));
-    mockHistorical.mockResolvedValue(
-      Array.from({ length: 120 }, (_, i) => ({
+    mockChart.mockResolvedValue({
+      quotes: Array.from({ length: 120 }, (_, i) => ({
         date: new Date(2024, 0, i + 1), open: 1300, high: 1400,
-        low: 1250, close: 1350, adjClose: 1350, volume: 0,
-      }))
-    );
+        low: 1250, close: 1350, adjclose: 1350, volume: 0,
+      })),
+    });
     vi.resetModules();
     await import("../fetch/update_fx_rate.js");
-    expect(mockHistorical).toHaveBeenCalled();
+    expect(mockChart).toHaveBeenCalled();
     process.argv = ["node", "script.ts"];
   });
 
   it("TC16 - 가격 행 < 100개 → Error 발생(process.exit(1))", async () => {
     process.argv = ["node", "script.ts", "--force"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
-    mockHistorical.mockResolvedValue(
-      Array.from({ length: 50 }, (_, i) => ({  // 50개 → 에러
+    mockChart.mockResolvedValue({
+      quotes: Array.from({ length: 50 }, (_, i) => ({  // 50개 → 100 미만 → 에러
         date: new Date(2024, 0, i + 1), open: 1300, high: 1400,
-        low: 1250, close: 1350, adjClose: 1350, volume: 0,
-      }))
-    );
+        low: 1250, close: 1350, adjclose: 1350, volume: 0,
+      })),
+    });
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
     vi.resetModules();
     await import("../fetch/update_fx_rate.js");
@@ -305,12 +313,21 @@ describe("main() 시나리오", () => {
   it("TC17 - 정상 경로 → writeFileSync 호출 확인", async () => {
     process.argv = ["node", "script.ts", "--force"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
-    mockHistorical.mockResolvedValue(
-      Array.from({ length: 120 }, (_, i) => ({
-        date: new Date(2024, 0, i + 1), open: 1300, high: 1400,
-        low: 1250, close: 1350, adjClose: 1350, volume: 0,
-      }))
-    );
+    // open/adjclose/volume=null 인 행을 포함 → round(null) 브랜치 커버
+    // close=null 인 행도 포함 → filter 브랜치 커버
+    mockChart.mockResolvedValue({
+      quotes: [
+        // close=null 행 → filter에서 제거됨 (filter false 브랜치 커버)
+        { date: new Date(2024, 0, 1), open: 1300, high: 1400, low: 1250, close: null, adjclose: 1350, volume: 0 },
+        // open/adjclose/volume=null 행 → round(null) 브랜치, adjclose??close, volume??null 커버
+        { date: new Date(2024, 0, 2), open: null,  high: 1400, low: 1250, close: 1350, adjclose: null, volume: null },
+        // 나머지 120개 정상 행
+        ...Array.from({ length: 120 }, (_, i) => ({
+          date: new Date(2024, 0, i + 3), open: 1300, high: 1400,
+          low: 1250, close: 1350, adjclose: 1350, volume: 0,
+        })),
+      ],
+    });
     vi.resetModules();
     await import("../fetch/update_fx_rate.js");
     expect(mockWriteFileSync).toHaveBeenCalled();
