@@ -299,8 +299,8 @@ describe('toPriceSeries', () => {
 describe('resolveOutputFile', () => {
   const config = {
     tickersJson: '/db/all_us.json',
-    tickersDir:  '/db/us_tickers',
-    trendDir:    '/db/us_trend',
+    tickersDir:  '/db/us/tickers',
+    trendDir:    '/db/us/trend',
   };
 
   it('n=undefined, period=undefined → trend_all_all.json', () => {
@@ -325,7 +325,7 @@ describe('resolveOutputFile', () => {
 
   it('trendDir 경로 포함', () => {
     const result = resolveOutputFile(config, undefined, undefined);
-    expect(result).toContain('/db/us_trend');
+    expect(result).toContain('/db/us/trend');
   });
 });
 
@@ -421,8 +421,8 @@ describe('now', () => {
 describe('loadTickers', () => {
   const config = {
     tickersJson: '/db/all_us.json',
-    tickersDir:  '/db/us_tickers',
-    trendDir:    '/db/us_trend',
+    tickersDir:  '/db/us/tickers',
+    trendDir:    '/db/us/trend',
   };
 
   beforeEach(() => {
@@ -448,8 +448,8 @@ describe('loadTickers', () => {
 describe('loadPrices', () => {
   const config = {
     tickersJson: '/db/all_us.json',
-    tickersDir:  '/db/us_tickers',
-    trendDir:    '/db/us_trend',
+    tickersDir:  '/db/us/tickers',
+    trendDir:    '/db/us/trend',
   };
 
   beforeEach(() => {

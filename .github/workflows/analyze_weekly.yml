@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: kr_trend_${{ matrix.n }}_${{ matrix.period }}
-          path: src/db/kr_trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
+          path: src/db/kr/trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
           retention-days: 1
 
   # ── 추세 분석 US (n × period 매트릭스 병렬 실행) ─────────────────────────
@@ -83,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: us_trend_${{ matrix.n }}_${{ matrix.period }}
-          path: src/db/us_trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
+          path: src/db/us/trend/trend_${{ matrix.n }}_${{ matrix.period }}.json
           retention-days: 1
 
   # ── 섹터 로테이션 분석 (KR + US 병렬) ──────────────────────────────────────
@@ -180,9 +180,9 @@ jobs:
 
       - name: Move sector files
         run: |
-          mkdir -p src/db/kr_sector src/db/us_sector
-          [ -f sector_kr/rotation.json ] && mv sector_kr/rotation.json src/db/kr_sector/rotation.json
-          [ -f sector_us/rotation.json ] && mv sector_us/rotation.json src/db/us_sector/rotation.json
+          mkdir -p src/db/kr/sector src/db/us/sector
+          [ -f sector_kr/rotation.json ] && mv sector_kr/rotation.json src/db/kr/sector/rotation.json
+          [ -f sector_us/rotation.json ] && mv sector_us/rotation.json src/db/us/sector/rotation.json
 
       - name: Download breadth artifacts
         uses: actions/download-artifact@v4
@@ -192,7 +192,7 @@ jobs:
 
       - name: Move breadth files
         run: |
-          mkdir -p src/db/kr_breadth src/db/us_breadth
+          mkdir -p src/db/kr/breadth src/db/us/breadth
           for market in kr us; do
             for period in 3m 1y; do
               src="breadth_${market}_${period}/breadth_${period}.json"
@@ -209,7 +209,7 @@ jobs:
 
       - name: Move trend files
         run: |
-          mkdir -p src/db/kr_trend src/db/us_trend
+          mkdir -p src/db/kr/trend src/db/us/trend
           for market in kr us; do
             for n in 100 200 500; do
               for period in 3m 1y 2y 3y; do
@@ -225,9 +225,9 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/kr_sector/ src/db/us_sector/ \
-                  src/db/kr_breadth/ src/db/us_breadth/ \
-                  src/db/kr_trend/   src/db/us_trend/
+          git add src/db/kr/sector/ src/db/us/sector/ \
+                  src/db/kr/breadth/ src/db/us/breadth/ \
+                  src/db/kr/trend/   src/db/us/trend/
 
           if git diff --cached --quiet; then
             echo "변경 없음 — 커밋 건너뜀"

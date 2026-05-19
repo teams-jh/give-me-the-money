@@ -261,8 +261,8 @@ describe('toFundamentalData', () => {
 describe('resolveOutputFile', () => {
   const config = {
     tickersJson: '/db/metadata/all_kr_tickers.json',
-    tickersDir:  '/db/kr_tickers',
-    signalsDir:  '/db/kr_signals',
+    tickersDir:  '/db/kr/tickers',
+    signalsDir:  '/db/kr/signals',
   };
 
   it('n 없으면 signals_all.json', () => {
@@ -277,7 +277,7 @@ describe('resolveOutputFile', () => {
 
   it('signalsDir 경로 포함', () => {
     const result = resolveOutputFile(config, 50);
-    expect(result).toContain('/db/kr_signals');
+    expect(result).toContain('/db/kr/signals');
   });
 });
 
@@ -327,8 +327,8 @@ describe('parseArgs', () => {
 describe('loadTickers', () => {
   const config = {
     tickersJson: '/db/all_kr.json',
-    tickersDir:  '/db/kr_tickers',
-    signalsDir:  '/db/kr_signals',
+    tickersDir:  '/db/kr/tickers',
+    signalsDir:  '/db/kr/signals',
   };
 
   beforeEach(() => {
@@ -363,8 +363,8 @@ describe('loadTickers', () => {
 describe('loadTicker', () => {
   const config = {
     tickersJson: '/db/all_kr.json',
-    tickersDir:  '/db/kr_tickers',
-    signalsDir:  '/db/kr_signals',
+    tickersDir:  '/db/kr/tickers',
+    signalsDir:  '/db/kr/signals',
   };
 
   beforeEach(() => {

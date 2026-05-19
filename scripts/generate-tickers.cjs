@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const krTickersDir = path.join(__dirname, '../src/db/kr_tickers');
-const usTickersDir = path.join(__dirname, '../src/db/us_tickers');
+const krTickersDir = path.join(__dirname, '../src/db/kr/tickers');
+const usTickersDir = path.join(__dirname, '../src/db/us/tickers');
 const outputFile = path.join(__dirname, '../src/library/all-tickers-data.ts');
 
 const krFiles = fs.existsSync(krTickersDir) ? fs.readdirSync(krTickersDir).filter(f => f.endsWith('.json')) : [];
@@ -15,14 +15,14 @@ content += "import { TickerData } from './tickers';\n\n";
 krFiles.forEach((file) => {
   const tickerFromFileName = file.replace('.json', '');
   const varName = `data_kr_${tickerFromFileName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-  content += `import ${varName} from '../db/kr_tickers/${file}';\n`;
+  content += `import ${varName} from '../db/kr/tickers/${file}';\n`;
 });
 
 // US Tickers
 usFiles.forEach((file) => {
   const tickerFromFileName = file.replace('.json', '');
   const varName = `data_us_${tickerFromFileName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-  content += `import ${varName} from '../db/us_tickers/${file}';\n`;
+  content += `import ${varName} from '../db/us/tickers/${file}';\n`;
 });
 
 content += '\nexport const allTickersData: Record<string, TickerData> = {\n';

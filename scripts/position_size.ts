@@ -38,8 +38,8 @@ const __dirname  = path.dirname(__filename);
 const DB_DIR     = path.resolve(__dirname, "../src/db");
 
 const TICKERS_DIR: Record<string, string> = {
-  us: path.join(DB_DIR, "us_tickers"),
-  kr: path.join(DB_DIR, "kr_tickers"),
+  us: path.join(DB_DIR, "us/tickers"),
+  kr: path.join(DB_DIR, "kr/tickers"),
 };
 
 // ── 타입 ─────────────────────────────────────────────────────────────────────

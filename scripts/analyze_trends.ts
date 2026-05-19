@@ -39,13 +39,13 @@ interface MarketConfig {
 const MARKET_CONFIG: Record<string, MarketConfig> = {
   us: {
     tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "us_tickers"),
-    trendDir:    path.join(DB_DIR, "us_trend"),
+    tickersDir:  path.join(DB_DIR, "us/tickers"),
+    trendDir:    path.join(DB_DIR, "us/trend"),
   },
   kr: {
     tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "kr_tickers"),
-    trendDir:    path.join(DB_DIR, "kr_trend"),
+    tickersDir:  path.join(DB_DIR, "kr/tickers"),
+    trendDir:    path.join(DB_DIR, "kr/trend"),
   },
 };
 
