@@ -31,7 +31,7 @@ const __dirname  = path.dirname(__filename);
 
 const CNN_PAGE_URL = "https://edition.cnn.com/markets/fear-and-greed";
 const CNN_API_URL  = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata";
-const OUTPUT_DIR   = path.resolve(__dirname, "../../src/db/market_sentiment");
+const OUTPUT_DIR   = path.resolve(__dirname, "../../../src/db/market_sentiment");
 const OUTPUT       = path.join(OUTPUT_DIR, "fear_and_greed.json");
 
 const PAGE_TIMEOUT_MS = 30_000;   // CNN 페이지 로드 최대 시간

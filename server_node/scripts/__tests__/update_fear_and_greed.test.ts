@@ -12,20 +12,21 @@
  *   TC08  buildJson()          - 히스토리 없음 → 빈 배열 / round() 간접 검증
  *   TC09  buildJson()          - 히스토리 있음 → 변환·정렬 / round() 간접 검증
  *   TC10  main()               - 오늘 업데이트 + no --force → 스킵 (puppeteer 미호출)
- *   TC11  main()               - 정상 경로 → writeFileSync 호출
+ *   TC11  main()               - 정상 경로 → writeFileSync + renameSync 호출
  *   TC12  main()               - API 응답 score 없음 → process.exit(1)
  *   TC13  main()               - --force 플래그 → 오늘 업데이트여도 실행
  *   TC14  main()               - request 인터셉트: image → abort, other → continue
- *   TC15  main()               - response URL 불일치 → 무시, 두 번째 응답으로 resolve
+ *   TC15  main()               - page.evaluate 실패(네트워크 오류) → process.exit(1)
  *
  * 설계 결정:
  *   round() 단위 테스트는 별도로 두지 않음.
  *   소스의 round()는 export되지 않으며, TC08·TC09에서 최종 JSON 값(score, historical.score)으로
  *   소스 실제 round() 로직을 간접 검증한다.
  *
- * Puppeteer 모킹 전략:
- *   page.on("request", handler) / page.on("response", handler) 핸들러를 캡처하여
- *   page.goto() 안에서 직접 호출 → apiDataPromise 를 동기적으로 resolve 시킴
+ * Puppeteer 모킹 전략 (v2 - page.evaluate 방식):
+ *   구현이 page.evaluate()로 브라우저 컨텍스트 안에서 직접 fetch를 호출하므로,
+ *   page.evaluate mock이 API 응답 데이터를 반환하도록 설정한다.
+ *   page.goto()는 CNN 페이지 방문(쿠키 획득)용으로 단순 resolve로 모킹한다.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -47,15 +48,14 @@ vi.mock("fs", () => ({
 }));
 
 // ── Puppeteer 모킹 ────────────────────────────────────────────────────────────
-// 전략: page.on() 으로 등록된 핸들러를 캡처 → page.goto() 안에서 직접 호출
-
-let capturedRequestHandler: ((req: unknown) => void) | undefined;
-let capturedResponseHandler: ((res: unknown) => void) | undefined;
+// 전략: page.goto()는 쿠키 획득용으로 단순 resolve,
+//       page.evaluate()가 실제 API 데이터를 반환하도록 모킹
 
 const mockAbort    = vi.fn();
 const mockContinue = vi.fn();
 const mockPageSetRequestInterception = vi.fn().mockResolvedValue(undefined);
-const mockPageGoto = vi.fn();
+const mockPageGoto     = vi.fn().mockResolvedValue(undefined);
+const mockPageEvaluate = vi.fn();
 const mockBrowserClose = vi.fn().mockResolvedValue(undefined);
 const mockNewPage  = vi.fn();
 const mockLaunch   = vi.fn();
@@ -92,45 +92,30 @@ function makeCnnResponse(opts: { noScore?: boolean; hasHistorical?: boolean } = 
 }
 
 // ── 헬퍼: Puppeteer 목 페이지 초기화 ──────────────────────────────────────────
+// page.evaluate()가 API 응답을 반환하도록 설정
 
 function setupPuppeteerMock(
   apiResponse: unknown,
-  opts: { matchUrl?: boolean; jsonThrows?: boolean } = {}
+  opts: { evaluateThrows?: boolean } = {}
 ) {
-  capturedRequestHandler  = undefined;
-  capturedResponseHandler = undefined;
+  mockPageGoto.mockResolvedValue(undefined);
 
-  const mockPageOn = vi.fn().mockImplementation((event: string, handler: unknown) => {
-    if (event === "request")  capturedRequestHandler  = handler as (req: unknown) => void;
-    if (event === "response") capturedResponseHandler = handler as (res: unknown) => void;
-  });
-
-  const urlPart = opts.matchUrl === false
-    ? "https://edition.cnn.com/unrelated/page"
-    : "https://edition.cnn.com/fearandgreed/graphdata/v1";
-
-  mockPageGoto.mockImplementation(async () => {
-    if (capturedResponseHandler) {
-      const mockRes = {
-        url: () => urlPart,
-        json: opts.jsonThrows
-          ? () => Promise.reject(new Error("JSON parse failed"))
-          : () => Promise.resolve(apiResponse),
-      };
-      // 응답 핸들러 비동기 호출 (소스 내부의 async 핸들러와 동일하게)
-      await capturedResponseHandler(mockRes);
-    }
-  });
+  if (opts.evaluateThrows) {
+    mockPageEvaluate.mockRejectedValue(new Error("fetch failed from browser context"));
+  } else {
+    mockPageEvaluate.mockResolvedValue(apiResponse);
+  }
 
   mockNewPage.mockResolvedValue({
     setRequestInterception: mockPageSetRequestInterception,
-    on: mockPageOn,
-    goto: mockPageGoto,
+    on:       vi.fn(),  // request 핸들러 등록용 (TC14에서 별도 오버라이드)
+    goto:     mockPageGoto,
+    evaluate: mockPageEvaluate,
   });
 
   mockLaunch.mockResolvedValue({
     newPage: mockNewPage,
-    close: mockBrowserClose,
+    close:   mockBrowserClose,
   });
 }
 
@@ -140,7 +125,7 @@ function yesterdayStr() {
   const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0, 10);
 }
 
-// ── TC05~08: isUpdatedToday() 간접 검증 (main() 통해) ──────────────────────────
+// ── TC01~04: isUpdatedToday() 간접 검증 (main() 통해) ─────────────────────────
 
 describe("isUpdatedToday() 간접 검증", () => {
   beforeEach(() => {
@@ -184,7 +169,7 @@ describe("isUpdatedToday() 간접 검증", () => {
   });
 });
 
-// ── TC09~11: getExecutablePath() 간접 검증 (puppeteer.launch 인수 통해) ───────
+// ── TC05~07: getExecutablePath() 간접 검증 (puppeteer.launch 인수 통해) ────────
 
 describe("getExecutablePath() 간접 검증", () => {
   beforeEach(() => {
@@ -192,7 +177,6 @@ describe("getExecutablePath() 간접 검증", () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
     setupPuppeteerMock(makeCnnResponse());
-    // 환경변수 정리
     delete process.env["PUPPETEER_EXECUTABLE_PATH"];
     delete process.env["CI"];
   });
@@ -229,9 +213,9 @@ describe("getExecutablePath() 간접 검증", () => {
   });
 });
 
-// ── TC12~13: buildJson() ──────────────────────────────────────────────────────
-// buildJson은 export 되지 않으므로 main() 통해 saveJson(buildJson(raw)) 경로로 간접 검증
-// writeFileSync 에 전달된 JSON 내용을 파싱하여 검증
+// ── TC08~09: buildJson() 간접 검증 ───────────────────────────────────────────
+// buildJson은 export 되지 않으므로 main() → saveJson(buildJson(raw)) 경로로 간접 검증
+// writeFileSync에 전달된 JSON 내용을 파싱하여 검증
 
 describe("buildJson() 간접 검증", () => {
   beforeEach(() => {
@@ -260,11 +244,11 @@ describe("buildJson() 간접 검증", () => {
     expect(written.historical).toHaveLength(3);
     const dates = written.historical.map((h: { date: string }) => h.date);
     expect(dates).toEqual([...dates].sort());
-    expect(written.historical[0].score).toBe(65);
+    expect(written.historical[0]!.score).toBe(65);
   });
 });
 
-// ── TC14~19: main() 시나리오 ──────────────────────────────────────────────────
+// ── TC10~15: main() 시나리오 ─────────────────────────────────────────────────
 
 describe("main() 시나리오", () => {
   beforeEach(() => {
@@ -280,7 +264,7 @@ describe("main() 시나리오", () => {
     expect(mockLaunch).not.toHaveBeenCalled();
   });
 
-  it("TC11 - 정상 경로 → writeFileSync 2회 (tmp + rename)", async () => {
+  it("TC11 - 정상 경로 → writeFileSync + renameSync 호출", async () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
     setupPuppeteerMock(makeCnnResponse());
@@ -317,83 +301,53 @@ describe("main() 시나리오", () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
 
-    // page.on("request", handler) 를 직접 캡처하여 TC에서 호출
     let reqHandler: ((req: unknown) => void) | undefined;
     const mockPageOn = vi.fn().mockImplementation((event: string, handler: unknown) => {
       if (event === "request") reqHandler = handler as (req: unknown) => void;
-      if (event === "response") capturedResponseHandler = handler as (res: unknown) => void;
     });
 
     mockPageGoto.mockImplementation(async () => {
-      // 다양한 요청 타입 핸들러 호출
+      // 다양한 요청 타입으로 핸들러 호출
       const makeReq = (type: string) => ({
         resourceType: () => type,
         abort:    mockAbort,
         continue: mockContinue,
       });
       if (reqHandler) {
-        reqHandler(makeReq("image"));  // → abort
-        reqHandler(makeReq("font"));   // → abort
-        reqHandler(makeReq("media"));  // → abort
-        reqHandler(makeReq("xhr"));    // → continue
-        reqHandler(makeReq("script")); // → continue
-      }
-      // 정상 API 응답 트리거
-      if (capturedResponseHandler) {
-        await capturedResponseHandler({
-          url: () => "https://edition.cnn.com/fearandgreed/graphdata/v1",
-          json: () => Promise.resolve(makeCnnResponse()),
-        });
+        reqHandler(makeReq("image"));   // → abort
+        reqHandler(makeReq("font"));    // → abort
+        reqHandler(makeReq("media"));   // → abort
+        reqHandler(makeReq("xhr"));     // → continue
+        reqHandler(makeReq("script"));  // → continue
       }
     });
 
+    mockPageEvaluate.mockResolvedValue(makeCnnResponse());
+
     mockNewPage.mockResolvedValue({
       setRequestInterception: mockPageSetRequestInterception,
-      on: mockPageOn,
-      goto: mockPageGoto,
+      on:       mockPageOn,
+      goto:     mockPageGoto,
+      evaluate: mockPageEvaluate,
     });
     mockLaunch.mockResolvedValue({ newPage: mockNewPage, close: mockBrowserClose });
 
     vi.resetModules();
     await import("../fetch/update_fear_and_greed.js");
+    await vi.waitFor(() => expect(mockAbort).toHaveBeenCalled(), { timeout: 3000 });
 
-    expect(mockAbort).toHaveBeenCalledTimes(3);    // image, font, media
-    expect(mockContinue).toHaveBeenCalledTimes(2); // xhr, script
+    expect(mockAbort).toHaveBeenCalledTimes(3);     // image, font, media
+    expect(mockContinue).toHaveBeenCalledTimes(2);  // xhr, script
   });
 
-  it("TC15 - response URL 불일치 → 무시(resolve 안 됨), 두 번째 응답으로 resolve", async () => {
+  it("TC15 - page.evaluate 실패(네트워크 오류) → process.exit(1)", async () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
-
-    // 첫 번째 응답은 URL 불일치, 두 번째는 일치
-    mockPageGoto.mockImplementation(async () => {
-      if (capturedResponseHandler) {
-        // 불일치 URL → 핸들러 내부에서 return (무시)
-        await capturedResponseHandler({
-          url: () => "https://edition.cnn.com/unrelated/page",
-          json: () => Promise.resolve({}),
-        });
-        // 일치 URL → resolve
-        await capturedResponseHandler({
-          url: () => "https://edition.cnn.com/fearandgreed/graphdata/v1",
-          json: () => Promise.resolve(makeCnnResponse()),
-        });
-      }
-    });
-
-    const mockPageOn = vi.fn().mockImplementation((event: string, handler: unknown) => {
-      if (event === "response") capturedResponseHandler = handler as (res: unknown) => void;
-    });
-
-    mockNewPage.mockResolvedValue({
-      setRequestInterception: mockPageSetRequestInterception,
-      on: mockPageOn,
-      goto: mockPageGoto,
-    });
-    mockLaunch.mockResolvedValue({ newPage: mockNewPage, close: mockBrowserClose });
-
+    setupPuppeteerMock(null, { evaluateThrows: true });
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
     vi.resetModules();
     await import("../fetch/update_fear_and_greed.js");
-    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 3000 });
+    await vi.waitFor(() => expect(mockExit).toHaveBeenCalledWith(1), { timeout: 3000 });
+    mockExit.mockRestore();
   });
 });
