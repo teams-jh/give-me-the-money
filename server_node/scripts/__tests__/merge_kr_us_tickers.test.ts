@@ -50,6 +50,10 @@ describe("merge_kr_tickers.ts", () => {
       .mockReturnValueOnce(JSON.stringify({
         tickers: ["035720.KQ", "003550.KQ"],
         name_map: { "035720.KQ": "카카오", "003550.KQ": "LG" },
+      }))
+      .mockReturnValueOnce(JSON.stringify({
+        tickers: [],
+        name_map: {},
       }));
 
     await import("../merge/merge_kr_tickers.js");
@@ -71,6 +75,10 @@ describe("merge_kr_tickers.ts", () => {
       .mockReturnValueOnce(JSON.stringify({
         tickers: ["035720.KQ"],
         name_map: { "035720.KQ": "카카오" },
+      }))
+      .mockReturnValueOnce(JSON.stringify({
+        tickers: ["352820.KS"],
+        name_map: { "352820.KS": "하이브" },
       }));
 
     await import("../merge/merge_kr_tickers.js");
@@ -78,6 +86,7 @@ describe("merge_kr_tickers.ts", () => {
     const out = captureOutput() as { name_map: Record<string, string> };
     expect(out.name_map["005930.KS"]).toBe("삼성전자");
     expect(out.name_map["035720.KQ"]).toBe("카카오");
+    expect(out.name_map["352820.KS"]).toBe("하이브");
   });
 
   it("TC03 - kospi300 파일 없음 → readFileSync 에러 전파", async () => {
