@@ -75,7 +75,6 @@ jobs:
 
           git add src/db/stock_market_index/kospi300_tickers.json \
                   src/db/stock_market_index/kosdaq200_tickers.json \
-                  src/db/stock_market_index/manual_tickers.json \
                   src/db/metadata/all_kr_tickers.json
 
           if git diff --cached --quiet; then
