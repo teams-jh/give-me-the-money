@@ -31,7 +31,7 @@ const yahooFinance  = new YahooFinance();
 
 // ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
-const DB_DIR = path.resolve(__dirname, "../../src/db");
+const DB_DIR = path.resolve(__dirname, "../../../src/db");
 
 interface MarketConfig {
   label:       string;   // 로그용 ("미국" | "국내")
