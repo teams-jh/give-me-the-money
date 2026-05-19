@@ -147,7 +147,7 @@ async function fetchPrices(): Promise<PriceRow[]> {
   log(`다운로드 완료: ${allRows.length}개 거래일 (null close 제거 전)`);
 
   // close가 null인 행 제거 (당일 미확정 데이터 등)
-  const rows = allRows.filter((row) => row.close !== null);
+  const rows = allRows.filter((row) => row.close != null);
   log(`유효 데이터: ${rows.length}개 거래일`);
 
   return rows.map((row) => ({
