@@ -1,34 +1,46 @@
 /**
- * update_manual_tickers.ts 테스트
+ * update_manual_tickers.ts 테스트 (KR / US 공용)
  *
  * TC 계획:
- *   [validateTicker]
+ *   [validateTicker - KR]
  *   TC01  유효한 코스피 티커 (.KS) → 오류 없음
  *   TC02  유효한 코스닥 티커 (.KQ) → 오류 없음
- *   TC03  잘못된 형식 (숫자 부족) → Error 발생
- *   TC04  잘못된 접미사 (.KX)     → Error 발생
- *   TC05  빈 문자열               → Error 발생
+ *   TC03  숫자 부족 → Error
+ *   TC04  잘못된 접미사 (.KX) → Error
+ *   TC05  빈 문자열 → Error
  *
- *   [add]
- *   TC06  신규 티커 + name 추가 → tickers·name_map에 반영, total_count 증가
- *   TC07  신규 티커 name 없이 추가 → tickers에만 반영
- *   TC08  중복 티커 + name → name_map만 업데이트, tickers 중복 없음
- *   TC09  중복 티커 name 없이 → 변경 없음 (writeFileSync 미호출)
- *   TC10  추가 후 tickers 알파벳순 정렬
- *   TC11  잘못된 형식 티커 → Error 발생, writeFileSync 미호출
+ *   [validateTicker - US]
+ *   TC06  유효한 US 티커 (AAPL) → 오류 없음
+ *   TC07  유효한 US 티커 클래스주 (BRK-B) → 오류 없음
+ *   TC08  소문자 포함 → Error
+ *   TC09  6자 초과 → Error
+ *
+ *   [add - KR]
+ *   TC10  신규 KR 티커 + name → tickers·name_map 반영
+ *   TC11  신규 KR 티커 name 없이 → tickers에만 반영
+ *   TC12  중복 KR 티커 + name → name_map만 업데이트
+ *   TC13  중복 KR 티커 name 없이 → writeFileSync 미호출
+ *   TC14  추가 후 tickers 알파벳순 정렬
+ *   TC15  잘못된 형식 → writeFileSync 미호출
+ *
+ *   [add - US]
+ *   TC16  신규 US 티커 + name → tickers·name_map 반영
+ *   TC17  잘못된 US 티커 형식 → writeFileSync 미호출
  *
  *   [remove]
- *   TC12  등록된 티커 제거 → tickers·name_map에서 삭제, total_count 감소
- *   TC13  미등록 티커 제거 → writeFileSync 미호출
- *   TC14  잘못된 형식 티커 → Error 발생
+ *   TC18  등록된 KR 티커 제거 → tickers·name_map 삭제
+ *   TC19  미등록 티커 제거 → writeFileSync 미호출
+ *   TC20  잘못된 형식 → writeFileSync 미호출
  *
  *   [list]
- *   TC15  등록 종목 있음 → console.log 출력
- *   TC16  등록 종목 없음 → "없습니다" 메시지 출력
+ *   TC21  등록 종목 있음 → console.log 출력
+ *   TC22  등록 종목 없음 → "없습니다" 메시지 출력
  *
  *   [parseArgs]
- *   TC17  명령 누락 → process.exit(1) 호출
- *   TC18  add 명령에 --ticker 누락 → process.exit(1) 호출
+ *   TC23  --market 누락 → process.exit(1)
+ *   TC24  지원하지 않는 마켓 → process.exit(1)
+ *   TC25  command 누락 → process.exit(1)
+ *   TC26  add에 --ticker 누락 → process.exit(1)
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -64,110 +76,118 @@ function captureWrittenJson(): Record<string, unknown> {
   return JSON.parse(call[1] as string) as Record<string, unknown>;
 }
 
-// ── validateTicker (순수 함수 인라인 재현) ────────────────────────────────────
+// ── validateTicker 인라인 재현 ────────────────────────────────────────────────
 
-function validateTicker(ticker: string): void {
-  const pattern = /^\d{6}\.(KS|KQ)$/;
-  if (!pattern.test(ticker)) {
+const MARKET_CONFIG = {
+  kr: { tickerPattern: /^\d{6}\.(KS|KQ)$/, tickerExample: "005930.KS / 247540.KQ" },
+  us: { tickerPattern: /^[A-Z0-9]{1,5}(-[A-Z])?$/, tickerExample: "AAPL / BRK-B" },
+};
+
+function validateTicker(ticker: string, market: "kr" | "us"): void {
+  const { tickerPattern } = MARKET_CONFIG[market];
+  if (!tickerPattern.test(ticker)) {
     throw new Error(`티커 형식이 올바르지 않습니다: "${ticker}"`);
   }
 }
 
-describe("validateTicker()", () => {
+// ── validateTicker KR ─────────────────────────────────────────────────────────
+
+describe("validateTicker() - KR", () => {
   it("TC01 - 유효한 코스피 티커 (.KS) → 오류 없음", () => {
-    expect(() => validateTicker("005930.KS")).not.toThrow();
+    expect(() => validateTicker("005930.KS", "kr")).not.toThrow();
   });
 
   it("TC02 - 유효한 코스닥 티커 (.KQ) → 오류 없음", () => {
-    expect(() => validateTicker("247540.KQ")).not.toThrow();
+    expect(() => validateTicker("247540.KQ", "kr")).not.toThrow();
   });
 
-  it("TC03 - 숫자가 6자리 미만 → Error 발생", () => {
-    expect(() => validateTicker("12345.KS")).toThrow("티커 형식이 올바르지 않습니다");
+  it("TC03 - 숫자 부족 → Error", () => {
+    expect(() => validateTicker("12345.KS", "kr")).toThrow("티커 형식이 올바르지 않습니다");
   });
 
-  it("TC04 - 잘못된 접미사 (.KX) → Error 발생", () => {
-    expect(() => validateTicker("005930.KX")).toThrow("티커 형식이 올바르지 않습니다");
+  it("TC04 - 잘못된 접미사 (.KX) → Error", () => {
+    expect(() => validateTicker("005930.KX", "kr")).toThrow("티커 형식이 올바르지 않습니다");
   });
 
-  it("TC05 - 빈 문자열 → Error 발생", () => {
-    expect(() => validateTicker("")).toThrow("티커 형식이 올바르지 않습니다");
+  it("TC05 - 빈 문자열 → Error", () => {
+    expect(() => validateTicker("", "kr")).toThrow("티커 형식이 올바르지 않습니다");
   });
 });
 
-// ── add ──────────────────────────────────────────────────────────────────────
+// ── validateTicker US ─────────────────────────────────────────────────────────
 
-describe("add 명령", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.resetModules();
+describe("validateTicker() - US", () => {
+  it("TC06 - 유효한 US 티커 (AAPL) → 오류 없음", () => {
+    expect(() => validateTicker("AAPL", "us")).not.toThrow();
   });
 
-  it("TC06 - 신규 티커 + name 추가 → tickers·name_map 반영, total_count 증가", async () => {
-    process.argv = ["node", "script.ts", "add", "--ticker", "352820.KS", "--name", "하이브"];
+  it("TC07 - 클래스주 (BRK-B) → 오류 없음", () => {
+    expect(() => validateTicker("BRK-B", "us")).not.toThrow();
+  });
+
+  it("TC08 - 소문자 포함 → Error", () => {
+    expect(() => validateTicker("aapl", "us")).toThrow("티커 형식이 올바르지 않습니다");
+  });
+
+  it("TC09 - 6자 초과 → Error", () => {
+    expect(() => validateTicker("TOOLONG", "us")).toThrow("티커 형식이 올바르지 않습니다");
+  });
+});
+
+// ── add KR ────────────────────────────────────────────────────────────────────
+
+describe("add 명령 - KR", () => {
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
+
+  it("TC10 - 신규 KR 티커 + name → tickers·name_map 반영", async () => {
+    process.argv = ["node", "s", "--market", "kr", "add", "--ticker", "352820.KS", "--name", "하이브"];
     mockReadFileSync.mockReturnValue(makeManualJson());
 
     await import("../fetch/update_manual_tickers.js");
 
     expect(mockWriteFileSync).toHaveBeenCalled();
-    const out = captureWrittenJson() as {
-      tickers: string[];
-      name_map: Record<string, string>;
-      total_count: number;
-    };
+    const out = captureWrittenJson() as { tickers: string[]; name_map: Record<string, string>; total_count: number };
     expect(out.tickers).toContain("352820.KS");
     expect(out.name_map["352820.KS"]).toBe("하이브");
     expect(out.total_count).toBe(1);
   });
 
-  it("TC07 - 신규 티커 name 없이 추가 → tickers에만 반영, name_map 비어있음", async () => {
-    process.argv = ["node", "script.ts", "add", "--ticker", "352820.KS"];
+  it("TC11 - 신규 KR 티커 name 없이 → tickers에만 반영", async () => {
+    process.argv = ["node", "s", "--market", "kr", "add", "--ticker", "352820.KS"];
     mockReadFileSync.mockReturnValue(makeManualJson());
 
     await import("../fetch/update_manual_tickers.js");
 
     expect(mockWriteFileSync).toHaveBeenCalled();
-    const out = captureWrittenJson() as {
-      tickers: string[];
-      name_map: Record<string, string>;
-    };
+    const out = captureWrittenJson() as { tickers: string[]; name_map: Record<string, string> };
     expect(out.tickers).toContain("352820.KS");
     expect(out.name_map["352820.KS"]).toBeUndefined();
   });
 
-  it("TC08 - 중복 티커 + name → name_map만 업데이트, tickers 중복 없음", async () => {
-    process.argv = ["node", "script.ts", "add", "--ticker", "352820.KS", "--name", "하이브(수정)"];
-    mockReadFileSync.mockReturnValue(
-      makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
-    );
+  it("TC12 - 중복 KR 티커 + name → name_map만 업데이트, tickers 중복 없음", async () => {
+    process.argv = ["node", "s", "--market", "kr", "add", "--ticker", "352820.KS", "--name", "하이브(수정)"];
+    mockReadFileSync.mockReturnValue(makeManualJson(["352820.KS"], { "352820.KS": "하이브" }));
 
     await import("../fetch/update_manual_tickers.js");
 
     expect(mockWriteFileSync).toHaveBeenCalled();
-    const out = captureWrittenJson() as {
-      tickers: string[];
-      name_map: Record<string, string>;
-    };
+    const out = captureWrittenJson() as { tickers: string[]; name_map: Record<string, string> };
     expect(out.tickers.filter((t) => t === "352820.KS")).toHaveLength(1);
     expect(out.name_map["352820.KS"]).toBe("하이브(수정)");
   });
 
-  it("TC09 - 중복 티커 name 없이 → writeFileSync 미호출", async () => {
-    process.argv = ["node", "script.ts", "add", "--ticker", "352820.KS"];
-    mockReadFileSync.mockReturnValue(
-      makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
-    );
+  it("TC13 - 중복 KR 티커 name 없이 → writeFileSync 미호출", async () => {
+    process.argv = ["node", "s", "--market", "kr", "add", "--ticker", "352820.KS"];
+    mockReadFileSync.mockReturnValue(makeManualJson(["352820.KS"], { "352820.KS": "하이브" }));
 
     await import("../fetch/update_manual_tickers.js");
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
   });
 
-  it("TC10 - 추가 후 tickers 알파벳순 정렬", async () => {
-    process.argv = ["node", "script.ts", "add", "--ticker", "000080.KS"];
-    mockReadFileSync.mockReturnValue(
-      makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
-    );
+  it("TC14 - 추가 후 tickers 알파벳순 정렬", async () => {
+    process.argv = ["node", "s", "--market", "kr", "add", "--ticker", "000080.KS"];
+    mockReadFileSync.mockReturnValue(makeManualJson(["352820.KS"], { "352820.KS": "하이브" }));
 
     await import("../fetch/update_manual_tickers.js");
 
@@ -176,87 +196,93 @@ describe("add 명령", () => {
     expect(out.tickers[1]).toBe("352820.KS");
   });
 
-  it("TC11 - 잘못된 형식 티커 → process.exit(1), writeFileSync 미호출", async () => {
-    process.argv = ["node", "script.ts", "add", "--ticker", "INVALID"];
+  it("TC15 - 잘못된 형식 → writeFileSync 미호출", async () => {
+    process.argv = ["node", "s", "--market", "kr", "add", "--ticker", "INVALID"];
     mockReadFileSync.mockReturnValue(makeManualJson());
-
-    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
 
     await import("../fetch/update_manual_tickers.js").catch(() => {});
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
-    mockExit.mockRestore();
+  });
+});
+
+// ── add US ────────────────────────────────────────────────────────────────────
+
+describe("add 명령 - US", () => {
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
+
+  it("TC16 - 신규 US 티커 + name → tickers·name_map 반영", async () => {
+    process.argv = ["node", "s", "--market", "us", "add", "--ticker", "AAPL", "--name", "Apple"];
+    mockReadFileSync.mockReturnValue(makeManualJson());
+
+    await import("../fetch/update_manual_tickers.js");
+
+    expect(mockWriteFileSync).toHaveBeenCalled();
+    const out = captureWrittenJson() as { tickers: string[]; name_map: Record<string, string> };
+    expect(out.tickers).toContain("AAPL");
+    expect(out.name_map["AAPL"]).toBe("Apple");
+  });
+
+  it("TC17 - 잘못된 US 티커 형식 → writeFileSync 미호출", async () => {
+    process.argv = ["node", "s", "--market", "us", "add", "--ticker", "invalid"];
+    mockReadFileSync.mockReturnValue(makeManualJson());
+    vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+
+    await import("../fetch/update_manual_tickers.js").catch(() => {});
+
+    expect(mockWriteFileSync).not.toHaveBeenCalled();
   });
 });
 
 // ── remove ────────────────────────────────────────────────────────────────────
 
 describe("remove 명령", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.resetModules();
-  });
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
 
-  it("TC12 - 등록된 티커 제거 → tickers·name_map 삭제, total_count 감소", async () => {
-    process.argv = ["node", "script.ts", "remove", "--ticker", "352820.KS"];
+  it("TC18 - 등록된 KR 티커 제거 → tickers·name_map 삭제, total_count 감소", async () => {
+    process.argv = ["node", "s", "--market", "kr", "remove", "--ticker", "352820.KS"];
     mockReadFileSync.mockReturnValue(
-      makeManualJson(["293490.KQ", "352820.KS"], {
-        "293490.KQ": "카카오게임즈",
-        "352820.KS": "하이브",
-      }),
+      makeManualJson(["293490.KQ", "352820.KS"], { "293490.KQ": "카카오게임즈", "352820.KS": "하이브" }),
     );
 
     await import("../fetch/update_manual_tickers.js");
 
     expect(mockWriteFileSync).toHaveBeenCalled();
-    const out = captureWrittenJson() as {
-      tickers: string[];
-      name_map: Record<string, string>;
-      total_count: number;
-    };
+    const out = captureWrittenJson() as { tickers: string[]; name_map: Record<string, string>; total_count: number };
     expect(out.tickers).not.toContain("352820.KS");
     expect(out.name_map["352820.KS"]).toBeUndefined();
     expect(out.total_count).toBe(1);
   });
 
-  it("TC13 - 미등록 티커 제거 → writeFileSync 미호출", async () => {
-    process.argv = ["node", "script.ts", "remove", "--ticker", "000080.KS"];
-    mockReadFileSync.mockReturnValue(
-      makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
-    );
+  it("TC19 - 미등록 티커 제거 → writeFileSync 미호출", async () => {
+    process.argv = ["node", "s", "--market", "kr", "remove", "--ticker", "000080.KS"];
+    mockReadFileSync.mockReturnValue(makeManualJson(["352820.KS"], { "352820.KS": "하이브" }));
 
     await import("../fetch/update_manual_tickers.js");
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
   });
 
-  it("TC14 - 잘못된 형식 티커 → process.exit(1), writeFileSync 미호출", async () => {
-    process.argv = ["node", "script.ts", "remove", "--ticker", "INVALID"];
+  it("TC20 - 잘못된 형식 → writeFileSync 미호출", async () => {
+    process.argv = ["node", "s", "--market", "kr", "remove", "--ticker", "INVALID"];
     mockReadFileSync.mockReturnValue(makeManualJson());
-
-    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+    vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
 
     await import("../fetch/update_manual_tickers.js").catch(() => {});
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
-    mockExit.mockRestore();
   });
 });
 
 // ── list ──────────────────────────────────────────────────────────────────────
 
 describe("list 명령", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.resetModules();
-  });
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
 
-  it("TC15 - 등록 종목 있음 → 티커 목록 console.log 출력", async () => {
-    process.argv = ["node", "script.ts", "list"];
-    mockReadFileSync.mockReturnValue(
-      makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
-    );
-
+  it("TC21 - 등록 종목 있음 → 티커·종목명 출력", async () => {
+    process.argv = ["node", "s", "--market", "kr", "list"];
+    mockReadFileSync.mockReturnValue(makeManualJson(["352820.KS"], { "352820.KS": "하이브" }));
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await import("../fetch/update_manual_tickers.js");
@@ -267,10 +293,9 @@ describe("list 명령", () => {
     logSpy.mockRestore();
   });
 
-  it("TC16 - 등록 종목 없음 → '없습니다' 메시지 출력", async () => {
-    process.argv = ["node", "script.ts", "list"];
+  it("TC22 - 등록 종목 없음 → '없습니다' 메시지 출력", async () => {
+    process.argv = ["node", "s", "--market", "us", "list"];
     mockReadFileSync.mockReturnValue(makeManualJson());
-
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await import("../fetch/update_manual_tickers.js");
@@ -284,13 +309,10 @@ describe("list 명령", () => {
 // ── parseArgs ────────────────────────────────────────────────────────────────
 
 describe("parseArgs() - 잘못된 인자", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    vi.resetModules();
-  });
+  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
 
-  it("TC17 - 명령 누락 → process.exit(1) 호출", async () => {
-    process.argv = ["node", "script.ts"];
+  it("TC23 - --market 누락 → process.exit(1)", async () => {
+    process.argv = ["node", "s", "add", "--ticker", "AAPL"];
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
 
     await import("../fetch/update_manual_tickers.js").catch(() => {});
@@ -299,8 +321,28 @@ describe("parseArgs() - 잘못된 인자", () => {
     mockExit.mockRestore();
   });
 
-  it("TC18 - add 명령에 --ticker 누락 → process.exit(1) 호출", async () => {
-    process.argv = ["node", "script.ts", "add"];
+  it("TC24 - 지원하지 않는 마켓 → process.exit(1)", async () => {
+    process.argv = ["node", "s", "--market", "jp", "add", "--ticker", "7203.T"];
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+
+    await import("../fetch/update_manual_tickers.js").catch(() => {});
+
+    expect(mockExit).toHaveBeenCalledWith(1);
+    mockExit.mockRestore();
+  });
+
+  it("TC25 - command 누락 → process.exit(1)", async () => {
+    process.argv = ["node", "s", "--market", "kr"];
+    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
+
+    await import("../fetch/update_manual_tickers.js").catch(() => {});
+
+    expect(mockExit).toHaveBeenCalledWith(1);
+    mockExit.mockRestore();
+  });
+
+  it("TC26 - add에 --ticker 누락 → process.exit(1)", async () => {
+    process.argv = ["node", "s", "--market", "us", "add"];
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
 
     await import("../fetch/update_manual_tickers.js").catch(() => {});

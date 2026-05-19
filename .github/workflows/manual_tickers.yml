@@ -1,11 +1,18 @@
 name: Manual Ticker Management
 
-# 수동 관심 종목 추가·제거·목록 조회
-# 실행 후 자동으로 all_kr_tickers.json 까지 갱신하고 커밋
+# 수동 관심 종목 추가·제거·목록 조회 (KR / US 공용)
+# 실행 후 자동으로 all_{market}_tickers.json 까지 갱신하고 커밋
 
 on:
   workflow_dispatch:
     inputs:
+      market:
+        description: "마켓 (kr / us)"
+        required: true
+        type: choice
+        options:
+          - kr
+          - us
       command:
         description: "명령 (add / remove / list)"
         required: true
@@ -15,17 +22,17 @@ on:
           - remove
           - list
       ticker:
-        description: "종목 코드 (add·remove 시 필수, 예: 352820.KS / 247540.KQ)"
+        description: "종목 코드 (add·remove 시 필수, KR 예: 352820.KS / US 예: AAPL)"
         required: false
         default: ""
       name:
-        description: "종목명 (add 시 선택, 예: 하이브)"
+        description: "종목명 (add 시 선택, 예: 하이브 / Apple)"
         required: false
         default: ""
 
 jobs:
   manage-manual-tickers:
-    name: "수동 종목 ${{ github.event.inputs.command }}"
+    name: "[${{ github.event.inputs.market }}] 수동 종목 ${{ github.event.inputs.command }}"
     runs-on: ubuntu-latest
 
     permissions:
@@ -52,7 +59,7 @@ jobs:
         if: ${{ github.event.inputs.command == 'add' }}
         working-directory: server_node
         run: |
-          ARGS="--ticker ${{ github.event.inputs.ticker }}"
+          ARGS="--market ${{ github.event.inputs.market }} --ticker ${{ github.event.inputs.ticker }}"
           if [ -n "${{ github.event.inputs.name }}" ]; then
             ARGS="$ARGS --name ${{ github.event.inputs.name }}"
           fi
@@ -62,19 +69,27 @@ jobs:
         if: ${{ github.event.inputs.command == 'remove' }}
         working-directory: server_node
         run: |
-          npx tsx scripts/fetch/update_manual_tickers.ts remove \
-            --ticker ${{ github.event.inputs.ticker }}
+          npx tsx scripts/fetch/update_manual_tickers.ts \
+            --market ${{ github.event.inputs.market }} \
+            remove --ticker ${{ github.event.inputs.ticker }}
 
       - name: Run update_manual_tickers (list)
         if: ${{ github.event.inputs.command == 'list' }}
         working-directory: server_node
         run: |
-          npx tsx scripts/fetch/update_manual_tickers.ts list
+          npx tsx scripts/fetch/update_manual_tickers.ts \
+            --market ${{ github.event.inputs.market }} \
+            list
 
-      - name: Merge KR tickers (add·remove 시만 실행)
-        if: ${{ github.event.inputs.command == 'add' || github.event.inputs.command == 'remove' }}
+      - name: Merge KR tickers
+        if: ${{ (github.event.inputs.command == 'add' || github.event.inputs.command == 'remove') && github.event.inputs.market == 'kr' }}
         working-directory: server_node
         run: npx tsx scripts/merge/merge_kr_tickers.ts
+
+      - name: Merge US tickers
+        if: ${{ (github.event.inputs.command == 'add' || github.event.inputs.command == 'remove') && github.event.inputs.market == 'us' }}
+        working-directory: server_node
+        run: npx tsx scripts/merge/merge_us_tickers.ts
 
       - name: Commit and push
         if: ${{ github.event.inputs.command == 'add' || github.event.inputs.command == 'remove' }}
@@ -82,8 +97,9 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add src/db/stock_market_index/manual_tickers.json \
-                  src/db/metadata/all_kr_tickers.json
+          MARKET="${{ github.event.inputs.market }}"
+          git add src/db/stock_market_index/manual_${MARKET}_tickers.json \
+                  src/db/metadata/all_${MARKET}_tickers.json
 
           if git diff --cached --quiet; then
             echo "변경 없음 (이미 등록된 종목이거나 미등록 종목 제거)"
@@ -92,7 +108,7 @@ jobs:
             NAME="${{ github.event.inputs.name }}"
             CMD="${{ github.event.inputs.command }}"
             LABEL="${TICKER}${NAME:+ (${NAME})}"
-            git commit -m "data: manual_tickers ${CMD} ${LABEL}"
+            git commit -m "data: manual_${MARKET}_tickers ${CMD} ${LABEL}"
             git pull --rebase --autostash
             git push
           fi

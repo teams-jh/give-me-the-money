@@ -1,24 +1,28 @@
 /**
- * 수동 관심 종목 관리 (manual_tickers.json)
+ * 수동 관심 종목 관리 (manual_kr_tickers.json / manual_us_tickers.json)
  *
  * 흐름:
- *   add    : manual_tickers.json에 종목 추가 (중복 무시)
- *   remove : manual_tickers.json에서 종목 제거
+ *   add    : 해당 마켓 manual JSON에 종목 추가 (중복 무시)
+ *   remove : 해당 마켓 manual JSON에서 종목 제거
  *   list   : 현재 등록된 종목 목록 출력
  *
  * 실행:
- *   npx tsx scripts/fetch/update_manual_tickers.ts add    --ticker 005930.KS --name 삼성전자
- *   npx tsx scripts/fetch/update_manual_tickers.ts add    --ticker 005930.KS              # name 없이도 가능
- *   npx tsx scripts/fetch/update_manual_tickers.ts remove --ticker 005930.KS
- *   npx tsx scripts/fetch/update_manual_tickers.ts list
+ *   npx tsx scripts/fetch/update_manual_tickers.ts --market kr add    --ticker 005930.KS --name 삼성전자
+ *   npx tsx scripts/fetch/update_manual_tickers.ts --market kr add    --ticker 005930.KS
+ *   npx tsx scripts/fetch/update_manual_tickers.ts --market kr remove --ticker 005930.KS
+ *   npx tsx scripts/fetch/update_manual_tickers.ts --market kr list
+ *   npx tsx scripts/fetch/update_manual_tickers.ts --market us add    --ticker AAPL --name Apple
+ *   npx tsx scripts/fetch/update_manual_tickers.ts --market us remove --ticker AAPL
+ *   npx tsx scripts/fetch/update_manual_tickers.ts --market us list
  *
  * 티커 형식:
- *   코스피 종목 → 6자리 코드 + .KS  (예: 005930.KS)
- *   코스닥 종목 → 6자리 코드 + .KQ  (예: 247540.KQ)
+ *   kr: 6자리 숫자 + .KS 또는 .KQ  (예: 005930.KS / 247540.KQ)
+ *   us: 영문자·숫자·하이픈          (예: AAPL / BRK-B)
  *
  * 주의:
- *   add 후 all_kr_tickers.json 갱신이 필요하면 아래 명령을 추가로 실행하세요.
- *   npx tsx scripts/merge/merge_kr_tickers.ts
+ *   add / remove 후 all_{market}_tickers.json 갱신이 필요하면 아래 명령을 실행하세요.
+ *   kr: npx tsx scripts/merge/merge_kr_tickers.ts
+ *   us: npx tsx scripts/merge/merge_us_tickers.ts
  */
 
 import fs   from "fs";
@@ -28,12 +32,31 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
-// ── 경로 ─────────────────────────────────────────────────────────────────────
+// ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
-const MANUAL_TICKERS_PATH = path.resolve(
-  __dirname,
-  "../../../src/db/stock_market_index/manual_tickers.json",
-);
+const STOCK_INDEX_DIR = path.resolve(__dirname, "../../../src/db/stock_market_index");
+
+interface MarketConfig {
+  jsonFile:        string;
+  tickerPattern:   RegExp;
+  tickerExample:   string;
+  mergeScript:     string;
+}
+
+const MARKET_CONFIG: Record<string, MarketConfig> = {
+  kr: {
+    jsonFile:      path.join(STOCK_INDEX_DIR, "manual_kr_tickers.json"),
+    tickerPattern: /^\d{6}\.(KS|KQ)$/,
+    tickerExample: "코스피 예시: 005930.KS  /  코스닥 예시: 247540.KQ",
+    mergeScript:   "npx tsx scripts/merge/merge_kr_tickers.ts",
+  },
+  us: {
+    jsonFile:      path.join(STOCK_INDEX_DIR, "manual_us_tickers.json"),
+    tickerPattern: /^[A-Z0-9]{1,5}(-[A-Z])?$/,
+    tickerExample: "예시: AAPL / BRK-B",
+    mergeScript:   "npx tsx scripts/merge/merge_us_tickers.ts",
+  },
+};
 
 // ── 타입 ─────────────────────────────────────────────────────────────────────
 
@@ -52,50 +75,68 @@ function log(msg: string): void {
   console.log(`${new Date().toISOString()} [INFO] ${msg}`);
 }
 
-function readManualTickers(): ManualTickersJson {
-  const raw = fs.readFileSync(MANUAL_TICKERS_PATH, "utf8");
+function readJson(filePath: string): ManualTickersJson {
+  const raw = fs.readFileSync(filePath, "utf8");
   return JSON.parse(raw) as ManualTickersJson;
 }
 
-function writeManualTickers(data: ManualTickersJson): void {
+function writeJson(filePath: string, data: ManualTickersJson): void {
   data.updated_at  = new Date().toISOString();
   data.total_count = data.tickers.length;
-  fs.writeFileSync(MANUAL_TICKERS_PATH, JSON.stringify(data, null, 2), "utf8");
-  log(`저장 완료: ${MANUAL_TICKERS_PATH}`);
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
+  log(`저장 완료: ${filePath}`);
 }
 
-function validateTicker(ticker: string): void {
-  const pattern = /^\d{6}\.(KS|KQ)$/;
-  if (!pattern.test(ticker)) {
+function validateTicker(ticker: string, config: MarketConfig): void {
+  if (!config.tickerPattern.test(ticker)) {
     throw new Error(
-      `티커 형식이 올바르지 않습니다: "${ticker}"\n` +
-      `  코스피 예시: 005930.KS\n` +
-      `  코스닥 예시: 247540.KQ`,
+      `티커 형식이 올바르지 않습니다: "${ticker}"\n  ${config.tickerExample}`,
     );
   }
 }
 
-function parseArgs(): { command: string; ticker?: string; name?: string } {
+// ── 인자 파싱 ─────────────────────────────────────────────────────────────────
+
+interface ParsedArgs {
+  market:  string;
+  command: string;
+  ticker?: string;
+  name?:   string;
+}
+
+function parseArgs(): ParsedArgs {
   const args = process.argv.slice(2);
-  const command = args[0];
+
+  // --market 파싱
+  const marketIdx = args.indexOf("--market");
+  if (marketIdx === -1 || !args[marketIdx + 1]) {
+    console.error("오류: --market kr 또는 --market us 가 필요합니다.");
+    process.exit(1);
+  }
+  const market = args[marketIdx + 1]!;
+  if (!MARKET_CONFIG[market]) {
+    console.error(`오류: 지원하지 않는 마켓입니다: "${market}" (kr / us 중 선택)`);
+    process.exit(1);
+  }
+
+  // command 파싱 (--market 이후 첫 번째 non-flag 토큰)
+  const remaining = args.filter((_, i) => i !== marketIdx && i !== marketIdx + 1);
+  const command   = remaining[0];
 
   if (!command || !["add", "remove", "list"].includes(command)) {
     console.error("사용법:");
-    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts add    --ticker <TICKER> [--name <종목명>]");
-    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts remove --ticker <TICKER>");
-    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts list");
+    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts --market <kr|us> add    --ticker <TICKER> [--name <종목명>]");
+    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts --market <kr|us> remove --ticker <TICKER>");
+    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts --market <kr|us> list");
     process.exit(1);
   }
 
   let ticker: string | undefined;
   let name:   string | undefined;
 
-  for (let i = 1; i < args.length; i++) {
-    if (args[i] === "--ticker" && args[i + 1]) {
-      ticker = args[++i];
-    } else if (args[i] === "--name" && args[i + 1]) {
-      name = args[++i];
-    }
+  for (let i = 1; i < remaining.length; i++) {
+    if (remaining[i] === "--ticker" && remaining[i + 1]) ticker = remaining[++i];
+    if (remaining[i] === "--name"   && remaining[i + 1]) name   = remaining[++i];
   }
 
   if ((command === "add" || command === "remove") && !ticker) {
@@ -103,23 +144,21 @@ function parseArgs(): { command: string; ticker?: string; name?: string } {
     process.exit(1);
   }
 
-  return { command, ticker, name };
+  return { market, command, ticker, name };
 }
 
 // ── 명령 처리 ─────────────────────────────────────────────────────────────────
 
-function cmdAdd(ticker: string, name?: string): void {
-  validateTicker(ticker);
+function cmdAdd(config: MarketConfig, ticker: string, name?: string): void {
+  validateTicker(ticker, config);
 
-  const data = readManualTickers();
+  const data = readJson(config.jsonFile);
 
   if (data.tickers.includes(ticker)) {
     log(`이미 등록된 종목입니다: ${ticker}`);
-
-    // name이 주어졌으면 name_map만 업데이트
     if (name) {
       data.name_map[ticker] = name;
-      writeManualTickers(data);
+      writeJson(config.jsonFile, data);
       log(`종목명 업데이트: ${ticker} → ${name}`);
     }
     return;
@@ -127,40 +166,37 @@ function cmdAdd(ticker: string, name?: string): void {
 
   data.tickers.push(ticker);
   data.tickers.sort();
+  if (name) data.name_map[ticker] = name;
 
-  if (name) {
-    data.name_map[ticker] = name;
-  }
-
-  writeManualTickers(data);
+  writeJson(config.jsonFile, data);
   log(`추가 완료: ${ticker}${name ? ` (${name})` : ""}`);
   log(`현재 수동 종목 수: ${data.tickers.length}개`);
-  log(`※ all_kr_tickers.json 갱신이 필요하면 아래 명령을 실행하세요:`);
-  log(`  npx tsx scripts/merge/merge_kr_tickers.ts`);
+  log(`※ all_tickers.json 갱신이 필요하면 아래 명령을 실행하세요:`);
+  log(`  ${config.mergeScript}`);
 }
 
-function cmdRemove(ticker: string): void {
-  validateTicker(ticker);
+function cmdRemove(config: MarketConfig, ticker: string): void {
+  validateTicker(ticker, config);
 
-  const data = readManualTickers();
+  const data = readJson(config.jsonFile);
 
   if (!data.tickers.includes(ticker)) {
     log(`등록되지 않은 종목입니다: ${ticker}`);
     return;
   }
 
-  data.tickers  = data.tickers.filter((t) => t !== ticker);
+  data.tickers = data.tickers.filter((t) => t !== ticker);
   delete data.name_map[ticker];
 
-  writeManualTickers(data);
+  writeJson(config.jsonFile, data);
   log(`제거 완료: ${ticker}`);
   log(`현재 수동 종목 수: ${data.tickers.length}개`);
-  log(`※ all_kr_tickers.json 갱신이 필요하면 아래 명령을 실행하세요:`);
-  log(`  npx tsx scripts/merge/merge_kr_tickers.ts`);
+  log(`※ all_tickers.json 갱신이 필요하면 아래 명령을 실행하세요:`);
+  log(`  ${config.mergeScript}`);
 }
 
-function cmdList(): void {
-  const data = readManualTickers();
+function cmdList(config: MarketConfig): void {
+  const data = readJson(config.jsonFile);
 
   if (data.tickers.length === 0) {
     log("등록된 수동 종목이 없습니다.");
@@ -170,18 +206,19 @@ function cmdList(): void {
   log(`=== 수동 관심 종목 목록 (총 ${data.tickers.length}개) ===`);
   for (const ticker of data.tickers) {
     const name = data.name_map[ticker] ?? "(종목명 없음)";
-    console.log(`  ${ticker.padEnd(12)} ${name}`);
+    console.log(`  ${ticker.padEnd(14)} ${name}`);
   }
 }
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
 function main(): void {
-  const { command, ticker, name } = parseArgs();
+  const { market, command, ticker, name } = parseArgs();
+  const config = MARKET_CONFIG[market]!;
 
-  if (command === "add")    cmdAdd(ticker!, name);
-  if (command === "remove") cmdRemove(ticker!);
-  if (command === "list")   cmdList();
+  if (command === "add")    cmdAdd(config, ticker!, name);
+  if (command === "remove") cmdRemove(config, ticker!);
+  if (command === "list")   cmdList(config);
 }
 
 main();
