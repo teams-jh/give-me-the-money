@@ -104,14 +104,31 @@ function isUpdatedToday(): boolean {
 
 // ── 1단계: Puppeteer로 브라우저 인터셉트 ────────────────────────────────────
 
+/** CI(GitHub Actions) 환경에서는 사전 설치된 Google Chrome을 사용한다 */
+function getExecutablePath(): string | undefined {
+  if (process.env["PUPPETEER_EXECUTABLE_PATH"]) {
+    return process.env["PUPPETEER_EXECUTABLE_PATH"];
+  }
+  // GitHub Actions ubuntu-latest에는 google-chrome이 사전 설치돼 있음
+  if (process.env["CI"]) {
+    return "/usr/bin/google-chrome";
+  }
+  return undefined;   // 로컬: puppeteer 번들 Chromium 자동 사용
+}
+
 async function fetchFearAndGreed(): Promise<CnnApiResponse> {
   log("Headless Chrome 실행 중...");
 
+  const executablePath = getExecutablePath();
+  if (executablePath) log(`브라우저 경로: ${executablePath}`);
+
   const browser = await puppeteer.launch({
     headless: true,
+    executablePath,
     args: [
-      "--no-sandbox",             // CI/Docker 환경 대응
+      "--no-sandbox",             // CI/Docker 환경 필수
       "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",  // GitHub Actions 메모리 제한 대응
     ],
   });
 

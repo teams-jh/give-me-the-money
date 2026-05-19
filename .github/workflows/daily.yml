@@ -110,6 +110,10 @@ jobs:
         working-directory: server_node
         run: npx tsx scripts/fetch/update_ticker_metadata.ts --market us ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
+      - name: Update Fear & Greed Index
+        working-directory: server_node
+        run: npx tsx scripts/fetch/update_fear_and_greed.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+
       - name: Analyze US signals
         run: npx tsx scripts/analyze_signals.ts --market us
 
@@ -122,6 +126,7 @@ jobs:
 
           git add src/db/us_tickers/ \
                   src/db/us_signals/ \
+                  src/db/market_sentiment/ \
                   src/db/metadata/all_us_tickers.json
 
           if git diff --cached --quiet; then
