@@ -321,9 +321,13 @@ describe("main() 시나리오", () => {
 
   it("TC19 - 알 수 없는 마켓 → process.exit(1)", async () => {
     process.argv = ["node", "script.ts", "--market", "jp"];
+    // main().catch(...)가 비동기이므로 import() 자체는 reject되지 않음
+    // → () => {} mock으로 exit 호출만 검증, console.error 억제로 부작용 노이즈 제거
+    const mockErr  = vi.spyOn(console, "error").mockImplementation(() => {});
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
     await import("../fetch/update_ticker_metadata.js");
     expect(mockExit).toHaveBeenCalledWith(1);
+    mockErr.mockRestore();
     mockExit.mockRestore();
     process.argv = ["node", "script.ts"];
   });
