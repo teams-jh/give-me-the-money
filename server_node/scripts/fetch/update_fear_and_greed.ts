@@ -1,12 +1,11 @@
 /**
  * Fear & Greed Index 데이터 업데이트
  *
- * Puppeteer(Headless Chrome)로 CNN 공포·탐욕 페이지를 열어
- * 브라우저가 내부적으로 호출하는 API 응답을 인터셉트한 뒤
- * src/db/market_sentiment/fear_and_greed.json 에 저장한다.
+ * Puppeteer(Headless Chrome)로 CNN 공포·탐욕 페이지를 열어 쿠키·세션을 획득한 뒤,
+ * 브라우저 컨텍스트 안에서 직접 fetch()로 API를 호출해 데이터를 수집한다.
  *
  * CNN dataviz API는 Cloudflare로 보호되어 단순 fetch/curl은 403이 발생한다.
- * 실제 브라우저를 통해 우회한다.
+ * 페이지 방문으로 인증 쿠키를 얻은 후 브라우저 내부에서 API를 직접 호출한다.
  *
  * 스킵 조건:
  *   - fear_and_greed.json 의 updated_at 이 오늘 날짜이면 건너뜀
@@ -20,8 +19,8 @@
  *   npx tsx scripts/fetch/update_fear_and_greed.ts --force
  */
 
-import fs      from "fs";
-import path    from "path";
+import fs        from "fs";
+import path      from "path";
 import puppeteer from "puppeteer";
 import { fileURLToPath } from "url";
 
@@ -31,11 +30,12 @@ const __dirname  = path.dirname(__filename);
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
 const CNN_PAGE_URL = "https://edition.cnn.com/markets/fear-and-greed";
-const API_URL_PART = "fearandgreed/graphdata";   // 인터셉트 대상 URL 키워드
+const CNN_API_URL  = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata";
 const OUTPUT_DIR   = path.resolve(__dirname, "../../src/db/market_sentiment");
 const OUTPUT       = path.join(OUTPUT_DIR, "fear_and_greed.json");
 
-const TIMEOUT_MS   = 30_000;   // 페이지 로드 + API 응답 대기 최대 시간
+const PAGE_TIMEOUT_MS = 30_000;   // CNN 페이지 로드 최대 시간
+const API_TIMEOUT_MS  = 20_000;   // 브라우저 내부 fetch 최대 시간
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
@@ -102,7 +102,7 @@ function isUpdatedToday(): boolean {
   }
 }
 
-// ── 1단계: Puppeteer로 브라우저 인터셉트 ────────────────────────────────────
+// ── 1단계: Puppeteer - 페이지 방문 후 브라우저 내부 fetch ────────────────────
 
 /** CI(GitHub Actions) 환경에서는 사전 설치된 Google Chrome을 사용한다 */
 function getExecutablePath(): string | undefined {
@@ -126,59 +126,62 @@ async function fetchFearAndGreed(): Promise<CnnApiResponse> {
     headless: true,
     executablePath,
     args: [
-      "--no-sandbox",             // CI/Docker 환경 필수
+      "--no-sandbox",
       "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",  // GitHub Actions 메모리 제한 대응
+      "--disable-dev-shm-usage",
     ],
   });
 
   try {
     const page = await browser.newPage();
 
-    // 불필요한 리소스(이미지·폰트·미디어) 차단 → 속도 개선
+    // 불필요한 리소스 차단 (이미지·폰트·미디어) → 로드 속도 개선
     await page.setRequestInterception(true);
     page.on("request", (req) => {
-      const type = req.resourceType();
-      if (type === "image" || type === "font" || type === "media") {
-        req.abort();
-      } else {
-        req.continue();
-      }
+      const t = req.resourceType();
+      if (t === "image" || t === "font" || t === "media") req.abort();
+      else req.continue();
     });
 
-    // API 응답을 캡처할 Promise를 페이지 이동 전에 등록
-    const apiDataPromise = new Promise<CnnApiResponse>((resolve, reject) => {
-      const timer = setTimeout(
-        () => reject(new Error(`API 응답 타임아웃 (${TIMEOUT_MS / 1000}초)`)),
-        TIMEOUT_MS
-      );
+    // 1) CNN 공포·탐욕 페이지 방문 → Cloudflare 통과 + 쿠키·세션 획득
+    log(`CNN 페이지 방문 중: ${CNN_PAGE_URL}`);
+    await page.goto(CNN_PAGE_URL, {
+      waitUntil: "domcontentloaded",
+      timeout:   PAGE_TIMEOUT_MS,
+    });
+    log("페이지 로드 완료 — 쿠키 획득");
 
-      page.on("response", async (res) => {
-        if (!res.url().includes(API_URL_PART)) return;
-
-        clearTimeout(timer);
+    // 2) 브라우저 컨텍스트 안에서 직접 API fetch 실행
+    //    (Cloudflare 쿠키가 자동으로 포함되므로 403 없이 통과)
+    log(`브라우저 내부에서 API 호출 중: ${CNN_API_URL}`);
+    const data = await page.evaluate(
+      async (apiUrl: string, timeoutMs: number): Promise<CnnApiResponse> => {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
         try {
-          const json = (await res.json()) as CnnApiResponse;
-          resolve(json);
-        } catch (e) {
-          reject(new Error(`API 응답 파싱 실패: ${String(e)}`));
+          const res = await fetch(apiUrl, {
+            headers: {
+              "Accept":  "application/json",
+              "Referer": "https://edition.cnn.com/markets/fear-and-greed",
+            },
+            signal: controller.signal,
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return (await res.json()) as CnnApiResponse;
+        } finally {
+          clearTimeout(timer);
         }
-      });
-    });
-
-    // CNN 공포·탐욕 페이지 접속 → Cloudflare 통과 + 브라우저가 API 자동 호출
-    log(`페이지 접속 중: ${CNN_PAGE_URL}`);
-    await page.goto(CNN_PAGE_URL, { waitUntil: "domcontentloaded", timeout: TIMEOUT_MS });
-
-    // 인터셉트한 API 응답 대기
-    const data = await apiDataPromise;
+      },
+      CNN_API_URL,
+      API_TIMEOUT_MS
+    );
 
     // 응답 구조 검증
     if (typeof data.fear_and_greed?.score !== "number") {
       throw new Error("API 응답 구조 이상: fear_and_greed.score 없음");
     }
 
-    log("API 응답 캡처 완료");
+    log("API 데이터 수신 완료");
     return data;
 
   } finally {
