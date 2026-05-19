@@ -29,8 +29,8 @@ interface MarketConfig {
 }
 
 const MARKET_CONFIG: Record<string, MarketConfig> = {
-  kr: { tickersDir: path.join(DB_DIR, "kr_tickers"), breadthDir: path.join(DB_DIR, "kr_breadth") },
-  us: { tickersDir: path.join(DB_DIR, "us_tickers"), breadthDir: path.join(DB_DIR, "us_breadth") },
+  kr: { tickersDir: path.join(DB_DIR, "kr/tickers"), breadthDir: path.join(DB_DIR, "kr/breadth") },
+  us: { tickersDir: path.join(DB_DIR, "us/tickers"), breadthDir: path.join(DB_DIR, "us/breadth") },
 };
 
 // lookback 거래일 수

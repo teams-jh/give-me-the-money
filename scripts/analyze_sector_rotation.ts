@@ -28,12 +28,12 @@ interface MarketConfig {
 
 const MARKET_CONFIG: Record<string, MarketConfig> = {
   kr: {
-    tickersDir: path.join(DB_DIR, "kr_tickers"),
-    sectorDir:  path.join(DB_DIR, "kr_sector"),
+    tickersDir: path.join(DB_DIR, "kr/tickers"),
+    sectorDir:  path.join(DB_DIR, "kr/sector"),
   },
   us: {
-    tickersDir: path.join(DB_DIR, "us_tickers"),
-    sectorDir:  path.join(DB_DIR, "us_sector"),
+    tickersDir: path.join(DB_DIR, "us/tickers"),
+    sectorDir:  path.join(DB_DIR, "us/sector"),
   },
 };
 
