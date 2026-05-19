@@ -32,7 +32,7 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const DB_DIR           = path.resolve(__dirname, "../../src/db");
+const DB_DIR           = path.resolve(__dirname, "../../../src/db");
 const STOCK_INDEX_DIR  = path.join(DB_DIR, "stock_market_index");
 const DWS_BASE = "https://new.real.download.dws.co.kr/common/master";
 

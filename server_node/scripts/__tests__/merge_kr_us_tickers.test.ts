@@ -50,6 +50,10 @@ describe("merge_kr_tickers.ts", () => {
       .mockReturnValueOnce(JSON.stringify({
         tickers: ["035720.KQ", "003550.KQ"],
         name_map: { "035720.KQ": "카카오", "003550.KQ": "LG" },
+      }))
+      .mockReturnValueOnce(JSON.stringify({
+        tickers: [],
+        name_map: {},
       }));
 
     await import("../merge/merge_kr_tickers.js");
@@ -71,6 +75,10 @@ describe("merge_kr_tickers.ts", () => {
       .mockReturnValueOnce(JSON.stringify({
         tickers: ["035720.KQ"],
         name_map: { "035720.KQ": "카카오" },
+      }))
+      .mockReturnValueOnce(JSON.stringify({
+        tickers: ["352820.KS"],
+        name_map: { "352820.KS": "하이브" },
       }));
 
     await import("../merge/merge_kr_tickers.js");
@@ -78,6 +86,7 @@ describe("merge_kr_tickers.ts", () => {
     const out = captureOutput() as { name_map: Record<string, string> };
     expect(out.name_map["005930.KS"]).toBe("삼성전자");
     expect(out.name_map["035720.KQ"]).toBe("카카오");
+    expect(out.name_map["352820.KS"]).toBe("하이브");
   });
 
   it("TC03 - kospi300 파일 없음 → readFileSync 에러 전파", async () => {
@@ -91,11 +100,16 @@ describe("merge_kr_tickers.ts", () => {
 describe("merge_us_tickers.ts", () => {
   beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
 
-  it("TC04 - top1000 단일 소스 → all_us_tickers.json 생성", async () => {
-    mockReadFileSync.mockReturnValue(JSON.stringify({
-      tickers: ["AAPL", "MSFT", "NVDA"],
-      name_map: { AAPL: "애플", MSFT: "마이크로소프트", NVDA: "엔비디아" },
-    }));
+  it("TC04 - top1000 + manual → all_us_tickers.json 생성", async () => {
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({
+        tickers: ["AAPL", "MSFT", "NVDA"],
+        name_map: { AAPL: "애플", MSFT: "마이크로소프트", NVDA: "엔비디아" },
+      }))
+      .mockReturnValueOnce(JSON.stringify({
+        tickers: [],
+        name_map: {},
+      }));
 
     await import("../merge/merge_us_tickers.js");
 
@@ -109,15 +123,21 @@ describe("merge_us_tickers.ts", () => {
     await expect(import("../merge/merge_us_tickers.js")).rejects.toThrow("ENOENT");
   });
 
-  it("TC06 - name_map 존재 시 출력 JSON에 포함", async () => {
-    mockReadFileSync.mockReturnValue(JSON.stringify({
-      tickers: ["GOOG"],
-      name_map: { GOOG: "구글" },
-    }));
+  it("TC06 - name_map 존재 시 출력 JSON에 포함 (manual 종목 포함)", async () => {
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({
+        tickers: ["GOOG"],
+        name_map: { GOOG: "구글" },
+      }))
+      .mockReturnValueOnce(JSON.stringify({
+        tickers: ["TSLA"],
+        name_map: { TSLA: "테슬라" },
+      }));
 
     await import("../merge/merge_us_tickers.js");
 
     const out = captureOutput() as { name_map: Record<string, string> };
     expect(out.name_map["GOOG"]).toBe("구글");
+    expect(out.name_map["TSLA"]).toBe("테슬라");
   });
 });

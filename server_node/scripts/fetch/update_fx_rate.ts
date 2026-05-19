@@ -17,7 +17,6 @@ import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import YahooFinance from "yahoo-finance2";
-import type { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical.js";
 
 const __filename   = fileURLToPath(import.meta.url);
 const __dirname    = path.dirname(__filename);
@@ -26,7 +25,7 @@ const yahooFinance = new YahooFinance();
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
 const FX_TICKER  = "KRW=X";          // Yahoo Finance USD/KRW 티커
-const OUTPUT_DIR = path.resolve(__dirname, "../../src/db/fx");
+const OUTPUT_DIR = path.resolve(__dirname, "../../../src/db/fx");
 const OUTPUT     = path.join(OUTPUT_DIR, "USDKRW.json");
 const PRICE_YEARS = 3;
 
@@ -134,7 +133,7 @@ async function fetchPrices(): Promise<PriceRow[]> {
 
   log(`환율 데이터 다운로드 중... (${period1.toISOString().slice(0, 10)} ~ ${period2.toISOString().slice(0, 10)})`);
 
-  const rows = await yahooFinance.historical(
+  const result = await yahooFinance.chart(
     FX_TICKER,
     {
       period1:  period1.toISOString().slice(0, 10),
@@ -144,15 +143,20 @@ async function fetchPrices(): Promise<PriceRow[]> {
     { validateResult: false }
   );
 
-  log(`다운로드 완료: ${rows.length}개 거래일`);
+  const allRows = result.quotes ?? [];
+  log(`다운로드 완료: ${allRows.length}개 거래일 (null close 제거 전)`);
 
-  return rows.map((row: HistoricalRowHistory) => ({
-    date:      row.date.toISOString().slice(0, 10),
+  // close가 null인 행 제거 (당일 미확정 데이터 등)
+  const rows = allRows.filter((row) => row.close != null);
+  log(`유효 데이터: ${rows.length}개 거래일`);
+
+  return rows.map((row) => ({
+    date:      new Date(row.date).toISOString().slice(0, 10),
     open:      round(row.open),
     high:      round(row.high),
     low:       round(row.low),
     close:     round(row.close),
-    adj_close: round(row.adjClose ?? row.close),  // 환율은 수정종가 = 종가
+    adj_close: round(row.adjclose ?? row.close),  // 환율은 수정종가 = 종가
     volume:    row.volume ?? null,
   }));
 }

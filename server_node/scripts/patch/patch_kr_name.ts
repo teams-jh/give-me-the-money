@@ -15,7 +15,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
-const DB_DIR      = path.resolve(__dirname, "../../src/db");
+const DB_DIR      = path.resolve(__dirname, "../../../src/db");
 const TICKERS_DIR = path.join(DB_DIR, "kr_tickers");
 const META_FILE   = path.join(DB_DIR, "metadata", "all_kr_tickers.json");
 

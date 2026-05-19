@@ -23,7 +23,7 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const DB_DIR = path.resolve(__dirname, "../../src/db/stock_market_index");
+const DB_DIR = path.resolve(__dirname, "../../../src/db/stock_market_index");
 const OUTPUT = path.join(DB_DIR, "top1000_us_tickers.json");
 
 const DWS_BASE = "https://new.real.download.dws.co.kr/common/master";
