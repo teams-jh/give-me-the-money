@@ -126,8 +126,10 @@ jobs:
 
           git add src/db/us_tickers/ \
                   src/db/us_signals/ \
-                  src/db/market_sentiment/ \
                   src/db/metadata/all_us_tickers.json
+
+          # market_sentiment는 Fear & Greed 스크립트가 성공한 경우에만 존재
+          [ -d src/db/market_sentiment ] && git add src/db/market_sentiment/ || echo "market_sentiment 없음 — 건너뜀"
 
           if git diff --cached --quiet; then
             echo "US 변경 없음 — 커밋 건너뜀"
