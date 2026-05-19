@@ -25,7 +25,7 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const DB_DIR = path.resolve(__dirname, "../../src/db/metadata");
+const DB_DIR = path.resolve(__dirname, "../../src/db/stock_market_index");
 const OUTPUT = path.join(DB_DIR, "nasdaq100_tickers.json");
 
 const WIKIPEDIA_URL = "https://en.wikipedia.org/wiki/Nasdaq-100";

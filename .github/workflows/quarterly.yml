@@ -126,7 +126,7 @@ jobs:
       - name: Check for changes
         id: check
         run: |
-          git diff --quiet src/db/metadata/top1000_us_tickers.json \
+          git diff --quiet src/db/stock_market_index/top1000_us_tickers.json \
                            src/db/metadata/all_us_tickers.json \
           && echo "changed=false" >> $GITHUB_OUTPUT \
           || echo "changed=true"  >> $GITHUB_OUTPUT
@@ -138,7 +138,7 @@ jobs:
 
           git pull --rebase --autostash
 
-          git add src/db/metadata/top1000_us_tickers.json \
+          git add src/db/stock_market_index/top1000_us_tickers.json \
                   src/db/metadata/all_us_tickers.json
 
           if git diff --cached --quiet; then

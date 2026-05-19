@@ -5,7 +5,7 @@
  *   1. Yahoo Finance 스크리너 API → NYS/NAS/AMS 시총 상위 1000 조회 (~4회 요청)
  *   2. DWS 마스터 데이터(.cod.zip) → 한글명(knam) 조회용 맵 구축
  *   3. 심볼 기준으로 한글명 매핑
- *   4. src/db/metadata/top1000_us_tickers.json 저장
+ *   4. src/db/stock_market_index/top1000_us_tickers.json 저장
  *
  * 실행:
  *   npx tsx scripts/fetch/update_top1000_us.ts
@@ -23,7 +23,7 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const DB_DIR = path.resolve(__dirname, "../../src/db/metadata");
+const DB_DIR = path.resolve(__dirname, "../../src/db/stock_market_index");
 const OUTPUT = path.join(DB_DIR, "top1000_us_tickers.json");
 
 const DWS_BASE = "https://new.real.download.dws.co.kr/common/master";
