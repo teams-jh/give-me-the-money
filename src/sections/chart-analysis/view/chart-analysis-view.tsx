@@ -20,7 +20,7 @@ import ChartApex from 'react-apexcharts';
 
 // Data
 import { allTickersData } from 'src/library/tickers';
-import { transformTickerToStock } from 'src/sections/top100/top100-utils';
+import { transformTickerToStock } from 'src/sections/stock-market-index/stock-market-index-utils';
 
 // ----------------------------------------------------------------------
 
