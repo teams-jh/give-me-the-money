@@ -1,7 +1,7 @@
 /**
  * 국내 전체 티커 리스트 병합
  *
- * 소스: kospi300_tickers.json + kosdaq200_tickers.json
+ * 소스: kospi300_tickers.json + kosdaq200_tickers.json + manual_tickers.json
  * 출력: src/db/metadata/all_kr_tickers.json
  *
  * 실행:
@@ -22,6 +22,7 @@ mergeTickers({
   sources: [
     { path: path.join(STOCK_INDEX_DIR, "kospi300_tickers.json"),  label: "kospi300"  },
     { path: path.join(STOCK_INDEX_DIR, "kosdaq200_tickers.json"), label: "kosdaq200" },
+    { path: path.join(STOCK_INDEX_DIR, "manual_tickers.json"),    label: "manual"    },
   ],
   output: path.join(METADATA_DIR, "all_kr_tickers.json"),
 });
