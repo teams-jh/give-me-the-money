@@ -15,8 +15,8 @@ import { mergeTickers } from "./merge_tickers.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
-const STOCK_INDEX_DIR = path.resolve(__dirname, "../../src/db/stock_market_index");
-const METADATA_DIR    = path.resolve(__dirname, "../../src/db/metadata");
+const STOCK_INDEX_DIR = path.resolve(__dirname, "../../../src/db/stock_market_index");
+const METADATA_DIR    = path.resolve(__dirname, "../../../src/db/metadata");
 
 mergeTickers({
   sources: [

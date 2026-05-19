@@ -26,7 +26,7 @@ const yahooFinance = new YahooFinance();
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
 const FX_TICKER  = "KRW=X";          // Yahoo Finance USD/KRW 티커
-const OUTPUT_DIR = path.resolve(__dirname, "../../src/db/fx");
+const OUTPUT_DIR = path.resolve(__dirname, "../../../src/db/fx");
 const OUTPUT     = path.join(OUTPUT_DIR, "USDKRW.json");
 const PRICE_YEARS = 3;
 

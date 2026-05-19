@@ -32,7 +32,7 @@ const __dirname  = path.dirname(__filename);
 
 const CNN_PAGE_URL = "https://edition.cnn.com/markets/fear-and-greed";
 const API_URL_PART = "fearandgreed/graphdata";   // 인터셉트 대상 URL 키워드
-const OUTPUT_DIR   = path.resolve(__dirname, "../../src/db/market_sentiment");
+const OUTPUT_DIR   = path.resolve(__dirname, "../../../src/db/market_sentiment");
 const OUTPUT       = path.join(OUTPUT_DIR, "fear_and_greed.json");
 
 const TIMEOUT_MS   = 30_000;   // 페이지 로드 + API 응답 대기 최대 시간

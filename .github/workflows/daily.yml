@@ -53,7 +53,7 @@ jobs:
         run: npx tsx scripts/fetch/update_fx_rate.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Analyze KR signals
-        run: npx tsx scripts/analyze_signals.ts --market kr
+        run: server_node/node_modules/.bin/tsx scripts/analyze_signals.ts --market kr
 
       - name: Commit and push (KR)
         run: |
@@ -115,7 +115,7 @@ jobs:
         run: npx tsx scripts/fetch/update_fear_and_greed.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
       - name: Analyze US signals
-        run: npx tsx scripts/analyze_signals.ts --market us
+        run: server_node/node_modules/.bin/tsx scripts/analyze_signals.ts --market us
 
       - name: Commit and push (US)
         run: |
