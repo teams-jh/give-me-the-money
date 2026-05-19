@@ -1,7 +1,7 @@
 /**
  * 미국 전체 티커 리스트 병합
  *
- * 소스: top1000_us_tickers.json (시총 기준 상위 1000) → src/db/stock_market_index
+ * 소스: top1000_us_tickers.json (시총 기준 상위 1000) + manual_us_tickers.json
  * 출력: src/db/metadata/all_us_tickers.json
  *
  * 실행:
@@ -21,6 +21,7 @@ const METADATA_DIR    = path.resolve(__dirname, "../../../src/db/metadata");
 mergeTickers({
   sources: [
     { path: path.join(STOCK_INDEX_DIR, "top1000_us_tickers.json"), label: "top1000" },
+    { path: path.join(STOCK_INDEX_DIR, "manual_us_tickers.json"),  label: "manual"  },
   ],
   output: path.join(METADATA_DIR, "all_us_tickers.json"),
 });

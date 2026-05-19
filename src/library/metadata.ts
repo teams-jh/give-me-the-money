@@ -11,6 +11,7 @@ import russell1000Raw from '../db/stock_market_index/russell1000_tickers.json';
 import kospi300Raw from '../db/stock_market_index/kospi300_tickers.json';
 import kosdaq200Raw from '../db/stock_market_index/kosdaq200_tickers.json';
 import manualKrTickersRaw from '../db/stock_market_index/manual_kr_tickers.json';
+import manualUsTickersRaw from '../db/stock_market_index/manual_us_tickers.json';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +27,7 @@ export interface TickerMetadata {
   kospi300_count?: number;
   kosdaq200_count?: number;
   manual_count?: number;
+  manual_us_count?: number;
 }
 
 // ----------------------------------------------------------------------
@@ -37,6 +39,7 @@ export const russell1000 = russell1000Raw as TickerMetadata;
 export const kospi300 = kospi300Raw as TickerMetadata;
 export const kosdaq200 = kosdaq200Raw as TickerMetadata;
 export const manualKrTickers = manualKrTickersRaw as TickerMetadata;
+export const manualUsTickers = manualUsTickersRaw as TickerMetadata;
 
 /**
  * All metadata files as a single collection
@@ -55,13 +58,14 @@ export const metadata = {
   kospi300: kospi300,
   kosdaq200: kosdaq200,
   manualKr: manualKrTickers,
+  manualUs: manualUsTickers,
 };
 
 /**
  * Helper to get ticker list by index name
  */
 export const getTickersByIndex = (
-  index: 'all' | 'kr' | 'us' | 'nasdaq100' | 'russell1000' | 'kospi300' | 'kosdaq200' | 'manualKr'
+  index: 'all' | 'kr' | 'us' | 'nasdaq100' | 'russell1000' | 'kospi300' | 'kosdaq200' | 'manualKr' | 'manualUs'
 ): string[] => {
   return metadata[index].tickers;
 };
