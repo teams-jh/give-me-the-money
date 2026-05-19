@@ -1,20 +1,28 @@
 /**
  * Fear & Greed Index 데이터 업데이트
  *
- * CNN Fear & Greed API에서 현재 공포·탐욕 지수와 히스토리컬 데이터를 가져와
+ * Puppeteer(Headless Chrome)로 CNN 공포·탐욕 페이지를 열어
+ * 브라우저가 내부적으로 호출하는 API 응답을 인터셉트한 뒤
  * src/db/market_sentiment/fear_and_greed.json 에 저장한다.
+ *
+ * CNN dataviz API는 Cloudflare로 보호되어 단순 fetch/curl은 403이 발생한다.
+ * 실제 브라우저를 통해 우회한다.
  *
  * 스킵 조건:
  *   - fear_and_greed.json 의 updated_at 이 오늘 날짜이면 건너뜀
  *   - --force 플래그로 강제 재다운로드 가능
+ *
+ * 사전 준비:
+ *   npm install puppeteer       ← 최초 1회 (Chromium 자동 다운로드 포함)
  *
  * 실행:
  *   npx tsx scripts/fetch/update_fear_and_greed.ts
  *   npx tsx scripts/fetch/update_fear_and_greed.ts --force
  */
 
-import fs   from "fs";
-import path from "path";
+import fs      from "fs";
+import path    from "path";
+import puppeteer from "puppeteer";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,15 +30,12 @@ const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
-const CNN_URL    = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata";
-const OUTPUT_DIR = path.resolve(__dirname, "../../src/db/market_sentiment");
-const OUTPUT     = path.join(OUTPUT_DIR, "fear_and_greed.json");
+const CNN_PAGE_URL = "https://edition.cnn.com/markets/fear-and-greed";
+const API_URL_PART = "fearandgreed/graphdata";   // 인터셉트 대상 URL 키워드
+const OUTPUT_DIR   = path.resolve(__dirname, "../../src/db/market_sentiment");
+const OUTPUT       = path.join(OUTPUT_DIR, "fear_and_greed.json");
 
-const FETCH_HEADERS: Record<string, string> = {
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-  "Accept":     "application/json",
-  "Referer":    "https://edition.cnn.com/markets/fear-and-greed",
-};
+const TIMEOUT_MS   = 30_000;   // 페이지 로드 + API 응답 대기 최대 시간
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
@@ -97,26 +102,72 @@ function isUpdatedToday(): boolean {
   }
 }
 
-// ── 1단계: API 호출 ───────────────────────────────────────────────────────────
+// ── 1단계: Puppeteer로 브라우저 인터셉트 ────────────────────────────────────
 
 async function fetchFearAndGreed(): Promise<CnnApiResponse> {
-  log("CNN Fear & Greed Index 데이터 다운로드 중...");
+  log("Headless Chrome 실행 중...");
 
-  const response = await fetch(CNN_URL, { method: "GET", headers: FETCH_HEADERS });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: [
+      "--no-sandbox",             // CI/Docker 환경 대응
+      "--disable-setuid-sandbox",
+    ],
+  });
 
-  if (!response.ok) {
-    throw new Error(`HTTP 오류: ${response.status} ${response.statusText}`);
+  try {
+    const page = await browser.newPage();
+
+    // 불필요한 리소스(이미지·폰트·미디어) 차단 → 속도 개선
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const type = req.resourceType();
+      if (type === "image" || type === "font" || type === "media") {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    // API 응답을 캡처할 Promise를 페이지 이동 전에 등록
+    const apiDataPromise = new Promise<CnnApiResponse>((resolve, reject) => {
+      const timer = setTimeout(
+        () => reject(new Error(`API 응답 타임아웃 (${TIMEOUT_MS / 1000}초)`)),
+        TIMEOUT_MS
+      );
+
+      page.on("response", async (res) => {
+        if (!res.url().includes(API_URL_PART)) return;
+
+        clearTimeout(timer);
+        try {
+          const json = (await res.json()) as CnnApiResponse;
+          resolve(json);
+        } catch (e) {
+          reject(new Error(`API 응답 파싱 실패: ${String(e)}`));
+        }
+      });
+    });
+
+    // CNN 공포·탐욕 페이지 접속 → Cloudflare 통과 + 브라우저가 API 자동 호출
+    log(`페이지 접속 중: ${CNN_PAGE_URL}`);
+    await page.goto(CNN_PAGE_URL, { waitUntil: "domcontentloaded", timeout: TIMEOUT_MS });
+
+    // 인터셉트한 API 응답 대기
+    const data = await apiDataPromise;
+
+    // 응답 구조 검증
+    if (typeof data.fear_and_greed?.score !== "number") {
+      throw new Error("API 응답 구조 이상: fear_and_greed.score 없음");
+    }
+
+    log("API 응답 캡처 완료");
+    return data;
+
+  } finally {
+    await browser.close();
+    log("브라우저 종료");
   }
-
-  const data = (await response.json()) as CnnApiResponse;
-
-  // 응답 구조 검증
-  if (typeof data.fear_and_greed?.score !== "number") {
-    throw new Error("API 응답 구조 이상: fear_and_greed.score 없음");
-  }
-
-  log("다운로드 완료");
-  return data;
 }
 
 // ── 2단계: JSON 빌드 ──────────────────────────────────────────────────────────
