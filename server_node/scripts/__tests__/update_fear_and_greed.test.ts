@@ -2,25 +2,26 @@
  * update_fear_and_greed.ts 테스트
  *
  * TC 계획:
- *   TC01  round()              - 소수점 반올림
- *   TC02  round()              - null → null
- *   TC03  round()              - NaN → null
- *   TC04  round()              - undefined → null
- *   TC05  isUpdatedToday()     - 오늘 날짜 파일 → true (main() 스킵 경로)
- *   TC06  isUpdatedToday()     - 어제 날짜 → false (fetch 실행)
- *   TC07  isUpdatedToday()     - 파일 없음(throw) → false
- *   TC08  isUpdatedToday()     - updated_at 없음 → false
- *   TC09  getExecutablePath()  - PUPPETEER_EXECUTABLE_PATH 환경 변수 설정 → 해당 경로
- *   TC10  getExecutablePath()  - CI=true → /usr/bin/google-chrome
- *   TC11  getExecutablePath()  - 미설정 → undefined
- *   TC12  buildJson()          - 히스토리 없음 → 빈 배열
- *   TC13  buildJson()          - 히스토리 있음 → 변환·정렬
- *   TC14  main()               - 오늘 업데이트 + no --force → 스킵 (puppeteer 미호출)
- *   TC15  main()               - 정상 경로 → writeFileSync 호출
- *   TC16  main()               - API 응답 score 없음 → process.exit(1)
- *   TC17  main()               - --force 플래그 → 오늘 업데이트여도 실행
- *   TC18  main()               - request 인터셉트: image → abort, other → continue
- *   TC19  main()               - response URL 불일치 → 통과(무시)
+ *   TC01  isUpdatedToday()     - 오늘 날짜 파일 → true (main() 스킵 경로)
+ *   TC02  isUpdatedToday()     - 어제 날짜 → false (fetch 실행)
+ *   TC03  isUpdatedToday()     - 파일 없음(throw) → false
+ *   TC04  isUpdatedToday()     - updated_at 없음 → false
+ *   TC05  getExecutablePath()  - PUPPETEER_EXECUTABLE_PATH 환경 변수 설정 → 해당 경로
+ *   TC06  getExecutablePath()  - CI=true → /usr/bin/google-chrome
+ *   TC07  getExecutablePath()  - 미설정 → undefined
+ *   TC08  buildJson()          - 히스토리 없음 → 빈 배열 / round() 간접 검증
+ *   TC09  buildJson()          - 히스토리 있음 → 변환·정렬 / round() 간접 검증
+ *   TC10  main()               - 오늘 업데이트 + no --force → 스킵 (puppeteer 미호출)
+ *   TC11  main()               - 정상 경로 → writeFileSync 호출
+ *   TC12  main()               - API 응답 score 없음 → process.exit(1)
+ *   TC13  main()               - --force 플래그 → 오늘 업데이트여도 실행
+ *   TC14  main()               - request 인터셉트: image → abort, other → continue
+ *   TC15  main()               - response URL 불일치 → 무시, 두 번째 응답으로 resolve
+ *
+ * 설계 결정:
+ *   round() 단위 테스트는 별도로 두지 않음.
+ *   소스의 round()는 export되지 않으며, TC08·TC09에서 최종 JSON 값(score, historical.score)으로
+ *   소스 실제 round() 로직을 간접 검증한다.
  *
  * Puppeteer 모킹 전략:
  *   page.on("request", handler) / page.on("response", handler) 핸들러를 캡처하여
@@ -135,39 +136,9 @@ function setupPuppeteerMock(
 
 // ── 날짜 헬퍼 ─────────────────────────────────────────────────────────────────
 
-function todayStr() { return new Date().toISOString().slice(0, 10); }
 function yesterdayStr() {
   const d = new Date(); d.setDate(d.getDate() - 1); return d.toISOString().slice(0, 10);
 }
-
-// ── 순수 함수 로컬 재현 ────────────────────────────────────────────────────────
-// 소스의 round() 와 동일 로직 - 소스 변경 시 이 테스트가 깨지도록 의도
-
-function round(v: number | null | undefined): number | null {
-  if (v == null || isNaN(v)) return null;
-  return Math.round(v * 100) / 100;
-}
-
-// ── TC01~04: round() ──────────────────────────────────────────────────────────
-
-describe("round()", () => {
-  it("TC01 - 양수 소수점 반올림", () => {
-    expect(round(72.555)).toBe(72.56);
-    expect(round(1234.567)).toBe(1234.57);
-  });
-
-  it("TC02 - null → null", () => {
-    expect(round(null)).toBeNull();
-  });
-
-  it("TC03 - NaN → null", () => {
-    expect(round(NaN)).toBeNull();
-  });
-
-  it("TC04 - undefined → null", () => {
-    expect(round(undefined)).toBeNull();
-  });
-});
 
 // ── TC05~08: isUpdatedToday() 간접 검증 (main() 통해) ──────────────────────────
 
@@ -177,7 +148,7 @@ describe("isUpdatedToday() 간접 검증", () => {
     process.argv = ["node", "script.ts"];
   });
 
-  it("TC05 - 오늘 날짜 파일 존재 → main() 스킵 (puppeteer 미호출)", async () => {
+  it("TC01 - 오늘 날짜 파일 존재 → main() 스킵 (puppeteer 미호출)", async () => {
     mockReadFileSync.mockReturnValue(
       JSON.stringify({ updated_at: new Date().toISOString() })
     );
@@ -186,7 +157,7 @@ describe("isUpdatedToday() 간접 검증", () => {
     expect(mockLaunch).not.toHaveBeenCalled();
   });
 
-  it("TC06 - 어제 날짜 파일 → 업데이트 실행 (puppeteer 호출)", async () => {
+  it("TC02 - 어제 날짜 파일 → 업데이트 실행 (puppeteer 호출)", async () => {
     mockReadFileSync.mockReturnValue(
       JSON.stringify({ updated_at: `${yesterdayStr()}T00:00:00.000Z` })
     );
@@ -196,7 +167,7 @@ describe("isUpdatedToday() 간접 검증", () => {
     expect(mockLaunch).toHaveBeenCalled();
   });
 
-  it("TC07 - 파일 없음(throw) → false → 업데이트 실행", async () => {
+  it("TC03 - 파일 없음(throw) → false → 업데이트 실행", async () => {
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
     setupPuppeteerMock(makeCnnResponse());
     vi.resetModules();
@@ -204,7 +175,7 @@ describe("isUpdatedToday() 간접 검증", () => {
     expect(mockLaunch).toHaveBeenCalled();
   });
 
-  it("TC08 - updated_at 없음 → false → 업데이트 실행", async () => {
+  it("TC04 - updated_at 없음 → false → 업데이트 실행", async () => {
     mockReadFileSync.mockReturnValue(JSON.stringify({ score: 72 }));
     setupPuppeteerMock(makeCnnResponse());
     vi.resetModules();
@@ -231,7 +202,7 @@ describe("getExecutablePath() 간접 검증", () => {
     delete process.env["CI"];
   });
 
-  it("TC09 - PUPPETEER_EXECUTABLE_PATH 설정 → launch에 해당 경로 전달", async () => {
+  it("TC05 - PUPPETEER_EXECUTABLE_PATH 설정 → launch에 해당 경로 전달", async () => {
     process.env["PUPPETEER_EXECUTABLE_PATH"] = "/opt/chromium/chrome";
     vi.resetModules();
     await import("../fetch/update_fear_and_greed.js");
@@ -240,7 +211,7 @@ describe("getExecutablePath() 간접 검증", () => {
     );
   });
 
-  it("TC10 - CI=true → launch에 /usr/bin/google-chrome 전달", async () => {
+  it("TC06 - CI=true → launch에 /usr/bin/google-chrome 전달", async () => {
     process.env["CI"] = "true";
     vi.resetModules();
     await import("../fetch/update_fear_and_greed.js");
@@ -249,7 +220,7 @@ describe("getExecutablePath() 간접 검증", () => {
     );
   });
 
-  it("TC11 - 환경변수 미설정 → launch에 executablePath=undefined 전달", async () => {
+  it("TC07 - 환경변수 미설정 → launch에 executablePath=undefined 전달", async () => {
     vi.resetModules();
     await import("../fetch/update_fear_and_greed.js");
     expect(mockLaunch).toHaveBeenCalledWith(
@@ -269,7 +240,7 @@ describe("buildJson() 간접 검증", () => {
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
   });
 
-  it("TC12 - 히스토리 없음 → historical 빈 배열", async () => {
+  it("TC08 - 히스토리 없음 → historical 빈 배열", async () => {
     setupPuppeteerMock(makeCnnResponse({ hasHistorical: false }));
     vi.resetModules();
     await import("../fetch/update_fear_and_greed.js");
@@ -280,7 +251,7 @@ describe("buildJson() 간접 검증", () => {
     expect(written.rating).toBe("Greed");
   });
 
-  it("TC13 - 히스토리 있음 → 오름차순 정렬 + 날짜 변환", async () => {
+  it("TC09 - 히스토리 있음 → 오름차순 정렬 + 날짜 변환", async () => {
     setupPuppeteerMock(makeCnnResponse({ hasHistorical: true }));
     vi.resetModules();
     await import("../fetch/update_fear_and_greed.js");
@@ -300,7 +271,7 @@ describe("main() 시나리오", () => {
     vi.clearAllMocks();
   });
 
-  it("TC14 - 오늘 업데이트 + no --force → 스킵 (writeFileSync 미호출)", async () => {
+  it("TC10 - 오늘 업데이트 + no --force → 스킵 (writeFileSync 미호출)", async () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: new Date().toISOString() }));
     vi.resetModules();
@@ -309,7 +280,7 @@ describe("main() 시나리오", () => {
     expect(mockLaunch).not.toHaveBeenCalled();
   });
 
-  it("TC15 - 정상 경로 → writeFileSync 2회 (tmp + rename)", async () => {
+  it("TC11 - 정상 경로 → writeFileSync 2회 (tmp + rename)", async () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
     setupPuppeteerMock(makeCnnResponse());
@@ -320,7 +291,7 @@ describe("main() 시나리오", () => {
     expect(mockBrowserClose).toHaveBeenCalled();
   });
 
-  it("TC16 - API 응답에 score 없음 → process.exit(1)", async () => {
+  it("TC12 - API 응답에 score 없음 → process.exit(1)", async () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
     setupPuppeteerMock(makeCnnResponse({ noScore: true }));
@@ -331,7 +302,7 @@ describe("main() 시나리오", () => {
     mockExit.mockRestore();
   });
 
-  it("TC17 - --force 플래그 → 오늘 업데이트여도 fetch 실행", async () => {
+  it("TC13 - --force 플래그 → 오늘 업데이트여도 fetch 실행", async () => {
     process.argv = ["node", "script.ts", "--force"];
     mockReadFileSync.mockReturnValue(JSON.stringify({ updated_at: new Date().toISOString() }));
     setupPuppeteerMock(makeCnnResponse());
@@ -342,7 +313,7 @@ describe("main() 시나리오", () => {
     process.argv = ["node", "script.ts"];
   });
 
-  it("TC18 - request 인터셉트: image → abort, xhr → continue", async () => {
+  it("TC14 - request 인터셉트: image → abort, xhr → continue", async () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
 
@@ -390,7 +361,7 @@ describe("main() 시나리오", () => {
     expect(mockContinue).toHaveBeenCalledTimes(2); // xhr, script
   });
 
-  it("TC19 - response URL 불일치 → 무시(resolve 안 됨), 두 번째 응답으로 resolve", async () => {
+  it("TC15 - response URL 불일치 → 무시(resolve 안 됨), 두 번째 응답으로 resolve", async () => {
     process.argv = ["node", "script.ts"];
     mockReadFileSync.mockImplementation(() => { throw new Error("ENOENT"); });
 
