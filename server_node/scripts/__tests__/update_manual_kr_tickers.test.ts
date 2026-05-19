@@ -1,5 +1,5 @@
 /**
- * update_manual_tickers.ts 테스트
+ * update_manual_kr_tickers.ts 테스트
  *
  * TC 계획:
  *   [validateTicker]
@@ -107,7 +107,7 @@ describe("add 명령", () => {
     process.argv = ["node", "script.ts", "add", "--ticker", "352820.KS", "--name", "하이브"];
     mockReadFileSync.mockReturnValue(makeManualJson());
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     expect(mockWriteFileSync).toHaveBeenCalled();
     const out = captureWrittenJson() as {
@@ -124,7 +124,7 @@ describe("add 명령", () => {
     process.argv = ["node", "script.ts", "add", "--ticker", "352820.KS"];
     mockReadFileSync.mockReturnValue(makeManualJson());
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     expect(mockWriteFileSync).toHaveBeenCalled();
     const out = captureWrittenJson() as {
@@ -141,7 +141,7 @@ describe("add 명령", () => {
       makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
     );
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     expect(mockWriteFileSync).toHaveBeenCalled();
     const out = captureWrittenJson() as {
@@ -158,7 +158,7 @@ describe("add 명령", () => {
       makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
     );
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
   });
@@ -169,7 +169,7 @@ describe("add 명령", () => {
       makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
     );
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     const out = captureWrittenJson() as { tickers: string[] };
     expect(out.tickers[0]).toBe("000080.KS");
@@ -182,7 +182,7 @@ describe("add 명령", () => {
 
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
 
-    await import("../fetch/update_manual_tickers.js").catch(() => {});
+    await import("../fetch/update_manual_kr_tickers.js").catch(() => {});
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
     mockExit.mockRestore();
@@ -206,7 +206,7 @@ describe("remove 명령", () => {
       }),
     );
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     expect(mockWriteFileSync).toHaveBeenCalled();
     const out = captureWrittenJson() as {
@@ -225,7 +225,7 @@ describe("remove 명령", () => {
       makeManualJson(["352820.KS"], { "352820.KS": "하이브" }),
     );
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
   });
@@ -236,7 +236,7 @@ describe("remove 명령", () => {
 
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
 
-    await import("../fetch/update_manual_tickers.js").catch(() => {});
+    await import("../fetch/update_manual_kr_tickers.js").catch(() => {});
 
     expect(mockWriteFileSync).not.toHaveBeenCalled();
     mockExit.mockRestore();
@@ -259,7 +259,7 @@ describe("list 명령", () => {
 
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     const output = logSpy.mock.calls.map((c) => c.join(" ")).join("\n");
     expect(output).toContain("352820.KS");
@@ -273,7 +273,7 @@ describe("list 명령", () => {
 
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
-    await import("../fetch/update_manual_tickers.js");
+    await import("../fetch/update_manual_kr_tickers.js");
 
     const output = logSpy.mock.calls.map((c) => c.join(" ")).join("\n");
     expect(output).toContain("없습니다");
@@ -293,7 +293,7 @@ describe("parseArgs() - 잘못된 인자", () => {
     process.argv = ["node", "script.ts"];
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
 
-    await import("../fetch/update_manual_tickers.js").catch(() => {});
+    await import("../fetch/update_manual_kr_tickers.js").catch(() => {});
 
     expect(mockExit).toHaveBeenCalledWith(1);
     mockExit.mockRestore();
@@ -303,7 +303,7 @@ describe("parseArgs() - 잘못된 인자", () => {
     process.argv = ["node", "script.ts", "add"];
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
 
-    await import("../fetch/update_manual_tickers.js").catch(() => {});
+    await import("../fetch/update_manual_kr_tickers.js").catch(() => {});
 
     expect(mockExit).toHaveBeenCalledWith(1);
     mockExit.mockRestore();

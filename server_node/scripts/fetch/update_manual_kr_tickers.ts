@@ -1,16 +1,16 @@
 /**
- * 수동 관심 종목 관리 (manual_tickers.json)
+ * 수동 관심 종목 관리 (manual_kr_tickers.json)
  *
  * 흐름:
- *   add    : manual_tickers.json에 종목 추가 (중복 무시)
- *   remove : manual_tickers.json에서 종목 제거
+ *   add    : manual_kr_tickers.json에 종목 추가 (중복 무시)
+ *   remove : manual_kr_tickers.json에서 종목 제거
  *   list   : 현재 등록된 종목 목록 출력
  *
  * 실행:
- *   npx tsx scripts/fetch/update_manual_tickers.ts add    --ticker 005930.KS --name 삼성전자
- *   npx tsx scripts/fetch/update_manual_tickers.ts add    --ticker 005930.KS              # name 없이도 가능
- *   npx tsx scripts/fetch/update_manual_tickers.ts remove --ticker 005930.KS
- *   npx tsx scripts/fetch/update_manual_tickers.ts list
+ *   npx tsx scripts/fetch/update_manual_kr_tickers.ts add    --ticker 005930.KS --name 삼성전자
+ *   npx tsx scripts/fetch/update_manual_kr_tickers.ts add    --ticker 005930.KS              # name 없이도 가능
+ *   npx tsx scripts/fetch/update_manual_kr_tickers.ts remove --ticker 005930.KS
+ *   npx tsx scripts/fetch/update_manual_kr_tickers.ts list
  *
  * 티커 형식:
  *   코스피 종목 → 6자리 코드 + .KS  (예: 005930.KS)
@@ -32,7 +32,7 @@ const __dirname  = path.dirname(__filename);
 
 const MANUAL_TICKERS_PATH = path.resolve(
   __dirname,
-  "../../../src/db/stock_market_index/manual_tickers.json",
+  "../../../src/db/stock_market_index/manual_kr_tickers.json",
 );
 
 // ── 타입 ─────────────────────────────────────────────────────────────────────
@@ -81,9 +81,9 @@ function parseArgs(): { command: string; ticker?: string; name?: string } {
 
   if (!command || !["add", "remove", "list"].includes(command)) {
     console.error("사용법:");
-    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts add    --ticker <TICKER> [--name <종목명>]");
-    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts remove --ticker <TICKER>");
-    console.error("  npx tsx scripts/fetch/update_manual_tickers.ts list");
+    console.error("  npx tsx scripts/fetch/update_manual_kr_tickers.ts add    --ticker <TICKER> [--name <종목명>]");
+    console.error("  npx tsx scripts/fetch/update_manual_kr_tickers.ts remove --ticker <TICKER>");
+    console.error("  npx tsx scripts/fetch/update_manual_kr_tickers.ts list");
     process.exit(1);
   }
 

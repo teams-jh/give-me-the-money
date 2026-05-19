@@ -10,7 +10,7 @@ import nasdaq100Raw from '../db/stock_market_index/nasdaq100_tickers.json';
 import russell1000Raw from '../db/stock_market_index/russell1000_tickers.json';
 import kospi300Raw from '../db/stock_market_index/kospi300_tickers.json';
 import kosdaq200Raw from '../db/stock_market_index/kosdaq200_tickers.json';
-import manualKrTickersRaw from '../db/stock_market_index/manual_tickers.json';
+import manualKrTickersRaw from '../db/stock_market_index/manual_kr_tickers.json';
 
 // ----------------------------------------------------------------------
 
