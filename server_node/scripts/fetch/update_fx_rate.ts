@@ -106,7 +106,7 @@ function log(msg: string): void {
   console.log(`${new Date().toISOString()} [INFO] ${msg}`);
 }
 
-function round(v: number | null | undefined): number | null {
+export function round(v: number | null | undefined): number | null {
   if (v == null || isNaN(v)) return null;
   return Math.round(v * 100) / 100;
 }
@@ -163,7 +163,7 @@ async function fetchPrices(): Promise<PriceRow[]> {
 
 // ── 2단계: 현재가 정보 계산 ───────────────────────────────────────────────────
 
-function calcMarketInfo(prices: PriceRow[]) {
+export function calcMarketInfo(prices: PriceRow[]) {
   if (prices.length === 0) {
     return { price: null, previous_close: null, fifty_two_week_high: null, fifty_two_week_low: null };
   }
@@ -192,7 +192,7 @@ function calcMarketInfo(prices: PriceRow[]) {
 
 // ── 3단계: JSON 빌드 ──────────────────────────────────────────────────────────
 
-function buildJson(prices: PriceRow[]): FxJson {
+export function buildJson(prices: PriceRow[]): FxJson {
   const market = calcMarketInfo(prices);
 
   return {
@@ -280,7 +280,7 @@ function saveJson(data: FxJson): void {
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const force = process.argv.includes("--force");
 
   log("=== USD/KRW 환율 데이터 업데이트 시작 ===");
@@ -304,7 +304,9 @@ async function main(): Promise<void> {
   log("=== 업데이트 완료 ===");
 }
 
-main().catch((e: unknown) => {
-  console.error(e instanceof Error ? e.message : String(e));
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((e: unknown) => {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  });
+}
