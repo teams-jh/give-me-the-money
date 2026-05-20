@@ -307,7 +307,7 @@ async function fetchChartData(ticker: string): Promise<ChartData> {
       high:      round(q.high   as number | null),
       low:       round(q.low    as number | null),
       close:     round(q.close  as number | null),
-      adj_close: round((q as Record<string, unknown>).adjClose as number | null),
+      adj_close: round((q as Record<string, unknown>).adjclose as number | null),
       volume:    (q.volume as number | null) ?? null,
     }));
 
@@ -409,7 +409,7 @@ export function buildTickerJson(
   const storeStart = new Date();
   storeStart.setFullYear(storeStart.getFullYear() - STORE_YEARS);
   const storeStartStr = storeStart.toISOString().slice(0, 10);
-  const prices = allPrices.filter((p) => p.date >= storeStartStr);
+  const prices = allPrices.filter((row) => row.date >= storeStartStr);
 
   return {
     ticker,
