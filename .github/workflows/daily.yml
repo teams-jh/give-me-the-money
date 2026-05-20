@@ -52,6 +52,10 @@ jobs:
         working-directory: server_node
         run: npx tsx scripts/fetch/update_fx_rate.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
 
+      - name: Update Dollar Index
+        working-directory: server_node
+        run: npx tsx scripts/fetch/update_dollar_index.ts ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+
       - name: Analyze KR signals
         run: server_node/node_modules/.bin/tsx scripts/analyze_signals.ts --market kr
 
