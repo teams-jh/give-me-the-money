@@ -21,7 +21,10 @@ const yahooFinance = new YahooFinance({
   suppressNotices: ["ripHistorical"],
 });
 
-const PRICE_YEARS = 3;
+// 조회는 4년치 → 현재 연도 제외 후 완전한 3개년 확보
+// (3년만 조회하면 가장 오래된 연도가 중간부터 시작되어 배당금이 누락됨)
+const FETCH_YEARS = 4;
+const AVG_YEARS   = 3;
 
 // ── 타입 ──────────────────────────────────────────────────────────────────────
 
@@ -61,7 +64,7 @@ function getPeriod(years: number): { period1: string; period2: string } {
 // ── chart() 한 번 호출로 주가 + 배당 이벤트 동시 조회 ────────────────────────
 
 async function fetchChartData(ticker: string): Promise<ChartResultArray> {
-  const { period1, period2 } = getPeriod(PRICE_YEARS);
+  const { period1, period2 } = getPeriod(FETCH_YEARS);
 
   return yahooFinance.chart(
     ticker,
@@ -146,14 +149,30 @@ function buildYearSummaries(
 
 // ── 3년 평균 배당률 ──────────────────────────────────────────────────────────
 
-function calcAvgYield3y(summaries: YearSummary[]): number | null {
+function calcAvgYield3y(summaries: YearSummary[]): {
+  avg:   number | null;
+  years: number[];
+  note:  string;
+} {
   const currentYear = new Date().getFullYear();
-  // 진행 중인 현재 연도 제외 (불완전한 데이터)
+
+  // 현재 연도 제외 (진행 중 → 불완전)
   const complete = summaries.filter((s) => s.year < currentYear);
-  const recent3  = complete.slice(-3);
-  if (recent3.length === 0) return null;
-  const avg = recent3.reduce((a, s) => a + s.yield, 0) / recent3.length;
-  return round4(avg);
+  const recent   = complete.slice(-AVG_YEARS);
+
+  if (recent.length === 0) {
+    return { avg: null, years: [], note: "배당 데이터 없음" };
+  }
+  if (recent.length < AVG_YEARS) {
+    return {
+      avg:   null,
+      years: recent.map((s) => s.year),
+      note:  `완전한 연도 ${AVG_YEARS}개 미만 (${recent.length}개만 확보)`,
+    };
+  }
+
+  const avg = round4(recent.reduce((a, s) => a + s.yield, 0) / recent.length);
+  return { avg, years: recent.map((s) => s.year), note: "정상" };
 }
 
 // ── 메인 ─────────────────────────────────────────────────────────────────────
@@ -208,12 +227,16 @@ async function main(): Promise<void> {
   }
 
   // 5) 3년 평균 배당률
-  const avg3y = calcAvgYield3y(summaries);
+  const result = calcAvgYield3y(summaries);
   console.log("\n▶ 5. 3년 평균 배당률 (현재 연도 제외)");
-  if (avg3y !== null) {
-    console.log(`   avg_yield_3y = ${(avg3y * 100).toFixed(3)}%  (raw: ${avg3y})`);
+  if (result.avg !== null) {
+    console.log(`   대상 연도     : ${result.years.join(", ")}`);
+    console.log(`   avg_yield_3y  = ${(result.avg * 100).toFixed(3)}%  (raw: ${result.avg})`);
   } else {
-    console.log("   ⚠️  완전한 연도 데이터 3개 미만");
+    console.log(`   ⚠️  ${result.note}`);
+    if (result.years.length > 0) {
+      console.log(`   확보된 연도   : ${result.years.join(", ")}`);
+    }
   }
 
   console.log("\n========================================\n");
