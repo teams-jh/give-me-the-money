@@ -3,7 +3,7 @@
  *
  * 흐름:
  *   1. --market 에 해당하는 all_{market}_tickers.json 에서 티커 목록 로드
- *   2. 티커별 yahoo-finance2 quoteSummary + historical(3년) 조회
+ *   2. 티커별 yahoo-finance2 quoteSummary + chart(4년, 배당 이벤트 포함) 조회
  *   3. src/db/{outputDir}/{TICKER}.json 저장 (원본 데이터만, 판단 로직 없음)
  *   4. 완료 후 all_{market}_tickers.json 을 시총 기준 재정렬
  *
@@ -23,7 +23,7 @@ import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import YahooFinance from "yahoo-finance2";
-import type { HistoricalRowHistory } from "yahoo-finance2/dist/esm/src/modules/historical.js";
+import type { ChartResultArray, ChartResultArrayQuote } from "yahoo-finance2/modules/chart";
 
 const __filename    = fileURLToPath(import.meta.url);
 const __dirname     = path.dirname(__filename);
@@ -54,7 +54,13 @@ const MARKET_CONFIG: Record<string, MarketConfig> = {
 
 const CONCURRENCY = 5;
 const BATCH_DELAY = 3_000;   // ms
-const PRICE_YEARS = 3;
+
+// chart() 조회 기간: TTM 계산을 위해 평균 대상(3년)보다 1년 더 조회
+const FETCH_YEARS = 4;
+// prices 배열에 저장하는 기간 (기존과 동일)
+const STORE_YEARS = 3;
+// 3년 평균 배당률 계산 대상 기간
+const AVG_YEARS   = 3;
 
 const QUOTE_SUMMARY_MODULES = [
   "price",
@@ -130,6 +136,18 @@ interface YfSummary {
   };
 }
 
+/** chart() 배당 이벤트 한 건 */
+interface DividendEvent {
+  date:   string;   // YYYY-MM-DD
+  amount: number;   // 주당 배당금
+}
+
+/** fetchChartData() 반환값 */
+interface ChartData {
+  prices:    PriceRow[];        // FETCH_YEARS치 전체 (TTM 계산용)
+  dividends: DividendEvent[];   // FETCH_YEARS치 배당 이벤트
+}
+
 interface PriceRow {
   date:      string;
   open:      number | null;
@@ -196,6 +214,7 @@ interface TickerData {
     rate:         number | null;
     yield:        number | null;
     payout_ratio: number | null;
+    avg_yield_3y: number | null;   // 일별 TTM 배당수익률의 3년 평균 (무배당 시 null)
   };
   ownership: {
     held_pct_institutions: number | null;
@@ -263,42 +282,108 @@ async function fetchQuoteSummary(ticker: string): Promise<YfSummary> {
   ) as Promise<YfSummary>;
 }
 
-async function fetchPriceHistory(ticker: string): Promise<PriceRow[]> {
+async function fetchChartData(ticker: string): Promise<ChartData> {
   const period2 = new Date();
   const period1 = new Date();
-  period1.setFullYear(period1.getFullYear() - PRICE_YEARS);
+  period1.setFullYear(period1.getFullYear() - FETCH_YEARS);
 
-  const rows = await yahooFinance.historical(
+  const chart = await yahooFinance.chart(
     ticker,
     {
       period1:  period1.toISOString().slice(0, 10),
       period2:  period2.toISOString().slice(0, 10),
       interval: "1d",
+      events:   "div",   // 배당 이벤트 포함
     },
     { validateResult: false }
-  );
+  ) as ChartResultArray;
 
-  return rows.map((row: HistoricalRowHistory) => {
-    const { date, open, high, low, close, adjClose, volume } = row;
-    return {
-      date:      date.toISOString().slice(0, 10),
-      open:      round(open),
-      high:      round(high),
-      low:       round(low),
-      close:     round(close),
-      adj_close: round(adjClose),
-      volume:    volume ?? null,
-    };
-  });
+  // 주가 파싱
+  const prices: PriceRow[] = chart.quotes
+    .filter((q: ChartResultArrayQuote) => q.close != null)
+    .map((q: ChartResultArrayQuote) => ({
+      date:      q.date.toISOString().slice(0, 10),
+      open:      round(q.open   as number | null),
+      high:      round(q.high   as number | null),
+      low:       round(q.low    as number | null),
+      close:     round(q.close  as number | null),
+      adj_close: round((q as Record<string, unknown>).adjclose as number | null),
+      volume:    (q.volume as number | null) ?? null,
+    }));
+
+  // 배당 이벤트 파싱
+  // chart().events.dividends 는 버전에 따라 Array | Record 두 형태로 올 수 있음
+  const rawDivs = chart.events?.dividends ?? [];
+  const dividends: DividendEvent[] = (
+    Array.isArray(rawDivs)
+      ? rawDivs
+      : Object.values(rawDivs as Record<string, { amount: number; date: Date }>)
+  )
+    .map((d) => ({
+      date:   (d.date as Date).toISOString().slice(0, 10),
+      amount: d.amount as number,
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return { prices, dividends };
 }
 
-// ── 3단계: JSON 구조 빌드 ────────────────────────────────────────────────────
+// ── 3년 평균 배당률 (일별 TTM 방식) ─────────────────────────────────────────
+//
+// 각 거래일 t 마다:
+//   TTM_t        = 직전 365일 배당금 합계
+//   daily_yield_t = TTM_t / 종가_t
+//
+// avg_yield_3y = Σ daily_yield_t / N  (N = 최근 3년 거래일 수, 약 750)
+//
+// 무배당 종목(dividends 없음) → null 반환
+
+export function calcAvgYield3y(
+  allPrices: PriceRow[],
+  dividends: DividendEvent[],
+): number | null {
+  if (dividends.length === 0) return null;
+
+  // 평균 계산 대상: 최근 AVG_YEARS 년 거래일
+  const avgStart = new Date();
+  avgStart.setFullYear(avgStart.getFullYear() - AVG_YEARS);
+  const avgStartStr = avgStart.toISOString().slice(0, 10);
+
+  const targetPrices = allPrices.filter(
+    (p) => p.date >= avgStartStr && p.close != null && p.close > 0
+  );
+  if (targetPrices.length === 0) return null;
+
+  const sortedDivs = [...dividends].sort((a, b) => a.date.localeCompare(b.date));
+
+  let yieldSum = 0;
+
+  for (const price of targetPrices) {
+    // TTM 윈도우: [date - 365일, date)
+    const windowEnd   = price.date;
+    const windowStart = new Date(price.date);
+    windowStart.setDate(windowStart.getDate() - 365);
+    const windowStartStr = windowStart.toISOString().slice(0, 10);
+
+    const ttm = sortedDivs
+      .filter((d) => d.date >= windowStartStr && d.date < windowEnd)
+      .reduce((sum, d) => sum + d.amount, 0);
+
+    yieldSum += ttm / price.close!;
+  }
+
+  const avg = yieldSum / targetPrices.length;
+  return Math.round(avg * 10000) / 10000;
+}
+
+
 
 export function buildTickerJson(
-  ticker:  string,
-  summary: YfSummary,
-  prices:  PriceRow[],
-  krName:  string | null = null,
+  ticker:    string,
+  summary:   YfSummary,
+  allPrices: PriceRow[],        // FETCH_YEARS치 전체 (TTM 계산용)
+  dividends: DividendEvent[],   // FETCH_YEARS치 배당 이벤트
+  krName:    string | null = null,
 ): TickerData {
   const p   = summary.price                           ?? {};
   const ap  = summary.assetProfile                    ?? {};
@@ -316,6 +401,15 @@ export function buildTickerJson(
       quarter:    formatQuarter(q.endDate ?? null),
       net_income: q.netIncome ?? null,
     }));
+
+  // avg_yield_3y: 일별 TTM 배당수익률의 3년 평균
+  const avg_yield_3y = calcAvgYield3y(allPrices, dividends);
+
+  // JSON 저장용 prices: 최근 STORE_YEARS 치만 (기존과 동일)
+  const storeStart = new Date();
+  storeStart.setFullYear(storeStart.getFullYear() - STORE_YEARS);
+  const storeStartStr = storeStart.toISOString().slice(0, 10);
+  const prices = allPrices.filter((row) => row.date >= storeStartStr);
 
   return {
     ticker,
@@ -374,6 +468,7 @@ export function buildTickerJson(
       rate:         sd.dividendRate  ?? null,
       yield:        sd.dividendYield ?? null,
       payout_ratio: sd.payoutRatio   ?? null,
+      avg_yield_3y,
     },
 
     ownership: {
@@ -425,14 +520,15 @@ async function processTicker(ticker: string, force: boolean, outputDir: string, 
   }
 
   try {
-    const [summary, prices] = await Promise.all([
+    const [summary, { prices: allPrices, dividends }] = await Promise.all([
       fetchQuoteSummary(ticker),
-      fetchPriceHistory(ticker),
+      fetchChartData(ticker),
     ]);
 
-    const data = buildTickerJson(ticker, summary, prices, krName);
+    const data = buildTickerJson(ticker, summary, allPrices, dividends, krName);
     saveTickerJson(ticker, data, outputDir);
-    return { status: "ok", priceCount: prices.length };
+    const storePrices = data.prices.length;
+    return { status: "ok", priceCount: storePrices };
 
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

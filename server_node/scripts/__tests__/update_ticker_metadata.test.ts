@@ -35,7 +35,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   chunk, round, formatQuarter, tickerToFilename,
-  isUpdatedToday, buildTickerJson, main,
+  isUpdatedToday, buildTickerJson, calcAvgYield3y, main,
 } from "../fetch/update_ticker_metadata.js";
 
 // ── vi.hoisted: vi.mock() 호이스팅 전에 mock 변수 초기화 ─────────────────────
@@ -43,7 +43,7 @@ import {
 const {
   mockReadFileSync, mockWriteFileSync, mockMkdirSync,
   mockExistsSync, mockRenameSync, mockReaddirSync,
-  mockHistorical, mockQuoteSummary,
+  mockChart, mockQuoteSummary,
 } = vi.hoisted(() => ({
   mockReadFileSync:  vi.fn(),
   mockWriteFileSync: vi.fn(),
@@ -51,7 +51,7 @@ const {
   mockExistsSync:    vi.fn(() => false),
   mockRenameSync:    vi.fn(),
   mockReaddirSync:   vi.fn(() => []),
-  mockHistorical:    vi.fn(),
+  mockChart:         vi.fn(),
   mockQuoteSummary:  vi.fn(),
 }));
 
@@ -72,7 +72,7 @@ vi.mock("fs", () => ({
 
 vi.mock("yahoo-finance2", () => ({
   default: class {
-    historical   = mockHistorical;
+    chart        = mockChart;
     quoteSummary = mockQuoteSummary;
   },
 }));
@@ -209,7 +209,7 @@ describe("buildTickerJson()", () => {
   it("TC15 - 필수 최상위 키 모두 포함", () => {
     const result = buildTickerJson("AAPL", {
       price: { longName: "Apple Inc", currency: "USD", regularMarketPrice: 180 },
-    } as YfSummary, []);
+    } as YfSummary, [], []);
     expect(result).toHaveProperty("ticker", "AAPL");
     expect(result).toHaveProperty("info");
     expect(result).toHaveProperty("market");
@@ -222,7 +222,7 @@ describe("buildTickerJson()", () => {
   });
 
   it("TC16 - 빈 summary → 모든 값 null", () => {
-    const result = buildTickerJson("AAPL", {} as YfSummary, []);
+    const result = buildTickerJson("AAPL", {} as YfSummary, [], []);
     expect(result.info.name).toBeNull();
     expect(result.market.price).toBeNull();
     expect(result.market.market_cap).toBeNull();
@@ -235,13 +235,56 @@ describe("buildTickerJson()", () => {
     }));
     const result = buildTickerJson("AAPL", {
       incomeStatementHistoryQuarterly: { incomeStatementHistory: entries },
-    } as YfSummary, []);
+    } as YfSummary, [], []);
     expect(result.profitability.quarterly_earnings.length).toBe(4);
   });
 
   it("TC18 - krName 적용", () => {
-    const result = buildTickerJson("005930.KS", {} as YfSummary, [], "삼성전자");
+    const result = buildTickerJson("005930.KS", {} as YfSummary, [], [], "삼성전자");
     expect(result.info.kr_name).toBe("삼성전자");
+  });
+});
+
+// ── calcAvgYield3y() ─────────────────────────────────────────────────────────
+
+describe("calcAvgYield3y()", () => {
+  /** 오늘 기준 n년 전 날짜 문자열 */
+  function daysAgo(days: number): string {
+    const d = new Date();
+    d.setDate(d.getDate() - days);
+    return d.toISOString().slice(0, 10);
+  }
+
+  it("TC-DIV1 - 배당 이벤트 없음 → null", () => {
+    const prices = [{ date: daysAgo(100), close: 100, open: null, high: null, low: null, adj_close: null, volume: null }];
+    expect(calcAvgYield3y(prices, [])).toBeNull();
+  });
+
+  it("TC-DIV2 - 3년 범위 내 가격 없음 → null", () => {
+    const oldDate = "2010-01-01";
+    const prices  = [{ date: oldDate, close: 100, open: null, high: null, low: null, adj_close: null, volume: null }];
+    const divs    = [{ date: "2010-06-01", amount: 1.0 }];
+    expect(calcAvgYield3y(prices, divs)).toBeNull();
+  });
+
+  it("TC-DIV3 - 정상 계산: TTM 배당 / 종가 평균", () => {
+    // 2년 전 날짜에 주가 + 배당 이벤트 설정
+    const priceDate = daysAgo(365 * 2);      // 2년 전
+    const divDate   = daysAgo(365 * 2 + 30); // 배당은 그보다 30일 전 (TTM 윈도우 내)
+    const prices = [{ date: priceDate, close: 100, open: null, high: null, low: null, adj_close: null, volume: null }];
+    const divs   = [{ date: divDate, amount: 4.0 }];
+    const result = calcAvgYield3y(prices, divs);
+    // TTM = 4.0, close = 100 → yield = 0.04
+    expect(result).toBe(0.04);
+  });
+
+  it("TC-DIV4 - TTM 윈도우 밖 배당은 제외", () => {
+    const priceDate  = daysAgo(365);        // 1년 전 주가
+    const oldDivDate = daysAgo(365 + 400);  // 400일 전 배당 (TTM 365일 윈도우 밖)
+    const prices = [{ date: priceDate, close: 200, open: null, high: null, low: null, adj_close: null, volume: null }];
+    const divs   = [{ date: oldDivDate, amount: 10.0 }];
+    // TTM = 0 → yield = 0 → avg = 0
+    expect(calcAvgYield3y(prices, divs)).toBe(0);
   });
 });
 
@@ -286,10 +329,11 @@ describe("main() 정상 흐름 시나리오", () => {
       .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
       .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 3_000_000_000_000 } }));
 
-    mockHistorical.mockResolvedValue([{
-      date: new Date("2024-01-02"), open: 180, high: 185, low: 175,
-      close: 182, adjClose: 182, volume: 1_000_000,
-    }]);
+    mockChart.mockResolvedValue({
+      quotes: [{ date: new Date("2024-01-02"), open: 180, high: 185, low: 175,
+                 close: 182, adjClose: 182, volume: 1_000_000 }],
+      events: {},
+    });
     mockQuoteSummary.mockResolvedValue({
       price: { longName: "Apple Inc", currency: "USD", regularMarketPrice: 182, marketState: "REGULAR" },
       incomeStatementHistoryQuarterly: {
@@ -313,7 +357,7 @@ describe("main() 정상 흐름 시나리오", () => {
     });
 
     await main();
-    expect(mockHistorical).not.toHaveBeenCalled();
+    expect(mockChart).not.toHaveBeenCalled();
     expect(mockWriteFileSync).toHaveBeenCalled();  // sortAllTickersByMarketCap은 실행
     process.argv = ["node", "script.ts"];
   });
@@ -330,7 +374,7 @@ describe("main() 정상 흐름 시나리오", () => {
       .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
       .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 3e12 } }));
 
-    mockHistorical.mockResolvedValue([]);
+    mockChart.mockResolvedValue({ quotes: [], events: {} });
     mockQuoteSummary.mockResolvedValue({ price: { longName: "Apple Inc" } });
 
     await main();
@@ -346,7 +390,7 @@ describe("main() 정상 흐름 시나리오", () => {
 
     mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }));
     mockQuoteSummary.mockRejectedValue(new Error("Yahoo API timeout"));
-    mockHistorical.mockResolvedValue([]);
+    mockChart.mockResolvedValue({ quotes: [], events: {} });
 
     const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
     await main();
@@ -362,7 +406,7 @@ describe("main() 정상 흐름 시나리오", () => {
       .mockReturnValueOnce(false);
 
     mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL", "MSFT"], name_map: {} }));
-    mockHistorical.mockResolvedValue([]);
+    mockChart.mockResolvedValue({ quotes: [], events: {} });
     mockQuoteSummary.mockResolvedValue({ price: { longName: "Apple Inc" } });
 
     await main();
@@ -383,7 +427,7 @@ describe("main() 정상 흐름 시나리오", () => {
       .mockReturnValueOnce(JSON.stringify({ tickers: ["005930.KS"], name_map: { "005930.KS": "삼성전자" } }))
       .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 5e14 } }));
 
-    mockHistorical.mockResolvedValue([]);
+    mockChart.mockResolvedValue({ quotes: [], events: {} });
     mockQuoteSummary.mockResolvedValue({ price: { longName: "Samsung Electronics" } });
 
     await main();

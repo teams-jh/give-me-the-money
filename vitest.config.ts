@@ -21,6 +21,7 @@ export default defineConfig({
       exclude: [
         '**/*.test.ts',
         '**/*.spec.ts',
+        'server_node/scripts/test_*.ts',   // 수동 실행용 테스트 스크립트 제외
       ],
       reporter: ['text', 'lcov'],
       // 파일별 80% 임계값 — 테스트 미작성 파일은 당연히 미달, 추후 테스트 추가로 해소
