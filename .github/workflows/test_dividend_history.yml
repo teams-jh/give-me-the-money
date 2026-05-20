@@ -1,0 +1,43 @@
+name: Test Dividend History
+
+# feat/dividend-history 브랜치에서 배당 히스토리 조회를 수동으로 테스트
+# Actions 탭 → Test Dividend History → Run workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      ticker:
+        description: "종목 코드 (예: AAPL / MSFT / 005930.KS)"
+        required: false
+        default: "AAPL"
+
+jobs:
+  test-dividend-history:
+    name: "[${{ github.event.inputs.ticker }}] 배당 히스토리 조회"
+    runs-on: ubuntu-latest
+
+    # feat/dividend-history 브랜치에서만 실행 가능
+    if: github.ref == 'refs/heads/feat/dividend-history'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: feat/dividend-history
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: PUPPETEER_SKIP_DOWNLOAD=true npm ci
+
+      - name: Run dividend history test
+        working-directory: server_node
+        run: |
+          npx tsx scripts/test_dividend_history.ts \
+            --ticker ${{ github.event.inputs.ticker }}
