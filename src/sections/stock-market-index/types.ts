@@ -10,6 +10,7 @@ export interface PeriodData {
   chart_labels: string[];
   chart_data: number[];
   regression: number[];
+  actual_prices?: number[];
 }
 
 export interface Stock {

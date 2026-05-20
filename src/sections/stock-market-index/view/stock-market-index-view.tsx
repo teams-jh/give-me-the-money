@@ -253,6 +253,7 @@ export function StockMarketIndexView() {
 
       const labels = periodData.chart_labels || [];
       const dataPoints = periodData.chart_data || [];
+      const actualPrices = periodData.actual_prices || [];
 
       let idx = labels.indexOf(selectedDate);
       if (idx === -1 && labels.length > 0) {
@@ -270,9 +271,9 @@ export function StockMarketIndexView() {
         };
       }
 
-      const currentPrice = dataPoints[idx];
-      const startPrice = dataPoints[0] || currentPrice;
-      const prevPrice = idx > 0 ? dataPoints[idx - 1] : startPrice;
+      const currentPrice = actualPrices[idx] !== undefined ? actualPrices[idx] : dataPoints[idx];
+      const startPrice = actualPrices[0] !== undefined ? actualPrices[0] : (dataPoints[0] || currentPrice);
+      const prevPrice = idx > 0 ? (actualPrices[idx - 1] !== undefined ? actualPrices[idx - 1] : dataPoints[idx - 1]) : startPrice;
 
       const cumulativeReturn = startPrice > 0 ? ((currentPrice - startPrice) / startPrice) * 100 : 0;
       const dailyReturn = prevPrice > 0 ? ((currentPrice - prevPrice) / prevPrice) * 100 : 0;
