@@ -76,7 +76,7 @@ async function downloadCsv(): Promise<string> {
 // ── 2단계: CSV 파싱 ───────────────────────────────────────────────────────────
 
 /** CSV 한 행을 파싱 (따옴표 내 쉼표 처리) */
-function parseRow(line: string): string[] {
+export function parseRow(line: string): string[] {
   const cols: string[] = [];
   let cur = "";
   let inQuote = false;
@@ -95,7 +95,7 @@ function parseRow(line: string): string[] {
   return cols;
 }
 
-function parseCsv(raw: string): string[] {
+export function parseCsv(raw: string): string[] {
   // UTF-8 BOM(\uFEFF) 제거
   const cleaned = raw.replace(/^\uFEFF/, "");
   const lines   = cleaned.split("\n").map((l) => l.trim()).filter(Boolean);
@@ -164,7 +164,7 @@ function saveJson(parsedTickers: string[]): void {
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   log("=== Russell 1000 티커 업데이트 시작 ===");
 
   const raw    = await downloadCsv();
@@ -179,7 +179,9 @@ async function main(): Promise<void> {
   log("=== 업데이트 완료 ===");
 }
 
-main().catch((e: unknown) => {
-  console.error(e);
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((e: unknown) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

@@ -87,7 +87,7 @@ function writeJson(filePath: string, data: ManualTickersJson): void {
   log(`저장 완료: ${filePath}`);
 }
 
-function validateTicker(ticker: string, config: MarketConfig): void {
+export function validateTicker(ticker: string, config: MarketConfig): void {
   if (!config.tickerPattern.test(ticker)) {
     throw new Error(
       `티커 형식이 올바르지 않습니다: "${ticker}"\n  ${config.tickerExample}`,
@@ -212,7 +212,7 @@ function cmdList(config: MarketConfig): void {
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-function main(): void {
+export function main(): void {
   const { market, command, ticker, name } = parseArgs();
   const config = MARKET_CONFIG[market]!;
 
@@ -221,4 +221,6 @@ function main(): void {
   if (command === "list")   cmdList(config);
 }
 
-main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main();
+}

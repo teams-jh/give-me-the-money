@@ -12,63 +12,23 @@
  *   TC08  parseCsv() - 헤더 없음 → Error("헤더 행")
  *   TC09  parseCsv() - non-Equity(Cash, Futures, "-") 제외
  *   TC10  parseCsv() - 빈 ticker("-") 제외
- *   TC11  downloadCsv() - HTML 응답 감지 → Error 발생
- *   TC12  main()     - 파싱 결과 0개 → Error 발생 + process.exit(1)
+ *   TC11  main()     - HTML 응답 감지 → Error throw
+ *   TC12  main()     - 파싱 결과 0개 → Error throw
  *   TC13  main()     - 정상 경로 → writeFileSync 호출 확인
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { parseRow, parseCsv, main } from "../fetch/update_russell1000.js";
 
-// ── parseRow / parseCsv 인라인 재현 ──────────────────────────────────────────
-// 소스에서 export 없음 → 동일 로직 인라인 보유 (회귀 방지용)
+// ── vi.hoisted: vi.mock() 호이스팅 전에 mock 변수 초기화 ─────────────────────
 
-function parseRow(line: string): string[] {
-  const cols: string[] = [];
-  let cur = "";
-  let inQuote = false;
-  for (const ch of line) {
-    if (ch === '"') { inQuote = !inQuote; }
-    else if (ch === "," && !inQuote) { cols.push(cur); cur = ""; }
-    else { cur += ch; }
-  }
-  cols.push(cur);
-  return cols;
-}
+const { mockWriteFileSync, mockMkdirSync, mockAxiosGet } = vi.hoisted(() => ({
+  mockWriteFileSync: vi.fn(),
+  mockMkdirSync:     vi.fn(),
+  mockAxiosGet:      vi.fn(),
+}));
 
-function parseCsv(raw: string): string[] {
-  const cleaned = raw.replace(/^\uFEFF/, "");
-  const lines   = cleaned.split("\n").map((l) => l.trim()).filter(Boolean);
-
-  const headerIdx = lines.findIndex((l) => {
-    const lower = l.toLowerCase();
-    return lower.includes("ticker") && lower.includes("asset class");
-  });
-  if (headerIdx === -1) throw new Error("헤더 행을 찾을 수 없습니다.");
-
-  const headerLine = lines[headerIdx];
-  if (!headerLine) throw new Error("헤더 행이 비어 있습니다.");
-  const headers = parseRow(headerLine).map((h) => h.toLowerCase().trim());
-
-  const tickerIdx     = headers.indexOf("ticker") !== -1 ? headers.indexOf("ticker")
-    : headers.findIndex((h) => h.includes("ticker"));
-  const assetClassIdx = headers.indexOf("asset class") !== -1 ? headers.indexOf("asset class")
-    : headers.findIndex((h) => h.includes("asset") && h.includes("class"));
-
-  const result: string[] = [];
-  for (const line of lines.slice(headerIdx + 1)) {
-    const cols       = parseRow(line);
-    const ticker     = (cols[tickerIdx]     ?? "").trim();
-    const assetClass = (cols[assetClassIdx] ?? "").trim().toLowerCase();
-    if (!ticker || ticker === "-" || assetClass !== "equity") continue;
-    result.push(ticker);
-  }
-  return result;
-}
-
-// ── fs / axios 모킹 ───────────────────────────────────────────────────────────
-
-const mockWriteFileSync = vi.fn();
-const mockMkdirSync     = vi.fn();
+// ── fs 모킹 ──────────────────────────────────────────────────────────────────
 
 vi.mock("fs", () => ({
   default: {
@@ -78,7 +38,8 @@ vi.mock("fs", () => ({
   },
 }));
 
-const mockAxiosGet = vi.fn();
+// ── axios 모킹 ────────────────────────────────────────────────────────────────
+
 vi.mock("axios", () => ({
   default: { get: (...a: unknown[]) => mockAxiosGet(...a) },
 }));
@@ -98,8 +59,7 @@ describe("parseRow()", () => {
   });
 
   it("TC02 - 따옴표 내 쉼표 처리", () => {
-    const row = `AAPL,"Apple, Inc",Equity`;
-    expect(parseRow(row)).toEqual(["AAPL", "Apple, Inc", "Equity"]);
+    expect(parseRow(`AAPL,"Apple, Inc",Equity`)).toEqual(["AAPL", "Apple, Inc", "Equity"]);
   });
 
   it("TC03 - 빈 필드 포함", () => {
@@ -124,18 +84,15 @@ describe("parseCsv()", () => {
   });
 
   it("TC06 - UTF-8 BOM(\\uFEFF) 제거 후 정상 파싱", () => {
-    const csv = "\uFEFFTicker,Name,Asset Class\nAAPL,Apple,Equity";
-    expect(parseCsv(csv)).toEqual(["AAPL"]);
+    expect(parseCsv("\uFEFFTicker,Name,Asset Class\nAAPL,Apple,Equity")).toEqual(["AAPL"]);
   });
 
   it('TC07 - 헤더 대소문자 무관 탐색 ("TICKER","ASSET CLASS")', () => {
-    const csv = "TICKER,NAME,ASSET CLASS\nAAPL,Apple,equity";
-    expect(parseCsv(csv)).toEqual(["AAPL"]);
+    expect(parseCsv("TICKER,NAME,ASSET CLASS\nAAPL,Apple,equity")).toEqual(["AAPL"]);
   });
 
   it("TC08 - 헤더 없음 → Error 발생", () => {
-    const csv = "Symbol,Name,Type\nAAPL,Apple,Equity";
-    expect(() => parseCsv(csv)).toThrow("헤더 행");
+    expect(() => parseCsv("Symbol,Name,Type\nAAPL,Apple,Equity")).toThrow("헤더 행");
   });
 
   it("TC09 - Cash / Futures / '-' ticker 제외", () => {
@@ -148,48 +105,33 @@ describe("parseCsv()", () => {
   });
 
   it("TC10 - 빈 ticker 제외", () => {
-    const csv = "Ticker,Name,Asset Class\n,Empty,Equity\nAAPL,Apple,Equity";
-    expect(parseCsv(csv)).toEqual(["AAPL"]);
+    expect(parseCsv("Ticker,Name,Asset Class\n,Empty,Equity\nAAPL,Apple,Equity")).toEqual(["AAPL"]);
   });
 });
 
-// ── TC11: downloadCsv() HTML 감지 ────────────────────────────────────────────
-
-describe("downloadCsv() HTML 감지 (main()을 통한 간접 검증)", () => {
-  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
-
-  it("TC11 - HTML 응답 → Error 발생 + process.exit(1)", async () => {
-    mockAxiosGet.mockResolvedValue({ data: "<!DOCTYPE html><html>...</html>" });
-    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
-    await import("../fetch/update_russell1000.js");
-    expect(mockExit).toHaveBeenCalledWith(1);
-    mockExit.mockRestore();
-  });
-});
-
-// ── TC12~13: main() ───────────────────────────────────────────────────────────
+// ── TC11~13: main() ───────────────────────────────────────────────────────────
 
 describe("main() 시나리오", () => {
-  beforeEach(() => { vi.clearAllMocks(); vi.resetModules(); });
+  beforeEach(() => { vi.clearAllMocks(); });
 
-  it("TC12 - 파싱 티커 0개 → process.exit(1)", async () => {
+  it("TC11 - HTML 응답 감지 → Error throw", async () => {
+    mockAxiosGet.mockResolvedValue({ data: "<!DOCTYPE html><html>...</html>" });
+    await expect(main()).rejects.toThrow();
+  });
+
+  it("TC12 - 파싱 티커 0개 → Error throw", async () => {
     mockAxiosGet.mockResolvedValue({
-      data: "Ticker,Name,Asset Class\nCASH,Dollar,Cash",  // Equity 없음
+      data: "Ticker,Name,Asset Class\nCASH,Dollar,Cash",
     });
-    const mockExit = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
-    await import("../fetch/update_russell1000.js");
-    expect(mockExit).toHaveBeenCalledWith(1);
-    mockExit.mockRestore();
+    await expect(main()).rejects.toThrow("파싱된 종목이 없습니다");
   });
 
   it("TC13 - 정상 경로 → writeFileSync 호출", async () => {
     const csv = "Ticker,Name,Asset Class\nAAPL,Apple,Equity\nMSFT,Microsoft,Equity";
     mockAxiosGet.mockResolvedValue({ data: csv });
-    await import("../fetch/update_russell1000.js");
+    await main();
     expect(mockWriteFileSync).toHaveBeenCalled();
-    const saved = JSON.parse(mockWriteFileSync.mock.calls[0]?.[1] as string) as {
-      tickers: string[];
-    };
+    const saved = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as { tickers: string[] };
     expect(saved.tickers).toContain("AAPL");
     expect(saved.tickers).toContain("MSFT");
   });

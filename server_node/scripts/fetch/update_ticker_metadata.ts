@@ -219,18 +219,18 @@ function log(msg: string):  void { console.log(`${new Date().toISOString()} [INF
 function warn(msg: string): void { console.warn(`${new Date().toISOString()} [WARN]  ${msg}`); }
 function err(msg: string):  void { console.error(`${new Date().toISOString()} [ERROR] ${msg}`); }
 
-function chunk<T>(arr: T[], n: number): T[][] {
+export function chunk<T>(arr: T[], n: number): T[][] {
   const result: T[][] = [];
   for (let i = 0; i < arr.length; i += n) result.push(arr.slice(i, i + n));
   return result;
 }
 
-function round(v: number | null | undefined): number | null {
+export function round(v: number | null | undefined): number | null {
   if (v == null || isNaN(v)) return null;
   return Math.round(v * 100) / 100;
 }
 
-function formatQuarter(date: Date | null | undefined): string | null {
+export function formatQuarter(date: Date | null | undefined): string | null {
   if (!date) return null;
   const q = Math.ceil((date.getMonth() + 1) / 3);
   return `${date.getFullYear()}Q${q}`;
@@ -294,7 +294,7 @@ async function fetchPriceHistory(ticker: string): Promise<PriceRow[]> {
 
 // ── 3단계: JSON 구조 빌드 ────────────────────────────────────────────────────
 
-function buildTickerJson(
+export function buildTickerJson(
   ticker:  string,
   summary: YfSummary,
   prices:  PriceRow[],
@@ -389,7 +389,7 @@ function buildTickerJson(
 // ── 4단계: 파일 저장 ──────────────────────────────────────────────────────────
 
 /** Yahoo Finance 티커에서 파일명용 코드 추출 (005930.KS → 005930, AAPL → AAPL) */
-function tickerToFilename(ticker: string): string {
+export function tickerToFilename(ticker: string): string {
   return ticker.split(".")[0] ?? ticker;
 }
 
@@ -404,7 +404,7 @@ function saveTickerJson(ticker: string, data: TickerData, outputDir: string): vo
 
 // ── 5단계: 단일 티커 처리 ────────────────────────────────────────────────────
 
-function isUpdatedToday(file: string): boolean {
+export function isUpdatedToday(file: string): boolean {
   try {
     const data        = JSON.parse(fs.readFileSync(file, "utf8")) as { updated_at?: string };
     if (!data.updated_at) return false;
@@ -487,7 +487,7 @@ function sortAllTickersByMarketCap(config: MarketConfig): void {
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const args   = process.argv.slice(2);
   const force  = args.includes("--force");
   const tIdx   = args.indexOf("--ticker");
@@ -531,7 +531,9 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch((e: unknown) => {
-  err(e instanceof Error ? e.message : String(e));
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((e: unknown) => {
+    err(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  });
+}
