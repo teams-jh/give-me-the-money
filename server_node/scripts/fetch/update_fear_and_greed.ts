@@ -195,13 +195,21 @@ async function fetchFearAndGreed(): Promise<CnnApiResponse> {
 function buildJson(raw: CnnApiResponse): FearAndGreedJson {
   const fg = raw.fear_and_greed;
 
-  // 히스토리컬: Unix ms → ISO date 변환, 오름차순 정렬
-  const historical: HistoricalRow[] = (raw.fear_and_greed_historical?.data ?? [])
-    .map((d) => ({
-      date:   new Date(d.x).toISOString().slice(0, 10),
-      score:  round(d.y) ?? d.y,
-      rating: d.rating,
-    }))
+  // 히스토리컬: Unix ms → ISO date 변환, 날짜별 마지막 값만 유지(dedup), 오름차순 정렬
+  // CNN API는 장중에도 점수를 갱신하므로 같은 날짜에 여러 항목이 올 수 있음.
+  // timestamp(x) 오름차순으로 처리하면 나중 항목이 Map을 덮어써 마지막 값만 남음.
+  const deduped = new Map<string, HistoricalRow>();
+  (raw.fear_and_greed_historical?.data ?? [])
+    .sort((a, b) => a.x - b.x)
+    .forEach((d) => {
+      const date = new Date(d.x).toISOString().slice(0, 10);
+      deduped.set(date, {
+        date,
+        score:  round(d.y) ?? d.y,
+        rating: d.rating,
+      });
+    });
+  const historical: HistoricalRow[] = [...deduped.values()]
     .sort((a, b) => a.date.localeCompare(b.date));
 
   return {

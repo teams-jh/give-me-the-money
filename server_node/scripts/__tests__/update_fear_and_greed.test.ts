@@ -11,6 +11,7 @@
  *   TC07  getExecutablePath()  - 미설정 → undefined
  *   TC08  buildJson()          - 히스토리 없음 → 빈 배열 / round() 간접 검증
  *   TC09  buildJson()          - 히스토리 있음 → 변환·정렬 / round() 간접 검증
+ *   TC16  buildJson()          - 같은 날짜 중복 항목 → 마지막 값(timestamp 최대)만 유지
  *   TC10  main()               - 오늘 업데이트 + no --force → 스킵 (puppeteer 미호출)
  *   TC11  main()               - 정상 경로 → writeFileSync + renameSync 호출
  *   TC12  main()               - API 응답 score 없음 → process.exit(1)
@@ -68,7 +69,7 @@ vi.mock("puppeteer", () => ({
 
 // ── 헬퍼: 정상 API 응답 데이터 ───────────────────────────────────────────────
 
-function makeCnnResponse(opts: { noScore?: boolean; hasHistorical?: boolean } = {}) {
+function makeCnnResponse(opts: { noScore?: boolean; hasHistorical?: boolean; hasDuplicates?: boolean } = {}) {
   return {
     fear_and_greed: opts.noScore ? {} : {
       score:            72.5,
@@ -85,6 +86,16 @@ function makeCnnResponse(opts: { noScore?: boolean; hasHistorical?: boolean } = 
           { x: new Date("2026-05-17").getTime(), y: 65.0, rating: "Greed" },
           { x: new Date("2026-05-19").getTime(), y: 72.5, rating: "Greed" },
           { x: new Date("2026-05-18").getTime(), y: 68.0, rating: "Greed" },  // 정렬 확인용
+        ],
+      },
+    } : {}),
+    ...(opts.hasDuplicates ? {
+      fear_and_greed_historical: {
+        data: [
+          // 2026-05-19 가 두 번 등장 — 장중 업데이트 시뮬레이션
+          { x: new Date("2026-05-19T10:00:00Z").getTime(), y: 60.0, rating: "Greed" },  // 이전 값
+          { x: new Date("2026-05-19T16:00:00Z").getTime(), y: 63.5, rating: "Greed" },  // 마지막 값 → 유지
+          { x: new Date("2026-05-18").getTime(),            y: 58.0, rating: "Neutral" },
         ],
       },
     } : {}),
@@ -245,6 +256,20 @@ describe("buildJson() 간접 검증", () => {
     const dates = written.historical.map((h: { date: string }) => h.date);
     expect(dates).toEqual([...dates].sort());
     expect(written.historical[0]!.score).toBe(65);
+  });
+
+  it("TC16 - 같은 날짜 중복 항목 → 마지막 값(timestamp 최대)만 유지", async () => {
+    setupPuppeteerMock(makeCnnResponse({ hasDuplicates: true }));
+    vi.resetModules();
+    await import("../fetch/update_fear_and_greed.js");
+    await vi.waitFor(() => expect(mockWriteFileSync).toHaveBeenCalled(), { timeout: 3000 });
+    const written = JSON.parse(mockWriteFileSync.mock.calls[0][1] as string);
+    // 2026-05-19 중복 2건 → 1건으로 dedup, 총 2건
+    expect(written.historical).toHaveLength(2);
+    const may19 = written.historical.find((h: { date: string }) => h.date === "2026-05-19");
+    expect(may19).toBeDefined();
+    // 16:00 항목(63.5)이 10:00 항목(60.0)을 덮어써야 함
+    expect(may19!.score).toBe(63.5);
   });
 });
 
