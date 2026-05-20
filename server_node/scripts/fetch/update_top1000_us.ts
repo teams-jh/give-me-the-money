@@ -206,7 +206,7 @@ const COD_COLUMNS = [
   "ttyp", "etyp", "ttyp_sb",
 ] as const;
 
-async function buildKnamMap(): Promise<Map<string, string>> {
+export async function buildKnamMap(): Promise<Map<string, string>> {
   const map = new Map<string, string>();
 
   for (const src of DWS_SOURCES) {
@@ -245,7 +245,7 @@ async function buildKnamMap(): Promise<Map<string, string>> {
 
 // ── 3단계: 결합 & 저장 ───────────────────────────────────────────────────────
 
-function buildAndSave(quotes: ScreenerQuote[], knamMap: Map<string, string>): void {
+export function buildAndSave(quotes: ScreenerQuote[], knamMap: Map<string, string>): void {
   const filtered = quotes
     .filter((q) => q.symbol && q.marketCap && q.marketCap > 0)
     .slice(0, TARGET);
@@ -276,7 +276,7 @@ function buildAndSave(quotes: ScreenerQuote[], knamMap: Map<string, string>): vo
 
 // ── main ──────────────────────────────────────────────────────────────────────
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   log("=== 미국 시총 상위 1000 업데이트 시작 ===");
 
   const quotes  = await fetchTop1000FromScreener();
@@ -286,4 +286,6 @@ async function main(): Promise<void> {
   log("=== 완료 ===");
 }
 
-main().catch((err) => { console.error(err); process.exit(1); });
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((err) => { console.error(err); process.exit(1); });
+}

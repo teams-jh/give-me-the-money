@@ -193,7 +193,7 @@ interface ParsedRow {
   groupCode:  string;
 }
 
-function parseMst(
+export function parseMst(
   content:        Buffer,
   byteSize:       number,
   part1Cols:      readonly string[],
@@ -248,7 +248,7 @@ function parseMst(
 
 // ── 4단계: 필터 + 정렬 + 상위 N개 ────────────────────────────────────────────
 
-function filterAndRank(rows: ParsedRow[], topN: number): ParsedRow[] {
+export function filterAndRank(rows: ParsedRow[], topN: number): ParsedRow[] {
   return rows
     .filter((r) => r.code.length === 6 && r.groupCode === "ST")
     .sort((a, b) => b.marketCap - a.marketCap)
@@ -257,7 +257,7 @@ function filterAndRank(rows: ParsedRow[], topN: number): ParsedRow[] {
 
 // ── 5단계: JSON 저장 ──────────────────────────────────────────────────────────
 
-function saveJson(
+export function saveJson(
   tickers:    ParsedRow[],
   sourceUrl:  string,
   outputFile: string,
@@ -281,7 +281,7 @@ function saveJson(
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   log("=== 국내주식 티커 업데이트 시작 (DWS) ===");
 
   for (const idx of INDEXES) {
@@ -322,7 +322,9 @@ async function main(): Promise<void> {
   log("=== 업데이트 완료 ===");
 }
 
-main().catch((e: unknown) => {
-  console.error(e);
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((e: unknown) => {
+    console.error(e);
+    process.exit(1);
+  });
+}

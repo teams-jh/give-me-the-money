@@ -298,7 +298,7 @@ function saveJson(data: FearAndGreedJson): void {
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const force = process.argv.includes("--force");
 
   log("=== Fear & Greed Index 업데이트 시작 ===");
@@ -316,7 +316,9 @@ async function main(): Promise<void> {
   log("=== 업데이트 완료 ===");
 }
 
-main().catch((e: unknown) => {
-  console.error(e instanceof Error ? e.message : String(e));
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((e: unknown) => {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  });
+}

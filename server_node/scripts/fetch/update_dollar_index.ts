@@ -111,7 +111,7 @@ function log(msg: string): void {
   console.log(`${new Date().toISOString()} [INFO] ${msg}`);
 }
 
-function round(v: number | null | undefined): number | null {
+export function round(v: number | null | undefined): number | null {
   if (v == null || isNaN(v)) return null;
   return Math.round(v * 100) / 100;
 }
@@ -168,7 +168,7 @@ async function fetchPrices(): Promise<PriceRow[]> {
 
 // ── 2단계: 현재가 정보 계산 ───────────────────────────────────────────────────
 
-function calcMarketInfo(prices: PriceRow[]) {
+export function calcMarketInfo(prices: PriceRow[]) {
   if (prices.length === 0) {
     return { price: null, previous_close: null, fifty_two_week_high: null, fifty_two_week_low: null };
   }
@@ -178,7 +178,7 @@ function calcMarketInfo(prices: PriceRow[]) {
   const prev   = sorted[sorted.length - 2] ?? null;
 
   // 52주(약 252 거래일) 범위
-  const oneYearAgo = new Date();
+  const oneYearAgo = new Date(latest.date);  // 실행 시점이 아닌 데이터 최신일 기준
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
   const yearStr = oneYearAgo.toISOString().slice(0, 10);
 
@@ -197,7 +197,7 @@ function calcMarketInfo(prices: PriceRow[]) {
 
 // ── 3단계: JSON 빌드 ──────────────────────────────────────────────────────────
 
-function buildJson(prices: PriceRow[]): DxyJson {
+export function buildJson(prices: PriceRow[]): DxyJson {
   const market = calcMarketInfo(prices);
 
   return {
@@ -285,7 +285,7 @@ function saveJson(data: DxyJson): void {
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const force = process.argv.includes("--force");
 
   log("=== US Dollar Index 데이터 업데이트 시작 ===");
@@ -309,7 +309,9 @@ async function main(): Promise<void> {
   log("=== 업데이트 완료 ===");
 }
 
-main().catch((e: unknown) => {
-  console.error(e instanceof Error ? e.message : String(e));
-  process.exit(1);
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((e: unknown) => {
+    console.error(e instanceof Error ? e.message : String(e));
+    process.exit(1);
+  });
+}
