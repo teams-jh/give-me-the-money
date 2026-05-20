@@ -101,20 +101,20 @@ export const getTickerData = async (ticker: string): Promise<TickerData> => {
   try {
     if (isKr) {
       try {
-        const module = await import(`../db/kr_tickers/${ticker}.json`);
+        const module = await import(`../db/kr/tickers/${ticker}.json`);
         return module.default;
       } catch {
         // Fallback to US
-        const module = await import(`../db/us_tickers/${ticker}.json`);
+        const module = await import(`../db/us/tickers/${ticker}.json`);
         return module.default;
       }
     } else {
       try {
-        const module = await import(`../db/us_tickers/${ticker}.json`);
+        const module = await import(`../db/us/tickers/${ticker}.json`);
         return module.default;
       } catch {
         // Fallback to KR
-        const module = await import(`../db/kr_tickers/${ticker}.json`);
+        const module = await import(`../db/kr/tickers/${ticker}.json`);
         return module.default;
       }
     }
