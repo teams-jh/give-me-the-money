@@ -1,48 +1,46 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
 import { useBoolean } from 'minimal-shared/hooks';
-import { getIsMobile } from 'src/utils/is-mobile';
-import { useOpicSpeech } from '../hooks/use-opic-speech';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Select from '@mui/material/Select';
 import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
+import SaveIcon from '@mui/icons-material/Save';
 import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
 import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ToggleButton from '@mui/material/ToggleButton';
+import { alpha, useTheme } from '@mui/material/styles';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import InputAdornment from '@mui/material/InputAdornment';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { alpha, useTheme } from '@mui/material/styles';
-
-import { OpicEditorItem } from '../opic';
-
-import SaveIcon from '@mui/icons-material/Save';
-import AddIcon from '@mui/icons-material/Add';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import InputAdornment from '@mui/material/InputAdornment';
 import MusicNoteIcon from '@mui/icons-material/MusicNote';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+
+import { getIsMobile } from 'src/utils/is-mobile';
+
 import { getFileScript, saveFileScript } from 'src/api/indexDB';
+
 import { toast } from 'src/components/snackbar';
+
+import { OpicEditorItem } from '../opic';
+import { useOpicSpeech } from '../hooks/use-opic-speech';
 
 // ----------------------------------------------------------------------
 

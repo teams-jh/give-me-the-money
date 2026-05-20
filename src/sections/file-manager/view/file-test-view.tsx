@@ -2,32 +2,30 @@
 
 import type { IFile, IFileFilters } from 'src/types/file';
 
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { useBoolean, useSetState, useLocalStorage } from 'minimal-shared/hooks';
+import { useBoolean, useSetState } from 'minimal-shared/hooks';
+import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
 
 import { DashboardContent } from 'src/layouts/dashboard';
+import { getTreeData, saveTreeData } from 'src/api/indexDB';
+
 import { toast } from 'src/components/snackbar';
 import { fileFormat } from 'src/components/file-thumbnail';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { useTable, rowInPage, getComparator } from 'src/components/table';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useTable, getComparator } from 'src/components/table';
 
-import { getTreeData, saveTreeData, getFullData, saveFullData } from 'src/api/indexDB';
+import { OpicTestLiveView } from './opic-test-live-view';
 import { FileManagerFilters } from '../file-manager-filters';
+import { OpicTestEditorView } from './opic-test-editor-view';
 import { FileManagerGridView } from '../file-manager-grid-view';
 import { FileManagerFiltersResult } from '../file-manager-filters-result';
 import { FileManagerCreateFolderDialog } from '../file-manager-create-folder-dialog';
-import { OpicTestEditorView } from './opic-test-editor-view';
-import { OpicTestLiveView } from './opic-test-live-view';
 
 // ----------------------------------------------------------------------
 
@@ -146,8 +144,7 @@ export function FileTestView({ title, category }: Props) {
   });
   const { state: currentFilters } = filters;
 
-  const dataForGrid = useMemo(() => {
-    return treeData
+  const dataForGrid = useMemo(() => treeData
       .filter((node: any) => node.type === 'file')
       .map((node: any) => ({
         id: node.id,
@@ -161,8 +158,7 @@ export function FileTestView({ title, category }: Props) {
         modifiedAt: node.modifiedAt,
         shared: null,
         totalFiles: 0,
-      })) as IFile[];
-  }, [treeData]);
+      })) as IFile[], [treeData]);
 
   const dataFiltered = useMemo(
     () =>

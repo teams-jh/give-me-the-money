@@ -1,31 +1,25 @@
-import { memo, useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocalStorage } from 'minimal-shared/hooks';
 import { useDroppable } from '@dnd-kit/core';
+import { useLocalStorage } from 'minimal-shared/hooks';
+import { memo, useRef, useMemo, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import InputBase from '@mui/material/InputBase';
-import Autocomplete from '@mui/material/Autocomplete';
-import ListItemText from '@mui/material/ListItemText';
-import InputAdornment from '@mui/material/InputAdornment';
-import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
-import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
-
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import FolderIcon from '@mui/icons-material/Folder';
-import DescriptionIcon from '@mui/icons-material/Description';
-import StorageIcon from '@mui/icons-material/Storage';
 import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Autocomplete from '@mui/material/Autocomplete';
+import InputAdornment from '@mui/material/InputAdornment';
+import DescriptionIcon from '@mui/icons-material/Description';
 import ViewSidebarIcon from '@mui/icons-material/ViewSidebar';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 // ----------------------------------------------------------------------
 
@@ -441,8 +435,7 @@ export function FileManagerSidebar({
   }, [isResizing, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
   const sortedData = useMemo(() => {
-    const sortNodes = (nodes: any[]): any[] => {
-      return [...nodes]
+    const sortNodes = (nodes: any[]): any[] => [...nodes]
         .sort((a, b) => {
           if (a.type === 'folder' && b.type !== 'folder') return -1;
           if (a.type !== 'folder' && b.type === 'folder') return 1;
@@ -452,7 +445,6 @@ export function FileManagerSidebar({
           ...node,
           children: node.children ? sortNodes(node.children) : undefined,
         }));
-    };
     return sortNodes(data);
   }, [data]);
 

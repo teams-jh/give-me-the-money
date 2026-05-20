@@ -1,12 +1,12 @@
 import type { BoxProps } from '@mui/material/Box';
 
 import { memo } from 'react';
+
 import Box from '@mui/material/Box';
 import Portal from '@mui/material/Portal';
 import Checkbox from '@mui/material/Checkbox';
-
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 
 // ----------------------------------------------------------------------
@@ -27,8 +27,7 @@ export const FileManagerActionSelected = memo(({
   numSelected,
   onSelectAllItems,
   ...other
-}: Props) => {
-  return (
+}: Props) => (
     <Portal>
       <Box
         sx={[
@@ -85,5 +84,4 @@ export const FileManagerActionSelected = memo(({
         {action && action}
       </Box>
     </Portal>
-  );
-});
+  ));

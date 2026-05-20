@@ -1,25 +1,24 @@
 'use client';
 
-import { useState, useMemo, useEffect, useRef } from 'react';
+import ChartApex from 'react-apexcharts';
+import ReactECharts from 'echarts-for-react';
+import { useRef, useMemo, useState, useEffect } from 'react';
+// Chart Libraries
+import { ColorType, createChart, LineSeries as LW_LineSeries, CandlestickSeries as LW_CandlestickSeries } from 'lightweight-charts';
+import { Chart, XAxis, YAxis, LineSeries, ChartCanvas, CandlestickSeries, MovingAverageTooltip, discontinuousTimeScaleProviderBuilder } from 'react-financial-charts';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Tab from '@mui/material/Tab';
+import Card from '@mui/material/Card';
 import Tabs from '@mui/material/Tabs';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
 
-import { DashboardContent } from 'src/layouts/dashboard';
-
-// Chart Libraries
-import { createChart, ColorType, CandlestickSeries as LW_CandlestickSeries, LineSeries as LW_LineSeries } from 'lightweight-charts';
-import { ChartCanvas, Chart, CandlestickSeries, XAxis, YAxis, discontinuousTimeScaleProviderBuilder, LineSeries, MovingAverageTooltip } from 'react-financial-charts';
-import ReactECharts from 'echarts-for-react';
-import ChartApex from 'react-apexcharts';
-
 // Data
 import { allTickersData } from 'src/library/tickers';
+import { DashboardContent } from 'src/layouts/dashboard';
+
 import { transformTickerToStock } from 'src/sections/stock-market-index/stock-market-index-utils';
 
 // ----------------------------------------------------------------------

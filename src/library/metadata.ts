@@ -6,10 +6,10 @@
 
 import allKrTickersRaw from '../db/metadata/all_kr_tickers.json';
 import allUsTickersRaw from '../db/metadata/all_us_tickers.json';
-import nasdaq100Raw from '../db/stock_market_index/nasdaq100_tickers.json';
-import russell1000Raw from '../db/stock_market_index/russell1000_tickers.json';
 import kospi300Raw from '../db/stock_market_index/kospi300_tickers.json';
+import nasdaq100Raw from '../db/stock_market_index/nasdaq100_tickers.json';
 import kosdaq200Raw from '../db/stock_market_index/kosdaq200_tickers.json';
+import russell1000Raw from '../db/stock_market_index/russell1000_tickers.json';
 import manualKrTickersRaw from '../db/stock_market_index/manual_kr_tickers.json';
 import manualUsTickersRaw from '../db/stock_market_index/manual_us_tickers.json';
 
@@ -53,10 +53,10 @@ export const metadata = {
   } as TickerMetadata,
   kr: allKrTickers,
   us: allUsTickers,
-  nasdaq100: nasdaq100,
-  russell1000: russell1000,
-  kospi300: kospi300,
-  kosdaq200: kosdaq200,
+  nasdaq100,
+  russell1000,
+  kospi300,
+  kosdaq200,
   manualKr: manualKrTickers,
   manualUs: manualUsTickers,
 };
@@ -66,6 +66,4 @@ export const metadata = {
  */
 export const getTickersByIndex = (
   index: 'all' | 'kr' | 'us' | 'nasdaq100' | 'russell1000' | 'kospi300' | 'kosdaq200' | 'manualKr' | 'manualUs'
-): string[] => {
-  return metadata[index].tickers;
-};
+): string[] => metadata[index].tickers;

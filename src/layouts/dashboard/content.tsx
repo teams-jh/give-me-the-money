@@ -8,7 +8,6 @@ import { mergeClasses } from 'minimal-shared/utils';
 import { styled } from '@mui/material/styles';
 import Container from '@mui/material/Container';
 
-
 import { layoutClasses } from '../core';
 
 // ----------------------------------------------------------------------

@@ -28,5 +28,6 @@ export const paths = {
     root: '/indicators',
     chart: '/indicators/chart',
     macro: '/indicators/macro',
+    exchangeRate: '/indicators/exchange-rate',
   },
 };

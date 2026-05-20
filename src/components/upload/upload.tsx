@@ -6,8 +6,8 @@ import { varAlpha, mergeClasses } from 'minimal-shared/utils';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormHelperText from '@mui/material/FormHelperText';
-
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
 import { uploadClasses } from './classes';
 import { UploadPlaceholder } from './components/placeholder';
 import { RejectionFiles } from './components/rejection-files';

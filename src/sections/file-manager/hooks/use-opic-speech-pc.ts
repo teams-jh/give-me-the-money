@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
+
 import { toast } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
@@ -225,8 +226,7 @@ export function useOpicSpeech() {
     recordedAudiosRef.current = recordedAudios;
   }, [recordedAudios]);
 
-  useEffect(() => {
-    return () => {
+  useEffect(() => () => {
       if (recognitionRef.current) recognitionRef.current.abort();
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       if (mediaStreamRef.current) {
@@ -241,8 +241,7 @@ export function useOpicSpeech() {
       Object.values(recordedAudiosRef.current).forEach(url => {
         try { URL.revokeObjectURL(url); } catch (e) {}
       });
-    };
-  }, []);
+    }, []);
 
   const recordedAudiosRefInternal = useRef(recordedAudios);
   useEffect(() => {

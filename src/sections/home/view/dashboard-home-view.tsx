@@ -1,13 +1,13 @@
 'use client';
 
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 import { alpha } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import PieChartRoundedIcon from '@mui/icons-material/PieChartRounded';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
-import PieChartRoundedIcon from '@mui/icons-material/PieChartRounded';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
@@ -140,7 +140,7 @@ function SummaryCard({ title, value, percent, icon, color }: SummaryCardProps) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: color,
+          color,
           p: 2
         }}
       >
@@ -166,12 +166,12 @@ function SummaryCard({ title, value, percent, icon, color }: SummaryCardProps) {
             justifyContent: 'center',
             borderRadius: '50%',
             bgcolor: alpha(color, 0.1),
-            color: color
+            color
           }}
         >
           <TrendingUpRoundedIcon sx={{ fontSize: 12 }} />
         </Box>
-        <Typography variant="subtitle2" component="span" sx={{ color: color, fontWeight: 700 }}>
+        <Typography variant="subtitle2" component="span" sx={{ color, fontWeight: 700 }}>
           {percent}
         </Typography>
         <Typography variant="caption" sx={{ color: 'text.disabled', ml: 0.5 }}>

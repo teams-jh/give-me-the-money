@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { it, expect, describe } from 'vitest';
+
 import { calcPositionSize, type PositionInput } from './position.ts';
 
 // ── 기본 입력 fixture ─────────────────────────────────────────────────────────

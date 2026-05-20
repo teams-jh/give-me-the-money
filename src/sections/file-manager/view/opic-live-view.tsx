@@ -1,24 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
-import TextField from '@mui/material/TextField';
 import Container from '@mui/material/Container';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import InputAdornment from '@mui/material/InputAdornment';
-import { alpha, useTheme } from '@mui/material/styles';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 
-import { getFileScript } from 'src/api/indexDB';
-import { toast } from 'src/components/snackbar';
 import { getIsMobile } from 'src/utils/is-mobile';
+
+import { getFileScript } from 'src/api/indexDB';
+
 import { useOpicSpeech } from '../hooks/use-opic-speech';
 import { OpicHeader, OpicScriptItem, OpicQuestionSection } from '../opic';
 
@@ -119,14 +113,12 @@ export function OpicLiveView({ fileId, fileName, onBack, onEdit }: Props) {
   }, [fileId, resetStates]);
 
   // Stop audio when page changes or component unmounts
-  useEffect(() => {
-    return () => {
+  useEffect(() => () => {
       stopAll();
       if (questionAudioRef.current) {
         questionAudioRef.current.pause();
       }
-    };
-  }, [fileId, stopAll]);
+    }, [fileId, stopAll]);
 
   const toggleLine = useCallback((index: string | number) => {
     setRevealedLines((prev) => ({

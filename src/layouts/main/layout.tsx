@@ -9,17 +9,15 @@ import { useBoolean } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-import Button from '@mui/material/Button';
 
-import { paths } from 'src/routes/paths';
 import { usePathname } from 'src/routes/hooks';
 
 import { Logo } from 'src/components/logo';
 
 import { NavMobile } from './nav/mobile';
 import { Footer, HomeFooter } from './footer';
-import { MenuButton } from '../components/menu-button';
 import { mainNavData } from '../nav-config-dashboard';
+import { MenuButton } from '../components/menu-button';
 import { MainSection, LayoutSection, HeaderSection } from '../core';
 
 // ----------------------------------------------------------------------

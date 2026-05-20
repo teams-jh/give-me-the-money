@@ -6,7 +6,6 @@ import { varAlpha, isActiveLink, isExternalLink } from 'minimal-shared/utils';
 
 import Collapse from '@mui/material/Collapse';
 
-import { paths } from 'src/routes/paths';
 import { usePathname } from 'src/routes/hooks';
 
 import { CONFIG } from 'src/global-config';

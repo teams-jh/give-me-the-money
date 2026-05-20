@@ -5,8 +5,8 @@ import { varAlpha, mergeClasses } from 'minimal-shared/utils';
 
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
-
 import CloseIcon from '@mui/icons-material/Close';
+
 import { uploadClasses } from '../classes';
 
 // ----------------------------------------------------------------------

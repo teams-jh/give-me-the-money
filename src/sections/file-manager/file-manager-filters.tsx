@@ -1,19 +1,12 @@
 import type { UseSetStateReturn } from 'minimal-shared/hooks';
 import type { IFileFilters } from 'src/types/file';
-import type { IDatePickerControl } from 'src/types/common';
 
 import { useState, useEffect, useCallback } from 'react';
-import { varAlpha } from 'minimal-shared/utils';
-import { usePopover } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import CardActionArea from '@mui/material/CardActionArea';
-import InputAdornment from '@mui/material/InputAdornment';
-
 import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
 
 // ----------------------------------------------------------------------
 

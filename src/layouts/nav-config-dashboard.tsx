@@ -1,16 +1,16 @@
-import type { NavSectionProps } from 'src/components/nav-section';
 import type { NavMainProps } from './main/nav/types';
-
-import { paths } from 'src/routes/paths';
+import type { NavSectionProps } from 'src/components/nav-section';
 
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
-import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
-import HeadphonesRoundedIcon from '@mui/icons-material/HeadphonesRounded';
-import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded';
 import ShowChartRoundedIcon from '@mui/icons-material/ShowChartRounded';
 import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
+import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
+import HeadphonesRoundedIcon from '@mui/icons-material/HeadphonesRounded';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
+import LeaderboardRoundedIcon from '@mui/icons-material/LeaderboardRounded';
+
+import { paths } from 'src/routes/paths';
 
 const ICONS = {
   folder: <FolderRoundedIcon fontSize="small" />,
@@ -91,6 +91,7 @@ export const navData: NavSectionProps['data'] = [
         children: [
           { title: '차트 지표', path: paths.indicators.chart },
           { title: '매크로 지표', path: paths.indicators.macro },
+          { title: '환율', path: paths.indicators.exchangeRate },
         ],
       },
     ],
@@ -165,6 +166,7 @@ export const mainNavData: NavMainProps['data'] = [
         items: [
           { title: '차트 지표', path: paths.indicators.chart },
           { title: '매크로 지표', path: paths.indicators.macro },
+          { title: '환율', path: paths.indicators.exchangeRate },
         ],
       },
     ],

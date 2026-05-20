@@ -13,8 +13,9 @@
  *   → 양수 클수록 강세장, 음수 클수록 약세장
  */
 
-import { classifyTrend } from "./classifyTrend.ts";
 import type { StockInput } from "./sector.ts";
+
+import { classifyTrend } from "./classifyTrend.ts";
 
 // ── 출력 타입 ─────────────────────────────────────────────────────────────────
 

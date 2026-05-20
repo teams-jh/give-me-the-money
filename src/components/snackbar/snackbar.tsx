@@ -1,11 +1,11 @@
 'use client';
 
 import Portal from '@mui/material/Portal';
-
 import InfoIcon from '@mui/icons-material/Info';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
+import WarningIcon from '@mui/icons-material/Warning';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
 import { SnackbarRoot } from './styles';
 import { snackbarClasses } from './classes';
 

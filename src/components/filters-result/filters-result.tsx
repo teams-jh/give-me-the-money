@@ -3,7 +3,6 @@ import type { Theme, SxProps } from '@mui/material/styles';
 
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
-
 import DeleteIcon from '@mui/icons-material/Delete';
 
 // ----------------------------------------------------------------------

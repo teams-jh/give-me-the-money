@@ -1,17 +1,19 @@
+import type { Stock, PeriodKey } from './types';
+
 import { useState } from 'react';
+
 import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Grid from '@mui/material/Grid';
+import Tabs from '@mui/material/Tabs';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import { alpha, useTheme } from '@mui/material/styles';
 
-import { Stock, PeriodKey } from './types';
 import { BigChart, getTrendColor, getTrendLabel } from './stock-market-index-charts';
 
 // ----------------------------------------------------------------------

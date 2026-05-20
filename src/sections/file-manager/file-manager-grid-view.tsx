@@ -1,25 +1,24 @@
 import type { IFile } from 'src/types/file';
 import type { UseTableReturn } from 'src/components/table';
 
+import { useRef, useMemo, useState } from 'react';
 import { useBoolean, usePopover } from 'minimal-shared/hooks';
-import { useRef, useState, useCallback, useMemo } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
-
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 
+import { EmptyContent } from 'src/components/empty-content';
 import { CustomPopover } from 'src/components/custom-popover';
 
 import { FileManagerPanel } from './file-manager-panel';
 import { FileManagerFileItem } from './file-manager-file-item';
 import { FileManagerFolderItem } from './file-manager-folder-item';
 import { FileManagerActionSelected } from './file-manager-action-selected';
-import { EmptyContent } from 'src/components/empty-content';
 import { FileManagerCreateFolderDialog } from './file-manager-create-folder-dialog';
 
 // ----------------------------------------------------------------------
@@ -72,8 +71,7 @@ export function FileManagerGridView({
 
   const [createType, setCreateType] = useState<'folder' | 'file'>(hideFolder ? 'file' : 'folder');
 
-  const sortedData = useMemo(() => {
-    return [...dataFiltered].sort((a, b) => {
+  const sortedData = useMemo(() => [...dataFiltered].sort((a, b) => {
       if (a.type === 'folder' && b.type !== 'folder') return -1;
       if (a.type !== 'folder' && b.type === 'folder') return 1;
 
@@ -81,8 +79,7 @@ export function FileManagerGridView({
       if (!a.isFavorited && b.isFavorited) return 1;
 
       return a.name.localeCompare(b.name);
-    });
-  }, [dataFiltered]);
+    }), [dataFiltered]);
 
   const renderUploadFilesDialog = () => (
     <FileManagerCreateFolderDialog open={newFilesDialog.value} onClose={newFilesDialog.onFalse} />
@@ -160,8 +157,7 @@ export function FileManagerGridView({
             )
           }
           action={
-            <>
-              <Button
+            <Button
                 size="small"
                 color="error"
                 variant="contained"
@@ -171,7 +167,6 @@ export function FileManagerGridView({
               >
                 Delete
               </Button>
-            </>
           }
         />
       )

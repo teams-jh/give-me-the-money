@@ -1,30 +1,23 @@
 import type { IFileManager } from 'src/types/file';
 import type { FileItemProps } from './file-manager-file-item-slots';
 
-import { memo, useState, useCallback, useEffect } from 'react';
-import { useBoolean, usePopover } from 'minimal-shared/hooks';
 import { useDraggable } from '@dnd-kit/core';
+import { useBoolean, usePopover } from 'minimal-shared/hooks';
+import { memo, useState, useEffect, useCallback } from 'react';
 
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-import { fData } from 'src/utils/format-number';
 import { fDateTime } from 'src/utils/format-time';
-
 import { getIsMobile } from 'src/utils/is-mobile';
 
-import { toast } from 'src/components/snackbar';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DeleteIcon from '@mui/icons-material/Delete';
-
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { CustomPopover } from 'src/components/custom-popover';
 
-import { FileManagerCreateFolderDialog } from './file-manager-create-folder-dialog';
 import {
   FileItem,
   FileItemIcon,

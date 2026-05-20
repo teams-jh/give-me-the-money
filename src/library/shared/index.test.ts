@@ -3,17 +3,18 @@
  * re-export 정상 동작 smoke test
  */
 
-import { describe, it, expect } from 'vitest';
+import { it, expect, describe } from 'vitest';
+
 import {
-  classifyTrend,
-  calcMA, calcEMA, calcRSI, calcMACD, calcBollingerBands, calcATR, calcOBV, calcMDD,
-  analyzeSignals, detectGoldenCross, detectRSISignal, detectMACDCross,
-  detectBBBreakout, detectVolumeSpike, detectOBVDivergence, detectRiskSignal,
-  analyzeFundamentals, detectValuation, detectEarningsAcceleration, detectOwnership,
-  detectHighLowBreakout, detectPriceVolumeDivergence,
-  calcPositionSize,
-  calcSectorRotation, getQuarterKey,
-  calcMarketBreadth, buildSnapshotDates, getMarketCondition,
+  calcMA,
+  calcEMA, calcRSI, calcATR, calcOBV, calcMDD, calcMACD, classifyTrend, getQuarterKey,
+  analyzeSignals, detectRSISignal, detectMACDCross, detectValuation,
+  detectOwnership, detectBBBreakout, detectRiskSignal, calcPositionSize,
+  detectGoldenCross, detectVolumeSpike, calcMarketBreadth, calcBollingerBands,
+  calcSectorRotation, buildSnapshotDates,
+  getMarketCondition,
+  detectOBVDivergence, analyzeFundamentals,
+  detectHighLowBreakout, detectEarningsAcceleration, detectPriceVolumeDivergence,
 } from './index.ts';
 
 describe('index.ts re-export smoke test', () => {

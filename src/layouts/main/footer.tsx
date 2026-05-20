@@ -6,10 +6,8 @@ import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import { styled } from '@mui/material/styles';
 import Container from '@mui/material/Container';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 const _socials: any[] = [];
@@ -92,8 +90,7 @@ export function Footer({
                 justifyContent: 'center',
                 [theme.breakpoints.up(layoutQuery)]: { mb: 0, justifyContent: 'flex-start' },
               })}
-            >
-            </Box>
+             />
           </Grid>
 
           <Grid size={{ xs: 12, [layoutQuery]: 6 }}>

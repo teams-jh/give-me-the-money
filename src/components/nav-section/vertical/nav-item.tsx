@@ -6,9 +6,8 @@ import { mergeClasses } from 'minimal-shared/utils';
 import Tooltip from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
-
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 import { createNavItem } from '../utils';
 import { navItemStyles, navSectionClasses } from '../styles';

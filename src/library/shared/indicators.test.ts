@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest';
+import { it, expect, describe } from 'vitest';
+
 import {
   calcMA,
   calcEMA,
@@ -6,10 +7,10 @@ import {
   calcATR,
   calcOBV,
   calcMDD,
-  calcBollingerBands,
-  calcMACD,
   calcROC,
+  calcMACD,
   type OHLCV,
+  calcBollingerBands,
 } from './indicators.ts';
 
 // ── 테스트용 헬퍼 ─────────────────────────────────────────────────────────────
@@ -335,7 +336,13 @@ describe('calcROC', () => {
 
 // ── calcStochastic ────────────────────────────────────────────────────────────
 
-import { calcStochastic, calcADX, calcMFI, calcSupertrend } from './indicators.ts';
+import { calcADX, calcMFI, calcEnvelope, calcStochastic , calcSupertrend ,
+  calcTrendlines,
+  calcDonchianChannels,
+  calcSupportResistance,
+  calcLinearRegressionChannel,
+  calcZigZagSupportResistance,
+} from './indicators.ts';
 
 describe('calcStochastic', () => {
   it('결과 배열 길이는 입력과 동일하다', () => {
@@ -492,7 +499,7 @@ describe('calcSupertrend', () => {
 
 // ── calcEnvelope, calcDonchianChannels ────────────────────────────────────────
 
-import { calcDonchianChannels } from './indicators.ts';
+
 
 describe('calcEnvelope', () => {
   it('period 미만 구간은 null이다', () => {
@@ -523,13 +530,7 @@ describe('calcEnvelope', () => {
 
 // ── calcSupportResistance ─────────────────────────────────────────────────────
 
-import {
-  calcSupportResistance,
-  calcTrendlines,
-  calcLinearRegressionChannel,
-  calcZigZagSupportResistance,
-  calcEnvelope,
-} from './indicators.ts';
+
 
 describe('calcSupportResistance', () => {
   const n = 30;

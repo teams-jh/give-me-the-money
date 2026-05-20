@@ -2,14 +2,16 @@
  * signals.test.ts - 올바른 함수 시그니처 반영
  */
 
-import { describe, it, expect } from 'vitest';
-import {
-  detectGoldenCross, detectRSISignal, detectMACDCross, detectBBBreakout,
-  detectVolumeSpike, detectOBVDivergence, detectRiskSignal, detectHighLowBreakout,
-  detectPriceVolumeDivergence, detectStochasticSignal, detectROCSignal,
-  detectMFISignal, detectSupertrendSignal, analyzeSignals,
-} from './signals.ts';
 import type { OHLCV } from './indicators.ts';
+
+import { it, expect, describe } from 'vitest';
+
+import {
+  analyzeSignals, detectRSISignal, detectMACDCross, detectROCSignal,
+  detectMFISignal, detectBBBreakout, detectRiskSignal, detectGoldenCross,
+  detectVolumeSpike, detectOBVDivergence, detectHighLowBreakout,
+  detectStochasticSignal, detectSupertrendSignal, detectPriceVolumeDivergence,
+} from './signals.ts';
 
 function makeOHLCV(closes: number[], vol = 1_000_000): OHLCV[] {
   return closes.map((close, i) => ({

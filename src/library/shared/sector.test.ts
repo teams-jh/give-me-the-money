@@ -7,13 +7,15 @@
  *   calcSectorStrengthRotation — 분기별 섹터 추세 강도 랭킹
  */
 
-import { describe, it, expect } from 'vitest';
+import type { StockInput } from './sector.ts';
+
+import { it, expect, describe } from 'vitest';
+
 import {
   getQuarterKey,
   calcSectorRotation,
   calcSectorStrengthRotation,
 } from './sector.ts';
-import type { StockInput } from './sector.ts';
 
 // ── 헬퍼 ─────────────────────────────────────────────────────────────────────
 

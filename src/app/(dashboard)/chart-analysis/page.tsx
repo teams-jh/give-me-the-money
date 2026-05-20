@@ -1,4 +1,5 @@
 import { CONFIG } from 'src/global-config';
+
 import { ChartAnalysisView } from 'src/sections/chart-analysis/view/chart-analysis-view';
 
 // ----------------------------------------------------------------------

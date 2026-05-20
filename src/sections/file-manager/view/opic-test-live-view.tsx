@@ -1,21 +1,20 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Divider from '@mui/material/Divider';
-import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import { alpha, useTheme } from '@mui/material/styles';
-
 import DescriptionIcon from '@mui/icons-material/Description';
-import { getFileScript, getTreeData, saveFileScript } from 'src/api/indexDB';
-import { toast } from 'src/components/snackbar';
+
 import { getIsMobile } from 'src/utils/is-mobile';
+
+import { getTreeData, getFileScript } from 'src/api/indexDB';
+
+import { toast } from 'src/components/snackbar';
+
 import { useOpicSpeech } from '../hooks/use-opic-speech';
 import { OpicHeader, OpicScriptItem, OpicQuestionSection } from '../opic';
 
@@ -193,7 +192,7 @@ export function OpicTestLiveView({ fileId, fileName, onBack, onEdit, storageKey 
         };
 
         const ids = playlistWithDefaults.fileIds;
-        let order = Array.from({ length: ids.length }, (_, i) => i);
+        const order = Array.from({ length: ids.length }, (_, i) => i);
 
         if (playlistWithDefaults.randomPlay && ids.length > 1) {
           // Fisher-Yates Shuffle
@@ -520,8 +519,7 @@ export function OpicTestLiveView({ fileId, fileName, onBack, onEdit, storageKey 
   }, [autoPlay, storageKey]);
 
   // Cleanup audio and speech on unmount
-  useEffect(() => {
-    return () => {
+  useEffect(() => () => {
       window.speechSynthesis.cancel();
       if (audioRef.current) {
         audioRef.current.pause();
@@ -530,8 +528,7 @@ export function OpicTestLiveView({ fileId, fileName, onBack, onEdit, storageKey 
       if (domAudioRef.current) {
         domAudioRef.current.pause();
       }
-    };
-  }, []);
+    }, []);
 
   // 4. Persist Auto Play
   useEffect(() => {

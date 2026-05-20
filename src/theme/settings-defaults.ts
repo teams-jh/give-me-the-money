@@ -1,6 +1,8 @@
-import { themeConfig } from './theme-config';
-import { CONFIG } from 'src/global-config';
 import type { ThemeColorPreset } from './with-settings/color-presets';
+
+import { CONFIG } from 'src/global-config';
+
+import { themeConfig } from './theme-config';
 
 // ----------------------------------------------------------------------
 

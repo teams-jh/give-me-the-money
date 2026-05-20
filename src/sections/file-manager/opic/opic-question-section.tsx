@@ -4,11 +4,11 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
+import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import { alpha } from '@mui/material/styles';
-import StopCircleIcon from '@mui/icons-material/StopCircle';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
 
 // ----------------------------------------------------------------------
 

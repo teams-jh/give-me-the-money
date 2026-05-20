@@ -1,6 +1,7 @@
+import type { PeriodData } from './types';
+
 import Box from '@mui/material/Box';
 import { alpha, useTheme } from '@mui/material/styles';
-import { PeriodData } from './types';
 
 // ----------------------------------------------------------------------
 

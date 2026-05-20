@@ -11,17 +11,19 @@
  *   analyzeFundamentals        — 통합 분석
  */
 
-import { describe, it, expect } from 'vitest';
+import type { FundamentalData } from './fundamentals.ts';
+
+import { it, expect, describe } from 'vitest';
+
 import {
+  detectDividend,
   detectValuation,
-  detectEarningsAcceleration,
   detectOwnership,
   detectGrowthQuality,
-  detectDividend,
-  detectProfitabilityTrend,
   analyzeFundamentals,
+  detectProfitabilityTrend,
+  detectEarningsAcceleration,
 } from './fundamentals.ts';
-import type { FundamentalData } from './fundamentals.ts';
 
 // ── 픽스처 헬퍼 ──────────────────────────────────────────────────────────────
 

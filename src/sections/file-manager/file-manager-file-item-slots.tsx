@@ -1,26 +1,23 @@
 import type { BoxProps } from '@mui/material/Box';
 import type { CheckboxProps } from '@mui/material/Checkbox';
 import type { UsePopoverReturn } from 'minimal-shared/hooks';
-import type { IFileManager } from 'src/types/file';
 import type { FileThumbnailProps } from 'src/components/file-thumbnail';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
+import Tooltip from '@mui/material/Tooltip';
 import { styled } from '@mui/material/styles';
 import Checkbox from '@mui/material/Checkbox';
-import Tooltip from '@mui/material/Tooltip';
+import StarIcon from '@mui/icons-material/Star';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import FolderIcon from '@mui/icons-material/Folder';
-
-import { CONFIG } from 'src/global-config';
-
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import StarIcon from '@mui/icons-material/Star';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+
 import { FileThumbnail } from 'src/components/file-thumbnail';
 
 // ----------------------------------------------------------------------

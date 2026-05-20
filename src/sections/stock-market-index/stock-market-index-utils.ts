@@ -1,6 +1,8 @@
-import { TickerData } from 'src/library/tickers';
-import { classifyTrend as sharedClassifyTrend, PriceSeries } from '../../library/shared';
-import { Stock, PeriodKey, PeriodData } from './types';
+import type { TickerData } from 'src/library/tickers';
+import type { PriceSeries } from '../../library/shared';
+import type { Stock, PeriodKey, PeriodData } from './types';
+
+import { classifyTrend as sharedClassifyTrend } from '../../library/shared';
 
 /**
  * Transform raw TickerData into the Stock format used in views

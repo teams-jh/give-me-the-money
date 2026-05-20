@@ -4,8 +4,8 @@ import { useDropzone } from 'react-dropzone';
 import { varAlpha, mergeClasses } from 'minimal-shared/utils';
 
 import Box from '@mui/material/Box';
-
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+
 import { uploadClasses } from './classes';
 
 // ----------------------------------------------------------------------

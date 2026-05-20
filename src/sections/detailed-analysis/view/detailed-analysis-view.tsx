@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { DashboardContent } from 'src/layouts/dashboard';
+
 import { MarketPeriodSelector } from 'src/components/market-period-selector';
 
 import { UsAnalysisView } from './us-analysis-view';

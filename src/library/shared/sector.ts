@@ -279,8 +279,9 @@ export function calcSectorRotation(
 
 // ── 섹터 추세 강도 분석 ───────────────────────────────────────────────────────
 
-import { classifyTrend } from "./classifyTrend.ts";
 import type { TrendType } from "./classifyTrend.ts";
+
+import { classifyTrend } from "./classifyTrend.ts";
 
 /** 분기 × 섹터의 추세 강도 통계 */
 export interface SectorStrengthStats {

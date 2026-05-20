@@ -7,10 +7,9 @@ import type { ThemeOptions } from './types';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider as ThemeVarsProvider } from '@mui/material/styles';
 
-import { defaultSettings } from './settings-defaults';
-
 import { createTheme } from './create-theme';
 import { Rtl } from './with-settings/right-to-left';
+import { defaultSettings } from './settings-defaults';
 
 // ----------------------------------------------------------------------
 

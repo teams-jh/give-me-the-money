@@ -5,9 +5,11 @@
  *   classifyTrend — 선형회귀 기반 추세 분류
  */
 
-import { describe, it, expect } from 'vitest';
-import { classifyTrend } from './classifyTrend.ts';
 import type { PriceSeries } from './classifyTrend.ts';
+
+import { it, expect, describe } from 'vitest';
+
+import { classifyTrend } from './classifyTrend.ts';
 
 // ── 헬퍼 ─────────────────────────────────────────────────────────────────────
 

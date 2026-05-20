@@ -7,11 +7,12 @@
  *   calcMarketBreadth      — 시장 breadth 시계열 계산
  */
 
-import { describe, it, expect } from 'vitest';
+import { it, expect, describe } from 'vitest';
+
 import {
+  calcMarketBreadth,
   getMarketCondition,
   buildSnapshotDates,
-  calcMarketBreadth,
 } from './breadth.ts';
 
 // ── 헬퍼: 거래일 생성 ─────────────────────────────────────────────────────────

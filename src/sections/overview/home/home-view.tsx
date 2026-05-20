@@ -1,8 +1,9 @@
 'use client';
 
+import { varAlpha } from 'minimal-shared/utils';
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { varAlpha } from 'minimal-shared/utils';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 

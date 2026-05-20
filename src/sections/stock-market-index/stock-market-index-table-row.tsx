@@ -1,16 +1,17 @@
+import type { Stock, PeriodKey } from './types';
+
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Tooltip from '@mui/material/Tooltip';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
-import Chip from '@mui/material/Chip';
-import Tooltip from '@mui/material/Tooltip';
+import { alpha, useTheme } from '@mui/material/styles';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
 import TrendingDownRoundedIcon from '@mui/icons-material/TrendingDownRounded';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { alpha, useTheme } from '@mui/material/styles';
 
-import { Stock, PeriodKey } from './types';
 import { Sparkline, getTrendColor, getTrendLabel } from './stock-market-index-charts';
 
 // ----------------------------------------------------------------------

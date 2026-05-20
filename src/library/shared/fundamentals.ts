@@ -24,7 +24,7 @@
  *   - analyzeFundamentals        : 위 전체 통합 → FundamentalSummary
  */
 
-import type { Alert, SignalDirection, SignalStrength } from "./signals.ts";
+import type { Alert, SignalStrength, SignalDirection } from "./signals.ts";
 
 // ── 입력 타입 ─────────────────────────────────────────────────────────────────
 

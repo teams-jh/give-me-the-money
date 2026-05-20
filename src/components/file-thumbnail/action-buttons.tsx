@@ -5,9 +5,8 @@ import { varAlpha } from 'minimal-shared/utils';
 
 import ButtonBase from '@mui/material/ButtonBase';
 import IconButton from '@mui/material/IconButton';
-
-import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import CloseIcon from '@mui/icons-material/Close';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 
 // ----------------------------------------------------------------------
 

@@ -1,28 +1,26 @@
 'use client';
 
 import { useState } from 'react';
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import Slider from '@mui/material/Slider';
-import LinearProgress from '@mui/material/LinearProgress';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import { alpha, useTheme } from '@mui/material/styles';
-
+import LinearProgress from '@mui/material/LinearProgress';
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
 // Icons
 import PublicRoundedIcon from '@mui/icons-material/PublicRounded';
 import SavingsRoundedIcon from '@mui/icons-material/SavingsRounded';
-import CurrencyExchangeRoundedIcon from '@mui/icons-material/CurrencyExchangeRounded';
-import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
-import WorkRoundedIcon from '@mui/icons-material/WorkRounded';
-import TrendingDownRoundedIcon from '@mui/icons-material/TrendingDownRounded';
 import TrendingUpRoundedIcon from '@mui/icons-material/TrendingUpRounded';
+import TrendingDownRoundedIcon from '@mui/icons-material/TrendingDownRounded';
+import CurrencyExchangeRoundedIcon from '@mui/icons-material/CurrencyExchangeRounded';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
@@ -290,7 +288,7 @@ export function MacroIndicatorsView() {
                   title="원/달러 환율 (USD/KRW)"
                   value="1,350.50 원"
                   change="+4.20 원"
-                  isUp={true}
+                  isUp
                   category="CURRENCY EXCHANGE"
                   impact="High"
                   description="원화 대비 미국 달러의 가치입니다. 미국 금리 동결 장기화 및 대외 불안정성에 의해 상승 압력을 받고 있습니다."
@@ -318,7 +316,7 @@ export function MacroIndicatorsView() {
                   title="실업률 (Unemployment Rate)"
                   value="3.9 %"
                   change="+0.1 %"
-                  isUp={true}
+                  isUp
                   category="LABOR MARKET"
                   impact="Medium"
                   description="경제 활동 인구 중 일자리가 없는 인구의 비율로, 노동시장의 과열 정도를 가늠하는 결정적 지표 중 하나입니다."

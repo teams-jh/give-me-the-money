@@ -1,51 +1,52 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useBoolean } from 'minimal-shared/hooks';
+import type {
+  DragEndEvent} from '@dnd-kit/core';
+
+import { CSS } from '@dnd-kit/utilities';
+import { useRef, useMemo, useState, useEffect, useCallback } from 'react';
+import {
+  useSensor,
+  DndContext,
+  useSensors,
+  closestCenter,
+  PointerSensor,
+  KeyboardSensor
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  useSortable,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
 import Container from '@mui/material/Container';
+import TextField from '@mui/material/TextField';
+import SaveIcon from '@mui/icons-material/Save';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import Autocomplete from '@mui/material/Autocomplete';
-import Tooltip from '@mui/material/Tooltip';
-import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
-import { alpha, useTheme } from '@mui/material/styles';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-
-import SaveIcon from '@mui/icons-material/Save';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SearchIcon from '@mui/icons-material/Search';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Autocomplete from '@mui/material/Autocomplete';
+import ShuffleIcon from '@mui/icons-material/Shuffle';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import { alpha, useTheme } from '@mui/material/styles';
+import SettingsIcon from '@mui/icons-material/Settings';
+import InputAdornment from '@mui/material/InputAdornment';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 
 import { getTreeData, getFileScript, saveFileScript } from 'src/api/indexDB';
+
 import { toast } from 'src/components/snackbar';
 
 // ----------------------------------------------------------------------
@@ -305,9 +306,7 @@ export function OpicTestEditorView({ fileId, fileName, onBack, onSaveSuccess, on
     }));
   };
 
-  const selectedFiles = useMemo(() => {
-    return playlist.fileIds.map(id => driveFiles.find(f => f.id === id)).filter(Boolean) as { id: string; label: string; path: string }[];
-  }, [playlist.fileIds, driveFiles]);
+  const selectedFiles = useMemo(() => playlist.fileIds.map(id => driveFiles.find(f => f.id === id)).filter(Boolean) as { id: string; label: string; path: string }[], [playlist.fileIds, driveFiles]);
 
   if (loading) {
     return (
