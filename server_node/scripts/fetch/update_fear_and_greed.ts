@@ -49,6 +49,17 @@ interface FearAndGreedCurrent {
   previous_1_year:  number;
 }
 
+/** 7개 하위 지표 각각의 응답 구조 (FearAndGreedCurrent 와 동일 형태) */
+interface CnnApiComponent {
+  score:            number;
+  rating:           string;
+  timestamp:        string;
+  previous_close:   number;
+  previous_1_week:  number;
+  previous_1_month: number;
+  previous_1_year:  number;
+}
+
 interface HistoricalPoint {
   x:      number;   // Unix timestamp (ms)
   y:      number;   // score
@@ -56,14 +67,27 @@ interface HistoricalPoint {
 }
 
 interface CnnApiResponse {
-  fear_and_greed:             FearAndGreedCurrent;
-  fear_and_greed_historical?: { data: HistoricalPoint[] };
+  fear_and_greed:              FearAndGreedCurrent;
+  fear_and_greed_historical?:  { data: HistoricalPoint[] };
+  // 7개 하위 지표 컴포넌트
+  market_momentum_sp500?:      CnnApiComponent;
+  stock_price_strength?:       CnnApiComponent;
+  stock_price_breadth?:        CnnApiComponent;
+  put_call_options?:           CnnApiComponent;
+  junk_bond_demand?:           CnnApiComponent;
+  market_volatility_vix?:      CnnApiComponent;
+  safe_haven_demand?:          CnnApiComponent;
   [key: string]: unknown;
 }
 
 interface HistoricalRow {
   date:   string;
   score:  number;
+  rating: string;
+}
+
+interface ComponentScore {
+  score:  number | null;
   rating: string;
 }
 
@@ -75,6 +99,15 @@ interface FearAndGreedJson {
   previous_1_week:  number;
   previous_1_month: number;
   previous_1_year:  number;
+  components: {
+    market_momentum:   ComponentScore;   // market_momentum_sp500
+    stock_strength:    ComponentScore;   // stock_price_strength
+    stock_breadth:     ComponentScore;   // stock_price_breadth
+    put_call:          ComponentScore;   // put_call_options
+    junk_bond:         ComponentScore;   // junk_bond_demand
+    market_volatility: ComponentScore;   // market_volatility_vix
+    safe_haven:        ComponentScore;   // safe_haven_demand
+  };
   historical:       HistoricalRow[];
 }
 
@@ -87,6 +120,15 @@ function log(msg: string): void {
 function round(v: number | null | undefined): number | null {
   if (v == null || isNaN(v)) return null;
   return Math.round(v * 100) / 100;
+}
+
+/** CnnApiComponent → ComponentScore 변환 (필드 누락 시 score: null, rating: "unknown") */
+function extractComponent(c: CnnApiComponent | undefined): ComponentScore {
+  if (!c) return { score: null, rating: "unknown" };
+  return {
+    score:  round(c.score) ?? null,
+    rating: c.rating,
+  };
 }
 
 /** fear_and_greed.json 의 updated_at 이 오늘 날짜면 true */
@@ -220,6 +262,15 @@ function buildJson(raw: CnnApiResponse): FearAndGreedJson {
     previous_1_week:  round(fg.previous_1_week)  ?? fg.previous_1_week,
     previous_1_month: round(fg.previous_1_month) ?? fg.previous_1_month,
     previous_1_year:  round(fg.previous_1_year)  ?? fg.previous_1_year,
+    components: {
+      market_momentum:   extractComponent(raw.market_momentum_sp500),
+      stock_strength:    extractComponent(raw.stock_price_strength),
+      stock_breadth:     extractComponent(raw.stock_price_breadth),
+      put_call:          extractComponent(raw.put_call_options),
+      junk_bond:         extractComponent(raw.junk_bond_demand),
+      market_volatility: extractComponent(raw.market_volatility_vix),
+      safe_haven:        extractComponent(raw.safe_haven_demand),
+    },
     historical,
   };
 }
@@ -240,6 +291,8 @@ function saveJson(data: FearAndGreedJson): void {
   log(`1주일 전:  ${data.previous_1_week}`);
   log(`1개월 전:  ${data.previous_1_month}`);
   log(`1년 전:    ${data.previous_1_year}`);
+  const c = data.components;
+  log(`[컴포넌트] 모멘텀:${c.market_momentum.score}  강도:${c.stock_strength.score}  폭:${c.stock_breadth.score}  풋콜:${c.put_call.score}  정크본드:${c.junk_bond.score}  변동성:${c.market_volatility.score}  안전자산:${c.safe_haven.score}`);
   log(`히스토리:  ${data.historical.length}개 데이터 포인트`);
 }
 
