@@ -165,21 +165,24 @@ describe("calcMarketInfo()", () => {
     expect(res.previous_close).toBeNull();
   });
 
-  it("TC12 - 여러 행 → 최신 close·52주 high/low 정확 (52주 밖 데이터 제외)", () => {
-    const today  = new Date();
-    const recent = new Date(); recent.setDate(today.getDate() - 10);
-    const old    = new Date(); old.setFullYear(today.getFullYear() - 2);
+  it("TC12 - 여러 행 → 52주 기준점이 latest.date 임을 직접 검증", () => {
+    // latestDate를 약 2년 전으로 고정
+    // → new Date() 기준이면 범위 안 데이터가 없어 high/low = null (FAIL)
+    // → latest.date 기준이면 latestDate 로부터 1년 이내 데이터만 포함 (PASS)
+    const latestDate = "2024-06-01";
+    const recentDate = "2024-05-20";  // latestDate 기준 52주 이내
+    const oldDate    = "2022-01-01";  // latestDate 기준 52주 밖 → 제외
 
     const prices: PriceRow[] = [
-      makePrice(recent.toISOString().slice(0, 10), 104.0, 106.5, 102.0),
-      makePrice(today.toISOString().slice(0, 10),  103.5, 105.0, 101.5),
-      makePrice(old.toISOString().slice(0, 10),    120.0, 130.0,  90.0),  // 52주 밖 → 제외
+      makePrice(recentDate, 104.0, 106.5, 102.0),
+      makePrice(latestDate, 103.5, 105.0, 101.5),
+      makePrice(oldDate,    120.0, 130.0,  90.0),
     ];
 
     const res = calcMarketInfo(prices);
     expect(res.price).toBe(103.5);
     expect(res.previous_close).toBe(104.0);
-    expect(res.fifty_two_week_high).toBe(106.5);
+    expect(res.fifty_two_week_high).toBe(106.5);  // oldDate 제외
     expect(res.fifty_two_week_low).toBe(101.5);
   });
 });

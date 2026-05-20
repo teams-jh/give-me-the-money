@@ -178,7 +178,7 @@ export function calcMarketInfo(prices: PriceRow[]) {
   const prev   = sorted[sorted.length - 2] ?? null;
 
   // 52주(약 252 거래일) 범위
-  const oneYearAgo = new Date();
+  const oneYearAgo = new Date(latest.date);  // 실행 시점이 아닌 데이터 최신일 기준
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
   const yearStr = oneYearAgo.toISOString().slice(0, 10);
 

@@ -165,21 +165,24 @@ describe("calcMarketInfo()", () => {
     expect(res.previous_close).toBeNull();
   });
 
-  it("TC12 - 여러 행 → 최신 close·52주 고/저 정확", () => {
-    const today  = new Date();
-    const recent = new Date(); recent.setDate(today.getDate() - 10);
-    const old    = new Date(); old.setFullYear(today.getFullYear() - 2);
+  it("TC12 - 여러 행 → 52주 기준점이 latest.date 임을 직접 검증", () => {
+    // latestDate를 약 2년 전으로 고정
+    // → new Date() 기준이면 범위 안 데이터가 없어 high/low = null (FAIL)
+    // → latest.date 기준이면 latestDate 로부터 1년 이내 데이터만 포함 (PASS)
+    const latestDate = "2024-06-01";
+    const recentDate = "2024-05-20";  // latestDate 기준 52주 이내
+    const oldDate    = "2022-01-01";  // latestDate 기준 52주 밖 → 제외
 
     const prices: PriceRow[] = [
-      makePrice(recent.toISOString().slice(0, 10), 1400, 1450, 1380),
-      makePrice(today.toISOString().slice(0, 10),  1360, 1370, 1340),
-      makePrice(old.toISOString().slice(0, 10),    2000, 2500, 1900),  // 52주 밖
+      makePrice(recentDate, 1400, 1450, 1380),
+      makePrice(latestDate, 1360, 1370, 1340),
+      makePrice(oldDate,    2000, 2500, 1900),
     ];
 
     const res = calcMarketInfo(prices);
     expect(res.price).toBe(1360);
     expect(res.previous_close).toBe(1400);
-    expect(res.fifty_two_week_high).toBe(1450);
+    expect(res.fifty_two_week_high).toBe(1450);  // oldDate 제외
     expect(res.fifty_two_week_low).toBe(1340);
   });
 });
