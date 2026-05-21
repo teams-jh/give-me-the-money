@@ -29,9 +29,6 @@ const __dirname = path.dirname(__filename);
 const OUTPUT_DIR = path.resolve(__dirname, "../../../src/db/market_sentiment");
 const OUTPUT = path.join(OUTPUT_DIR, "krx_put_option.json");
 
-const TEST_ID = process.env.KRX_ID;
-const TEST_PW = process.env.KRX_PW;
-
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
 
 function log(msg: string): void {
@@ -76,6 +73,9 @@ function getExecutablePath(): string | undefined {
 // ── 핵심 스크래퍼 실행 ──────────────────────────────────────────────────────────
 
 async function runScraper(debugMode: boolean): Promise<Buffer> {
+  const TEST_ID = process.env.KRX_ID;
+  const TEST_PW = process.env.KRX_PW;
+
   if (!TEST_ID || !TEST_PW) {
     throw new Error('KRX_ID 또는 KRX_PW 환경변수가 설정되지 않았습니다.');
   }
