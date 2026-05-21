@@ -452,6 +452,117 @@ async function testKrxOptionWithConsent() {
     console.log(decodedCsv.slice(0, 1500));
     console.log('------------------------\n');
 
+    console.log('Parsing CSV data...');
+    
+    // CSV 파싱을 위한 헬퍼 함수
+    const parseCsvLine = (line: string): string[] => {
+      const result: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim());
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+      result.push(current.trim());
+      return result;
+    };
+
+    const lines = decodedCsv.split(/\r?\n/).filter(line => line.trim().length > 0);
+    if (lines.length >= 2) {
+      let headerIndex = -1;
+      let headers: string[] = [];
+      
+      for (let i = 0; i < lines.length; i++) {
+        const parsed = parseCsvLine(lines[i]);
+        const cleaned = parsed.map(h => h.replace(/"/g, '').trim());
+        if (cleaned.includes('일자')) {
+          headerIndex = i;
+          headers = cleaned;
+          break;
+        }
+      }
+
+      if (headerIndex !== -1) {
+        const dateIdx = headers.indexOf('일자');
+        const retailIdx = headers.indexOf('개인');
+        const foreignerIdx = headers.indexOf('외국인');
+        const institutionIdx = headers.indexOf('기관합계');
+
+        if (dateIdx !== -1) {
+          const historical: any[] = [];
+
+          for (let i = headerIndex + 1; i < lines.length; i++) {
+            const row = parseCsvLine(lines[i]).map(val => val.replace(/"/g, '').trim());
+            if (row.length <= dateIdx || !row[dateIdx]) continue;
+            
+            let rawDate = row[dateIdx].replace(/[-\/]/g, '');
+            if (rawDate.length !== 8) continue;
+            const formattedDate = `${rawDate.substring(0, 4)}-${rawDate.substring(4, 6)}-${rawDate.substring(6, 8)}`;
+            
+            const parseNum = (val: string) => {
+              if (!val) return 0;
+              const clean = val.replace(/,/g, '');
+              return parseFloat(clean) || 0;
+            };
+
+            const retailVal = retailIdx !== -1 ? parseNum(row[retailIdx]) : 0;
+            const foreignerVal = foreignerIdx !== -1 ? parseNum(row[foreignerIdx]) : 0;
+            const institutionVal = institutionIdx !== -1 ? parseNum(row[institutionIdx]) : 0;
+
+            historical.push({
+              date: formattedDate,
+              retail: retailVal,
+              foreigner: foreignerVal,
+              institution: institutionVal
+            });
+          }
+
+          // 날짜 기준 오름차순 정렬
+          historical.sort((a, b) => a.date.localeCompare(b.date));
+
+          const latest = historical[historical.length - 1] || null;
+          const dbData = {
+            updated_at: new Date().toISOString(),
+            latest: latest ? {
+              date: latest.date,
+              retail: latest.retail,
+              foreigner: latest.foreigner,
+              institution: latest.institution
+            } : null,
+            historical: historical
+          };
+
+          // 저장 디렉토리 동적 확인
+          let dbDir = path.join(process.cwd(), 'src', 'db', 'market_sentiment');
+          if (!fs.existsSync(dbDir)) {
+            dbDir = path.join(process.cwd(), '..', 'src', 'db', 'market_sentiment');
+          }
+          if (!fs.existsSync(dbDir)) {
+            fs.mkdirSync(dbDir, { recursive: true });
+          }
+
+          const dbFilePath = path.join(dbDir, 'krx_put_option.json');
+          fs.writeFileSync(dbFilePath, JSON.stringify(dbData, null, 2), 'utf-8');
+          console.log(`✅ Data successfully saved to: ${dbFilePath}`);
+        } else {
+          console.error('CSV "일자" 컬럼을 찾을 수 없습니다.');
+        }
+      } else {
+        console.error('CSV에서 헤더 줄을 찾을 수 없습니다.');
+      }
+    } else {
+      console.error('CSV 데이터 행수가 충분하지 않습니다.');
+    }
+
+
   } catch (error: any) {
     console.error('Automation Error:', error.message || error);
     if (page) {
