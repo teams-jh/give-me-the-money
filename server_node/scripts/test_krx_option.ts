@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import iconv from 'iconv-lite';
 import fs from 'fs';
 import path from 'path';
-import readline from 'readline';
+
 
 // =========================================================================
 // [개발자 가이드] 로컬 테스트용 사용자 기입 계정 정보 유지
@@ -27,7 +27,7 @@ function getExecutablePath(): string | undefined {
   return undefined;
 }
 
-async function testKrxOptionWithConsent(startDate?: string, endDate?: string) {
+async function testKrxOptionWithConsent() {
   console.log('=== Starting KRX Put Option 100% Automated Fetch ===');
   
   // 날짜 계산 유틸리티
@@ -39,11 +39,14 @@ async function testKrxOptionWithConsent(startDate?: string, endDate?: string) {
   };
 
   const today = new Date();
-  const finalEndDate = endDate || formatYYYYMMDD(today);
-  // 기본적으로 조회 시작일이 없으면 최근 1주일치로 세팅 (7일 전)
-  const finalStartDate = startDate || formatYYYYMMDD(new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000));
+  const finalEndDate = formatYYYYMMDD(today);
+  
+  // 최대 조회 기간인 2년 전 날짜 계산 (윤년 등 대응 안전 로직)
+  const twoYearsAgo = new Date(today);
+  twoYearsAgo.setFullYear(today.getFullYear() - 2);
+  const finalStartDate = formatYYYYMMDD(twoYearsAgo);
 
-  console.log(`Inquiry Period: ${finalStartDate} ~ ${finalEndDate}`);
+  console.log(`Inquiry Period (Max 2 Years): ${finalStartDate} ~ ${finalEndDate}`);
   
   if (!TEST_ID || !TEST_PW) {
     console.error('[Error] KRX 아이디 또는 비밀번호가 설정되지 않았습니다.');
@@ -463,57 +466,6 @@ async function testKrxOptionWithConsent(startDate?: string, endDate?: string) {
   }
 }
 
-function askQuestion(query: string): Promise<string> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  return new Promise(resolve => rl.question(query, ans => {
-    rl.close();
-    resolve(ans.trim());
-  }));
-}
+testKrxOptionWithConsent();
 
-async function main() {
-  let startDate = process.env.START_DATE;
-  let endDate = process.env.END_DATE;
-
-  // CLI Arguments 파싱 (예: tsx scripts/test_krx_option.ts 20260510 20260520)
-  const args = process.argv.slice(2);
-  if (args.length > 0) {
-    if (args[0] && /^\d{8}$/.test(args[0])) {
-      startDate = args[0];
-    }
-    if (args[1] && /^\d{8}$/.test(args[1])) {
-      endDate = args[1];
-    }
-  }
-
-  // CLI Arguments와 환경변수 둘 다 없으면 콘솔 대화형 입력 진행
-  if (!startDate || !endDate) {
-    console.log('\n📅 [기간 입력] 조회 기간을 설정해 주세요.');
-    console.log('형식: YYYYMMDD (예: 20260510). 미입력(엔터) 시 기본값(최근 1주일)이 적용됩니다.');
-
-    if (!startDate) {
-      const startInput = await askQuestion('▶ 조회 시작일: ');
-      if (startInput) {
-        startDate = startInput;
-      }
-    }
-
-    if (!endDate) {
-      const endInput = await askQuestion('▶ 조회 종료일: ');
-      if (endInput) {
-        endDate = endInput;
-      }
-    }
-    console.log('');
-  }
-
-  await testKrxOptionWithConsent(startDate, endDate);
-}
-
-main().catch(err => {
-  console.error('Execution failed:', err);
-});
 
