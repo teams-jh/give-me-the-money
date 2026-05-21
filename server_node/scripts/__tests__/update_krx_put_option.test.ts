@@ -75,6 +75,7 @@ vi.mock("puppeteer", () => ({
 describe("update_krx_put_option", () => {
   vi.setConfig({ testTimeout: 50000 });
   let exitSpy: ReturnType<typeof vi.spyOn>;
+  let originalSetTimeout: typeof global.setTimeout;
 
   beforeEach(() => {
     // process.exit 감시 및 가로채기
@@ -83,6 +84,13 @@ describe("update_krx_put_option", () => {
     // 환경변수 임시 가상 세팅
     process.env.KRX_ID = "test-id";
     process.env.KRX_PW = "test-pw";
+
+    // 모든 setTimeout의 대기 시간을 0ms로 단축하여 테스트 속도 극대화
+    originalSetTimeout = global.setTimeout;
+    // @ts-ignore
+    global.setTimeout = (fn: (...args: any[]) => void, ms?: number, ...args: any[]) => {
+      return originalSetTimeout(fn, 0, ...args);
+    };
 
     // 모크 초기화
     vi.clearAllMocks();
@@ -98,6 +106,9 @@ describe("update_krx_put_option", () => {
   });
 
   afterEach(() => {
+    // setTimeout 복원
+    global.setTimeout = originalSetTimeout;
+
     exitSpy.mockRestore();
     // 프로세스 아규먼트 정리
     const forceIdx = process.argv.indexOf("--force");
