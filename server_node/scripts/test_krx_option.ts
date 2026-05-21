@@ -65,6 +65,9 @@ async function testKrxOptionWithConsent() {
       '--disable-dev-shm-usage',
       '--disable-notifications',
       '--disable-geolocation',
+      '--ignore-certificate-errors',
+      '--allow-running-insecure-content',
+      '--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessRespectPreflightResults,PrivateNetworkAccessSendPreflights,PrivateNetworkAccessNonSecureContextsAllowed,PrivateNetworkAccess,PrivateNetworkAccessTechnicalMitigation',
     ],
   });
 
@@ -75,6 +78,19 @@ async function testKrxOptionWithConsent() {
 
   try {
     page = await browser.newPage();
+    
+    // [CDP] PNA (Private Network Access) 차단 우회를 위해 local-network-access 권한 명시적 부여
+    try {
+      const cdp = await page.createCDPSession();
+      await cdp.send('Browser.setPermission', {
+        origin: 'https://data.krx.co.kr',
+        permission: { name: 'local-network-access' },
+        setting: 'granted'
+      });
+      console.log('✅ CDP: local-network-access permission granted for data.krx.co.kr');
+    } catch (cdpErr: any) {
+      console.warn('⚠️ Failed to grant local-network-access via CDP:', cdpErr.message);
+    }
     
     // 브라우저 Native Dialog 감지: alert/confirm은 닫되 내용은 로깅
     page.on('dialog', async dialog => {
@@ -170,50 +186,57 @@ async function testKrxOptionWithConsent() {
       console.log('⚠️  nProtect agent connection not confirmed. Proceeding anyway...');
     }
 
-    // 로그인 크리덴셜 입력 — page.type()으로 실제 키보드 이벤트 발생
-    // (nProtect 키보드 보안 모듈이 키스트로크를 직접 캡처하여 암호화)
-    console.log('Typing credentials via keyboard simulation...');
-    
-    // ID 필드 클리어 후 입력
-    await page.click('input#mbrId');
-    await page.evaluate(() => {
-      const el = document.querySelector('input#mbrId') as HTMLInputElement;
-      if (el) el.value = '';
-    });
-    await page.type('input#mbrId', TEST_ID, { delay: 80 });
-    
-    // 비밀번호 필드: 실제 키 입력으로 nProtect 암호화 모듈 통과
-    await page.click('input[name="pw"]');
-    await page.evaluate(() => {
-      const el = document.querySelector('input[name="pw"]') as HTMLInputElement;
-      if (el) el.value = '';
-    });
-    await page.type('input[name="pw"]', TEST_PW, { delay: 80 });
-    
-    // blur 이벤트로 nProtect doFocusOut 트리거 (암호화 완료)
-    await page.evaluate(() => {
-      const pw = document.querySelector('input[name="pw"]') as HTMLInputElement;
-      if (pw) pw.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
-    });
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // 로그인 입력 및 제출을 진행하는 헬퍼 함수
+    const performLoginSubmission = async () => {
+      console.log('Typing credentials via keyboard simulation...');
+      
+      // ID 필드 클리어 후 입력
+      await page!.click('input#mbrId');
+      await page!.evaluate(() => {
+        const el = document.querySelector('input#mbrId') as HTMLInputElement;
+        if (el) el.value = '';
+      });
+      await page!.type('input#mbrId', TEST_ID!, { delay: 80 });
+      
+      // [우회] nProtect가 오프라인일 때 비밀번호 input에 걸린 키보드 보안 리스너(Locker)를 무력화하기 위해 엘리먼트 복제
+      console.log('Stripping nProtect listeners from password field...');
+      await page!.evaluate(() => {
+        const pwInput = document.querySelector('input[name="pw"]') as HTMLInputElement;
+        if (pwInput) {
+          const cleanInput = pwInput.cloneNode(true) as HTMLInputElement;
+          // 인라인 속성 제거
+          cleanInput.removeAttribute('onkeydown');
+          cleanInput.removeAttribute('onkeypress');
+          cleanInput.removeAttribute('onkeyup');
+          cleanInput.removeAttribute('onfocus');
+          cleanInput.removeAttribute('onblur');
+          cleanInput.removeAttribute('onclick');
+          cleanInput.value = '';
+          pwInput.replaceWith(cleanInput);
+        }
+      });
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      // 복제된 깨끗한 input에 비밀번호 입력
+      await page!.click('input[name="pw"]');
+      await page!.type('input[name="pw"]', TEST_PW!, { delay: 80 });
+      
+      // blur 이벤트로 nProtect doFocusOut 트리거 (암호화 완료)
+      await page!.evaluate(() => {
+        const pw = document.querySelector('input[name="pw"]') as HTMLInputElement;
+        if (pw) pw.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+      });
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-    // 로그인 스크린샷
-    try {
-      await page.screenshot({ path: 'scripts/krx_login_fill_snapshot.png' });
-      console.log('Login fill snapshot saved.');
-    } catch (e) {}
+      // 로그인 스크린샷
+      try {
+        await page!.screenshot({ path: 'scripts/krx_login_fill_snapshot.png' });
+        console.log('Login fill snapshot saved.');
+      } catch (e) {}
 
-    // 로그인 버튼 클릭
-    console.log('Clicking login button...');
-    
-    const navigationPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {
-      console.log('Note: Login navigation completed or timed out.');
-    });
-
-    try {
-      await page.evaluate(() => {
+      // 로그인 버튼 클릭
+      console.log('Clicking login button...');
+      await page!.evaluate(() => {
         const $ = (window as any).jQuery;
         if ($ && $('.jsLoginBtn').length > 0) {
           $('.jsLoginBtn').trigger('click');
@@ -222,13 +245,10 @@ async function testKrxOptionWithConsent() {
           if (loginBtn) loginBtn.click();
         }
       });
-    } catch (e: any) {
-      if (e.message && e.message.includes('destroyed')) {
-        console.log('Note: Immediate navigation triggered.');
-      } else {
-        console.error('Login button click error:', e.message);
-      }
-    }
+    };
+
+    // 첫 번째 로그인 시도
+    await performLoginSubmission();
 
     // 중복 로그인 팝업 감지 및 자동 클릭 처리
     console.log('Checking for duplicate login modal...');
@@ -260,11 +280,18 @@ async function testKrxOptionWithConsent() {
     }
 
     if (dupChecked) {
-      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {
-        console.log('Note: Duplicate login navigation timed out.');
-      });
+      console.log('Waiting 5 seconds for page reload after duplicate session logout...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      console.log('🔄 Retrying login execution after duplicate session clearance...');
+      // 새로고침된 페이지에 한 번 더 로그인 시도
+      await performLoginSubmission();
+      
+      // 재시도 후의 대기
+      await new Promise(resolve => setTimeout(resolve, 5000));
     } else {
-      await navigationPromise;
+      // 일반 대기
+      await new Promise(resolve => setTimeout(resolve, 3000));
     }
 
     // 로그인 완료 URL 확인
@@ -491,10 +518,10 @@ async function testKrxOptionWithConsent() {
       }
 
       if (headerIndex !== -1) {
-        const dateIdx = headers.indexOf('일자');
-        const retailIdx = headers.indexOf('개인');
-        const foreignerIdx = headers.indexOf('외국인');
-        const institutionIdx = headers.indexOf('기관합계');
+        const dateIdx = headers.findIndex(h => h.includes('일자'));
+        const retailIdx = headers.findIndex(h => h.includes('개인'));
+        const foreignerIdx = headers.findIndex(h => h.includes('외국인'));
+        const institutionIdx = headers.findIndex(h => h.includes('기관'));
 
         if (dateIdx !== -1) {
           const historical: any[] = [];
