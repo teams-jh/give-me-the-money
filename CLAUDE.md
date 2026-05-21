@@ -70,3 +70,14 @@ AGENTS.md
 
 ### 6단계 — 머지
 - 리뷰 반영 완료 후 `main` 브랜치에 머지
+
+---
+
+## 테스트 및 자동화 수집 가이드
+
+- **테스트 실행 커맨드 (Windows PowerShell)**:
+  `powershell -ExecutionPolicy Bypass -Command "npx tsx scripts/test_krx_option.ts"`
+- **nProtect 보안 모듈 및 Puppeteer 우회 수칙**:
+  - **순정 크롬 실행 유지**: `--disable-web-security`, 격리된 `--user-data-dir` 등 과도한 웹 보안 비활성화 및 임시 프로필 설정은 로컬 nProtect 에이전트와의 SSL/세션 신뢰를 깨뜨려 `LOGOUT`을 초래합니다. 순정 구글 크롬 상태로 띄워 윈도우 로컬 에이전트(`127.0.0.1:14440`)와 안전하게 연동되도록 해야 합니다.
+  - **키보드 이벤트 시뮬레이션**: 비밀번호와 같은 키보드 보안 입력 필드는 `page.type()`과 같은 실제 키보드 타이핑 모방 이벤트를 주어야 nProtect가 암호화 세션을 정상 형성합니다.
+  - **네이티브 얼럿(Alert/Confirm) 가드**: 보안프로그램 설치 안내 등의 브라우저 팝업은 스크립트 실행을 중단시키므로 `dialog.dismiss()` 등을 활용해 자동으로 감지 및 닫기 처리해야 합니다.
