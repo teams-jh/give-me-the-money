@@ -2,6 +2,7 @@ import puppeteer from 'puppeteer';
 import iconv from 'iconv-lite';
 import fs from 'fs';
 import path from 'path';
+import readline from 'readline';
 
 // =========================================================================
 // [개발자 가이드] 로컬 테스트용 사용자 기입 계정 정보 유지
@@ -26,8 +27,23 @@ function getExecutablePath(): string | undefined {
   return undefined;
 }
 
-async function testKrxOptionWithConsent() {
+async function testKrxOptionWithConsent(startDate?: string, endDate?: string) {
   console.log('=== Starting KRX Put Option 100% Automated Fetch ===');
+  
+  // 날짜 계산 유틸리티
+  const formatYYYYMMDD = (d: Date) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}${mm}${dd}`;
+  };
+
+  const today = new Date();
+  const finalEndDate = endDate || formatYYYYMMDD(today);
+  // 기본적으로 조회 시작일이 없으면 최근 1주일치로 세팅 (7일 전)
+  const finalStartDate = startDate || formatYYYYMMDD(new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000));
+
+  console.log(`Inquiry Period: ${finalStartDate} ~ ${finalEndDate}`);
   
   if (!TEST_ID || !TEST_PW) {
     console.error('[Error] KRX 아이디 또는 비밀번호가 설정되지 않았습니다.');
@@ -355,22 +371,22 @@ async function testKrxOptionWithConsent() {
     let retries = 3;
     while (retries > 0) {
       try {
-        csvBytes = await page.evaluate(async () => {
+        csvBytes = await page.evaluate(async (startVal, endVal) => {
           const otpUrl = 'https://data.krx.co.kr/comm/fileDn/GenerateOTP/generate.cmd';
           const otpParams = new URLSearchParams({
             bld: 'dbms/MDC/STAT/standard/MDCSTAT13102',
             locale: 'ko_KR',
             prodId: '',
-            strtDd: '20260513',
-            endDd: '20260520',
+            strtDd: startVal,
+            endDd: endVal,
             inqTpCd: '2',
             prtType: 'AMT',
             prtCheck: 'SUN',
             isuCd: 'KR___OPK2I',
             isuOpt: 'P',
             aggBasTpCd: '',
-            strtDdBox1: '20260513',
-            endDdBox1: '20260520',
+            strtDdBox1: startVal,
+            endDdBox1: endVal,
             money: '3',
             csvxls_isNo: 'false',
             name: 'fileDown',
@@ -416,7 +432,7 @@ async function testKrxOptionWithConsent() {
           } finally {
             clearTimeout(timer2);
           }
-        });
+        }, finalStartDate, finalEndDate);
         
         break;
       } catch (err: any) {
@@ -447,4 +463,57 @@ async function testKrxOptionWithConsent() {
   }
 }
 
-testKrxOptionWithConsent();
+function askQuestion(query: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise(resolve => rl.question(query, ans => {
+    rl.close();
+    resolve(ans.trim());
+  }));
+}
+
+async function main() {
+  let startDate = process.env.START_DATE;
+  let endDate = process.env.END_DATE;
+
+  // CLI Arguments 파싱 (예: tsx scripts/test_krx_option.ts 20260510 20260520)
+  const args = process.argv.slice(2);
+  if (args.length > 0) {
+    if (args[0] && /^\d{8}$/.test(args[0])) {
+      startDate = args[0];
+    }
+    if (args[1] && /^\d{8}$/.test(args[1])) {
+      endDate = args[1];
+    }
+  }
+
+  // CLI Arguments와 환경변수 둘 다 없으면 콘솔 대화형 입력 진행
+  if (!startDate || !endDate) {
+    console.log('\n📅 [기간 입력] 조회 기간을 설정해 주세요.');
+    console.log('형식: YYYYMMDD (예: 20260510). 미입력(엔터) 시 기본값(최근 1주일)이 적용됩니다.');
+
+    if (!startDate) {
+      const startInput = await askQuestion('▶ 조회 시작일: ');
+      if (startInput) {
+        startDate = startInput;
+      }
+    }
+
+    if (!endDate) {
+      const endInput = await askQuestion('▶ 조회 종료일: ');
+      if (endInput) {
+        endDate = endInput;
+      }
+    }
+    console.log('');
+  }
+
+  await testKrxOptionWithConsent(startDate, endDate);
+}
+
+main().catch(err => {
+  console.error('Execution failed:', err);
+});
+
