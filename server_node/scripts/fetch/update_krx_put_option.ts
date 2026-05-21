@@ -192,14 +192,17 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
       // ID 입력
       await page!.click('input#mbrId');
       await page!.evaluate(() => {
+        /* v8 ignore start */
         const el = document.querySelector('input#mbrId') as HTMLInputElement;
         if (el) el.value = '';
+        /* v8 ignore stop */
       });
       await page!.type('input#mbrId', TEST_ID!, { delay: 60 });
       
       // nProtect 키보드 보안 우회 (Node 복제)
       log('nProtect 키락킹 해제를 위한 Node Clone Bypass 적용...');
       await page!.evaluate(() => {
+        /* v8 ignore start */
         const pwInput = document.querySelector('input[name="pw"]') as HTMLInputElement;
         if (pwInput) {
           const cleanInput = pwInput.cloneNode(true) as HTMLInputElement;
@@ -212,6 +215,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
           cleanInput.value = '';
           pwInput.replaceWith(cleanInput);
         }
+        /* v8 ignore stop */
       });
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -220,8 +224,10 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
       await page!.type('input[name="pw"]', TEST_PW!, { delay: 60 });
       
       await page!.evaluate(() => {
+        /* v8 ignore start */
         const pw = document.querySelector('input[name="pw"]') as HTMLInputElement;
         if (pw) pw.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+        /* v8 ignore stop */
       });
       await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -235,6 +241,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
 
       log('로그인 제출 버튼 클릭...');
       await page!.evaluate(() => {
+        /* v8 ignore start */
         const $ = (window as any).jQuery;
         if ($ && $('.jsLoginBtn').length > 0) {
           $('.jsLoginBtn').trigger('click');
@@ -242,6 +249,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
           const loginBtn = document.querySelector('a.jsLoginBtn') as HTMLElement;
           if (loginBtn) loginBtn.click();
         }
+        /* v8 ignore stop */
       });
     };
 
@@ -255,6 +263,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
       await new Promise(resolve => setTimeout(resolve, 500));
       try {
         const hasDupModal = await page.evaluate(() => {
+          /* v8 ignore start */
           const text = document.body.innerText;
           if (text.includes('이미 로그인된 계정입니다')) {
             const elements = Array.from(document.querySelectorAll('a, button, span, div, input')) as HTMLElement[];
@@ -265,6 +274,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
             if (confirmBtn) { confirmBtn.click(); return true; }
           }
           return false;
+          /* v8 ignore stop */
         });
 
         if (hasDupModal) {
@@ -315,20 +325,24 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
     // 3단계: 회원 이용약관 동의 팝업 처리
     log('3. 규정 동의/보안 정책 동의 팝업 체크...');
     const popupDiagnosis = await page.evaluate(() => {
+      /* v8 ignore start */
       const popupEl = document.querySelector('#previousMemberPopup') as HTMLElement;
       const isVisible = popupEl && window.getComputedStyle(popupEl).display !== 'none';
       return {
         popupVisible: !!isVisible,
       };
+      /* v8 ignore stop */
     });
 
     if (popupDiagnosis.popupVisible) {
       log('🚨 [이용약관 동의] 팝업이 노출되어 자동 동의 절차를 클릭합니다.');
       await page.evaluate(() => {
+        /* v8 ignore start */
         const checkboxY = document.querySelector('#isUseRuleOk3_Y') as HTMLInputElement;
         if (checkboxY) checkboxY.click();
         const agreeBtn = document.querySelector('#agreeComplete') as HTMLElement;
         if (agreeBtn) agreeBtn.click();
+        /* v8 ignore stop */
       });
       await new Promise(resolve => setTimeout(resolve, 5000));
     }
@@ -337,6 +351,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
     if (page.url().includes('MDCCOMS002_S1.cmd')) {
       log('⚠️ [규약 동의서] 동의 페이지 리다이렉트 감지. 전체 동의 버튼을 클릭합니다.');
       await page.evaluate(() => {
+        /* v8 ignore start */
         const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"]')) as HTMLInputElement[];
         checkboxes.forEach(cb => { if (!cb.checked) cb.click(); });
         const buttons = Array.from(document.querySelectorAll('a, button, input[type="button"]')) as HTMLElement[];
@@ -345,6 +360,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
           return text.includes('확인') || text.includes('동의') || text.includes('완료');
         });
         if (targetBtn) targetBtn.click();
+        /* v8 ignore stop */
       });
       await new Promise(resolve => setTimeout(resolve, 8000));
     }
@@ -385,6 +401,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
     while (retries > 0) {
       try {
         csvBytes = await page.evaluate(async (startVal, endVal) => {
+          /* v8 ignore start */
           const otpUrl = 'https://data.krx.co.kr/comm/fileDn/GenerateOTP/generate.cmd';
           const otpParams = new URLSearchParams({
             bld: 'dbms/MDC/STAT/standard/MDCSTAT13102',
@@ -443,6 +460,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
           } finally {
             clearTimeout(timer2);
           }
+          /* v8 ignore stop */
         }, finalStartDate, finalEndDate);
         
         break;
@@ -458,6 +476,7 @@ async function runScraper(debugMode: boolean): Promise<Buffer> {
     return Buffer.from(csvBytes);
 
   } catch (error: any) {
+    /* v8 ignore next */
     if (page) {
       try {
         const errorPath = path.join(__dirname, 'krx_error_screenshot.png');
@@ -611,6 +630,7 @@ export async function main(): Promise<void> {
 }
 
 // 직접 실행 판별
+/* v8 ignore start */
 const isMain =
   process.argv[1] !== undefined &&
   path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
@@ -621,3 +641,4 @@ if (isMain) {
     process.exit(1);
   });
 }
+/* v8 ignore stop */
