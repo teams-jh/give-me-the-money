@@ -24,13 +24,14 @@ const DB_DIR     = path.resolve(__dirname, "../src/db");
 // ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
 interface MarketConfig {
-  tickersDir: string;
-  breadthDir: string;
+  tickersJson: string;
+  tickersDir:  string;
+  breadthDir:  string;
 }
 
 const MARKET_CONFIG: Record<string, MarketConfig> = {
-  kr: { tickersDir: path.join(DB_DIR, "kr/tickers"), breadthDir: path.join(DB_DIR, "kr/breadth") },
-  us: { tickersDir: path.join(DB_DIR, "us/tickers"), breadthDir: path.join(DB_DIR, "us/breadth") },
+  kr: { tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"), tickersDir: path.join(DB_DIR, "kr/tickers"), breadthDir: path.join(DB_DIR, "kr/breadth") },
+  us: { tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"), tickersDir: path.join(DB_DIR, "us/tickers"), breadthDir: path.join(DB_DIR, "us/breadth") },
 };
 
 // lookback 거래일 수
@@ -68,12 +69,16 @@ export function parseArgs(): CliArgs {
 
 // ── 데이터 로드 ───────────────────────────────────────────────────────────────
 
-export function loadStocks(tickersDir: string): StockInput[] {
-  const files  = fs.readdirSync(tickersDir).filter(f => f.endsWith(".json"));
+export function loadStocks(tickersJson: string, tickersDir: string): StockInput[] {
+  const meta    = JSON.parse(fs.readFileSync(tickersJson, "utf-8")) as { tickers: string[] };
   const stocks: StockInput[] = [];
 
-  for (const file of files) {
-    const raw = JSON.parse(fs.readFileSync(path.join(tickersDir, file), "utf-8")) as {
+  for (const ticker of meta.tickers) {
+    const filename = ticker.replace(/[^a-zA-Z0-9]/g, "_") + ".json";
+    const file     = path.join(tickersDir, filename);
+    if (!fs.existsSync(file)) continue;
+
+    const raw = JSON.parse(fs.readFileSync(file, "utf-8")) as {
       ticker: string;
       info:   { sector: string };
       prices: { date: string; close: number }[];
@@ -124,7 +129,7 @@ function main(): void {
 
   // 1. 데이터 로드
   console.log("\n데이터 로드 중...");
-  const stocks = loadStocks(config.tickersDir);
+  const stocks = loadStocks(config.tickersJson, config.tickersDir);
   console.log(`  ✅ ${stocks.length}개 종목 로드`);
 
   // 2. 전체 거래일 목록 추출 (가장 긴 종목 기준)

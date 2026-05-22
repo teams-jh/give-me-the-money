@@ -260,15 +260,17 @@ describe('loadStocks', () => {
   };
 
   beforeEach(() => {
-    vi.mocked(fs.readdirSync).mockReset();
+    vi.mocked(fs.existsSync).mockReset();
     vi.mocked(fs.readFileSync).mockReset();
   });
 
   it('유효한 JSON 파일 로드 → StockInput 반환', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue(['AAPL.json'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(validStock));
+    vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValueOnce(JSON.stringify(validStock));
+    vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/dir');
+    const result = loadStocks('/fake/meta.json', '/fake/dir');
     expect(result).toHaveLength(1);
     expect(result[0]!.ticker).toBe('AAPL');
     expect(result[0]!.sector).toBe('Technology');
@@ -277,42 +279,47 @@ describe('loadStocks', () => {
 
   it('prices < 10개인 종목 제외', () => {
     const shortStock = { ...validStock, prices: validStock.prices.slice(0, 5) };
-    vi.mocked(fs.readdirSync).mockReturnValue(['SHORT.json'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(shortStock));
+    vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['SHORT'] }))
+      .mockReturnValueOnce(JSON.stringify(shortStock));
+    vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/dir');
+    const result = loadStocks('/fake/meta.json', '/fake/dir');
     expect(result).toHaveLength(0);
   });
 
-  it('.json 이 아닌 파일 제외', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue(['AAPL.json', 'README.md', '.DS_Store'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(validStock));
+  it('파일이 존재하지 않는 티커 제외', () => {
+    vi.mocked(fs.readFileSync).mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }));
+    vi.mocked(fs.existsSync).mockReturnValue(false);
 
-    // readFileSync 는 .json 파일 수만큼만 호출
-    loadStocks('/fake/dir');
+    loadStocks('/fake/meta.json', '/fake/dir');
     expect(vi.mocked(fs.readFileSync)).toHaveBeenCalledTimes(1);
   });
 
   it('sector 없으면 "Unknown" 기본값', () => {
     const noSector = { ...validStock, info: { sector: undefined } };
-    vi.mocked(fs.readdirSync).mockReturnValue(['AAPL.json'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(noSector));
+    vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValueOnce(JSON.stringify(noSector));
+    vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/dir');
+    const result = loadStocks('/fake/meta.json', '/fake/dir');
     expect(result[0]!.sector).toBe('Unknown');
   });
 
-  it('빈 디렉토리 → 빈 배열', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue([] as any);
-    const result = loadStocks('/fake/dir');
+  it('빈 tickers 목록 → 빈 배열', () => {
+    vi.mocked(fs.readFileSync).mockReturnValueOnce(JSON.stringify({ tickers: [] }));
+    const result = loadStocks('/fake/meta.json', '/fake/dir');
     expect(result).toHaveLength(0);
   });
 
   it('여러 종목 동시 로드', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue(['A.json', 'B.json'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(validStock));
+    vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['A', 'B'] }))
+      .mockReturnValue(JSON.stringify(validStock));
+    vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/dir');
+    const result = loadStocks('/fake/meta.json', '/fake/dir');
     expect(result).toHaveLength(2);
   });
 });
@@ -330,8 +337,9 @@ describe('main() 통합', () => {
 
   beforeEach(() => {
     process.argv = ['node', 'script.ts', '--market', 'kr', '--period', '3m', '--step', '10'];
-    vi.mocked(fs.readdirSync).mockReturnValue(['AAPL.json', 'MSFT.json'] as any);
+    vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL', 'MSFT'] }))
       .mockReturnValueOnce(JSON.stringify(stockA))
       .mockReturnValueOnce(JSON.stringify(stockB));
     vi.mocked(fs.mkdirSync).mockImplementation(() => undefined);
@@ -340,13 +348,13 @@ describe('main() 통합', () => {
 
   afterEach(() => {
     process.argv = origArgv;
-    vi.mocked(fs.readdirSync).mockReset();
+    vi.mocked(fs.existsSync).mockReset();
     vi.mocked(fs.readFileSync).mockReset();
   });
 
   it('정상 실행 → writeFileSync 호출됨', async () => {
     // main 을 동적으로 재실행하기 위해 직접 loadStocks → calcMarketBreadth 흐름 검증
-    const stocks = loadStocks('/fake');
+    const stocks = loadStocks('/fake/meta.json', '/fake');
     expect(stocks).toHaveLength(2);
   });
 });
@@ -388,8 +396,10 @@ describe('main() TC', () => {
 
   it('TC_B1 - 정상 실행: 전환점 포함 → writeFileSync 호출', async () => {
     process.argv = ['node', SCRIPT_PATH_BREADTH, '--market', 'kr', '--period', '3m', '--step', '5'];
-    mockReaddirSync.mockReturnValue(['AAPL.json']);
-    mockReadFileSync.mockReturnValue(stockJson);
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValue(stockJson);
     mockBuildSnapshotDates.mockReturnValue([SNAP1.date, SNAP2.date]);
     // 두 스냅샷의 netBreadth 부호가 다름 → 전환점 1개 생성
     mockCalcMarketBreadth.mockReturnValue({ snapshots: [SNAP1, SNAP2] });
@@ -407,8 +417,10 @@ describe('main() TC', () => {
 
   it('TC_B2 - 스냅샷 없음 → process.exit(1)', async () => {
     process.argv = ['node', SCRIPT_PATH_BREADTH, '--market', 'us', '--period', '1y', '--step', '10'];
-    mockReaddirSync.mockReturnValue(['AAPL.json']);
-    mockReadFileSync.mockReturnValue(stockJson);
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValue(stockJson);
     mockBuildSnapshotDates.mockReturnValue([]);
     mockCalcMarketBreadth.mockReturnValue({ snapshots: [] });
 
