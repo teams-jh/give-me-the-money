@@ -31,12 +31,19 @@ const yahooFinance  = new YahooFinance();
 
 // ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
-const DB_DIR = path.resolve(__dirname, "../../../src/db");
+const DB_DIR          = path.resolve(__dirname, "../../../src/db");
+const STOCK_INDEX_DIR = path.resolve(__dirname, "../../../src/db/stock_market_index");
+
+interface MarketSource {
+  label: string;   // count 키 접두사 (예: "kospi300" → kospi300_count)
+  path:  string;   // 소스 JSON 절대 경로
+}
 
 interface MarketConfig {
-  label:       string;   // 로그용 ("미국" | "국내")
-  tickersJson: string;   // all_*_tickers.json 절대 경로
-  outputDir:   string;   // 티커 JSON 저장 디렉토리 절대 경로
+  label:       string;          // 로그용 ("미국" | "국내")
+  tickersJson: string;          // all_*_tickers.json 절대 경로
+  outputDir:   string;          // 티커 JSON 저장 디렉토리 절대 경로
+  sources:     MarketSource[];  // 구성종목 소스 파일 목록 (카운트 재계산용)
 }
 
 const MARKET_CONFIG: Record<string, MarketConfig> = {
@@ -44,11 +51,20 @@ const MARKET_CONFIG: Record<string, MarketConfig> = {
     label:       "미국",
     tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
     outputDir:   path.join(DB_DIR, "us/tickers"),
+    sources: [
+      { label: "top1000", path: path.join(STOCK_INDEX_DIR, "top1000_us_tickers.json") },
+      { label: "manual",  path: path.join(STOCK_INDEX_DIR, "manual_us_tickers.json")  },
+    ],
   },
   kr: {
     label:       "국내",
     tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
     outputDir:   path.join(DB_DIR, "kr/tickers"),
+    sources: [
+      { label: "kospi300", path: path.join(STOCK_INDEX_DIR, "kospi300_tickers.json")  },
+      { label: "kosdaq200", path: path.join(STOCK_INDEX_DIR, "kosdaq200_tickers.json") },
+      { label: "manual",   path: path.join(STOCK_INDEX_DIR, "manual_kr_tickers.json") },
+    ],
   },
 };
 
@@ -568,12 +584,23 @@ function sortAllTickersByMarketCap(config: MarketConfig): void {
   }
 
   caps.sort((a, b) => b.cap - a.cap);
-  const sorted = caps.map((c) => c.ticker);
+  const sorted    = caps.map((c) => c.ticker);
+  const sortedSet = new Set(sorted);
+
+  // 파일이 존재하는 티커 기준으로 소스별 카운트 재계산
+  const updatedCounts: Record<string, number> = {};
+  for (const src of config.sources) {
+    if (!fs.existsSync(src.path)) { updatedCounts[`${src.label}_count`] = 0; continue; }
+    const srcJson = JSON.parse(fs.readFileSync(src.path, "utf8")) as { tickers: string[] };
+    updatedCounts[`${src.label}_count`] = srcJson.tickers.filter(t => sortedSet.has(t)).length;
+  }
 
   const output: AllTickersJson = {
     ...allJson,
-    updated_at: new Date().toISOString(),
-    tickers:    sorted,
+    updated_at:  new Date().toISOString(),
+    total_count: sorted.length,
+    ...updatedCounts,
+    tickers:     sorted,
   };
 
   fs.writeFileSync(config.tickersJson, JSON.stringify(output, null, 2), "utf8");
