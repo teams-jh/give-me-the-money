@@ -22,18 +22,21 @@ const DB_DIR     = path.resolve(__dirname, "../src/db");
 // ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
 interface MarketConfig {
-  tickersDir: string;
-  sectorDir:  string;
+  tickersJson: string;
+  tickersDir:  string;
+  sectorDir:   string;
 }
 
 const MARKET_CONFIG: Record<string, MarketConfig> = {
   kr: {
-    tickersDir: path.join(DB_DIR, "kr/tickers"),
-    sectorDir:  path.join(DB_DIR, "kr/sector"),
+    tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
+    tickersDir:  path.join(DB_DIR, "kr/tickers"),
+    sectorDir:   path.join(DB_DIR, "kr/sector"),
   },
   us: {
-    tickersDir: path.join(DB_DIR, "us/tickers"),
-    sectorDir:  path.join(DB_DIR, "us/sector"),
+    tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
+    tickersDir:  path.join(DB_DIR, "us/tickers"),
+    sectorDir:   path.join(DB_DIR, "us/sector"),
   },
 };
 
@@ -62,13 +65,17 @@ export function parseArgs(): CliArgs {
 
 // ── 데이터 로드 ───────────────────────────────────────────────────────────────
 
-export function loadStocks(tickersDir: string): StockInput[] {
-  const files = fs.readdirSync(tickersDir).filter(f => f.endsWith(".json"));
+export function loadStocks(tickersJson: string, tickersDir: string): StockInput[] {
+  const meta  = JSON.parse(fs.readFileSync(tickersJson, "utf-8")) as { tickers: string[] };
   const stocks: StockInput[] = [];
 
-  for (const file of files) {
+  for (const ticker of meta.tickers) {
+    const filename = ticker.replace(/[^a-zA-Z0-9]/g, "_") + ".json";
+    const file     = path.join(tickersDir, filename);
+    if (!fs.existsSync(file)) continue;
+
     const raw = JSON.parse(
-      fs.readFileSync(path.join(tickersDir, file), "utf-8")
+      fs.readFileSync(file, "utf-8")
     ) as {
       ticker: string;
       info:   { sector: string };
@@ -123,7 +130,7 @@ function main(): void {
 
   // 1. 데이터 로드
   console.log("\n데이터 로드 중...");
-  const stocks = loadStocks(config.tickersDir);
+  const stocks = loadStocks(config.tickersJson, config.tickersDir);
   console.log(`  ✅ ${stocks.length}개 종목 로드 완료`);
 
   // 2. 수익률 기반 섹터 로테이션 계산

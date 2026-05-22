@@ -195,15 +195,17 @@ describe('loadStocks', () => {
   };
 
   beforeEach(() => {
-    vi.mocked(fs.readdirSync).mockReset();
+    vi.mocked(fs.existsSync).mockReset();
     vi.mocked(fs.readFileSync).mockReset();
   });
 
   it('유효 파일 → StockInput 변환', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue(['TSLA.json'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(validStock));
+    vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['TSLA'] }))
+      .mockReturnValueOnce(JSON.stringify(validStock));
+    vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/dir');
+    const result = loadStocks('/fake/meta.json', '/fake/dir');
     expect(result).toHaveLength(1);
     expect(result[0]!.ticker).toBe('TSLA');
     expect(result[0]!.sector).toBe('Consumer');
@@ -211,40 +213,46 @@ describe('loadStocks', () => {
 
   it('prices 10개 미만 종목 제외', () => {
     const tooShort = { ...validStock, prices: validStock.prices.slice(0, 8) };
-    vi.mocked(fs.readdirSync).mockReturnValue(['SHORT.json'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(tooShort));
+    vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['SHORT'] }))
+      .mockReturnValueOnce(JSON.stringify(tooShort));
+    vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    expect(loadStocks('/fake/dir')).toHaveLength(0);
+    expect(loadStocks('/fake/meta.json', '/fake/dir')).toHaveLength(0);
   });
 
-  it('.json 아닌 파일 무시', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue(['TSLA.json', 'note.txt'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(validStock));
+  it('파일이 존재하지 않는 티커 무시', () => {
+    vi.mocked(fs.readFileSync).mockReturnValueOnce(JSON.stringify({ tickers: ['TSLA'] }));
+    vi.mocked(fs.existsSync).mockReturnValue(false);
 
-    loadStocks('/fake/dir');
+    loadStocks('/fake/meta.json', '/fake/dir');
     expect(vi.mocked(fs.readFileSync)).toHaveBeenCalledTimes(1);
   });
 
   it('sector 없으면 "Unknown"', () => {
     const noSector = { ...validStock, info: { sector: undefined } };
-    vi.mocked(fs.readdirSync).mockReturnValue(['X.json'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(noSector));
+    vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['X'] }))
+      .mockReturnValueOnce(JSON.stringify(noSector));
+    vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/dir');
+    const result = loadStocks('/fake/meta.json', '/fake/dir');
     expect(result[0]!.sector).toBe('Unknown');
   });
 
   it('prices 날짜·종가 필드 정확히 매핑', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue(['TSLA.json'] as any);
-    vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(validStock));
+    vi.mocked(fs.readFileSync)
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['TSLA'] }))
+      .mockReturnValueOnce(JSON.stringify(validStock));
+    vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/dir');
+    const result = loadStocks('/fake/meta.json', '/fake/dir');
     expect(result[0]!.prices[0]).toEqual({ date: dates[0], close: 200 });
   });
 
-  it('빈 디렉토리 → 빈 배열', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue([] as any);
-    expect(loadStocks('/fake/dir')).toHaveLength(0);
+  it('빈 tickers 목록 → 빈 배열', () => {
+    vi.mocked(fs.readFileSync).mockReturnValueOnce(JSON.stringify({ tickers: [] }));
+    expect(loadStocks('/fake/meta.json', '/fake/dir')).toHaveLength(0);
   });
 });
 
