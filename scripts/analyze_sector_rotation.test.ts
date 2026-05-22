@@ -336,8 +336,10 @@ describe('main() TC', () => {
 
   it('TC_S1 - 정상 실행: bigRiser/Faller + 비교 인사이트 → writeFileSync 호출', async () => {
     process.argv = ['node', SCRIPT_PATH_SECTOR, '--market', 'kr'];
-    mockReaddirSync.mockReturnValue(['AAPL.json'] as any);
-    mockReadFileSync.mockReturnValue(stockJson);
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValue(stockJson);
     mockCalcSectorRotation.mockReturnValue(ROTATION_RESULT);
     mockCalcSectorStrengthRotation.mockReturnValue(STRENGTH_RESULT);
     mockMkdirSync.mockReturnValue(undefined);
@@ -353,8 +355,10 @@ describe('main() TC', () => {
 
   it('TC_S2 - --quarters 필터 적용 → 최근 N분기만 출력', async () => {
     process.argv = ['node', SCRIPT_PATH_SECTOR, '--market', 'us', '--quarters', '1'];
-    mockReaddirSync.mockReturnValue(['AAPL.json'] as any);
-    mockReadFileSync.mockReturnValue(stockJson);
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValue(stockJson);
     mockCalcSectorRotation.mockReturnValue(ROTATION_RESULT);
     mockCalcSectorStrengthRotation.mockReturnValue(STRENGTH_RESULT);
     mockMkdirSync.mockReturnValue(undefined);

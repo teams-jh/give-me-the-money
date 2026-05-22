@@ -396,8 +396,10 @@ describe('main() TC', () => {
 
   it('TC_B1 - 정상 실행: 전환점 포함 → writeFileSync 호출', async () => {
     process.argv = ['node', SCRIPT_PATH_BREADTH, '--market', 'kr', '--period', '3m', '--step', '5'];
-    mockReaddirSync.mockReturnValue(['AAPL.json']);
-    mockReadFileSync.mockReturnValue(stockJson);
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValue(stockJson);
     mockBuildSnapshotDates.mockReturnValue([SNAP1.date, SNAP2.date]);
     // 두 스냅샷의 netBreadth 부호가 다름 → 전환점 1개 생성
     mockCalcMarketBreadth.mockReturnValue({ snapshots: [SNAP1, SNAP2] });
@@ -415,8 +417,10 @@ describe('main() TC', () => {
 
   it('TC_B2 - 스냅샷 없음 → process.exit(1)', async () => {
     process.argv = ['node', SCRIPT_PATH_BREADTH, '--market', 'us', '--period', '1y', '--step', '10'];
-    mockReaddirSync.mockReturnValue(['AAPL.json']);
-    mockReadFileSync.mockReturnValue(stockJson);
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValue(stockJson);
     mockBuildSnapshotDates.mockReturnValue([]);
     mockCalcMarketBreadth.mockReturnValue({ snapshots: [] });
 
