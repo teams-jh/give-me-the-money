@@ -322,12 +322,16 @@ describe("main() 정상 흐름 시나리오", () => {
     mockExistsSync
       .mockReturnValueOnce(true)   // loadTickers
       .mockReturnValueOnce(false)  // processTicker: 신규
-      .mockReturnValueOnce(true);  // sortAllTickersByMarketCap
+      .mockReturnValueOnce(true)   // sortAllTickersByMarketCap: ticker 파일
+      .mockReturnValueOnce(true)   // sortAllTickersByMarketCap: top1000 source
+      .mockReturnValueOnce(true);  // sortAllTickersByMarketCap: manual source
 
     mockReadFileSync
       .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
       .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
-      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 3_000_000_000_000 } }));
+      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 3_000_000_000_000 } }))
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"] }))   // top1000
+      .mockReturnValueOnce(JSON.stringify({ tickers: [] }));         // manual
 
     mockChart.mockResolvedValue({
       quotes: [{ date: new Date("2024-01-02"), open: 180, high: 185, low: 175,
@@ -353,6 +357,9 @@ describe("main() 정상 흐름 시나리오", () => {
       if (String(p).includes("all_us_tickers.json")) {
         return JSON.stringify({ tickers: ["AAPL"], name_map: {} });
       }
+      if (String(p).includes("top1000_us_tickers.json") || String(p).includes("manual_us_tickers.json")) {
+        return JSON.stringify({ tickers: ["AAPL"] });
+      }
       return JSON.stringify({ updated_at: new Date().toISOString(), market: { market_cap: 3e12 } });
     });
 
@@ -364,15 +371,19 @@ describe("main() 정상 흐름 시나리오", () => {
 
   it("TC25 - --force 플래그: 오늘 날짜 파일 있어도 강제 재처리", async () => {
     process.argv = ["node", "script.ts", "--market", "us", "--force"];
+    // force=true → processTicker의 existsSync(!force && existsSync) short-circuit으로 미호출
     mockExistsSync
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(true);
+      .mockReturnValueOnce(true)   // loadTickers
+      .mockReturnValueOnce(true)   // sortAllTickersByMarketCap: AAPL.json
+      .mockReturnValueOnce(true)   // sortAllTickersByMarketCap: top1000 source
+      .mockReturnValueOnce(true);  // sortAllTickersByMarketCap: manual source
 
     mockReadFileSync
       .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
       .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))
-      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 3e12 } }));
+      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 3e12 } }))
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"] }))   // top1000
+      .mockReturnValueOnce(JSON.stringify({ tickers: [] }));         // manual
 
     mockChart.mockResolvedValue({ quotes: [], events: {} });
     mockQuoteSummary.mockResolvedValue({ price: { longName: "Apple Inc" } });
@@ -384,11 +395,20 @@ describe("main() 정상 흐름 시나리오", () => {
 
   it("TC26 - yahooFinance 에러 → error 카운트 (process.exit 없음)", async () => {
     process.argv = ["node", "script.ts", "--market", "us"];
+    // sortAllTickersByMarketCap: 티커 파일 existsSync 먼저, 소스 파일 나중
     mockExistsSync
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(false);
+      .mockReturnValueOnce(true)   // loadTickers
+      .mockReturnValueOnce(false)  // processTicker: AAPL.json (신규)
+      .mockReturnValueOnce(false)  // sortAllTickersByMarketCap: AAPL.json (에러로 미생성)
+      .mockReturnValueOnce(true)   // sortAllTickersByMarketCap: top1000 source
+      .mockReturnValueOnce(true);  // sortAllTickersByMarketCap: manual source
 
-    mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }));
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))  // loadTickers
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["AAPL"], name_map: {} }))  // sortAll: tickersJson
+      // AAPL.json: existsSync false → skip
+      .mockReturnValueOnce(JSON.stringify({ tickers: [] }))  // top1000
+      .mockReturnValueOnce(JSON.stringify({ tickers: [] })); // manual
     mockQuoteSummary.mockRejectedValue(new Error("Yahoo API timeout"));
     mockChart.mockResolvedValue({ quotes: [], events: {} });
 
@@ -418,14 +438,20 @@ describe("main() 정상 흐름 시나리오", () => {
   it("TC28 - kr 마켓: name_map 한글명 processTicker에 주입", async () => {
     process.argv = ["node", "script.ts", "--market", "kr"];
     mockExistsSync
-      .mockReturnValueOnce(true)
-      .mockReturnValueOnce(false)
-      .mockReturnValueOnce(true);
+      .mockReturnValueOnce(true)   // loadTickers
+      .mockReturnValueOnce(false)  // processTicker: 신규
+      .mockReturnValueOnce(true)   // sortAllTickersByMarketCap: ticker 파일
+      .mockReturnValueOnce(true)   // sortAllTickersByMarketCap: kospi300 source
+      .mockReturnValueOnce(true)   // sortAllTickersByMarketCap: kosdaq200 source
+      .mockReturnValueOnce(true);  // sortAllTickersByMarketCap: manual source
 
     mockReadFileSync
       .mockReturnValueOnce(JSON.stringify({ tickers: ["005930.KS"], name_map: { "005930.KS": "삼성전자" } }))
       .mockReturnValueOnce(JSON.stringify({ tickers: ["005930.KS"], name_map: { "005930.KS": "삼성전자" } }))
-      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 5e14 } }));
+      .mockReturnValueOnce(JSON.stringify({ market: { market_cap: 5e14 } }))
+      .mockReturnValueOnce(JSON.stringify({ tickers: ["005930.KS"] }))  // kospi300
+      .mockReturnValueOnce(JSON.stringify({ tickers: [] }))             // kosdaq200
+      .mockReturnValueOnce(JSON.stringify({ tickers: [] }));            // manual
 
     mockChart.mockResolvedValue({ quotes: [], events: {} });
     mockQuoteSummary.mockResolvedValue({ price: { longName: "Samsung Electronics" } });
