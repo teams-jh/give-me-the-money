@@ -81,8 +81,12 @@ export const navData: NavSectionProps['data'] = [
       },
       {
         title: '상세 분석',
-        path: paths.detailedAnalysis,
+        path: paths.detailedAnalysis.root,
         icon: ICONS.detailed,
+        children: [
+          { title: '적립 투자', path: paths.detailedAnalysis.periodic },
+          { title: '추세 추종', path: paths.detailedAnalysis.trendFollowing },
+        ],
       },
       {
         title: '지표',
@@ -153,8 +157,17 @@ export const mainNavData: NavMainProps['data'] = [
   },
   {
     title: '상세 분석',
-    path: paths.detailedAnalysis,
+    path: paths.detailedAnalysis.root,
     icon: <AnalyticsRoundedIcon sx={{ width: 22, height: 22 }} />,
+    children: [
+      {
+        subheader: '상세 분석',
+        items: [
+          { title: '적립 투자', path: paths.detailedAnalysis.periodic },
+          { title: '추세 추종', path: paths.detailedAnalysis.trendFollowing },
+        ],
+      },
+    ],
   },
   {
     title: '지표',
