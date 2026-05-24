@@ -23,7 +23,11 @@ export const paths = {
   },
   stockMarketIndex: '/stock-market-index',
   chartAnalysis: '/chart-analysis',
-  detailedAnalysis: '/detailed-analysis',
+  detailedAnalysis: {
+    root: '/detailed-analysis',
+    periodic: '/detailed-analysis/periodic',
+    trendFollowing: '/detailed-analysis/trend-following',
+  },
   indicators: {
     root: '/indicators',
     chart: '/indicators/chart',

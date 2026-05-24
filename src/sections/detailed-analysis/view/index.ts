@@ -1,1 +1,2 @@
-export * from './detailed-analysis-view';
+export * from './periodic-investment-view';
+export * from './trend-following-view';

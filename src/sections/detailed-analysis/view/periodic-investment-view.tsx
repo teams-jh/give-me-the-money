@@ -24,7 +24,7 @@ const getLocalDateString = (date: Date) => {
   return `${y}-${m}-${d}`;
 };
 
-export function DetailedAnalysisView() {
+export function PeriodicInvestmentView() {
   const [market, setMarket] = useState<'US' | 'KR'>('US');
   const [period, setPeriod] = useState<PeriodKey | 'custom'>('1y');
 
@@ -47,10 +47,10 @@ export function DetailedAnalysisView() {
         >
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 800 }}>
-              종목 상세 분석 및 시뮬레이션 📊
+              적립식 투자 시뮬레이션 💰
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-              종목 간 수익률 비교와 적립식 투자(DCA) 시뮬레이션을 제공합니다.
+              매일 정기적으로 주식을 매수했을 때의 성과와 자산 증식 추이를 시뮬레이션합니다.
             </Typography>
           </Box>
 
