@@ -15,6 +15,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Autocomplete from '@mui/material/Autocomplete';
 import { alpha, useTheme } from '@mui/material/styles';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 
@@ -22,6 +24,13 @@ import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 // ----------------------------------------------------------------------
 
 const DAILY_INVESTMENT = 10000; // 매일 1만원
+
+const PRICE_TYPE_LABELS = {
+  open: '시가',
+  high: '고가',
+  low: '저가',
+  close: '종가',
+};
 
 interface KrAnalysisViewProps {
   period: PeriodKey | 'custom';
@@ -34,6 +43,7 @@ export function KrAnalysisView({ period, startDate, endDate }: KrAnalysisViewPro
   const [selectedTickers, setSelectedTickers] = useState<string[]>(['005930.KS', '000660.KS', '035420.KS']);
   const [inputValue, setInputValue] = useState('');
   const [currentTab, setCurrentTab] = useState<'comparison' | 'dca'>('comparison');
+  const [priceType, setPriceType] = useState<'open' | 'high' | 'low' | 'close'>('close');
 
   const rawChartData = useMemo(() => {
     const daysMap = { '3m': 63, '1y': 252, '2y': 504, '3y': 756 };
@@ -52,7 +62,7 @@ export function KrAnalysisView({ period, startDate, endDate }: KrAnalysisViewPro
           slice = allPrices.slice(-days);
         }
 
-        const chart_data = slice.map((p) => p.close);
+        const chart_data = slice.map((p) => p[priceType] ?? p.close);
         const chart_labels = slice.map((p) => p.date);
 
         return {
@@ -63,7 +73,7 @@ export function KrAnalysisView({ period, startDate, endDate }: KrAnalysisViewPro
         };
       })
       .filter((item): item is NonNullable<typeof item> => item !== null);
-  }, [selectedTickers, period, startDate, endDate]);
+  }, [selectedTickers, period, startDate, endDate, priceType]);
 
   const comparisonSeries = useMemo(() => rawChartData.map((item) => ({
       name: item.companyName,
@@ -105,10 +115,27 @@ export function KrAnalysisView({ period, startDate, endDate }: KrAnalysisViewPro
       };
     }), [rawChartData]);
 
-  const dcaSeries = useMemo(() => dcaData.map((item) => ({
+  const dcaSeries = useMemo(() => {
+    const series = dcaData.map((item) => ({
       name: item.companyName,
       data: item.history,
-    })), [dcaData]);
+    }));
+
+    if (dcaData.length > 0) {
+      const firstItem = dcaData[0];
+      const cashData = firstItem.history.map((h, idx) => ({
+        x: h.x,
+        y: Math.round((idx + 1) * DAILY_INVESTMENT),
+      }));
+
+      series.push({
+        name: '현금 보유 (단순 적립)',
+        data: cashData,
+      });
+    }
+
+    return series;
+  }, [dcaData]);
 
   const formatMoney = (value: number) => `${value.toLocaleString()}원`;
 
@@ -230,31 +257,54 @@ export function KrAnalysisView({ period, startDate, endDate }: KrAnalysisViewPro
 
       <Card sx={{ boxShadow: theme.customShadows?.card }}>
         <Stack
-          direction="row"
-          alignItems="center"
+          direction={{ xs: 'column', md: 'row' }}
+          alignItems={{ xs: 'flex-start', md: 'center' }}
           justifyContent="space-between"
+          spacing={2}
           sx={{ px: 3, py: 2, borderBottom: 1, borderColor: 'divider' }}
         >
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             {currentTab === 'comparison' ? '수익률 추이 분석 (KR)' : '적립식 투자(DCA) 결과 (KR)'}
           </Typography>
 
-          <Button
-            variant={currentTab === 'dca' ? 'contained' : 'outlined'}
-            color="primary"
-            onClick={() => setCurrentTab((prev) => (prev === 'comparison' ? 'dca' : 'comparison'))}
-            startIcon={<span>💰</span>}
-            sx={{ borderRadius: 1, fontWeight: 700 }}
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={2}
+            sx={{ width: { xs: '100%', md: 'auto' }, justifyContent: { xs: 'space-between', md: 'flex-end' } }}
           >
-            매일 만원씩 모았다면?
-          </Button>
+            <ToggleButtonGroup
+              size="small"
+              value={priceType}
+              exclusive
+              onChange={(e, val) => {
+                if (val !== null) setPriceType(val);
+              }}
+              color="primary"
+            >
+              <ToggleButton value="open" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>시가</ToggleButton>
+              <ToggleButton value="high" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>고가</ToggleButton>
+              <ToggleButton value="low" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>저가</ToggleButton>
+              <ToggleButton value="close" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>종가</ToggleButton>
+            </ToggleButtonGroup>
+
+            <Button
+              variant={currentTab === 'dca' ? 'contained' : 'outlined'}
+              color="primary"
+              onClick={() => setCurrentTab((prev) => (prev === 'comparison' ? 'dca' : 'comparison'))}
+              startIcon={<span>💰</span>}
+              sx={{ borderRadius: 1, fontWeight: 700 }}
+            >
+              매일 만원씩 모았다면?
+            </Button>
+          </Stack>
         </Stack>
 
         <Box sx={{ p: 3 }}>
           {currentTab === 'dca' && (
             <Box sx={{ mb: 3, p: 2, bgcolor: alpha(theme.palette.primary.main, 0.05), borderRadius: 1.5 }}>
               <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 700 }}>
-                💡 시뮬레이션 조건: 매일 10,000원씩 해당 종목을 매수했을 경우
+                💡 시뮬레이션 조건: 매일 10,000원씩 각 종목의 {PRICE_TYPE_LABELS[priceType]} 기준으로 매수했을 경우
               </Typography>
             </Box>
           )}
