@@ -86,6 +86,7 @@ export const navData: NavSectionProps['data'] = [
         children: [
           { title: '적립 투자', path: paths.detailedAnalysis.periodic },
           { title: '추세 추종', path: paths.detailedAnalysis.trendFollowing },
+          { title: '차트 추세 분석', path: paths.detailedAnalysis.chartTrend },
         ],
       },
       {
@@ -165,6 +166,7 @@ export const mainNavData: NavMainProps['data'] = [
         items: [
           { title: '적립 투자', path: paths.detailedAnalysis.periodic },
           { title: '추세 추종', path: paths.detailedAnalysis.trendFollowing },
+          { title: '차트 추세 분석', path: paths.detailedAnalysis.chartTrend },
         ],
       },
     ],
