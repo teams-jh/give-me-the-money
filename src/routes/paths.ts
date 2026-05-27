@@ -27,6 +27,7 @@ export const paths = {
     root: '/detailed-analysis',
     periodic: '/detailed-analysis/periodic',
     trendFollowing: '/detailed-analysis/trend-following',
+    chartTrend: '/detailed-analysis/chart-trend',
   },
   indicators: {
     root: '/indicators',
