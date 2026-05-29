@@ -33,6 +33,12 @@ export function SimulationResultsModal({ indicators }: Props) {
   const [rowsPerPage, setRowsPerPage] = useState(6);
   const [slopeFilter, setSlopeFilter] = useState<'all' | 'positive' | 'negative'>('all');
 
+  // Slope range states
+  const [minPosSlope, setMinPosSlope] = useState<string>('');
+  const [maxPosSlope, setMaxPosSlope] = useState<string>('');
+  const [minNegSlope, setMinNegSlope] = useState<string>('');
+  const [maxNegSlope, setMaxNegSlope] = useState<string>('');
+
   // Touch-then-Breakout Pattern states
   const [enablePatternFilter, setEnablePatternFilter] = useState(false);
   const [minTouchesPattern, setMinTouchesPattern] = useState(3);
@@ -78,10 +84,22 @@ export function SimulationResultsModal({ indicators }: Props) {
     return null;
   };
 
-  // Filter results by slope type and Touch-then-Breakout pattern
+  // Filter results by slope type, slope range, and Touch-then-Breakout pattern
   const filteredResults = simResults.filter((sim) => {
-    if (slopeFilter === 'positive' && sim.slopeType !== 'positive') return false;
-    if (slopeFilter === 'negative' && sim.slopeType !== 'negative') return false;
+    const slopeVal = sim.slope ?? 0;
+    if (slopeFilter === 'positive') {
+      if (sim.slopeType !== 'positive') return false;
+      const minVal = minPosSlope !== '' ? parseFloat(minPosSlope) : null;
+      const maxVal = maxPosSlope !== '' ? parseFloat(maxPosSlope) : null;
+      if (minVal !== null && !isNaN(minVal) && slopeVal < minVal) return false;
+      if (maxVal !== null && !isNaN(maxVal) && slopeVal > maxVal) return false;
+    } else if (slopeFilter === 'negative') {
+      if (sim.slopeType !== 'negative') return false;
+      const minVal = minNegSlope !== '' ? parseFloat(minNegSlope) : null;
+      const maxVal = maxNegSlope !== '' ? parseFloat(maxNegSlope) : null;
+      if (minVal !== null && !isNaN(minVal) && slopeVal < minVal) return false;
+      if (maxVal !== null && !isNaN(maxVal) && slopeVal > maxVal) return false;
+    }
 
     if (enablePatternFilter) {
       const pattern = getPatternDetails(sim);
@@ -272,6 +290,110 @@ export function SimulationResultsModal({ indicators }: Props) {
           </Stack>
         </Stack>
 
+        {/* Slope Range Filter (Positive / Negative) */}
+        {slopeFilter !== 'all' && (
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            sx={{
+              p: 1.5,
+              borderRadius: 1.5,
+              bgcolor: alpha(theme.palette.background.neutral || theme.palette.grey[100], 0.4),
+              border: `1px dashed ${theme.palette.divider}`,
+              alignSelf: 'flex-start',
+            }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.primary', minWidth: 140 }}>
+              📏 {slopeFilter === 'positive' ? '양의' : '음의'} 기울기 범위 (%) :
+            </Typography>
+
+            <Stack direction="row" spacing={1} alignItems="center">
+              <input
+                type="number"
+                step="any"
+                placeholder={slopeFilter === 'positive' ? "최소 (예: 0)" : "최소 (예: -50)"}
+                value={slopeFilter === 'positive' ? minPosSlope : minNegSlope}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (slopeFilter === 'positive') setMinPosSlope(val);
+                  else setMinNegSlope(val);
+                  setPage(0);
+                }}
+                style={{
+                  width: '110px',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: `1px solid ${theme.palette.divider}`,
+                  backgroundColor: theme.palette.background.paper,
+                  color: theme.palette.text.primary,
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  outline: 'none',
+                }}
+              />
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 800 }}>
+                ~
+              </Typography>
+              <input
+                type="number"
+                step="any"
+                placeholder={slopeFilter === 'positive' ? "최대 (예: 30)" : "최대 (예: 0)"}
+                value={slopeFilter === 'positive' ? maxPosSlope : maxNegSlope}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (slopeFilter === 'positive') setMaxPosSlope(val);
+                  else setMaxNegSlope(val);
+                  setPage(0);
+                }}
+                style={{
+                  width: '110px',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: `1px solid ${theme.palette.divider}`,
+                  backgroundColor: theme.palette.background.paper,
+                  color: theme.palette.text.primary,
+                  fontSize: '0.875rem',
+                  fontWeight: 600,
+                  outline: 'none',
+                }}
+              />
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                %
+              </Typography>
+
+              {/* Reset/Clear button */}
+              {((slopeFilter === 'positive' && (minPosSlope !== '' || maxPosSlope !== '')) ||
+                (slopeFilter === 'negative' && (minNegSlope !== '' || maxNegSlope !== ''))) && (
+                <Button
+                  size="small"
+                  variant="text"
+                  color="warning"
+                  onClick={() => {
+                    if (slopeFilter === 'positive') {
+                      setMinPosSlope('');
+                      setMaxPosSlope('');
+                    } else {
+                      setMinNegSlope('');
+                      setMaxNegSlope('');
+                    }
+                    setPage(0);
+                  }}
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: '0.75rem',
+                    p: '2px 8px',
+                    minWidth: 'auto',
+                    ml: 1,
+                  }}
+                >
+                  초기화
+                </Button>
+              )}
+            </Stack>
+          </Stack>
+        )}
+
         {/* Touch-then-Breakout Pattern Filter */}
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ xs: 'flex-start', md: 'center' }}>
           <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}>
@@ -366,6 +488,39 @@ export function SimulationResultsModal({ indicators }: Props) {
                     <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
                       코드: {sim.ticker}
                     </Typography>
+                    <Box sx={{ mt: 0.5 }}>
+                      <Chip
+                        label={`기울기: ${(sim.slope ?? 0) > 0 ? '+' : ''}${(sim.slope ?? 0).toFixed(2)}%`}
+                        size="small"
+                        sx={{
+                          height: 20,
+                          fontSize: '0.7rem',
+                          fontWeight: 800,
+                          bgcolor: alpha(
+                            sim.slopeType === 'positive'
+                              ? theme.palette.error.main
+                              : sim.slopeType === 'negative'
+                                ? theme.palette.info.main
+                                : theme.palette.text.secondary,
+                            0.12
+                          ),
+                          color:
+                            sim.slopeType === 'positive'
+                              ? 'error.main'
+                              : sim.slopeType === 'negative'
+                                ? 'info.main'
+                                : 'text.secondary',
+                          border: `1px solid ${alpha(
+                            sim.slopeType === 'positive'
+                              ? theme.palette.error.main
+                              : sim.slopeType === 'negative'
+                                ? theme.palette.info.main
+                                : theme.palette.text.secondary,
+                            0.25
+                          )}`,
+                        }}
+                      />
+                    </Box>
                   </Box>
 
                   {/* Touch & Breakout Badges */}

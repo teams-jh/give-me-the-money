@@ -42,7 +42,17 @@ export function AutoTrendlineController({ indicators }: Props) {
     isSimulating,
     trendTouchBasis,
     setTrendTouchBasis,
+    trendStartDate,
+    setTrendStartDate,
+    trendEndDate,
+    setTrendEndDate,
+    startDate,
+    endDate,
+    activeStockDataSlice,
   } = indicators;
+
+  const minDate = activeStockDataSlice?.dates[0] || startDate;
+  const maxDate = activeStockDataSlice?.dates[activeStockDataSlice.dates.length - 1] || endDate;
 
   return (
     <Grid size={{ xs: 12 }}>
@@ -90,7 +100,7 @@ export function AutoTrendlineController({ indicators }: Props) {
                 )}
               </Typography>
             </Box>
-            <Stack direction="row" spacing={1.5} alignItems="center">
+            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexShrink: 0 }}>
               {showAutoTrend && (
                 <Button
                   variant="contained"
@@ -104,11 +114,12 @@ export function AutoTrendlineController({ indicators }: Props) {
                   }
                   sx={{
                     fontWeight: 800,
-                    px: 2,
+                    px: 2.5,
                     py: 1,
                     fontSize: '0.875rem',
                     borderRadius: 1.5,
                     boxShadow: theme.customShadows?.z8,
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {isSimulating ? '시뮬레이션 중...' : '📊 전체 종목 시뮬레이션'}
@@ -125,6 +136,7 @@ export function AutoTrendlineController({ indicators }: Props) {
                   fontSize: '0.9rem',
                   cursor: 'pointer',
                   borderRadius: 1.5,
+                  whiteSpace: 'nowrap',
                 }}
               />
             </Stack>
@@ -132,79 +144,199 @@ export function AutoTrendlineController({ indicators }: Props) {
 
           {showAutoTrend && (
             <Grid container spacing={3}>
-              {/* 1. 기준 가격 선택 */}
-              <Grid size={{ xs: 12, md: 3 }}>
-                <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
-                  🎯 분석 기준 가격 (Price Base)
-                </Typography>
-                <Stack direction="row" spacing={1}>
-                  {(['highlow', 'close', 'open'] as const).map((base) => {
-                    const labelMap = { highlow: '고점/저점', close: '종가 기준', open: '시가 기준' };
-                    const isActive = trendBase === base;
-                    return (
-                      <Chip
-                        key={base}
-                        label={labelMap[base]}
-                        color={isActive ? 'primary' : 'default'}
-                        variant={isActive ? 'filled' : 'outlined'}
-                        onClick={() => setTrendBase(base)}
-                        sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
-                      />
-                    );
-                  })}
-                </Stack>
-              </Grid>
+              {/* Left Column (Selections and Date Range) */}
+              <Grid size={{ xs: 12, md: 9 }}>
+                <Grid container spacing={3}>
+                  {/* 1. 기준 가격 선택 */}
+                  <Grid size={{ xs: 12, md: 4 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                      🎯 분석 기준 가격 (Price Base)
+                    </Typography>
+                    <Stack direction="row" spacing={1}>
+                      {(['highlow', 'close', 'open'] as const).map((base) => {
+                        const labelMap = { highlow: '고점/저점', close: '종가 기준', open: '시가 기준' };
+                        const isActive = trendBase === base;
+                        return (
+                          <Chip
+                            key={base}
+                            label={labelMap[base]}
+                            color={isActive ? 'primary' : 'default'}
+                            variant={isActive ? 'filled' : 'outlined'}
+                            onClick={() => setTrendBase(base)}
+                            sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Grid>
 
-              {/* 2. 알고리즘 선택 */}
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
-                  ⚙️ 추세 분석 알고리즘 (Algorithm)
-                </Typography>
-                <Stack direction="row" spacing={1}>
-                  {(['swing', 'zigzag', 'regression'] as const).map((algo) => {
-                    const labelMap = {
-                      swing: '스윙 극점 연결',
-                      zigzag: '지그재그 반전',
-                      regression: '선형회귀 채널',
-                    };
-                    const isActive = trendAlgo === algo;
-                    return (
-                      <Chip
-                        key={algo}
-                        label={labelMap[algo]}
-                        color={isActive ? 'warning' : 'default'}
-                        variant={isActive ? 'filled' : 'outlined'}
-                        onClick={() => setTrendAlgo(algo)}
-                        sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
-                      />
-                    );
-                  })}
-                </Stack>
-              </Grid>
+                  {/* 2. 알고리즘 선택 */}
+                  <Grid size={{ xs: 12, md: 5.5 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                      ⚙️ 추세 분석 알고리즘 (Algorithm)
+                    </Typography>
+                    <Stack direction="row" spacing={1}>
+                      {(['swing', 'zigzag', 'regression'] as const).map((algo) => {
+                        const labelMap = {
+                          swing: '스윙 극점 연결',
+                          zigzag: '지그재그 반전',
+                          regression: '선형회귀 채널',
+                        };
+                        const isActive = trendAlgo === algo;
+                        return (
+                          <Chip
+                            key={algo}
+                            label={labelMap[algo]}
+                            color={isActive ? 'warning' : 'default'}
+                            variant={isActive ? 'filled' : 'outlined'}
+                            onClick={() => setTrendAlgo(algo)}
+                            sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Grid>
 
-              {/* 3. 작도 선 스타일 선택 */}
-              <Grid size={{ xs: 12, md: 2 }}>
-                <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
-                  📈 선 스타일 (Style)
-                </Typography>
-                <Stack direction="row" spacing={1}>
-                  {([
-                    { key: 'straight', label: '직선' },
-                    { key: 'smooth', label: '곡선' },
-                  ] as const).map((style) => {
-                    const isActive = lineCurve === style.key;
-                    return (
-                      <Chip
-                        key={style.key}
-                        label={style.label}
-                        color={isActive ? 'info' : 'default'}
-                        variant={isActive ? 'filled' : 'outlined'}
-                        onClick={() => setLineCurve(style.key)}
-                        sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
-                      />
-                    );
-                  })}
-                </Stack>
+                  {/* 3. 작도 선 스타일 선택 */}
+                  <Grid size={{ xs: 12, md: 2.5 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                      📈 선 스타일 (Style)
+                    </Typography>
+                    <Stack direction="row" spacing={1}>
+                      {([
+                        { key: 'straight', label: '직선' },
+                        { key: 'smooth', label: '곡선' },
+                      ] as const).map((style) => {
+                        const isActive = lineCurve === style.key;
+                        return (
+                          <Chip
+                            key={style.key}
+                            label={style.label}
+                            color={isActive ? 'info' : 'default'}
+                            variant={isActive ? 'filled' : 'outlined'}
+                            onClick={() => setLineCurve(style.key)}
+                            sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Grid>
+
+                  {/* Date Selection for Trendline */}
+                  <Grid size={{ xs: 12 }}>
+                    <Card
+                      sx={{
+                        p: 2.5,
+                        bgcolor: alpha(theme.palette.primary.main, 0.04),
+                        border: `1px dashed ${alpha(theme.palette.primary.main, 0.2)}`,
+                        borderRadius: 1.5,
+                        mt: 1,
+                      }}
+                    >
+                      <Stack
+                        direction={{ xs: 'column', md: 'row' }}
+                        spacing={3}
+                        alignItems={{ xs: 'stretch', md: 'center' }}
+                        justifyContent="space-between"
+                      >
+                        <Box>
+                          <Typography
+                            variant="subtitle2"
+                            sx={{
+                              fontWeight: 800,
+                              color: 'primary.main',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                            }}
+                          >
+                            📅 실시간 추세선 작도 범위 설정 (Trendline Date Range)
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
+                            추세선을 연산할 날짜 범위를 선택합니다. 기본값은 분석 기간의 마지막 영업일 하루 전까지입니다.
+                          </Typography>
+                        </Box>
+
+                        <Stack
+                          direction={{ xs: 'column', sm: 'row' }}
+                          spacing={2}
+                          alignItems="center"
+                          sx={{ flexGrow: 1, maxWidth: { md: '60%' } }}
+                        >
+                          <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
+                            <input
+                              type="date"
+                              value={trendStartDate}
+                              min={minDate}
+                              max={trendEndDate || maxDate}
+                              onChange={(e) => setTrendStartDate(e.target.value)}
+                              style={{
+                                padding: '8px 12px',
+                                borderRadius: '8px',
+                                border: `1px solid ${theme.palette.divider}`,
+                                backgroundColor: theme.palette.background.paper,
+                                color: theme.palette.text.primary,
+                                fontFamily: theme.typography.fontFamily,
+                                fontSize: '0.875rem',
+                                flex: 1,
+                                outline: 'none',
+                              }}
+                            />
+                            <Typography variant="body2" sx={{ color: 'text.secondary', px: 0.5 }}>
+                              ~
+                            </Typography>
+                            <input
+                              type="date"
+                              value={trendEndDate}
+                              min={trendStartDate || minDate}
+                              max={maxDate}
+                              onChange={(e) => setTrendEndDate(e.target.value)}
+                              style={{
+                                padding: '8px 12px',
+                                borderRadius: '8px',
+                                border: `1px solid ${theme.palette.divider}`,
+                                backgroundColor: theme.palette.background.paper,
+                                color: theme.palette.text.primary,
+                                fontFamily: theme.typography.fontFamily,
+                                fontSize: '0.875rem',
+                                flex: 1,
+                                outline: 'none',
+                              }}
+                            />
+                          </Stack>
+                          <Button
+                            size="medium"
+                            variant="outlined"
+                            onClick={() => {
+                              if (activeStockDataSlice && activeStockDataSlice.dates.length > 0) {
+                                const dates = activeStockDataSlice.dates;
+                                setTrendStartDate(dates[0]);
+                                if (dates.length >= 2) {
+                                  setTrendEndDate(dates[dates.length - 2]);
+                                } else {
+                                  setTrendEndDate(dates[0]);
+                                }
+                              }
+                            }}
+                            sx={{
+                              fontWeight: 700,
+                              whiteSpace: 'nowrap',
+                              borderRadius: 1,
+                              borderColor: theme.palette.primary.main,
+                              color: theme.palette.primary.main,
+                              '&:hover': {
+                                bgcolor: alpha(theme.palette.primary.main, 0.08),
+                                borderColor: theme.palette.primary.main,
+                              },
+                            }}
+                          >
+                            기본값 복원
+                          </Button>
+                        </Stack>
+                      </Stack>
+                    </Card>
+                  </Grid>
+                </Grid>
               </Grid>
 
               {/* 4. 알고리즘 상세 파라미터 튜닝 */}

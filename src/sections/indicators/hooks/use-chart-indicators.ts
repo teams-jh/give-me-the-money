@@ -122,6 +122,7 @@ export interface SimResult {
   latestResistance: number | null;
   touchPoints: TouchPoint[];
   slopeType: 'positive' | 'negative' | 'flat';
+  slope?: number;
 }
 
 export interface DynamicLinesResult {
@@ -187,6 +188,8 @@ export function useChartIndicators() {
   const [trendTouchTolerance, setTrendTouchTolerance] = useState<number>(2);
   const [trendBreakoutTolerance, setTrendBreakoutTolerance] = useState<number>(2);
   const [trendTouchBasis, setTrendTouchBasis] = useState<'close' | 'high' | 'both'>('both');
+  const [trendStartDate, setTrendStartDate] = useState<string>('');
+  const [trendEndDate, setTrendEndDate] = useState<string>('');
 
   // Simulation states
   const [simResults, setSimResults] = useState<SimResult[]>([]);
@@ -262,6 +265,22 @@ export function useChartIndicators() {
       dates,
     };
   }, [currentTicker, period, startDate, endDate]);
+
+  // Sync trendStartDate and trendEndDate when activeStockDataSlice changes
+  useEffect(() => {
+    if (activeStockDataSlice && activeStockDataSlice.dates.length > 0) {
+      const dates = activeStockDataSlice.dates;
+      setTrendStartDate(dates[0]);
+      if (dates.length >= 2) {
+        setTrendEndDate(dates[dates.length - 2]);
+      } else {
+        setTrendEndDate(dates[0]);
+      }
+    } else {
+      setTrendStartDate('');
+      setTrendEndDate('');
+    }
+  }, [activeStockDataSlice]);
 
   // Dynamic Technical Calculations
   const techAnalysis = useMemo<TechAnalysisResult | null>(() => {
@@ -503,15 +522,26 @@ export function useChartIndicators() {
   }, [activeStockDataSlice, visibleRange]);
 
   const dynamicLines = useMemo<DynamicLinesResult | null>(() => {
-    if (!activeStockDataSlice || !visibleHighLow) return null;
+    if (!activeStockDataSlice) return null;
 
-    const { visibleIndices } = visibleHighLow;
     const { highPrices, lowPrices, closePrices, openPrices, dates } = activeStockDataSlice;
 
-    const visHighs = visibleIndices.map((i) => highPrices[i]);
-    const visLows = visibleIndices.map((i) => lowPrices[i]);
-    const visCloses = visibleIndices.map((i) => closePrices[i]);
-    const visOpens = visibleIndices.map((i) => openPrices[i] || closePrices[i]);
+    let trendIndices: number[] = [];
+    if (trendStartDate && trendEndDate) {
+      dates.forEach((d, idx) => {
+        if (d >= trendStartDate && d <= trendEndDate) {
+          trendIndices.push(idx);
+        }
+      });
+    }
+    if (trendIndices.length === 0) {
+      trendIndices = dates.map((_, idx) => idx);
+    }
+
+    const visHighs = trendIndices.map((i) => highPrices[i]);
+    const visLows = trendIndices.map((i) => lowPrices[i]);
+    const visCloses = trendIndices.map((i) => closePrices[i]);
+    const visOpens = trendIndices.map((i) => openPrices[i] || closePrices[i]);
 
     // Apply selected price base
     const currentHighs =
@@ -540,23 +570,49 @@ export function useChartIndicators() {
       srRaw = calcSupportResistance(currentHighs, currentLows, currentCloses, currentOpens);
     }
 
-    const supportData = srRaw
-      .map((pt, idx) => ({
-        x: new Date(dates[visibleIndices[idx]]).getTime(),
-        y: pt.support,
-      }))
-      .filter((pt, idx) => pt.y !== null && (idx === 0 || idx === srRaw.length - 1));
+    // Project support and resistance lines over the entire dates range
+    const firstIdx = trendIndices[0];
+    const lastIdx = trendIndices[trendIndices.length - 1];
 
-    const resistanceData = srRaw
-      .map((pt, idx) => ({
-        x: new Date(dates[visibleIndices[idx]]).getTime(),
-        y: pt.resistance,
-      }))
-      .filter((pt, idx) => pt.y !== null && (idx === 0 || idx === srRaw.length - 1));
+    const supportStart = srRaw[0]?.support;
+    const supportEnd = srRaw[srRaw.length - 1]?.support;
+
+    const resistanceStart = srRaw[0]?.resistance;
+    const resistanceEnd = srRaw[srRaw.length - 1]?.resistance;
+
+    const deltaX = lastIdx - firstIdx || 1;
+
+    const mSupport = supportStart !== null && supportStart !== undefined && supportEnd !== null && supportEnd !== undefined 
+      ? (supportEnd - supportStart) / deltaX 
+      : 0;
+    const cSupport = supportStart !== null && supportStart !== undefined 
+      ? supportStart - mSupport * firstIdx 
+      : null;
+
+    const mResistance = resistanceStart !== null && resistanceStart !== undefined && resistanceEnd !== null && resistanceEnd !== undefined 
+      ? (resistanceEnd - resistanceStart) / deltaX 
+      : 0;
+    const cResistance = resistanceStart !== null && resistanceStart !== undefined 
+      ? resistanceStart - mResistance * firstIdx 
+      : null;
+
+    const supportData = cSupport !== null && cSupport !== undefined
+      ? [
+          { x: new Date(dates[0]).getTime(), y: cSupport },
+          { x: new Date(dates[dates.length - 1]).getTime(), y: mSupport * (dates.length - 1) + cSupport }
+        ]
+      : [];
+
+    const resistanceData = cResistance !== null && cResistance !== undefined
+      ? [
+          { x: new Date(dates[0]).getTime(), y: cResistance },
+          { x: new Date(dates[dates.length - 1]).getTime(), y: mResistance * (dates.length - 1) + cResistance }
+        ]
+      : [];
 
     const zigzagData = srRaw
       .map((pt, idx) => ({
-        x: new Date(dates[visibleIndices[idx]]).getTime(),
+        x: new Date(dates[trendIndices[idx]]).getTime(),
         y: pt.zigzag,
       }))
       .filter((pt): pt is { x: number; y: number } => pt.y !== null && pt.y !== undefined);
@@ -567,66 +623,63 @@ export function useChartIndicators() {
     let highBreakoutCount = 0;
     let closeBreakoutCount = 0;
 
-    if (srRaw.length > 0) {
-      for (let idx = 0; idx < srRaw.length; idx++) {
-        const pt = srRaw[idx];
-        if (pt.resistance !== null && pt.resistance !== undefined) {
-          const R_i = pt.resistance;
-          const high = visHighs[idx] ?? 0;
-          const close = visCloses[idx] ?? 0;
-          const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
-          const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
+    if (cResistance !== null && cResistance !== undefined) {
+      for (let i = 0; i < dates.length; i++) {
+        const R_i = mResistance * i + cResistance;
+        const high = highPrices[i] ?? 0;
+        const close = closePrices[i] ?? 0;
+        const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
+        const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
 
-          let isTouch = false;
-          let isBreakout = false;
-          let touchedY = high;
-          let priceType: 'high' | 'close' = 'high';
-          let type: 'touch' | 'breakout' = 'touch';
+        let isTouch = false;
+        let isBreakout = false;
+        let touchedY = high;
+        let priceType: 'high' | 'close' = 'high';
+        let type: 'touch' | 'breakout' = 'touch';
 
-          const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
-          const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
+        const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
+        const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
 
-          // 1. Close Breakout
-          if (checkClose && close >= upperBoundBreak) {
-            isBreakout = true;
-            touchedY = close;
-            priceType = 'close';
-            type = 'breakout';
-            closeBreakoutCount++;
-          }
-          // 2. Close Touch
-          else if (checkClose && close >= lowerBoundTouch && close <= R_i) {
-            isTouch = true;
-            touchedY = close;
-            priceType = 'close';
-            type = 'touch';
-            closeTouchCount++;
-          }
-          // 3. High Breakout
-          else if (checkHigh && high >= upperBoundBreak) {
-            isBreakout = true;
-            touchedY = high;
-            priceType = 'high';
-            type = 'breakout';
-            highBreakoutCount++;
-          }
-          // 4. High Touch
-          else if (checkHigh && high >= lowerBoundTouch && high <= R_i) {
-            isTouch = true;
-            touchedY = high;
-            priceType = 'high';
-            type = 'touch';
-            highTouchCount++;
-          }
+        // 1. Close Breakout
+        if (checkClose && close >= upperBoundBreak) {
+          isBreakout = true;
+          touchedY = close;
+          priceType = 'close';
+          type = 'breakout';
+          closeBreakoutCount++;
+        }
+        // 2. Close Touch
+        else if (checkClose && close >= lowerBoundTouch && close <= R_i) {
+          isTouch = true;
+          touchedY = close;
+          priceType = 'close';
+          type = 'touch';
+          closeTouchCount++;
+        }
+        // 3. High Breakout
+        else if (checkHigh && high >= upperBoundBreak) {
+          isBreakout = true;
+          touchedY = high;
+          priceType = 'high';
+          type = 'breakout';
+          highBreakoutCount++;
+        }
+        // 4. High Touch
+        else if (checkHigh && high >= lowerBoundTouch && high <= R_i) {
+          isTouch = true;
+          touchedY = high;
+          priceType = 'high';
+          type = 'touch';
+          highTouchCount++;
+        }
 
-          if (isTouch || isBreakout) {
-            touchPoints.push({
-              x: new Date(dates[visibleIndices[idx]]).getTime(),
-              y: touchedY,
-              priceType,
-              type,
-            });
-          }
+        if (isTouch || isBreakout) {
+          touchPoints.push({
+            x: new Date(dates[i]).getTime(),
+            y: touchedY,
+            priceType,
+            type,
+          });
         }
       }
     }
@@ -635,8 +688,8 @@ export function useChartIndicators() {
       supportData,
       resistanceData,
       zigzagData,
-      latestSupport: srRaw[srRaw.length - 1]?.support ?? null,
-      latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
+      latestSupport: cSupport !== null && cSupport !== undefined ? mSupport * (dates.length - 1) + cSupport : null,
+      latestResistance: cResistance !== null && cResistance !== undefined ? mResistance * (dates.length - 1) + cResistance : null,
       touchPoints,
       touchCount: closeTouchCount + highTouchCount,
       highTouchCount,
@@ -645,7 +698,7 @@ export function useChartIndicators() {
       closeBreakoutCount,
       highBreakoutCount,
     };
-  }, [activeStockDataSlice, visibleHighLow, trendBase, trendAlgo, zigzagThreshold, regressionStdDev, trendTouchTolerance, trendBreakoutTolerance, trendTouchBasis]);
+  }, [activeStockDataSlice, trendStartDate, trendEndDate, trendBase, trendAlgo, zigzagThreshold, regressionStdDev, trendTouchTolerance, trendBreakoutTolerance, trendTouchBasis]);
 
   // Chart configuration for selected ticker
   const chartData = useMemo(() => {
@@ -1011,6 +1064,41 @@ export function useChartIndicators() {
       });
     }
 
+    if (showAutoTrend && trendStartDate && trendEndDate) {
+      annotations.xaxis = [
+        {
+          x: new Date(trendStartDate).getTime(),
+          borderColor: theme.palette.primary.main,
+          strokeDashArray: 3,
+          label: {
+            borderColor: theme.palette.primary.main,
+            style: {
+              color: '#fff',
+              background: theme.palette.primary.main,
+              fontWeight: 700,
+              fontSize: '10px',
+            },
+            text: '추세 시작일',
+          },
+        },
+        {
+          x: new Date(trendEndDate).getTime(),
+          borderColor: theme.palette.primary.main,
+          strokeDashArray: 3,
+          label: {
+            borderColor: theme.palette.primary.main,
+            style: {
+              color: '#fff',
+              background: theme.palette.primary.main,
+              fontWeight: 700,
+              fontSize: '10px',
+            },
+            text: '추세 종료일',
+          },
+        },
+      ];
+    }
+
     if (showFib && visibleHighLow) {
       const { max, min } = visibleHighLow;
       const diff = max - min;
@@ -1161,7 +1249,7 @@ export function useChartIndicators() {
         },
       },
     };
-  }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, lineCurve, visibleRange, showAutoTrend, dynamicLines]);
+  }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, lineCurve, visibleRange, showAutoTrend, dynamicLines, trendStartDate, trendEndDate]);
 
   const runSimulation = useCallback(() => {
     setIsSimulating(true);
@@ -1191,14 +1279,31 @@ export function useChartIndicators() {
         const lowPrices = slice.map((p) => p.low || p.close);
         const dates = slice.map((p) => p.date);
 
+        let simTrendIndices: number[] = [];
+        if (trendStartDate && trendEndDate) {
+          dates.forEach((d, idx) => {
+            if (d >= trendStartDate && d <= trendEndDate) {
+              simTrendIndices.push(idx);
+            }
+          });
+        }
+        if (simTrendIndices.length === 0) {
+          simTrendIndices = dates.map((_, idx) => idx);
+        }
+
+        const simHighs = simTrendIndices.map((i) => highPrices[i]);
+        const simLows = simTrendIndices.map((i) => lowPrices[i]);
+        const simCloses = simTrendIndices.map((i) => closePrices[i]);
+        const simOpens = simTrendIndices.map((i) => openPrices[i] || closePrices[i]);
+
         const currentHighs =
-          trendBase === 'close' ? closePrices : trendBase === 'open' ? openPrices : highPrices;
+          trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simHighs;
         const currentLows =
-          trendBase === 'close' ? closePrices : trendBase === 'open' ? openPrices : lowPrices;
+          trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simLows;
         const currentCloses =
-          trendBase === 'close' ? closePrices : trendBase === 'open' ? openPrices : closePrices;
+          trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simCloses;
         const currentOpens =
-          trendBase === 'close' ? closePrices : trendBase === 'open' ? openPrices : openPrices;
+          trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simOpens;
 
         let srRaw: { support: number | null; resistance: number | null; zigzag?: number | null }[] = [];
 
@@ -1216,93 +1321,116 @@ export function useChartIndicators() {
           srRaw = calcSupportResistance(currentHighs, currentLows, currentCloses, currentOpens);
         }
 
+        // Project support and resistance lines over the entire slice dates range
+        const firstIdx = simTrendIndices[0];
+        const lastIdx = simTrendIndices[simTrendIndices.length - 1];
+
+        const supportStart = srRaw[0]?.support;
+        const supportEnd = srRaw[srRaw.length - 1]?.support;
+
+        const resistanceStart = srRaw[0]?.resistance;
+        const resistanceEnd = srRaw[srRaw.length - 1]?.resistance;
+
+        const deltaX = lastIdx - firstIdx || 1;
+
+        const mSupport = supportStart !== null && supportStart !== undefined && supportEnd !== null && supportEnd !== undefined 
+          ? (supportEnd - supportStart) / deltaX 
+          : 0;
+        const cSupport = supportStart !== null && supportStart !== undefined 
+          ? supportStart - mSupport * firstIdx 
+          : null;
+
+        const mResistance = resistanceStart !== null && resistanceStart !== undefined && resistanceEnd !== null && resistanceEnd !== undefined 
+          ? (resistanceEnd - resistanceStart) / deltaX 
+          : 0;
+        const cResistance = resistanceStart !== null && resistanceStart !== undefined 
+          ? resistanceStart - mResistance * firstIdx 
+          : null;
+
         let highTouchCount = 0;
         let closeTouchCount = 0;
         let highBreakoutCount = 0;
         let closeBreakoutCount = 0;
         const itemTouchPoints: TouchPoint[] = [];
 
-        if (srRaw.length > 0) {
-          for (let idx = 0; idx < srRaw.length; idx++) {
-            const pt = srRaw[idx];
-            if (pt.resistance !== null && pt.resistance !== undefined) {
-              const R_i = pt.resistance;
-              const high = highPrices[idx] ?? 0;
-              const close = closePrices[idx] ?? 0;
-              const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
-              const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
+        if (cResistance !== null && cResistance !== undefined) {
+          for (let i = 0; i < dates.length; i++) {
+            const R_i = mResistance * i + cResistance;
+            const high = highPrices[i] ?? 0;
+            const close = closePrices[i] ?? 0;
+            const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
+            const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
 
-              let isTouch = false;
-              let isBreakout = false;
-              let priceType: 'high' | 'close' = 'high';
-              let type: 'touch' | 'breakout' = 'touch';
-              let touchedY = high;
+            let isTouch = false;
+            let isBreakout = false;
+            let priceType: 'high' | 'close' = 'high';
+            let type: 'touch' | 'breakout' = 'touch';
+            let touchedY = high;
 
-              const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
-              const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
+            const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
+            const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
 
-              // 1. Close Breakout
-              if (checkClose && close >= upperBoundBreak) {
-                isBreakout = true;
-                priceType = 'close';
-                type = 'breakout';
-                touchedY = close;
-                closeBreakoutCount++;
-              }
-              // 2. Close Touch
-              else if (checkClose && close >= lowerBoundTouch && close <= R_i) {
-                isTouch = true;
-                priceType = 'close';
-                type = 'touch';
-                touchedY = close;
-                closeTouchCount++;
-              }
-              // 3. High Breakout
-              else if (checkHigh && high >= upperBoundBreak) {
-                isBreakout = true;
-                priceType = 'high';
-                type = 'breakout';
-                touchedY = high;
-                highBreakoutCount++;
-              }
-              // 4. High Touch
-              else if (checkHigh && high >= lowerBoundTouch && high <= R_i) {
-                isTouch = true;
-                priceType = 'high';
-                type = 'touch';
-                touchedY = high;
-                highTouchCount++;
-              }
+            // 1. Close Breakout
+            if (checkClose && close >= upperBoundBreak) {
+              isBreakout = true;
+              priceType = 'close';
+              type = 'breakout';
+              touchedY = close;
+              closeBreakoutCount++;
+            }
+            // 2. Close Touch
+            else if (checkClose && close >= lowerBoundTouch && close <= R_i) {
+              isTouch = true;
+              priceType = 'close';
+              type = 'touch';
+              touchedY = close;
+              closeTouchCount++;
+            }
+            // 3. High Breakout
+            else if (checkHigh && high >= upperBoundBreak) {
+              isBreakout = true;
+              priceType = 'high';
+              type = 'breakout';
+              touchedY = high;
+              highBreakoutCount++;
+            }
+            // 4. High Touch
+            else if (checkHigh && high >= lowerBoundTouch && high <= R_i) {
+              isTouch = true;
+              priceType = 'high';
+              type = 'touch';
+              touchedY = high;
+              highTouchCount++;
+            }
 
-              if (isTouch || isBreakout) {
-                itemTouchPoints.push({
-                  x: new Date(dates[idx]).getTime(),
-                  y: touchedY,
-                  priceType,
-                  type,
-                });
-              }
+            if (isTouch || isBreakout) {
+              itemTouchPoints.push({
+                x: new Date(dates[i]).getTime(),
+                y: touchedY,
+                priceType,
+                type,
+              });
             }
           }
         }
 
-        const resistanceData = srRaw
-          .map((pt, idx) => ({
-            x: new Date(dates[idx]).getTime(),
-            y: pt.resistance,
-          }))
-          .filter((pt) => pt.y !== null);
+        const resistanceData = cResistance !== null && cResistance !== undefined
+          ? [
+              { x: new Date(dates[0]).getTime(), y: cResistance },
+              { x: new Date(dates[dates.length - 1]).getTime(), y: mResistance * (dates.length - 1) + cResistance }
+            ]
+          : [];
 
-        const supportData = srRaw
-          .map((pt, idx) => ({
-            x: new Date(dates[idx]).getTime(),
-            y: pt.support,
-          }))
-          .filter((pt) => pt.y !== null);
+        const supportData = cSupport !== null && cSupport !== undefined
+          ? [
+              { x: new Date(dates[0]).getTime(), y: cSupport },
+              { x: new Date(dates[dates.length - 1]).getTime(), y: mSupport * (dates.length - 1) + cSupport }
+            ]
+          : [];
 
         const zigzagData = srRaw
           .map((pt, idx) => ({
-            x: new Date(dates[idx]).getTime(),
+            x: new Date(dates[simTrendIndices[idx]]).getTime(),
             y: pt.zigzag,
           }))
           .filter((pt): pt is { x: number; y: number } => pt.y !== null && pt.y !== undefined);
@@ -1310,6 +1438,7 @@ export function useChartIndicators() {
         const firstR = resistanceData[0]?.y ?? 0;
         const lastR = resistanceData[resistanceData.length - 1]?.y ?? 0;
         const slope = lastR - firstR;
+        const slopePercent = firstR !== 0 ? (slope / firstR) * 100 : 0;
         const slopeType: 'positive' | 'negative' | 'flat' =
           slope > 0.001 ? 'positive' : slope < -0.001 ? 'negative' : 'flat';
 
@@ -1326,9 +1455,10 @@ export function useChartIndicators() {
           resistanceData,
           supportData,
           zigzagData: trendAlgo === 'zigzag' ? zigzagData : undefined,
-          latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
+          latestResistance: cResistance !== null && cResistance !== undefined ? mResistance * (dates.length - 1) + cResistance : null,
           touchPoints: itemTouchPoints,
           slopeType,
+          slope: slopePercent,
         });
       }
 
@@ -1343,6 +1473,8 @@ export function useChartIndicators() {
     period,
     startDate,
     endDate,
+    trendStartDate,
+    trendEndDate,
     trendBase,
     trendAlgo,
     zigzagThreshold,
@@ -1408,6 +1540,10 @@ export function useChartIndicators() {
     setShowDonchian,
     showAutoTrend,
     setShowAutoTrend,
+    trendStartDate,
+    setTrendStartDate,
+    trendEndDate,
+    setTrendEndDate,
     trendBase,
     setTrendBase,
     trendAlgo,

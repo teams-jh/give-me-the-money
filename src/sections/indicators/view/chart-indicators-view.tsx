@@ -1,7 +1,9 @@
 'use client';
 
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
+import { alpha } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -56,28 +58,39 @@ export function ChartIndicatorsView() {
   return (
     <DashboardContent maxWidth="xl">
       <Stack spacing={2}>
-        {/* Header with Market Selector & Period Selection */}
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-          spacing={2}
-          sx={{ pb: 1 }}
-        >
-          <Stack spacing={0.5}>
-            <Grid container alignItems="center" spacing={1}>
-              <Grid>
-                <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                  차트 기술적 지표 분석 📈
-                </Typography>
-              </Grid>
+        {/* Header Title Block */}
+        <Stack spacing={0.5} sx={{ pb: 1 }}>
+          <Grid container alignItems="center" spacing={1}>
+            <Grid>
+              <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                차트 기술적 지표 분석 📈
+              </Typography>
             </Grid>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-              단일 종목의 가격 움직임을 기반으로 이동평균선, RSI, MACD, 볼린저 밴드를 실시간 연산하여
-              분석합니다.
-            </Typography>
-          </Stack>
+          </Grid>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+            단일 종목의 가격 움직임을 기반으로 이동평균선, RSI, MACD, 볼린저 밴드를 실시간 연산하여
+            분석합니다.
+          </Typography>
+        </Stack>
 
+        {/* Sticky Market Selector & Period Selection */}
+        <Box
+          sx={{
+            position: 'sticky',
+            top: 72, // Below the dashboard top navbar
+            zIndex: 1000,
+            bgcolor: (theme) => alpha(theme.palette.background.paper, 0.9),
+            backdropFilter: 'blur(8px)',
+            py: 1.5,
+            px: 2.5,
+            borderRadius: 2,
+            boxShadow: (theme) => theme.customShadows?.z8 || '0 8px 16px 0 rgba(0,0,0,0.06)',
+            border: (theme) => `1px solid ${theme.palette.divider}`,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+          }}
+        >
           <MarketPeriodSelector
             market={market}
             period={period}
@@ -88,7 +101,7 @@ export function ChartIndicatorsView() {
             onStartDateChange={setStartDate}
             onEndDateChange={setEndDate}
           />
-        </Stack>
+        </Box>
 
         {/* 1. Single Ticker Selection Card */}
         <TickerSelectionCard
