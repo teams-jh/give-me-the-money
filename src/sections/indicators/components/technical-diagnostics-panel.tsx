@@ -31,6 +31,9 @@ export interface TechAnalysisData {
   touchCount?: number;
   highTouchCount?: number;
   closeTouchCount?: number;
+  breakoutCount?: number;
+  closeBreakoutCount?: number;
+  highBreakoutCount?: number;
 }
 
 interface TechnicalDiagnosticsPanelProps {
@@ -270,7 +273,7 @@ export function TechnicalDiagnosticsPanel({
               status="Bearish"
               desc={`수학적 추세 채널 또는 피크 탐색 알고리즘을 기반으로 주가의 차익 실현 대기 매도벽을 실시간으로 추정한 가격대입니다. ${
                 techAnalysis.touchCount !== undefined
-                  ? `(현재 상단 추세선 터치 - 종가: ${techAnalysis.closeTouchCount ?? 0}회, 고가: ${techAnalysis.highTouchCount ?? 0}회, 총: ${techAnalysis.touchCount}회)`
+                  ? `(현재 상단 추세선 터치: ${techAnalysis.touchCount}회[종가 ${techAnalysis.closeTouchCount ?? 0} / 고가 ${techAnalysis.highTouchCount ?? 0}], 돌파: ${techAnalysis.breakoutCount ?? 0}회[종가 ${techAnalysis.closeBreakoutCount ?? 0} / 고가 ${techAnalysis.highBreakoutCount ?? 0}])`
                   : ''
               }`}
               value={`저항 가격: ${formatMoney(techAnalysis.latestResistance ?? 0)}`}

@@ -169,6 +169,9 @@ export function ChartIndicatorsView() {
                 touchCount: dynamicLines?.touchCount ?? 0,
                 highTouchCount: dynamicLines?.highTouchCount ?? 0,
                 closeTouchCount: dynamicLines?.closeTouchCount ?? 0,
+                breakoutCount: dynamicLines?.breakoutCount ?? 0,
+                closeBreakoutCount: dynamicLines?.closeBreakoutCount ?? 0,
+                highBreakoutCount: dynamicLines?.highBreakoutCount ?? 0,
               }}
               formatMoney={formatMoney}
             />
