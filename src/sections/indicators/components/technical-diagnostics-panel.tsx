@@ -28,6 +28,9 @@ export interface TechAnalysisData {
   latestDonchianUpper: number;
   latestSupport?: number;
   latestResistance?: number;
+  touchCount?: number;
+  highTouchCount?: number;
+  closeTouchCount?: number;
 }
 
 interface TechnicalDiagnosticsPanelProps {
@@ -265,7 +268,11 @@ export function TechnicalDiagnosticsPanel({
               title="실시간 자동 저항선 (Auto Resistance)"
               label="매도 타점 및 차익 실현 저항대 🔴"
               status="Bearish"
-              desc="수학적 추세 채널 또는 피크 탐색 알고리즘을 기반으로 주가의 차익 실현 대기 매도벽을 실시간으로 추정한 가격대입니다."
+              desc={`수학적 추세 채널 또는 피크 탐색 알고리즘을 기반으로 주가의 차익 실현 대기 매도벽을 실시간으로 추정한 가격대입니다. ${
+                techAnalysis.touchCount !== undefined
+                  ? `(현재 상단 추세선 터치 - 종가: ${techAnalysis.closeTouchCount ?? 0}회, 고가: ${techAnalysis.highTouchCount ?? 0}회, 총: ${techAnalysis.touchCount}회)`
+                  : ''
+              }`}
               value={`저항 가격: ${formatMoney(techAnalysis.latestResistance ?? 0)}`}
             />
           </>

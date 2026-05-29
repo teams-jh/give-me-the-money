@@ -13,6 +13,7 @@ import { TechnicalApexChart } from '../components/technical-apex-chart';
 import { TickerSelectionCard } from '../components/ticker-selection-card';
 import { TechnicalScoreBanner } from '../components/technical-score-banner';
 import { IndicatorFilterChips } from '../components/indicator-filter-chips';
+import { SimulationResultsModal } from '../components/simulation-results-modal';
 import { AutoTrendlineController } from '../components/auto-trendline-controller';
 import { TechnicalDiagnosticsPanel } from '../components/technical-diagnostics-panel';
 
@@ -165,12 +166,16 @@ export function ChartIndicatorsView() {
                 ...techAnalysis,
                 latestSupport: dynamicLines?.latestSupport ?? techAnalysis.latestSupport,
                 latestResistance: dynamicLines?.latestResistance ?? techAnalysis.latestResistance,
+                touchCount: dynamicLines?.touchCount ?? 0,
+                highTouchCount: dynamicLines?.highTouchCount ?? 0,
+                closeTouchCount: dynamicLines?.closeTouchCount ?? 0,
               }}
               formatMoney={formatMoney}
             />
           </Grid>
         )}
       </Stack>
+      <SimulationResultsModal indicators={indicators} />
     </DashboardContent>
   );
 }

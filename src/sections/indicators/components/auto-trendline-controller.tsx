@@ -7,8 +7,10 @@ import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { alpha, useTheme } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +34,12 @@ export function AutoTrendlineController({ indicators }: Props) {
     setRegressionStdDev,
     lineCurve,
     setLineCurve,
+    trendTouchTolerance,
+    setTrendTouchTolerance,
+    runSimulation,
+    isSimulating,
+    trendTouchBasis,
+    setTrendTouchBasis,
   } = indicators;
 
   return (
@@ -64,9 +72,46 @@ export function AutoTrendlineController({ indicators }: Props) {
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 화면에 노출된 캔들 범위 내에서 수학적 알고리즘을 통해 자동으로 최적의 지지선(Support)과
                 저항선(Resistance)을 실시간 작도합니다.
+                {showAutoTrend && (
+                  <span style={{ marginLeft: '8px', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+                    <span style={{ color: theme.palette.text.secondary, fontWeight: 500 }}>|</span>
+                    <span style={{ color: theme.palette.error.main, fontWeight: 800 }}>
+                      🔴 종가 터치: {indicators.dynamicLines?.closeTouchCount ?? 0}회
+                    </span>
+                    <span style={{ color: theme.palette.warning.main, fontWeight: 800 }}>
+                      🟠 고가 터치: {indicators.dynamicLines?.highTouchCount ?? 0}회
+                    </span>
+                    <span style={{ color: theme.palette.primary.main, fontWeight: 800 }}>
+                      ✨ 총 터치: {indicators.dynamicLines?.touchCount ?? 0}회
+                    </span>
+                  </span>
+                )}
               </Typography>
             </Box>
-            <Box>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              {showAutoTrend && (
+                <Button
+                  variant="contained"
+                  color="warning"
+                  onClick={runSimulation}
+                  disabled={isSimulating}
+                  startIcon={
+                    isSimulating ? (
+                      <CircularProgress size={16} color="inherit" />
+                    ) : undefined
+                  }
+                  sx={{
+                    fontWeight: 800,
+                    px: 2,
+                    py: 1,
+                    fontSize: '0.875rem',
+                    borderRadius: 1.5,
+                    boxShadow: theme.customShadows?.z8,
+                  }}
+                >
+                  {isSimulating ? '시뮬레이션 중...' : '📊 전체 종목 시뮬레이션'}
+                </Button>
+              )}
               <Chip
                 label={showAutoTrend ? '자동 추세선 ON' : '자동 추세선 OFF'}
                 color={showAutoTrend ? 'primary' : 'default'}
@@ -80,7 +125,7 @@ export function AutoTrendlineController({ indicators }: Props) {
                   borderRadius: 1.5,
                 }}
               />
-            </Box>
+            </Stack>
           </Stack>
 
           {showAutoTrend && (
@@ -162,45 +207,109 @@ export function AutoTrendlineController({ indicators }: Props) {
 
               {/* 4. 알고리즘 상세 파라미터 튜닝 */}
               <Grid size={{ xs: 12, md: 3 }}>
-                {trendAlgo === 'zigzag' && (
-                  <Box>
+                <Stack spacing={2}>
+                  {trendAlgo === 'zigzag' && (
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                        ⚡ 지그재그 반전 비율:{' '}
+                        <span style={{ color: theme.palette.warning.main }}>{zigzagThreshold}%</span>
+                      </Typography>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={zigzagThreshold}
+                          onChange={(e) => setZigzagThreshold(Number(e.target.value))}
+                          style={{
+                            width: '100%',
+                            cursor: 'pointer',
+                            accentColor: theme.palette.warning.main,
+                          }}
+                        />
+                      </Stack>
+                    </Box>
+                  )}
+
+                  {trendAlgo === 'regression' && (
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                        ⚡ 표준편차 채널 배수:{' '}
+                        <span style={{ color: theme.palette.warning.main }}>
+                          {regressionStdDev.toFixed(1)}x
+                        </span>
+                      </Typography>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <input
+                          type="range"
+                          min="1.0"
+                          max="3.0"
+                          step="0.1"
+                          value={regressionStdDev}
+                          onChange={(e) => setRegressionStdDev(Number(e.target.value))}
+                          style={{
+                            width: '100%',
+                            cursor: 'pointer',
+                            accentColor: theme.palette.warning.main,
+                          }}
+                        />
+                      </Stack>
+                    </Box>
+                  )}
+
+                  {trendAlgo === 'swing' && (
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 700, color: 'text.primary', mb: 0.5 }}
+                      >
+                        ⚡ 스윙 극점 필터링
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                        화면 내 스윙 고점과 저점 상위극점을 연결하여 안정적인 수평 채널을 확인합니다.
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Box sx={{ mt: 1.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
-                      ⚡ 지그재그 반전 비율:{' '}
-                      <span style={{ color: theme.palette.warning.main }}>{zigzagThreshold}%</span>
+                      🎯 터치 인정 기준 (Touch Basis)
                     </Typography>
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        value={zigzagThreshold}
-                        onChange={(e) => setZigzagThreshold(Number(e.target.value))}
-                        style={{
-                          width: '100%',
-                          cursor: 'pointer',
-                          accentColor: theme.palette.warning.main,
-                        }}
-                      />
+                    <Stack direction="row" spacing={0.5}>
+                      {([
+                        { key: 'both', label: '종가+고가' },
+                        { key: 'close', label: '종가만' },
+                        { key: 'high', label: '고가만' },
+                      ] as const).map((basis) => {
+                        const isActive = trendTouchBasis === basis.key;
+                        return (
+                          <Chip
+                            key={basis.key}
+                            label={basis.label}
+                            color={isActive ? 'warning' : 'default'}
+                            variant={isActive ? 'filled' : 'outlined'}
+                            onClick={() => setTrendTouchBasis(basis.key)}
+                            size="small"
+                            sx={{ fontWeight: isActive ? 700 : 500, flex: 1, cursor: 'pointer' }}
+                          />
+                        );
+                      })}
                     </Stack>
                   </Box>
-                )}
 
-                {trendAlgo === 'regression' && (
                   <Box>
                     <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
-                      ⚡ 표준편차 채널 배수:{' '}
-                      <span style={{ color: theme.palette.warning.main }}>
-                        {regressionStdDev.toFixed(1)}x
-                      </span>
+                      📐 터치 인정 범위 (-a%):{' '}
+                      <span style={{ color: theme.palette.warning.main }}>-{trendTouchTolerance}%</span>
                     </Typography>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <input
                         type="range"
-                        min="1.0"
-                        max="3.0"
+                        min="0.1"
+                        max="5.0"
                         step="0.1"
-                        value={regressionStdDev}
-                        onChange={(e) => setRegressionStdDev(Number(e.target.value))}
+                        value={trendTouchTolerance}
+                        onChange={(e) => setTrendTouchTolerance(Number(e.target.value))}
                         style={{
                           width: '100%',
                           cursor: 'pointer',
@@ -209,21 +318,7 @@ export function AutoTrendlineController({ indicators }: Props) {
                       />
                     </Stack>
                   </Box>
-                )}
-
-                {trendAlgo === 'swing' && (
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontWeight: 700, color: 'text.primary', mb: 0.5 }}
-                    >
-                      ⚡ 스윙 극점 필터링
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
-                      화면 내 스윙 고점과 저점 상위극점을 연결하여 안정적인 수평 채널을 확인합니다.
-                    </Typography>
-                  </Box>
-                )}
+                </Stack>
               </Grid>
             </Grid>
           )}
