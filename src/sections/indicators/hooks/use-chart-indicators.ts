@@ -99,12 +99,36 @@ export interface VisibleHighLowResult {
   visibleIndices: number[];
 }
 
+export interface TouchPoint {
+  x: number;
+  y: number;
+  priceType: 'high' | 'close';
+}
+
+export interface SimResult {
+  ticker: string;
+  name: string;
+  touchCount: number;
+  closeTouchCount: number;
+  highTouchCount: number;
+  prices: PriceDataPoint[];
+  resistanceData: { x: number; y: number | null }[];
+  supportData?: { x: number; y: number | null }[];
+  zigzagData?: { x: number; y: number }[];
+  latestResistance: number | null;
+  touchPoints: TouchPoint[];
+}
+
 export interface DynamicLinesResult {
   supportData: { x: number; y: number | null }[];
   resistanceData: { x: number; y: number | null }[];
   zigzagData: { x: number; y: number }[];
   latestSupport: number | null;
   latestResistance: number | null;
+  touchPoints: TouchPoint[];
+  touchCount: number;
+  highTouchCount: number;
+  closeTouchCount: number;
 }
 
 const getLocalDateString = (date: Date) => {
@@ -152,6 +176,13 @@ export function useChartIndicators() {
   const [zigzagThreshold, setZigzagThreshold] = useState<number>(3);
   const [regressionStdDev, setRegressionStdDev] = useState<number>(2.0);
   const [lineCurve, setLineCurve] = useState<'straight' | 'smooth'>('straight');
+  const [trendTouchTolerance, setTrendTouchTolerance] = useState<number>(2);
+  const [trendTouchBasis, setTrendTouchBasis] = useState<'close' | 'high' | 'both'>('both');
+
+  // Simulation states
+  const [simResults, setSimResults] = useState<SimResult[]>([]);
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [showSimModal, setShowSimModal] = useState(false);
 
   // Dynamic visible chart range (for highest/lowest calculations on zoom)
   const [visibleRange, setVisibleRange] = useState<{ min: number; max: number } | null>(null);
@@ -521,14 +552,62 @@ export function useChartIndicators() {
       }))
       .filter((pt): pt is { x: number; y: number } => pt.y !== null && pt.y !== undefined);
 
+    const touchPoints: TouchPoint[] = [];
+    let highTouchCount = 0;
+    let closeTouchCount = 0;
+
+    if (srRaw.length > 0) {
+      for (let idx = 0; idx < srRaw.length; idx++) {
+        const pt = srRaw[idx];
+        if (pt.resistance !== null && pt.resistance !== undefined) {
+          const R_i = pt.resistance;
+          const high = visHighs[idx] ?? 0;
+          const close = visCloses[idx] ?? 0;
+          const lowerBound = R_i * (1 - trendTouchTolerance / 100);
+          const upperBound = R_i * 1.01;
+
+          let isTouch = false;
+          let touchedY = high;
+          let priceType: 'high' | 'close' = 'high';
+
+          const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
+          const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
+
+          if (checkClose && close >= lowerBound && close <= upperBound) {
+            isTouch = true;
+            touchedY = close;
+            priceType = 'close';
+            closeTouchCount++;
+          } else if (checkHigh && high >= lowerBound && high <= upperBound) {
+            isTouch = true;
+            touchedY = high;
+            priceType = 'high';
+            highTouchCount++;
+          }
+
+          if (isTouch) {
+            touchPoints.push({
+              x: new Date(dates[visibleIndices[idx]]).getTime(),
+              y: touchedY,
+              priceType,
+            });
+          }
+        }
+      }
+    }
+
     return {
       supportData,
       resistanceData,
       zigzagData,
       latestSupport: srRaw[srRaw.length - 1]?.support ?? null,
       latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
+      touchPoints,
+      touchCount: touchPoints.length,
+      highTouchCount,
+      closeTouchCount,
     };
-  }, [activeStockDataSlice, visibleHighLow, trendBase, trendAlgo, zigzagThreshold, regressionStdDev]);
+  }, [activeStockDataSlice, visibleHighLow, trendBase, trendAlgo, zigzagThreshold, regressionStdDev, trendTouchTolerance, trendTouchBasis]);
 
   // Chart configuration for selected ticker
   const chartData = useMemo(() => {
@@ -853,6 +932,37 @@ export function useChartIndicators() {
       );
     }
 
+    if (showAutoTrend && dynamicLines?.touchPoints) {
+      dynamicLines.touchPoints.forEach((tp) => {
+        const isClose = tp.priceType === 'close';
+        const color = isClose ? theme.palette.error.main : theme.palette.warning.main;
+        const text = isClose ? '종가 터치' : '고가 터치';
+
+        annotations.points.push({
+          x: tp.x,
+          y: tp.y,
+          marker: {
+            size: 6,
+            fillColor: color,
+            strokeColor: '#FFFFFF',
+            strokeWidth: 2,
+          },
+          label: {
+            borderColor: color,
+            offsetY: -12,
+            style: {
+              color: '#fff',
+              background: color,
+              fontWeight: 700,
+              fontSize: '10px',
+              padding: { left: 4, right: 4, top: 2, bottom: 2 }
+            },
+            text,
+          },
+        });
+      });
+    }
+
     if (showFib && visibleHighLow) {
       const { max, min } = visibleHighLow;
       const diff = max - min;
@@ -1003,7 +1113,159 @@ export function useChartIndicators() {
         },
       },
     };
-  }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, lineCurve, visibleRange]);
+  }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, lineCurve, visibleRange, showAutoTrend, dynamicLines]);
+
+  const runSimulation = useCallback(() => {
+    setIsSimulating(true);
+    setTimeout(() => {
+      const results: SimResult[] = [];
+
+      for (const opt of tickerOptions) {
+        const rawData = allTickersData[opt.ticker];
+        if (!rawData) continue;
+
+        const allPrices = (rawData.prices || []) as PriceDataPoint[];
+        const daysMap = { '3m': 63, '1y': 252, '2y': 504, '3y': 756 };
+
+        let slice: PriceDataPoint[];
+        if (period === 'custom' && startDate && endDate) {
+          slice = allPrices.filter((p) => p.date >= startDate && p.date <= endDate);
+        } else {
+          const days = daysMap[period === 'custom' ? '1y' : period];
+          slice = allPrices.slice(-days);
+        }
+
+        if (slice.length === 0) continue;
+
+        const closePrices = slice.map((p) => p.close);
+        const openPrices = slice.map((p) => p.open || p.close);
+        const highPrices = slice.map((p) => p.high || p.close);
+        const lowPrices = slice.map((p) => p.low || p.close);
+        const dates = slice.map((p) => p.date);
+
+        const currentHighs =
+          trendBase === 'close' ? closePrices : trendBase === 'open' ? openPrices : highPrices;
+        const currentLows =
+          trendBase === 'close' ? closePrices : trendBase === 'open' ? openPrices : lowPrices;
+        const currentCloses =
+          trendBase === 'close' ? closePrices : trendBase === 'open' ? openPrices : closePrices;
+        const currentOpens =
+          trendBase === 'close' ? closePrices : trendBase === 'open' ? openPrices : openPrices;
+
+        let srRaw: { support: number | null; resistance: number | null; zigzag?: number | null }[] = [];
+
+        if (trendAlgo === 'regression') {
+          srRaw = calcLinearRegressionChannel(currentCloses, regressionStdDev);
+        } else if (trendAlgo === 'zigzag') {
+          srRaw = calcZigZagSupportResistance(
+            currentHighs,
+            currentLows,
+            currentCloses,
+            currentOpens,
+            zigzagThreshold
+          );
+        } else {
+          srRaw = calcSupportResistance(currentHighs, currentLows, currentCloses, currentOpens);
+        }
+
+        let highTouchCount = 0;
+        let closeTouchCount = 0;
+        const itemTouchPoints: TouchPoint[] = [];
+
+        if (srRaw.length > 0) {
+          for (let idx = 0; idx < srRaw.length; idx++) {
+            const pt = srRaw[idx];
+            if (pt.resistance !== null && pt.resistance !== undefined) {
+              const R_i = pt.resistance;
+              const high = highPrices[idx] ?? 0;
+              const close = closePrices[idx] ?? 0;
+              const lowerBound = R_i * (1 - trendTouchTolerance / 100);
+              const upperBound = R_i * 1.01;
+
+              let isTouch = false;
+              let priceType: 'high' | 'close' = 'high';
+              let touchedY = high;
+
+              const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
+              const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
+
+              if (checkClose && close >= lowerBound && close <= upperBound) {
+                isTouch = true;
+                priceType = 'close';
+                touchedY = close;
+                closeTouchCount++;
+              } else if (checkHigh && high >= lowerBound && high <= upperBound) {
+                isTouch = true;
+                priceType = 'high';
+                touchedY = high;
+                highTouchCount++;
+              }
+
+              if (isTouch) {
+                itemTouchPoints.push({
+                  x: new Date(dates[idx]).getTime(),
+                  y: touchedY,
+                  priceType,
+                });
+              }
+            }
+          }
+        }
+
+        const resistanceData = srRaw
+          .map((pt, idx) => ({
+            x: new Date(dates[idx]).getTime(),
+            y: pt.resistance,
+          }))
+          .filter((pt) => pt.y !== null);
+
+        const supportData = srRaw
+          .map((pt, idx) => ({
+            x: new Date(dates[idx]).getTime(),
+            y: pt.support,
+          }))
+          .filter((pt) => pt.y !== null);
+
+        const zigzagData = srRaw
+          .map((pt, idx) => ({
+            x: new Date(dates[idx]).getTime(),
+            y: pt.zigzag,
+          }))
+          .filter((pt): pt is { x: number; y: number } => pt.y !== null && pt.y !== undefined);
+
+        results.push({
+          ticker: opt.ticker,
+          name: opt.name,
+          touchCount: highTouchCount + closeTouchCount,
+          closeTouchCount,
+          highTouchCount,
+          prices: slice,
+          resistanceData,
+          supportData,
+          zigzagData: trendAlgo === 'zigzag' ? zigzagData : undefined,
+          latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
+          touchPoints: itemTouchPoints,
+        });
+      }
+
+      results.sort((a, b) => b.touchCount - a.touchCount);
+
+      setSimResults(results);
+      setIsSimulating(false);
+      setShowSimModal(true);
+    }, 150);
+  }, [
+    tickerOptions,
+    period,
+    startDate,
+    endDate,
+    trendBase,
+    trendAlgo,
+    zigzagThreshold,
+    regressionStdDev,
+    trendTouchTolerance,
+    trendTouchBasis,
+  ]);
 
   const handleTickerChange = (newValue: { ticker: string; name: string } | null) => {
     if (newValue) {
@@ -1085,6 +1347,17 @@ export function useChartIndicators() {
     formatMoney,
     handleTickerChange,
     handleMarketChange,
+    trendTouchTolerance,
+    setTrendTouchTolerance,
+    trendTouchBasis,
+    setTrendTouchBasis,
+    simResults,
+    setSimResults,
+    isSimulating,
+    setIsSimulating,
+    showSimModal,
+    setShowSimModal,
+    runSimulation,
   };
 }
 
