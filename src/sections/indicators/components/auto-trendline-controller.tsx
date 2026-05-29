@@ -36,6 +36,8 @@ export function AutoTrendlineController({ indicators }: Props) {
     setLineCurve,
     trendTouchTolerance,
     setTrendTouchTolerance,
+    trendBreakoutTolerance,
+    setTrendBreakoutTolerance,
     runSimulation,
     isSimulating,
     trendTouchBasis,
@@ -73,16 +75,16 @@ export function AutoTrendlineController({ indicators }: Props) {
                 화면에 노출된 캔들 범위 내에서 수학적 알고리즘을 통해 자동으로 최적의 지지선(Support)과
                 저항선(Resistance)을 실시간 작도합니다.
                 {showAutoTrend && (
-                  <span style={{ marginLeft: '8px', display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+                  <span style={{ marginLeft: '8px', display: 'inline-flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <span style={{ color: theme.palette.text.secondary, fontWeight: 500 }}>|</span>
                     <span style={{ color: theme.palette.error.main, fontWeight: 800 }}>
-                      🔴 종가 터치: {indicators.dynamicLines?.closeTouchCount ?? 0}회
+                      🔴 종가 (터치: {indicators.dynamicLines?.closeTouchCount ?? 0}회, 돌파: {indicators.dynamicLines?.closeBreakoutCount ?? 0}회)
                     </span>
                     <span style={{ color: theme.palette.warning.main, fontWeight: 800 }}>
-                      🟠 고가 터치: {indicators.dynamicLines?.highTouchCount ?? 0}회
+                      🟠 고가 (터치: {indicators.dynamicLines?.highTouchCount ?? 0}회, 돌파: {indicators.dynamicLines?.highBreakoutCount ?? 0}회)
                     </span>
                     <span style={{ color: theme.palette.primary.main, fontWeight: 800 }}>
-                      ✨ 총 터치: {indicators.dynamicLines?.touchCount ?? 0}회
+                      ✨ 총합 (터치: {indicators.dynamicLines?.touchCount ?? 0}회, 돌파: {indicators.dynamicLines?.breakoutCount ?? 0}회)
                     </span>
                   </span>
                 )}
@@ -314,6 +316,28 @@ export function AutoTrendlineController({ indicators }: Props) {
                           width: '100%',
                           cursor: 'pointer',
                           accentColor: theme.palette.warning.main,
+                        }}
+                      />
+                    </Stack>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                      📈 돌파 인정 범위 (+b%):{' '}
+                      <span style={{ color: theme.palette.secondary.main }}>+{trendBreakoutTolerance}%</span>
+                    </Typography>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="5.0"
+                        step="0.1"
+                        value={trendBreakoutTolerance}
+                        onChange={(e) => setTrendBreakoutTolerance(Number(e.target.value))}
+                        style={{
+                          width: '100%',
+                          cursor: 'pointer',
+                          accentColor: theme.palette.secondary.main,
                         }}
                       />
                     </Stack>

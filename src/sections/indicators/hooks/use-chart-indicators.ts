@@ -103,6 +103,7 @@ export interface TouchPoint {
   x: number;
   y: number;
   priceType: 'high' | 'close';
+  type: 'touch' | 'breakout';
 }
 
 export interface SimResult {
@@ -111,6 +112,9 @@ export interface SimResult {
   touchCount: number;
   closeTouchCount: number;
   highTouchCount: number;
+  breakoutCount: number;
+  closeBreakoutCount: number;
+  highBreakoutCount: number;
   prices: PriceDataPoint[];
   resistanceData: { x: number; y: number | null }[];
   supportData?: { x: number; y: number | null }[];
@@ -130,6 +134,9 @@ export interface DynamicLinesResult {
   touchCount: number;
   highTouchCount: number;
   closeTouchCount: number;
+  breakoutCount: number;
+  closeBreakoutCount: number;
+  highBreakoutCount: number;
 }
 
 const getLocalDateString = (date: Date) => {
@@ -178,6 +185,7 @@ export function useChartIndicators() {
   const [regressionStdDev, setRegressionStdDev] = useState<number>(2.0);
   const [lineCurve, setLineCurve] = useState<'straight' | 'smooth'>('straight');
   const [trendTouchTolerance, setTrendTouchTolerance] = useState<number>(2);
+  const [trendBreakoutTolerance, setTrendBreakoutTolerance] = useState<number>(2);
   const [trendTouchBasis, setTrendTouchBasis] = useState<'close' | 'high' | 'both'>('both');
 
   // Simulation states
@@ -556,6 +564,8 @@ export function useChartIndicators() {
     const touchPoints: TouchPoint[] = [];
     let highTouchCount = 0;
     let closeTouchCount = 0;
+    let highBreakoutCount = 0;
+    let closeBreakoutCount = 0;
 
     if (srRaw.length > 0) {
       for (let idx = 0; idx < srRaw.length; idx++) {
@@ -564,33 +574,57 @@ export function useChartIndicators() {
           const R_i = pt.resistance;
           const high = visHighs[idx] ?? 0;
           const close = visCloses[idx] ?? 0;
-          const lowerBound = R_i * (1 - trendTouchTolerance / 100);
-          const upperBound = R_i * 1.01;
+          const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
+          const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
 
           let isTouch = false;
+          let isBreakout = false;
           let touchedY = high;
           let priceType: 'high' | 'close' = 'high';
+          let type: 'touch' | 'breakout' = 'touch';
 
           const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
           const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
 
-          if (checkClose && close >= lowerBound && close <= upperBound) {
+          // 1. Close Breakout
+          if (checkClose && close >= upperBoundBreak) {
+            isBreakout = true;
+            touchedY = close;
+            priceType = 'close';
+            type = 'breakout';
+            closeBreakoutCount++;
+          }
+          // 2. Close Touch
+          else if (checkClose && close >= lowerBoundTouch && close <= R_i) {
             isTouch = true;
             touchedY = close;
             priceType = 'close';
+            type = 'touch';
             closeTouchCount++;
-          } else if (checkHigh && high >= lowerBound && high <= upperBound) {
+          }
+          // 3. High Breakout
+          else if (checkHigh && high >= upperBoundBreak) {
+            isBreakout = true;
+            touchedY = high;
+            priceType = 'high';
+            type = 'breakout';
+            highBreakoutCount++;
+          }
+          // 4. High Touch
+          else if (checkHigh && high >= lowerBoundTouch && high <= R_i) {
             isTouch = true;
             touchedY = high;
             priceType = 'high';
+            type = 'touch';
             highTouchCount++;
           }
 
-          if (isTouch) {
+          if (isTouch || isBreakout) {
             touchPoints.push({
               x: new Date(dates[visibleIndices[idx]]).getTime(),
               y: touchedY,
               priceType,
+              type,
             });
           }
         }
@@ -604,11 +638,14 @@ export function useChartIndicators() {
       latestSupport: srRaw[srRaw.length - 1]?.support ?? null,
       latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
       touchPoints,
-      touchCount: touchPoints.length,
+      touchCount: closeTouchCount + highTouchCount,
       highTouchCount,
       closeTouchCount,
+      breakoutCount: closeBreakoutCount + highBreakoutCount,
+      closeBreakoutCount,
+      highBreakoutCount,
     };
-  }, [activeStockDataSlice, visibleHighLow, trendBase, trendAlgo, zigzagThreshold, regressionStdDev, trendTouchTolerance, trendTouchBasis]);
+  }, [activeStockDataSlice, visibleHighLow, trendBase, trendAlgo, zigzagThreshold, regressionStdDev, trendTouchTolerance, trendBreakoutTolerance, trendTouchBasis]);
 
   // Chart configuration for selected ticker
   const chartData = useMemo(() => {
@@ -936,8 +973,18 @@ export function useChartIndicators() {
     if (showAutoTrend && dynamicLines?.touchPoints) {
       dynamicLines.touchPoints.forEach((tp) => {
         const isClose = tp.priceType === 'close';
-        const color = isClose ? theme.palette.error.main : theme.palette.warning.main;
-        const text = isClose ? '종가 터치' : '고가 터치';
+        const isBreak = tp.type === 'breakout';
+        
+        let color = theme.palette.warning.main;
+        let text = '고가 터치';
+
+        if (isBreak) {
+          color = isClose ? theme.palette.secondary.main : theme.palette.secondary.light;
+          text = isClose ? '종가 돌파' : '고가 돌파';
+        } else {
+          color = isClose ? theme.palette.error.main : theme.palette.warning.main;
+          text = isClose ? '종가 터치' : '고가 터치';
+        }
 
         annotations.points.push({
           x: tp.x,
@@ -1171,6 +1218,8 @@ export function useChartIndicators() {
 
         let highTouchCount = 0;
         let closeTouchCount = 0;
+        let highBreakoutCount = 0;
+        let closeBreakoutCount = 0;
         const itemTouchPoints: TouchPoint[] = [];
 
         if (srRaw.length > 0) {
@@ -1180,33 +1229,57 @@ export function useChartIndicators() {
               const R_i = pt.resistance;
               const high = highPrices[idx] ?? 0;
               const close = closePrices[idx] ?? 0;
-              const lowerBound = R_i * (1 - trendTouchTolerance / 100);
-              const upperBound = R_i * 1.01;
+              const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
+              const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
 
               let isTouch = false;
+              let isBreakout = false;
               let priceType: 'high' | 'close' = 'high';
+              let type: 'touch' | 'breakout' = 'touch';
               let touchedY = high;
 
               const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
               const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
 
-              if (checkClose && close >= lowerBound && close <= upperBound) {
+              // 1. Close Breakout
+              if (checkClose && close >= upperBoundBreak) {
+                isBreakout = true;
+                priceType = 'close';
+                type = 'breakout';
+                touchedY = close;
+                closeBreakoutCount++;
+              }
+              // 2. Close Touch
+              else if (checkClose && close >= lowerBoundTouch && close <= R_i) {
                 isTouch = true;
                 priceType = 'close';
+                type = 'touch';
                 touchedY = close;
                 closeTouchCount++;
-              } else if (checkHigh && high >= lowerBound && high <= upperBound) {
+              }
+              // 3. High Breakout
+              else if (checkHigh && high >= upperBoundBreak) {
+                isBreakout = true;
+                priceType = 'high';
+                type = 'breakout';
+                touchedY = high;
+                highBreakoutCount++;
+              }
+              // 4. High Touch
+              else if (checkHigh && high >= lowerBoundTouch && high <= R_i) {
                 isTouch = true;
                 priceType = 'high';
+                type = 'touch';
                 touchedY = high;
                 highTouchCount++;
               }
 
-              if (isTouch) {
+              if (isTouch || isBreakout) {
                 itemTouchPoints.push({
                   x: new Date(dates[idx]).getTime(),
                   y: touchedY,
                   priceType,
+                  type,
                 });
               }
             }
@@ -1246,6 +1319,9 @@ export function useChartIndicators() {
           touchCount: highTouchCount + closeTouchCount,
           closeTouchCount,
           highTouchCount,
+          breakoutCount: highBreakoutCount + closeBreakoutCount,
+          closeBreakoutCount,
+          highBreakoutCount,
           prices: slice,
           resistanceData,
           supportData,
@@ -1256,7 +1332,7 @@ export function useChartIndicators() {
         });
       }
 
-      results.sort((a, b) => b.touchCount - a.touchCount);
+      results.sort((a, b) => (b.touchCount + b.breakoutCount) - (a.touchCount + a.breakoutCount));
 
       setSimResults(results);
       setIsSimulating(false);
@@ -1272,6 +1348,7 @@ export function useChartIndicators() {
     zigzagThreshold,
     regressionStdDev,
     trendTouchTolerance,
+    trendBreakoutTolerance,
     trendTouchBasis,
   ]);
 
@@ -1357,6 +1434,8 @@ export function useChartIndicators() {
     handleMarketChange,
     trendTouchTolerance,
     setTrendTouchTolerance,
+    trendBreakoutTolerance,
+    setTrendBreakoutTolerance,
     trendTouchBasis,
     setTrendTouchBasis,
     simResults,
