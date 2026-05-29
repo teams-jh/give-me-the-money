@@ -117,6 +117,7 @@ export interface SimResult {
   zigzagData?: { x: number; y: number }[];
   latestResistance: number | null;
   touchPoints: TouchPoint[];
+  slopeType: 'positive' | 'negative' | 'flat';
 }
 
 export interface DynamicLinesResult {
@@ -1233,6 +1234,12 @@ export function useChartIndicators() {
           }))
           .filter((pt): pt is { x: number; y: number } => pt.y !== null && pt.y !== undefined);
 
+        const firstR = resistanceData[0]?.y ?? 0;
+        const lastR = resistanceData[resistanceData.length - 1]?.y ?? 0;
+        const slope = lastR - firstR;
+        const slopeType: 'positive' | 'negative' | 'flat' =
+          slope > 0.001 ? 'positive' : slope < -0.001 ? 'negative' : 'flat';
+
         results.push({
           ticker: opt.ticker,
           name: opt.name,
@@ -1245,6 +1252,7 @@ export function useChartIndicators() {
           zigzagData: trendAlgo === 'zigzag' ? zigzagData : undefined,
           latestResistance: srRaw[srRaw.length - 1]?.resistance ?? null,
           touchPoints: itemTouchPoints,
+          slopeType,
         });
       }
 

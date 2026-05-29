@@ -31,6 +31,7 @@ export function SimulationResultsModal({ indicators }: Props) {
   // Pagination states
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(6);
+  const [slopeFilter, setSlopeFilter] = useState<'all' | 'positive' | 'negative'>('all');
 
   const handleClose = () => {
     setShowSimModal(false);
@@ -51,8 +52,20 @@ export function SimulationResultsModal({ indicators }: Props) {
     setPage(0);
   };
 
+  const handleSlopeFilterChange = (filter: 'all' | 'positive' | 'negative') => {
+    setSlopeFilter(filter);
+    setPage(0);
+  };
+
+  // Filter results by slope type
+  const filteredResults = simResults.filter((sim) => {
+    if (slopeFilter === 'positive') return sim.slopeType === 'positive';
+    if (slopeFilter === 'negative') return sim.slopeType === 'negative';
+    return true;
+  });
+
   // Get active subset of paginated simulation results
-  const paginatedResults = simResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const paginatedResults = filteredResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   const getMiniChartOptions = (sim: SimResult) => {
     const annotations: any = { points: [] };
@@ -196,6 +209,35 @@ export function SimulationResultsModal({ indicators }: Props) {
         </IconButton>
       </Stack>
 
+      {/* Dynamic Slope Filter Chips */}
+      <Stack direction="row" spacing={1} sx={{ mb: 2 }} alignItems="center">
+        <Typography variant="body2" sx={{ fontWeight: 800, mr: 1, color: 'text.secondary' }}>
+          📈 추세선 저항선 기울기 필터 (Slope Filter):
+        </Typography>
+        {([
+          { key: 'all', label: '전체 (All)' },
+          { key: 'positive', label: '📈 양의 기울기 (우상향)' },
+          { key: 'negative', label: '📉 음의 기울기 (우하향)' },
+        ] as const).map((opt) => {
+          const isActive = slopeFilter === opt.key;
+          return (
+            <Chip
+              key={opt.key}
+              label={opt.label}
+              color={isActive ? 'warning' : 'default'}
+              variant={isActive ? 'filled' : 'outlined'}
+              onClick={() => handleSlopeFilterChange(opt.key)}
+              sx={{ fontWeight: isActive ? 700 : 500, cursor: 'pointer' }}
+            />
+          );
+        })}
+        {filteredResults.length !== simResults.length && (
+          <Typography variant="caption" sx={{ color: 'text.secondary', ml: 1 }}>
+            (필터 결과: <strong>{filteredResults.length}개 종목</strong>)
+          </Typography>
+        )}
+      </Stack>
+
       <Divider sx={{ mb: 3 }} />
 
       {/* Tickers ranked cards Grid */}
@@ -296,7 +338,7 @@ export function SimulationResultsModal({ indicators }: Props) {
       <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
         <TablePagination
           component="div"
-          count={simResults.length}
+          count={filteredResults.length}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
