@@ -390,3 +390,220 @@ describe('detectStochasticSignal 추가 브랜치', () => {
     expect(Array.isArray(result.alerts)).toBe(true);
   });
 });
+
+
+// ── calcTrendTouchPoints ───────────────────────────────────────────────────────
+
+import { calcTrendTouchPoints } from './signals.ts';
+
+/**
+ * 테스트용 평평한 추세선 (m=0, c=100)
+ * R_i = 100 (모든 i 동일)
+ * touchTolerance=2%  → 터치 구간: 98 <= price <= 100
+ * breakoutTolerance=2% → 돌파 구간: price >= 102
+ */
+const FLAT_LINE = { m: 0, c: 100, touchTolerance: 2, breakoutTolerance: 2 };
+
+/** n개의 타임스탬프 생성 (1일 간격) */
+function makeTimestamps(n: number): number[] {
+  return Array.from({ length: n }, (_, i) => i * 86_400_000);
+}
+
+function makeParams(
+  overrides: Partial<ReturnType<typeof baseParams>> & { n?: number }
+) {
+  const n = overrides.n ?? 5;
+  return { ...baseParams(n), ...overrides };
+}
+
+function baseParams(n: number) {
+  return {
+    timestamps:        makeTimestamps(n),
+    highPrices:        Array(n).fill(95),   // 기본: 비반응 구간
+    closePrices:       Array(n).fill(95),
+    ...FLAT_LINE,
+    trendMinIdx:       0,
+    trendMaxIdx:       n - 1,
+    touchBasis:        'both' as const,
+  };
+}
+
+describe('calcTrendTouchPoints', () => {
+
+  // ── 기본 동작 ────────────────────────────────────────────────────────────
+
+  it('빈 배열 → 모든 카운트 0, touchPoints 빈 배열', () => {
+    const r = calcTrendTouchPoints({ ...baseParams(0) });
+    expect(r.touchPoints).toHaveLength(0);
+    expect(r.touchCount).toBe(0);
+    expect(r.breakoutCount).toBe(0);
+  });
+
+  it('터치/돌파 구간에 해당하지 않는 가격 → 카운트 없음', () => {
+    // close=95, high=95 → 터치 구간(98~100) 아래
+    const r = calcTrendTouchPoints(baseParams(5));
+    expect(r.touchCount).toBe(0);
+    expect(r.breakoutCount).toBe(0);
+    expect(r.touchPoints).toHaveLength(0);
+  });
+
+  // ── 터치 판정 ─────────────────────────────────────────────────────────────
+
+  it('close가 터치 구간(98~100)이고 작도 범위 내 → closeTouchCount 증가', () => {
+    const closes = [95, 99, 95, 95, 95];   // 인덱스 1만 터치
+    const r = calcTrendTouchPoints({
+      ...baseParams(5),
+      closePrices: closes,
+    });
+    expect(r.closeTouchCount).toBe(1);
+    expect(r.touchCount).toBe(1);
+    expect(r.touchPoints[0]).toMatchObject({ priceType: 'close', type: 'touch', y: 99 });
+  });
+
+  it('high가 터치 구간이고 작도 범위 내 → highTouchCount 증가', () => {
+    const highs = [95, 95, 99, 95, 95];    // 인덱스 2만 터치
+    const r = calcTrendTouchPoints({
+      ...baseParams(5),
+      highPrices: highs,
+      touchBasis: 'high',
+    });
+    expect(r.highTouchCount).toBe(1);
+    expect(r.touchPoints[0]).toMatchObject({ priceType: 'high', type: 'touch', y: 99 });
+  });
+
+  it('close가 터치 구간이지만 작도 범위 밖 → 터치 카운팅 안됨', () => {
+    // 작도 범위: 0~2, 인덱스 3,4는 범위 밖
+    const closes = [95, 95, 95, 99, 99];
+    const r = calcTrendTouchPoints({
+      ...baseParams(5),
+      closePrices: closes,
+      trendMinIdx: 0,
+      trendMaxIdx: 2,
+    });
+    expect(r.touchCount).toBe(0);
+  });
+
+  // ── 돌파 판정 ─────────────────────────────────────────────────────────────
+
+  it('close가 돌파 구간(>=102) → closeBreakoutCount 증가', () => {
+    const closes = [95, 95, 103, 95, 95];
+    const r = calcTrendTouchPoints({
+      ...baseParams(5),
+      closePrices: closes,
+    });
+    expect(r.closeBreakoutCount).toBe(1);
+    expect(r.breakoutCount).toBe(1);
+    expect(r.touchPoints[0]).toMatchObject({ priceType: 'close', type: 'breakout', y: 103 });
+  });
+
+  it('high가 돌파 구간이고 작도 범위 밖이어도 → 돌파 카운팅됨 (전체 날짜 범위)', () => {
+    const highs = [95, 95, 95, 105, 95];   // 인덱스 3: 작도 범위 밖
+    const r = calcTrendTouchPoints({
+      ...baseParams(5),
+      highPrices: highs,
+      trendMinIdx: 0,
+      trendMaxIdx: 2,
+      touchBasis: 'high',
+    });
+    expect(r.highBreakoutCount).toBe(1);
+  });
+
+  // ── 우선순위 ──────────────────────────────────────────────────────────────
+
+  it('같은 날 close가 돌파 구간이면 close 돌파로 판정 (high 무시)', () => {
+    // close=103(돌파), high=103(돌파) → close 돌파 우선
+    const r = calcTrendTouchPoints({
+      ...baseParams(1),
+      closePrices: [103],
+      highPrices:  [103],
+    });
+    expect(r.touchPoints).toHaveLength(1);
+    expect(r.touchPoints[0]).toMatchObject({ priceType: 'close', type: 'breakout' });
+  });
+
+  it('같은 날 close가 터치 구간이면 close 터치로 판정 (high 터치 무시)', () => {
+    // close=99(터치), high=99(터치) → close 터치 우선
+    const r = calcTrendTouchPoints({
+      ...baseParams(1),
+      closePrices: [99],
+      highPrices:  [99],
+    });
+    expect(r.touchPoints).toHaveLength(1);
+    expect(r.touchPoints[0]).toMatchObject({ priceType: 'close', type: 'touch' });
+  });
+
+  it('하루에 최대 1개 판정 — 중복 카운팅 없음', () => {
+    const r = calcTrendTouchPoints({
+      ...baseParams(3),
+      closePrices: [99, 103, 99],
+      highPrices:  [99, 103, 99],
+    });
+    expect(r.touchPoints).toHaveLength(3);
+    expect(r.touchCount + r.breakoutCount).toBe(3);
+  });
+
+  // ── touchBasis 옵션 ───────────────────────────────────────────────────────
+
+  it("touchBasis='close' → high 돌파 무시", () => {
+    // close=95(비반응), high=103(돌파) → 판정 없음
+    const r = calcTrendTouchPoints({
+      ...baseParams(1),
+      closePrices: [95],
+      highPrices:  [103],
+      touchBasis:  'close',
+    });
+    expect(r.breakoutCount).toBe(0);
+  });
+
+  it("touchBasis='high' → close 터치 무시", () => {
+    // close=99(터치), high=95(비반응) → 판정 없음
+    const r = calcTrendTouchPoints({
+      ...baseParams(1),
+      closePrices: [99],
+      highPrices:  [95],
+      touchBasis:  'high',
+    });
+    expect(r.touchCount).toBe(0);
+  });
+
+  // ── 기울기 있는 추세선 ────────────────────────────────────────────────────
+
+  it('기울기 있는 추세선 — R_i가 i마다 달라져도 정확히 판정', () => {
+    // m=1, c=100 → R_0=100, R_1=101, R_2=102
+    // touchTolerance=2% → R_1 기준 터치: 98.98 <= price <= 101
+    // close[1] = 100 → 터치
+    const r = calcTrendTouchPoints({
+      timestamps:   makeTimestamps(3),
+      highPrices:   [95, 95, 95],
+      closePrices:  [95, 100, 95],
+      m: 1, c: 100,
+      trendMinIdx:  0,
+      trendMaxIdx:  2,
+      touchTolerance:    2,
+      breakoutTolerance: 2,
+      touchBasis: 'close',
+    });
+    expect(r.closeTouchCount).toBe(1);
+    expect(r.touchPoints[0].x).toBe(makeTimestamps(3)[1]);
+  });
+
+  // ── touchPoints 좌표 검증 ─────────────────────────────────────────────────
+
+  it('touchPoints.x가 timestamps 값과 일치', () => {
+    const ts = makeTimestamps(3);
+    const r = calcTrendTouchPoints({
+      ...baseParams(3),
+      closePrices: [95, 99, 95],  // 인덱스 1 터치
+    });
+    expect(r.touchPoints[0].x).toBe(ts[1]);
+  });
+
+  it('touchPoints.y가 실제 판정 가격과 일치', () => {
+    const r = calcTrendTouchPoints({
+      ...baseParams(3),
+      closePrices: [95, 99.5, 95],
+    });
+    expect(r.touchPoints[0].y).toBeCloseTo(99.5);
+  });
+
+});

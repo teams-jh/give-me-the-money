@@ -20,3 +20,5 @@ export type { FundamentalData, QuarterlyEarning, FundamentalSummary } from "./fu
 
 export type { StockInput, RankingRow, SectorSeries, QuarterRanking, SectorQuarterStats, SectorRotationResult } from "./sector";
 export type { Alert, RSISignal, OBVSignal, RiskSignal, CrossSignal, VolumeSignal, SignalSummary, SignalStrength, SignalDirection, MACDCrossSignal, BBBreakoutSignal } from "./signals";
+export { calcTrendTouchPoints } from "./signals";
+export type { CalcTrendTouchPointsParams, TrendTouchPoint, CalcTrendTouchPointsResult } from "./signals";
