@@ -157,14 +157,20 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
 
   // ── 필터 적용 + 교집합 계산 ──────────────────────────────────────────
   // 돌파 패턴 필터만 실시간 적용 (나머지는 시뮬레이션 버튼 클릭 시 적용)
+  // filterStartDate는 "분석 기간 이전 터치" 카운트 기준으로만 사용 (읽기 전용)
   const finalResults = useMemo<TrendSimFinalResult<SimResult>[]>(() => {
+    const startMs = filterStartDate ? new Date(filterStartDate).getTime() : 0;
     const filteredByPeriod: Partial<Record<PeriodKey, SimResult[]>> = {};
 
     for (const [period, results] of Object.entries(resultsByPeriod) as [PeriodKey, SimResult[]][]) {
       const filtered = enablePatternFilter
         ? results.filter(sim => {
             if ((sim.breakoutCount ?? 0) === 0) return false;
-            if ((sim.touchCount ?? 0) < minTouchesPattern) return false;
+            // 분석 기간(filterStartDate) 이전의 터치만 카운트
+            const touchesBefore = sim.touchPoints.filter(
+              tp => tp.type === 'touch' && tp.x < (startMs > 0 ? startMs : Infinity)
+            );
+            if (touchesBefore.length < minTouchesPattern) return false;
             return true;
           })
         : results;
@@ -173,7 +179,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
     }
 
     return intersectSimResults(filteredByPeriod);
-  }, [resultsByPeriod, enablePatternFilter, minTouchesPattern]);
+  }, [resultsByPeriod, enablePatternFilter, minTouchesPattern, filterStartDate]);
 
   // ── 시뮬레이션 실행 ──────────────────────────────────────────────────
   const runSimulation = useCallback(() => {
