@@ -1183,3 +1183,126 @@ export function analyzeSignals(ticker: string, ohlcv: OHLCV[]): SignalSummary {
     alerts:       allAlerts,
   };
 }
+
+
+// ── calcTrendTouchPoints ───────────────────────────────────────────────────────
+
+/**
+ * 추세선과 주가의 터치/돌파 이벤트를 판정한다.
+ *
+ * - 터치(touch)   : 작도 범위(trendMinIdx~trendMaxIdx) 내에서만 판정
+ *                   → 추세선이 실제로 존재하는 구간의 저항 유효성 검증
+ * - 돌파(breakout): 전체 날짜 범위에서 판정
+ *                   → 모달의 분석 날짜 필터로 최근 신호를 추출하는 용도
+ *
+ * 판정 우선순위 (하루 최대 1개):
+ *   1. Close Breakout  2. Close Touch  3. High Breakout  4. High Touch
+ */
+export interface CalcTrendTouchPointsParams {
+  /** Unix ms 타임스탬프 배열 (전체 날짜 범위) */
+  timestamps:        number[];
+  highPrices:        number[];
+  closePrices:       number[];
+  /** 추세선 기울기 (R_i = m * i + c) */
+  m:                 number;
+  /** 추세선 절편 */
+  c:                 number;
+  /** 터치 판정 시작 인덱스 (작도 범위 최소) */
+  trendMinIdx:       number;
+  /** 터치 판정 종료 인덱스 (작도 범위 최대) */
+  trendMaxIdx:       number;
+  /** 터치 인정 하한 허용 오차 (%) */
+  touchTolerance:    number;
+  /** 돌파 인정 상한 허용 오차 (%) */
+  breakoutTolerance: number;
+  /** 판정 기준 가격 */
+  touchBasis:        'close' | 'high' | 'both';
+}
+
+export interface TrendTouchPoint {
+  /** Unix ms 타임스탬프 */
+  x:         number;
+  /** 판정된 가격 */
+  y:         number;
+  priceType: 'close' | 'high';
+  type:      'touch' | 'breakout';
+}
+
+export interface CalcTrendTouchPointsResult {
+  touchPoints:        TrendTouchPoint[];
+  touchCount:         number;
+  closeTouchCount:    number;
+  highTouchCount:     number;
+  breakoutCount:      number;
+  closeBreakoutCount: number;
+  highBreakoutCount:  number;
+}
+
+export function calcTrendTouchPoints(
+  params: CalcTrendTouchPointsParams
+): CalcTrendTouchPointsResult {
+  const {
+    timestamps, highPrices, closePrices,
+    m, c,
+    trendMinIdx, trendMaxIdx,
+    touchTolerance, breakoutTolerance, touchBasis,
+  } = params;
+
+  const touchPoints: TrendTouchPoint[] = [];
+  let closeTouchCount    = 0;
+  let highTouchCount     = 0;
+  let closeBreakoutCount = 0;
+  let highBreakoutCount  = 0;
+
+  const checkClose = touchBasis === 'close' || touchBasis === 'both';
+  const checkHigh  = touchBasis === 'high'  || touchBasis === 'both';
+
+  for (let i = 0; i < timestamps.length; i++) {
+    const R_i            = m * i + c;
+    const high  = highPrices[i];
+    const close = closePrices[i];
+    if (high == null || close == null) continue;   // 데이터 누락 시 오탐 방지
+    const lowerBoundTouch = R_i * (1 - touchTolerance    / 100);
+    const upperBoundBreak = R_i * (1 + breakoutTolerance / 100);
+    const isInTrendRange  = i >= trendMinIdx && i <= trendMaxIdx;
+
+    let touchedY:  number                    = high;
+    let priceType: 'close' | 'high'          = 'high';
+    let type:      'touch' | 'breakout' | null = null;
+
+    // 1. Close Breakout (전체 날짜 범위)
+    if (checkClose && close >= upperBoundBreak) {
+      type = 'breakout'; priceType = 'close'; touchedY = close;
+      closeBreakoutCount++;
+    }
+    // 2. Close Touch (작도 범위 내에서만)
+    else if (isInTrendRange && checkClose && close >= lowerBoundTouch && close <= R_i) {
+      type = 'touch'; priceType = 'close'; touchedY = close;
+      closeTouchCount++;
+    }
+    // 3. High Breakout (전체 날짜 범위)
+    else if (checkHigh && high >= upperBoundBreak) {
+      type = 'breakout'; priceType = 'high'; touchedY = high;
+      highBreakoutCount++;
+    }
+    // 4. High Touch (작도 범위 내에서만)
+    else if (isInTrendRange && checkHigh && high >= lowerBoundTouch && high <= R_i) {
+      type = 'touch'; priceType = 'high'; touchedY = high;
+      highTouchCount++;
+    }
+
+    if (type !== null) {
+      touchPoints.push({ x: timestamps[i], y: touchedY, priceType, type });
+    }
+  }
+
+  return {
+    touchPoints,
+    touchCount:         closeTouchCount  + highTouchCount,
+    closeTouchCount,
+    highTouchCount,
+    breakoutCount:      closeBreakoutCount + highBreakoutCount,
+    closeBreakoutCount,
+    highBreakoutCount,
+  };
+}

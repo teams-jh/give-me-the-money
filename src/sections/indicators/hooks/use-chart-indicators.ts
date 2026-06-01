@@ -18,6 +18,8 @@ import {
   calcLinearRegressionChannel,
   calcZigZagSupportResistance,
 } from 'src/library/shared/indicators';
+import { calcTrendTouchPoints } from 'src/library/shared/signals';
+import type { TrendTouchPoint } from 'src/library/shared/signals';
 
 // ----------------------------------------------------------------------
 
@@ -523,6 +525,13 @@ export function useChartIndicators() {
     };
   }, [activeStockDataSlice, visibleRange]);
 
+  // activeStockDataSlice.dates를 미리 타임스탬프 배열로 변환 (캐시)
+  // dynamicLines, runSimulation에서 재사용 — 슬라이더 변경 시 불필요한 재파싱 방지
+  const activeTimestamps = useMemo(
+    () => activeStockDataSlice?.dates.map(d => new Date(d).getTime()) ?? [],
+    [activeStockDataSlice]
+  );
+
   const dynamicLines = useMemo<DynamicLinesResult | null>(() => {
     if (!activeStockDataSlice) return null;
 
@@ -619,78 +628,20 @@ export function useChartIndicators() {
       }))
       .filter((pt): pt is { x: number; y: number } => pt.y !== null && pt.y !== undefined);
 
-    const touchPoints: TouchPoint[] = [];
-    let highTouchCount = 0;
-    let closeTouchCount = 0;
-    let highBreakoutCount = 0;
-    let closeBreakoutCount = 0;
-
-    // 시뮬레이션 루프와 동일: 터치는 작도 범위 내에서만, 돌파는 전체 날짜
-    // trendIndices는 정렬된 연속 인덱스이므로 min/max 비교로 충분
-    const minTrendIdx = trendIndices[0];
-    const maxTrendIdx = trendIndices[trendIndices.length - 1];
-
-    if (cResistance !== null && cResistance !== undefined) {
-      for (let i = 0; i < dates.length; i++) {
-        const R_i = mResistance * i + cResistance;
-        const high = highPrices[i] ?? 0;
-        const close = closePrices[i] ?? 0;
-        const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
-        const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
-        const isInTrendRange = i >= minTrendIdx && i <= maxTrendIdx;
-
-        let isTouch = false;
-        let isBreakout = false;
-        let touchedY = high;
-        let priceType: 'high' | 'close' = 'high';
-        let type: 'touch' | 'breakout' = 'touch';
-
-        const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
-        const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
-
-        // 1. Close Breakout (전체 날짜 범위)
-        if (checkClose && close >= upperBoundBreak) {
-          isBreakout = true;
-          touchedY = close;
-          priceType = 'close';
-          type = 'breakout';
-          closeBreakoutCount++;
-        }
-        // 2. Close Touch (작도 범위 내에서만)
-        else if (isInTrendRange && checkClose && close >= lowerBoundTouch && close <= R_i) {
-          isTouch = true;
-          touchedY = close;
-          priceType = 'close';
-          type = 'touch';
-          closeTouchCount++;
-        }
-        // 3. High Breakout (전체 날짜 범위)
-        else if (checkHigh && high >= upperBoundBreak) {
-          isBreakout = true;
-          touchedY = high;
-          priceType = 'high';
-          type = 'breakout';
-          highBreakoutCount++;
-        }
-        // 4. High Touch (작도 범위 내에서만)
-        else if (isInTrendRange && checkHigh && high >= lowerBoundTouch && high <= R_i) {
-          isTouch = true;
-          touchedY = high;
-          priceType = 'high';
-          type = 'touch';
-          highTouchCount++;
-        }
-
-        if (isTouch || isBreakout) {
-          touchPoints.push({
-            x: new Date(dates[i]).getTime(),
-            y: touchedY,
-            priceType,
-            type,
-          });
-        }
-      }
-    }
+    const touchResult = (cResistance !== null && cResistance !== undefined)
+      ? calcTrendTouchPoints({
+          timestamps:        activeTimestamps,
+          highPrices,
+          closePrices,
+          m:                 mResistance,
+          c:                 cResistance,
+          trendMinIdx:       trendIndices[0],
+          trendMaxIdx:       trendIndices[trendIndices.length - 1],
+          touchTolerance:    trendTouchTolerance,
+          breakoutTolerance: trendBreakoutTolerance,
+          touchBasis:        trendTouchBasis,
+        })
+      : { touchPoints: [], touchCount: 0, closeTouchCount: 0, highTouchCount: 0, breakoutCount: 0, closeBreakoutCount: 0, highBreakoutCount: 0 };
 
     return {
       supportData,
@@ -698,13 +649,7 @@ export function useChartIndicators() {
       zigzagData,
       latestSupport: cSupport !== null && cSupport !== undefined ? mSupport * (dates.length - 1) + cSupport : null,
       latestResistance: cResistance !== null && cResistance !== undefined ? mResistance * (dates.length - 1) + cResistance : null,
-      touchPoints,
-      touchCount: closeTouchCount + highTouchCount,
-      highTouchCount,
-      closeTouchCount,
-      breakoutCount: closeBreakoutCount + highBreakoutCount,
-      closeBreakoutCount,
-      highBreakoutCount,
+      ...touchResult,
     };
   }, [activeStockDataSlice, trendStartDate, trendEndDate, trendBase, trendAlgo, zigzagThreshold, regressionStdDev, trendTouchTolerance, trendBreakoutTolerance, trendTouchBasis]);
 
@@ -1264,6 +1209,9 @@ export function useChartIndicators() {
     setTimeout(() => {
       const results: SimResult[] = [];
 
+      // dates는 모든 종목 공통 — 루프 외부에서 한 번만 변환
+      const simulationTimestamps = activeTimestamps;
+
       for (const opt of tickerOptions) {
         const rawData = allTickersData[opt.ticker];
         if (!rawData) continue;
@@ -1355,79 +1303,22 @@ export function useChartIndicators() {
           ? resistanceStart - mResistance * firstIdx 
           : null;
 
-        let highTouchCount = 0;
-        let closeTouchCount = 0;
-        let highBreakoutCount = 0;
-        let closeBreakoutCount = 0;
-        const itemTouchPoints: TouchPoint[] = [];
+        const touchResult = (cResistance !== null && cResistance !== undefined)
+          ? calcTrendTouchPoints({
+              timestamps:        simulationTimestamps,
+              highPrices,
+              closePrices,
+              m:                 mResistance,
+              c:                 cResistance,
+              trendMinIdx:       simTrendIndices[0],
+              trendMaxIdx:       simTrendIndices[simTrendIndices.length - 1],
+              touchTolerance:    trendTouchTolerance,
+              breakoutTolerance: trendBreakoutTolerance,
+              touchBasis:        trendTouchBasis,
+            })
+          : { touchPoints: [] as TrendTouchPoint[], touchCount: 0, closeTouchCount: 0, highTouchCount: 0, breakoutCount: 0, closeBreakoutCount: 0, highBreakoutCount: 0 };
 
-        // 터치 판정은 추세선이 실제로 존재하는 작도 범위 내에서만 유효
-        // 돌파 판정은 전체 날짜 범위 유지 (모달의 날짜 필터로 최근 신호 필터링)
-        // simTrendIndices는 정렬된 연속 인덱스이므로 min/max 비교로 충분 (Set 불필요)
-        const minTrendIdx = simTrendIndices[0];
-        const maxTrendIdx = simTrendIndices[simTrendIndices.length - 1];
-
-        if (cResistance !== null && cResistance !== undefined) {
-          for (let i = 0; i < dates.length; i++) {
-            const R_i = mResistance * i + cResistance;
-            const high = highPrices[i] ?? 0;
-            const close = closePrices[i] ?? 0;
-            const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
-            const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
-            const isInTrendRange = i >= minTrendIdx && i <= maxTrendIdx;
-
-            let isTouch = false;
-            let isBreakout = false;
-            let priceType: 'high' | 'close' = 'high';
-            let type: 'touch' | 'breakout' = 'touch';
-            let touchedY = high;
-
-            const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
-            const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
-
-            // 1. Close Breakout (전체 날짜 범위)
-            if (checkClose && close >= upperBoundBreak) {
-              isBreakout = true;
-              priceType = 'close';
-              type = 'breakout';
-              touchedY = close;
-              closeBreakoutCount++;
-            }
-            // 2. Close Touch (작도 범위 내에서만)
-            else if (isInTrendRange && checkClose && close >= lowerBoundTouch && close <= R_i) {
-              isTouch = true;
-              priceType = 'close';
-              type = 'touch';
-              touchedY = close;
-              closeTouchCount++;
-            }
-            // 3. High Breakout (전체 날짜 범위)
-            else if (checkHigh && high >= upperBoundBreak) {
-              isBreakout = true;
-              priceType = 'high';
-              type = 'breakout';
-              touchedY = high;
-              highBreakoutCount++;
-            }
-            // 4. High Touch (작도 범위 내에서만)
-            else if (isInTrendRange && checkHigh && high >= lowerBoundTouch && high <= R_i) {
-              isTouch = true;
-              priceType = 'high';
-              type = 'touch';
-              touchedY = high;
-              highTouchCount++;
-            }
-
-            if (isTouch || isBreakout) {
-              itemTouchPoints.push({
-                x: new Date(dates[i]).getTime(),
-                y: touchedY,
-                priceType,
-                type,
-              });
-            }
-          }
-        }
+        const { touchPoints: itemTouchPoints, touchCount, closeTouchCount, highTouchCount, breakoutCount, closeBreakoutCount, highBreakoutCount } = touchResult;
 
         const resistanceData = cResistance !== null && cResistance !== undefined
           ? [
