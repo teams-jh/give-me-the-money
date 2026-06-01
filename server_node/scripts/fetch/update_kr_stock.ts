@@ -245,7 +245,7 @@ export function parseMst(
       capSize:   record[capSizeCol]   ?? "",
       marketCap,
       groupCode: record[groupCol]     ?? "",
-      isSpac:    record[spacCol]?.trim() === "1",
+      isSpac:    record[spacCol]?.trim() === "Y",
     });
   }
 
