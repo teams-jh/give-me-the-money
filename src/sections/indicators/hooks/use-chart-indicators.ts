@@ -525,6 +525,13 @@ export function useChartIndicators() {
     };
   }, [activeStockDataSlice, visibleRange]);
 
+  // activeStockDataSlice.dates를 미리 타임스탬프 배열로 변환 (캐시)
+  // dynamicLines, runSimulation에서 재사용 — 슬라이더 변경 시 불필요한 재파싱 방지
+  const activeTimestamps = useMemo(
+    () => activeStockDataSlice?.dates.map(d => new Date(d).getTime()) ?? [],
+    [activeStockDataSlice]
+  );
+
   const dynamicLines = useMemo<DynamicLinesResult | null>(() => {
     if (!activeStockDataSlice) return null;
 
@@ -623,7 +630,7 @@ export function useChartIndicators() {
 
     const touchResult = (cResistance !== null && cResistance !== undefined)
       ? calcTrendTouchPoints({
-          timestamps:        dates.map(d => new Date(d).getTime()),
+          timestamps:        activeTimestamps,
           highPrices,
           closePrices,
           m:                 mResistance,
@@ -1202,6 +1209,9 @@ export function useChartIndicators() {
     setTimeout(() => {
       const results: SimResult[] = [];
 
+      // dates는 모든 종목 공통 — 루프 외부에서 한 번만 변환
+      const simulationTimestamps = activeTimestamps;
+
       for (const opt of tickerOptions) {
         const rawData = allTickersData[opt.ticker];
         if (!rawData) continue;
@@ -1295,7 +1305,7 @@ export function useChartIndicators() {
 
         const touchResult = (cResistance !== null && cResistance !== undefined)
           ? calcTrendTouchPoints({
-              timestamps:        dates.map(d => new Date(d).getTime()),
+              timestamps:        simulationTimestamps,
               highPrices,
               closePrices,
               m:                 mResistance,

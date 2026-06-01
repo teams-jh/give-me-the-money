@@ -1259,8 +1259,9 @@ export function calcTrendTouchPoints(
 
   for (let i = 0; i < timestamps.length; i++) {
     const R_i            = m * i + c;
-    const high           = highPrices[i]  ?? 0;
-    const close          = closePrices[i] ?? 0;
+    const high  = highPrices[i];
+    const close = closePrices[i];
+    if (high == null || close == null) continue;   // 데이터 누락 시 오탐 방지
     const lowerBoundTouch = R_i * (1 - touchTolerance    / 100);
     const upperBoundBreak = R_i * (1 + breakoutTolerance / 100);
     const isInTrendRange  = i >= trendMinIdx && i <= trendMaxIdx;
