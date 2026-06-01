@@ -292,21 +292,13 @@ export function TrendInputPanel({ sim }: Props) {
               style={{ width: '100%', cursor: 'pointer', accentColor: theme.palette.secondary.main }}
             />
           </Grid>
-        </Grid>
-
-        <Divider />
-
-        {/* ── 결과 필터 ── */}
-        <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>🔍 결과 필터</Typography>
-
-        <Grid container spacing={3}>
 
           {/* ── 9. 분석 날짜 범위 (돌파 카운트 필터) ── */}
           <Grid size={{ xs: 12, md: 5 }}>
             <Typography variant="body2" sx={{ fontWeight: 700, mb: 1 }}>
               📅 분석 날짜 범위{' '}
               <Typography component="span" variant="caption" sx={{ color: 'text.secondary' }}>
-                (돌파 카운트 적용)
+                (돌파 카운트 기간)
               </Typography>
             </Typography>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -354,6 +346,15 @@ export function TrendInputPanel({ sim }: Props) {
               </Stack>
             )}
           </Grid>
+
+        </Grid>
+
+        <Divider />
+
+        {/* ── 결과 필터 ── */}
+        <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>🔍 결과 필터</Typography>
+
+        <Grid container spacing={3}>
 
           {/* ── 11. 돌파 패턴 필터 ── */}
           <Grid size={{ xs: 12, md: 3 }}>
