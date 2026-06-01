@@ -607,3 +607,99 @@ describe('calcTrendTouchPoints', () => {
   });
 
 });
+
+
+// ── intersectSimResults ────────────────────────────────────────────────────────
+
+import { intersectSimResults } from './signals.ts';
+import type { TrendSimEntry } from './signals.ts';
+
+function makeEntries(tickers: string[]): TrendSimEntry[] {
+  return tickers.map(t => ({
+    ticker:        t,
+    name:          `${t} Corp`,
+    touchCount:    2,
+    breakoutCount: 1,
+    slope:         0.5,
+  }));
+}
+
+describe('intersectSimResults', () => {
+
+  it('빈 객체 입력 → 빈 배열', () => {
+    expect(intersectSimResults({})).toHaveLength(0);
+  });
+
+  it('기간 1개 → 해당 기간 종목 전체 반환', () => {
+    const r = intersectSimResults({ '1y': makeEntries(['AAA', 'BBB']) });
+    expect(r.map(x => x.ticker)).toEqual(expect.arrayContaining(['AAA', 'BBB']));
+    expect(r).toHaveLength(2);
+  });
+
+  it('기간 2개 AND 교집합 — 공통 종목만 반환', () => {
+    const r = intersectSimResults({
+      '3m': makeEntries(['AAA', 'BBB', 'CCC']),
+      '1y': makeEntries(['BBB', 'CCC', 'DDD']),
+    });
+    expect(r.map(x => x.ticker).sort()).toEqual(['BBB', 'CCC']);
+  });
+
+  it('기간 3개 AND 교집합 — 모든 기간 공통 종목만 반환', () => {
+    const r = intersectSimResults({
+      '3m': makeEntries(['A', 'B', 'C']),
+      '1y': makeEntries(['B', 'C', 'D']),
+      '2y': makeEntries(['C', 'D', 'E']),
+    });
+    expect(r.map(x => x.ticker)).toEqual(['C']);
+  });
+
+  it('공통 종목 없으면 빈 배열', () => {
+    const r = intersectSimResults({
+      '3m': makeEntries(['AAA']),
+      '1y': makeEntries(['BBB']),
+    });
+    expect(r).toHaveLength(0);
+  });
+
+  it('longestPeriodResult는 가장 긴 기간(우선순위: 3y>2y>1y>3m) 기준', () => {
+    const entries3m = makeEntries(['X']);
+    const entries1y = [{ ticker: 'X', name: 'X Corp', touchCount: 9, breakoutCount: 5, slope: 1.0 }];
+    const r = intersectSimResults({ '3m': entries3m, '1y': entries1y });
+    expect(r[0].longestPeriodResult.touchCount).toBe(9);  // 1y 기준
+  });
+
+  it('periodStats에 선택된 기간별 통계가 모두 포함', () => {
+    const r = intersectSimResults({
+      '3m': [{ ticker: 'X', name: 'X', touchCount: 2, breakoutCount: 1, slope: 0.3 }],
+      '1y': [{ ticker: 'X', name: 'X', touchCount: 5, breakoutCount: 3, slope: 0.7 }],
+    });
+    expect(r[0].periodStats['3m']?.touchCount).toBe(2);
+    expect(r[0].periodStats['1y']?.touchCount).toBe(5);
+    expect(r[0].periodStats['2y']).toBeUndefined();
+  });
+
+  it('slope 없는 항목 → periodStats.slope 기본값 0', () => {
+    const r = intersectSimResults({
+      '1y': [{ ticker: 'X', name: 'X', touchCount: 1, breakoutCount: 0 }],
+    });
+    expect(r[0].periodStats['1y']?.slope).toBe(0);
+  });
+
+  it('기간 순서 무관하게 동일한 교집합 반환', () => {
+    const a = intersectSimResults({
+      '1y': makeEntries(['A', 'B']),
+      '3m': makeEntries(['B', 'C']),
+    });
+    expect(a.map(x => x.ticker)).toContain('B');
+    expect(a).toHaveLength(1);
+  });
+
+  it('ticker, name이 결과에 올바르게 포함', () => {
+    const r = intersectSimResults({
+      '1y': [{ ticker: 'TSLA', name: 'Tesla Inc', touchCount: 3, breakoutCount: 1 }],
+    });
+    expect(r[0].ticker).toBe('TSLA');
+    expect(r[0].name).toBe('Tesla Inc');
+  });
+
+});
