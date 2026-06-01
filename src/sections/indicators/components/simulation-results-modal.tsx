@@ -106,21 +106,23 @@ export function SimulationResultsModal({ indicators }: Props) {
     return null;
   };
 
-  // Recalculate touch & breakout counts within the selected date range
+  // 터치 카운트: 전체 기간 기준 / 돌파 카운트: 날짜 범위 필터 적용
   const processedResults = simResults.map((sim) => {
     const startMs = filterStartDate ? new Date(filterStartDate).getTime() : 0;
     const endMs = filterEndDate ? new Date(filterEndDate).getTime() : Infinity;
 
     const filteredTouchPoints = sim.touchPoints.filter((tp) => tp.x >= startMs && tp.x <= endMs);
 
-    const closeTouchCount = filteredTouchPoints.filter(
+    // 터치 카운트는 날짜 필터 미적용 — 전체 touchPoints 기준
+    const closeTouchCount = sim.touchPoints.filter(
       (tp) => tp.type === 'touch' && tp.priceType === 'close'
     ).length;
-    const highTouchCount = filteredTouchPoints.filter(
+    const highTouchCount = sim.touchPoints.filter(
       (tp) => tp.type === 'touch' && tp.priceType === 'high'
     ).length;
     const touchCount = closeTouchCount + highTouchCount;
 
+    // 돌파 카운트는 날짜 필터 적용 — filteredTouchPoints 기준
     const closeBreakoutCount = filteredTouchPoints.filter(
       (tp) => tp.type === 'breakout' && tp.priceType === 'close'
     ).length;
