@@ -2,7 +2,7 @@
 
 import type { PeriodKey } from 'src/sections/top100/types';
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 import {
@@ -91,6 +91,28 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
   const [trendStartDate,     setTrendStartDate]     = useState('');
   const [trendEndDate,       setTrendEndDate]       = useState('');
 
+  // ── 기준 날짜 정보 (실제 거래일 기반) ────────────────────────────────
+  const referenceInfo = useMemo(() => {
+    const refTicker = allTickersList.find(t => !t.includes('.'));
+    const prices = (allTickersData[refTicker ?? '']?.prices || []) as { date: string }[];
+    if (prices.length === 0) return null;
+
+    const dates   = prices.map(p => p.date);
+    const lastDate = dates[dates.length - 1];
+
+    /** n 거래일 전 날짜 반환 */
+    const getNDaysAgo = (n: number): string =>
+      dates[Math.max(0, dates.length - 1 - n)] ?? lastDate;
+
+    /** 기간 시작 날짜 반환 */
+    const getPeriodStart = (period: PeriodKey): string => {
+      const daysMap: Record<PeriodKey, number> = { '3m': 63, '1y': 252, '2y': 504, '3y': 756 };
+      return dates[Math.max(0, dates.length - daysMap[period])] ?? dates[0];
+    };
+
+    return { lastDate, getNDaysAgo, getPeriodStart };
+  }, []);
+
   // ── 터치/돌파 파라미터 ───────────────────────────────────────────────
   const [trendTouchBasis,        setTrendTouchBasis]        = useState<'close' | 'high' | 'both'>('both');
   const [trendTouchTolerance,    setTrendTouchTolerance]    = useState(2);
@@ -104,6 +126,30 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
   const [slopeMax,            setSlopeMax]            = useState('');
   const [enablePatternFilter, setEnablePatternFilter] = useState(false);
   const [minTouchesPattern,   setMinTouchesPattern]   = useState(3);
+
+  // ── 기본값 초기화 및 기간 변경 시 작도 범위 자동 갱신 ──────────────
+  useEffect(() => {
+    if (!referenceInfo) return;
+    const { lastDate, getNDaysAgo, getPeriodStart } = referenceInfo;
+
+    // 추세선 작도 범위: 선택된 기간 중 가장 긴 기간의 시작 ~ 마지막 날짜
+    const periodOrder: PeriodKey[] = ['3m', '1y', '2y', '3y'];
+    const longestPeriod = simPeriods.reduce<PeriodKey>(
+      (longest, p) => periodOrder.indexOf(p) > periodOrder.indexOf(longest) ? p : longest,
+      simPeriods[0] ?? '1y'
+    );
+    setTrendStartDate(getPeriodStart(longestPeriod));
+    setTrendEndDate(lastDate);
+  }, [simPeriods, referenceInfo]);
+
+  useEffect(() => {
+    if (!referenceInfo) return;
+    const { lastDate, getNDaysAgo } = referenceInfo;
+
+    // 분석 날짜 범위: 마지막 주가 기준 최근 4거래일 (초기 1회만)
+    setFilterStartDate(getNDaysAgo(3));
+    setFilterEndDate(lastDate);
+  }, [referenceInfo]);  // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── 실행 결과 ────────────────────────────────────────────────────────
   const [isSimulating,      setIsSimulating]      = useState(false);
