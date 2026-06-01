@@ -107,11 +107,16 @@ export function SimulationResultsModal({ indicators }: Props) {
   };
 
   // 터치 카운트: 전체 기간 기준 / 돌파 카운트: 날짜 범위 필터 적용
-  const processedResults = simResults.map((sim) => {
-    const startMs = filterStartDate ? new Date(filterStartDate).getTime() : 0;
-    const endMs = filterEndDate ? new Date(filterEndDate).getTime() : Infinity;
+  // startMs, endMs는 sim과 무관하므로 map 외부에서 한 번만 계산 (성능 최적화)
+  const startMs = filterStartDate ? new Date(filterStartDate).getTime() : 0;
+  const endMs = filterEndDate ? new Date(filterEndDate).getTime() : Infinity;
 
-    const filteredTouchPoints = sim.touchPoints.filter((tp) => tp.x >= startMs && tp.x <= endMs);
+  const processedResults = simResults.map((sim) => {
+    // 터치 포인트는 전체 기간 유지, 돌파 포인트만 날짜 필터 적용
+    // → 차트 마커 및 패턴 감지(getPatternDetails)와 터치 카운트 간 시각적 불일치 방지
+    const filteredTouchPoints = sim.touchPoints.filter(
+      (tp) => tp.type === 'touch' || (tp.x >= startMs && tp.x <= endMs)
+    );
 
     // 터치 카운트는 날짜 필터 미적용 — 전체 touchPoints 기준
     const closeTouchCount = sim.touchPoints.filter(
