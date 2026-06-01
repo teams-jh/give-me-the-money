@@ -32,6 +32,7 @@ export const paths = {
   indicators: {
     root: '/indicators',
     chart: '/indicators/chart',
+    trend: '/indicators/trend',
     macro: '/indicators/macro',
     exchangeRate: '/indicators/exchange-rate',
   },

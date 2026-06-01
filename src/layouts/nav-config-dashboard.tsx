@@ -95,6 +95,7 @@ export const navData: NavSectionProps['data'] = [
         icon: ICONS.indicators,
         children: [
           { title: '차트 지표', path: paths.indicators.chart },
+          { title: '추세 지표', path: paths.indicators.trend },
           { title: '매크로 지표', path: paths.indicators.macro },
           { title: '환율', path: paths.indicators.exchangeRate },
         ],
@@ -180,6 +181,7 @@ export const mainNavData: NavMainProps['data'] = [
         subheader: '지표',
         items: [
           { title: '차트 지표', path: paths.indicators.chart },
+          { title: '추세 지표', path: paths.indicators.trend },
           { title: '매크로 지표', path: paths.indicators.macro },
           { title: '환율', path: paths.indicators.exchangeRate },
         ],
