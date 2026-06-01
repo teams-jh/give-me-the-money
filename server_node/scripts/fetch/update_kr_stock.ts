@@ -52,6 +52,7 @@ const INDEXES = [
     // 시가총액: field spec 누적 위치 212, 폭 9
     marketCapPos:   212,
     marketCapWidth: 9,
+    spacCol:        "SPAC",
     topN:        300,
     outputFile:  path.join(STOCK_INDEX_DIR, "kospi300_tickers.json"),
     minCount:    200,
@@ -101,6 +102,7 @@ const INDEXES = [
     // 시가총액: field spec 59개 합산 위치 216, 폭 5 (단위: 억)
     marketCapPos:   216,
     marketCapWidth: 5,
+    spacCol:        "기업인수목적회사여부",
     topN:        200,
     outputFile:  path.join(STOCK_INDEX_DIR, "kosdaq200_tickers.json"),
     minCount:    150,
@@ -191,6 +193,7 @@ interface ParsedRow {
   capSize:    string;
   marketCap:  number;   // 억 단위
   groupCode:  string;
+  isSpac:     boolean;  // SPAC(기업인수목적회사) 여부
 }
 
 export function parseMst(
@@ -204,6 +207,7 @@ export function parseMst(
   nameCol:        string,
   marketCapPos:   number,
   marketCapWidth: number,
+  spacCol:        string,
 ): ParsedRow[] {
   const text  = iconv.decode(content, "cp949");
   const rows: ParsedRow[] = [];
@@ -240,6 +244,7 @@ export function parseMst(
       capSize:   record[capSizeCol]   ?? "",
       marketCap,
       groupCode: record[groupCol]     ?? "",
+      isSpac:    (record[spacCol]     ?? "").trim() === "1",
     });
   }
 
@@ -250,7 +255,7 @@ export function parseMst(
 
 export function filterAndRank(rows: ParsedRow[], topN: number): ParsedRow[] {
   return rows
-    .filter((r) => r.code.length === 6 && r.groupCode === "ST")
+    .filter((r) => r.code.length === 6 && r.groupCode === "ST" && !r.isSpac)
     .sort((a, b) => b.marketCap - a.marketCap)
     .slice(0, topN);
 }
@@ -300,6 +305,7 @@ export async function main(): Promise<void> {
       idx.nameCol,
       idx.marketCapPos,
       idx.marketCapWidth,
+      idx.spacCol,
     );
 
     log(`전체 파싱: ${allRows.length}개 행`);
