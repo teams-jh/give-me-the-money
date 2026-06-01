@@ -187,48 +187,70 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           if (simMarket === 'KR' && !isKR) continue;
           if (simMarket === 'US' && isKR)  continue;
 
-          const allPrices = (rawData.prices || []) as PriceDataPoint[];
-          const slice     = allPrices.slice(-days);
+          const allPrices  = (rawData.prices || []) as PriceDataPoint[];
+          const slice      = allPrices.slice(-days);
           if (slice.length < 10) continue;
 
-          const dates      = slice.map(p => p.date);
-          const timestamps = slice.map(p => Date.parse(p.date));
+          const dates       = slice.map(p => p.date);
+          const timestamps  = slice.map(p => Date.parse(p.date));
           const highPrices  = slice.map(p => p.high  ?? p.close);
           const lowPrices   = slice.map(p => p.low   ?? p.close);
           const closePrices = slice.map(p => p.close);
+          const openPrices  = slice.map(p => p.open  ?? p.close);
 
           // 작도 범위 인덱스 산출
-          let trendIndices = dates.map((_, idx) => idx);
+          let simTrendIndices: number[] = [];
           if (trendStartDate && trendEndDate) {
-            const filtered: number[] = [];
             for (let i = 0; i < dates.length; i++) {
               const d = dates[i];
-              if (d >= trendStartDate && d <= trendEndDate) filtered.push(i);
+              if (d >= trendStartDate && d <= trendEndDate) simTrendIndices.push(i);
             }
-            if (filtered.length > 0) trendIndices = filtered;
+          }
+          if (simTrendIndices.length === 0) {
+            simTrendIndices = dates.map((_, idx) => idx);
           }
 
-          // 추세선 계산
-          let mResistance = 0, cResistance: number | null = null;
+          // trendBase에 따른 가격 변환 (작도 범위 슬라이스)
+          const simHighs  = simTrendIndices.map(i => highPrices[i]);
+          const simLows   = simTrendIndices.map(i => lowPrices[i]);
+          const simCloses = simTrendIndices.map(i => closePrices[i]);
+          const simOpens  = simTrendIndices.map(i => openPrices[i]);
+
+          const currentHighs  = trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simHighs;
+          const currentLows   = trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simLows;
+          const currentCloses = trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simCloses;
+          const currentOpens  = trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simOpens;
+
+          // 추세선 계산 (use-chart-indicators.ts와 동일한 패턴)
+          let srRaw: { support: number | null; resistance: number | null; zigzag?: number | null }[] = [];
 
           if (trendAlgo === 'regression') {
-            const ch = calcLinearRegressionChannel({ closePrices, stdDevMultiplier: regressionStdDev });
-            mResistance  = ch.mUpper;
-            cResistance  = ch.cUpper;
+            srRaw = calcLinearRegressionChannel(currentCloses, regressionStdDev);
           } else if (trendAlgo === 'zigzag') {
-            const sr = calcZigZagSupportResistance({ highPrices, lowPrices, closePrices, threshold: zigzagThreshold / 100 });
-            if (sr.resistance.length >= 2) {
-              const [p1, p2] = sr.resistance.slice(-2);
-              if (p2.x !== p1.x) {
-                mResistance = (p2.y - p1.y) / (p2.x - p1.x);
-                cResistance = p1.y - mResistance * p1.x;
-              }
-            }
+            srRaw = calcZigZagSupportResistance(currentHighs, currentLows, currentCloses, currentOpens, zigzagThreshold);
           } else {
-            const sr = calcSupportResistance({ highPrices, lowPrices, closePrices, openPrices: slice.map(p => p.open ?? p.close), dates, trendBase, trendIndices });
-            mResistance  = sr.mResistance;
-            cResistance  = sr.cResistance;
+            srRaw = calcSupportResistance(currentHighs, currentLows, currentCloses, currentOpens);
           }
+
+          // srRaw 시작/끝값으로 m, c 산출
+          const firstIdx = simTrendIndices[0];
+          const lastIdx  = simTrendIndices[simTrendIndices.length - 1];
+          const deltaX   = lastIdx - firstIdx || 1;
+
+          const resistanceStart = srRaw[0]?.resistance;
+          const resistanceEnd   = srRaw[srRaw.length - 1]?.resistance;
+          const supportStart    = srRaw[0]?.support;
+          const supportEnd      = srRaw[srRaw.length - 1]?.support;
+
+          const mResistance = resistanceStart != null && resistanceEnd != null
+            ? (resistanceEnd - resistanceStart) / deltaX : 0;
+          const cResistance = resistanceStart != null
+            ? resistanceStart - mResistance * firstIdx : null;
+
+          const mSupport = supportStart != null && supportEnd != null
+            ? (supportEnd - supportStart) / deltaX : 0;
+          const cSupport = supportStart != null
+            ? supportStart - mSupport * firstIdx : null;
 
           if (cResistance === null) continue;
 
@@ -239,36 +261,50 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
             closePrices,
             m:                 mResistance,
             c:                 cResistance,
-            trendMinIdx:       trendIndices[0],
-            trendMaxIdx:       trendIndices[trendIndices.length - 1],
+            trendMinIdx:       simTrendIndices[0],
+            trendMaxIdx:       simTrendIndices[simTrendIndices.length - 1],
             touchTolerance:    trendTouchTolerance,
             breakoutTolerance: trendBreakoutTolerance,
             touchBasis:        trendTouchBasis,
           });
 
-          // 기울기 분류
-          const slopeType: 'positive' | 'negative' | 'flat' =
-            mResistance > 0.001 ? 'positive' : mResistance < -0.001 ? 'negative' : 'flat';
-
-          // 저항선 데이터
+          // 차트 데이터
           const resistanceData = [
-            { x: timestamps[0],               y: cResistance },
+            { x: timestamps[0],                     y: cResistance },
             { x: timestamps[timestamps.length - 1], y: mResistance * (timestamps.length - 1) + cResistance },
           ];
+          const supportData = cSupport != null ? [
+            { x: timestamps[0],                     y: cSupport },
+            { x: timestamps[timestamps.length - 1], y: mSupport * (timestamps.length - 1) + cSupport },
+          ] : undefined;
+          const zigzagData = trendAlgo === 'zigzag'
+            ? srRaw
+                .map((pt, idx) => ({ x: timestamps[simTrendIndices[idx]], y: pt.zigzag }))
+                .filter((pt): pt is { x: number; y: number } => pt.y != null)
+            : undefined;
+
+          // 기울기 분류
+          const firstR       = resistanceData[0]?.y ?? 0;
+          const lastR        = resistanceData[resistanceData.length - 1]?.y ?? 0;
+          const slope        = lastR - firstR;
+          const slopePercent = firstR !== 0 ? (slope / firstR) * 100 : 0;
+          const slopeType: 'positive' | 'negative' | 'flat' =
+            slope > 0.001 ? 'positive' : slope < -0.001 ? 'negative' : 'flat';
 
           periodResults.push({
             ticker,
-            name:                rawData.name ?? ticker,
-            prices:              slice,
+            name:             rawData.info?.name ?? ticker,
+            prices:           slice,
             resistanceData,
-            latestResistance:    mResistance * (timestamps.length - 1) + cResistance,
+            supportData,
+            zigzagData,
+            latestResistance: mResistance * (timestamps.length - 1) + cResistance,
             slopeType,
-            slope:               mResistance,
+            slope:            slopePercent,
             ...touchResult,
           });
         }
 
-        // 기간 내 정렬: 돌파 내림차순
         periodResults.sort((a, b) => (b.breakoutCount + b.touchCount) - (a.breakoutCount + a.touchCount));
         newResultsByPeriod[period] = periodResults;
       }
