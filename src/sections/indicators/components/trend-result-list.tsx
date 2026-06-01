@@ -49,8 +49,8 @@ function getMiniChartOptions(
 
   const highs  = sim.prices.map(p => p.high  || p.close);
   const lows   = sim.prices.map(p => p.low   || p.close);
-  const maxVal = Math.max(...highs);
-  const minVal = Math.min(...lows);
+  const maxVal = highs.reduce((a, b) => (b > a ? b : a), -Infinity);
+  const minVal = lows.reduce((a, b)  => (b < a ? b : a), Infinity);
   const diff   = maxVal - minVal;
 
   return {
@@ -190,7 +190,7 @@ export function TrendResultList({ sim }: Props) {
                   {/* 미니차트 */}
                   <Box sx={{ height: 120, mt: 0.5 }}>
                     <ReactApexChart
-                      type="candlestick"
+                      type="line"
                       series={chartSeries}
                       options={chartOpts}
                       height={120}
