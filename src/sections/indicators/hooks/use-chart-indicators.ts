@@ -625,6 +625,11 @@ export function useChartIndicators() {
     let highBreakoutCount = 0;
     let closeBreakoutCount = 0;
 
+    // 시뮬레이션 루프와 동일: 터치는 작도 범위 내에서만, 돌파는 전체 날짜
+    // trendIndices는 정렬된 연속 인덱스이므로 min/max 비교로 충분
+    const minTrendIdx = trendIndices[0];
+    const maxTrendIdx = trendIndices[trendIndices.length - 1];
+
     if (cResistance !== null && cResistance !== undefined) {
       for (let i = 0; i < dates.length; i++) {
         const R_i = mResistance * i + cResistance;
@@ -632,6 +637,7 @@ export function useChartIndicators() {
         const close = closePrices[i] ?? 0;
         const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
         const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
+        const isInTrendRange = i >= minTrendIdx && i <= maxTrendIdx;
 
         let isTouch = false;
         let isBreakout = false;
@@ -642,7 +648,7 @@ export function useChartIndicators() {
         const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
         const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
 
-        // 1. Close Breakout
+        // 1. Close Breakout (전체 날짜 범위)
         if (checkClose && close >= upperBoundBreak) {
           isBreakout = true;
           touchedY = close;
@@ -650,15 +656,15 @@ export function useChartIndicators() {
           type = 'breakout';
           closeBreakoutCount++;
         }
-        // 2. Close Touch
-        else if (checkClose && close >= lowerBoundTouch && close <= R_i) {
+        // 2. Close Touch (작도 범위 내에서만)
+        else if (isInTrendRange && checkClose && close >= lowerBoundTouch && close <= R_i) {
           isTouch = true;
           touchedY = close;
           priceType = 'close';
           type = 'touch';
           closeTouchCount++;
         }
-        // 3. High Breakout
+        // 3. High Breakout (전체 날짜 범위)
         else if (checkHigh && high >= upperBoundBreak) {
           isBreakout = true;
           touchedY = high;
@@ -666,8 +672,8 @@ export function useChartIndicators() {
           type = 'breakout';
           highBreakoutCount++;
         }
-        // 4. High Touch
-        else if (checkHigh && high >= lowerBoundTouch && high <= R_i) {
+        // 4. High Touch (작도 범위 내에서만)
+        else if (isInTrendRange && checkHigh && high >= lowerBoundTouch && high <= R_i) {
           isTouch = true;
           touchedY = high;
           priceType = 'high';
@@ -1355,6 +1361,12 @@ export function useChartIndicators() {
         let closeBreakoutCount = 0;
         const itemTouchPoints: TouchPoint[] = [];
 
+        // 터치 판정은 추세선이 실제로 존재하는 작도 범위 내에서만 유효
+        // 돌파 판정은 전체 날짜 범위 유지 (모달의 날짜 필터로 최근 신호 필터링)
+        // simTrendIndices는 정렬된 연속 인덱스이므로 min/max 비교로 충분 (Set 불필요)
+        const minTrendIdx = simTrendIndices[0];
+        const maxTrendIdx = simTrendIndices[simTrendIndices.length - 1];
+
         if (cResistance !== null && cResistance !== undefined) {
           for (let i = 0; i < dates.length; i++) {
             const R_i = mResistance * i + cResistance;
@@ -1362,6 +1374,7 @@ export function useChartIndicators() {
             const close = closePrices[i] ?? 0;
             const lowerBoundTouch = R_i * (1 - trendTouchTolerance / 100);
             const upperBoundBreak = R_i * (1 + trendBreakoutTolerance / 100);
+            const isInTrendRange = i >= minTrendIdx && i <= maxTrendIdx;
 
             let isTouch = false;
             let isBreakout = false;
@@ -1372,7 +1385,7 @@ export function useChartIndicators() {
             const checkClose = trendTouchBasis === 'close' || trendTouchBasis === 'both';
             const checkHigh = trendTouchBasis === 'high' || trendTouchBasis === 'both';
 
-            // 1. Close Breakout
+            // 1. Close Breakout (전체 날짜 범위)
             if (checkClose && close >= upperBoundBreak) {
               isBreakout = true;
               priceType = 'close';
@@ -1380,15 +1393,15 @@ export function useChartIndicators() {
               touchedY = close;
               closeBreakoutCount++;
             }
-            // 2. Close Touch
-            else if (checkClose && close >= lowerBoundTouch && close <= R_i) {
+            // 2. Close Touch (작도 범위 내에서만)
+            else if (isInTrendRange && checkClose && close >= lowerBoundTouch && close <= R_i) {
               isTouch = true;
               priceType = 'close';
               type = 'touch';
               touchedY = close;
               closeTouchCount++;
             }
-            // 3. High Breakout
+            // 3. High Breakout (전체 날짜 범위)
             else if (checkHigh && high >= upperBoundBreak) {
               isBreakout = true;
               priceType = 'high';
@@ -1396,8 +1409,8 @@ export function useChartIndicators() {
               touchedY = high;
               highBreakoutCount++;
             }
-            // 4. High Touch
-            else if (checkHigh && high >= lowerBoundTouch && high <= R_i) {
+            // 4. High Touch (작도 범위 내에서만)
+            else if (isInTrendRange && checkHigh && high >= lowerBoundTouch && high <= R_i) {
               isTouch = true;
               priceType = 'high';
               type = 'touch';

@@ -106,21 +106,31 @@ export function SimulationResultsModal({ indicators }: Props) {
     return null;
   };
 
-  // Recalculate touch & breakout counts within the selected date range
+  // [카운팅 기준]
+  // 터치: use-chart-indicators.ts 시뮬레이션 단계에서 작도 범위(trendIndices) 내에서만 생성됨
+  // 돌파: 시뮬레이션에서 전체 날짜 범위로 생성 → 여기서 분석 날짜 범위 필터 적용
+  // startMs, endMs는 sim과 무관하므로 map 외부에서 한 번만 계산 (성능 최적화)
+  const startMs = filterStartDate ? new Date(filterStartDate).getTime() : 0;
+  const endMs = filterEndDate ? new Date(filterEndDate).getTime() : Infinity;
+
   const processedResults = simResults.map((sim) => {
-    const startMs = filterStartDate ? new Date(filterStartDate).getTime() : 0;
-    const endMs = filterEndDate ? new Date(filterEndDate).getTime() : Infinity;
+    // 터치 포인트: 시뮬레이션 단계에서 이미 작도 범위로 제한됨 → 전체 유지
+    // 돌파 포인트: 분석 날짜 범위 필터 적용
+    // → 차트 마커(filteredTouchPoints)와 각 카운트 간 시각적 일치 보장
+    const filteredTouchPoints = sim.touchPoints.filter(
+      (tp) => tp.type === 'touch' || (tp.x >= startMs && tp.x <= endMs)
+    );
 
-    const filteredTouchPoints = sim.touchPoints.filter((tp) => tp.x >= startMs && tp.x <= endMs);
-
-    const closeTouchCount = filteredTouchPoints.filter(
+    // 터치 카운트: 작도 범위 내 전체 (시뮬레이션 단계에서 이미 필터됨)
+    const closeTouchCount = sim.touchPoints.filter(
       (tp) => tp.type === 'touch' && tp.priceType === 'close'
     ).length;
-    const highTouchCount = filteredTouchPoints.filter(
+    const highTouchCount = sim.touchPoints.filter(
       (tp) => tp.type === 'touch' && tp.priceType === 'high'
     ).length;
     const touchCount = closeTouchCount + highTouchCount;
 
+    // 돌파 카운트: 분석 날짜 범위 필터 적용
     const closeBreakoutCount = filteredTouchPoints.filter(
       (tp) => tp.type === 'breakout' && tp.priceType === 'close'
     ).length;
