@@ -139,6 +139,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
 
           // 돌파 패턴 필터
           if (enablePatternFilter) {
+            if (breakoutCount === 0) return false;
             const touchesBefore = sim.touchPoints.filter(
               tp => tp.type === 'touch' && tp.x < (startMs > 0 ? startMs : Infinity)
             );
@@ -156,6 +157,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           return true;
         });
 
+      filtered.sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
       filteredByPeriod[period] = filtered;
     }
 
@@ -190,18 +192,19 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           if (slice.length < 10) continue;
 
           const dates      = slice.map(p => p.date);
-          const timestamps = slice.map(p => new Date(p.date).getTime());
-          const highPrices  = slice.map(p => p.high);
-          const lowPrices   = slice.map(p => p.low);
+          const timestamps = slice.map(p => Date.parse(p.date));
+          const highPrices  = slice.map(p => p.high  ?? p.close);
+          const lowPrices   = slice.map(p => p.low   ?? p.close);
           const closePrices = slice.map(p => p.close);
 
           // 작도 범위 인덱스 산출
           let trendIndices = dates.map((_, idx) => idx);
           if (trendStartDate && trendEndDate) {
-            const filtered = dates
-              .map((d, idx) => ({ d, idx }))
-              .filter(({ d }) => d >= trendStartDate && d <= trendEndDate)
-              .map(({ idx }) => idx);
+            const filtered: number[] = [];
+            for (let i = 0; i < dates.length; i++) {
+              const d = dates[i];
+              if (d >= trendStartDate && d <= trendEndDate) filtered.push(i);
+            }
             if (filtered.length > 0) trendIndices = filtered;
           }
 
@@ -216,11 +219,13 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
             const sr = calcZigZagSupportResistance({ highPrices, lowPrices, closePrices, threshold: zigzagThreshold / 100 });
             if (sr.resistance.length >= 2) {
               const [p1, p2] = sr.resistance.slice(-2);
-              mResistance    = (p2.y - p1.y) / (p2.x - p1.x);
-              cResistance    = p1.y - mResistance * p1.x;
+              if (p2.x !== p1.x) {
+                mResistance = (p2.y - p1.y) / (p2.x - p1.x);
+                cResistance = p1.y - mResistance * p1.x;
+              }
             }
           } else {
-            const sr = calcSupportResistance({ highPrices, lowPrices, closePrices, openPrices: slice.map(p => p.open), dates, trendBase, trendIndices });
+            const sr = calcSupportResistance({ highPrices, lowPrices, closePrices, openPrices: slice.map(p => p.open ?? p.close), dates, trendBase, trendIndices });
             mResistance  = sr.mResistance;
             cResistance  = sr.cResistance;
           }

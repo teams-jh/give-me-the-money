@@ -4,7 +4,9 @@ import type { SimResult } from '../hooks/use-chart-indicators';
 import type { TrendSimFinalResult } from 'src/library/shared/signals';
 import type { UseTrendSimulationReturn } from '../hooks/use-trend-simulation';
 
-import ReactApexChart from 'react-apexcharts';
+import dynamic from 'next/dynamic';
+
+const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';

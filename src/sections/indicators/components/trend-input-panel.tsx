@@ -227,6 +227,8 @@ export function TrendInputPanel({ sim }: Props) {
                       key={i}
                       type="date"
                       value={cfg.val}
+                      min={(cfg as any).min}
+                      max={(cfg as any).max}
                       onChange={e => cfg.set(e.target.value)}
                       style={{
                         flex: 1, padding: '8px 12px', borderRadius: 8,
