@@ -139,7 +139,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
 
           // 돌파 패턴 필터
           if (enablePatternFilter) {
-            if (breakoutCount === 0) return false;
+            if (sim.breakoutCount === 0) return false;
             const touchesBefore = sim.touchPoints.filter(
               tp => tp.type === 'touch' && tp.x < (startMs > 0 ? startMs : Infinity)
             );
