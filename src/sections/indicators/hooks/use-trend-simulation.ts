@@ -156,60 +156,24 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
   const [resultsByPeriod,   setResultsByPeriod]   = useState<Partial<Record<PeriodKey, SimResult[]>>>({});
 
   // ── 필터 적용 + 교집합 계산 ──────────────────────────────────────────
+  // 돌파 패턴 필터만 실시간 적용 (나머지는 시뮬레이션 버튼 클릭 시 적용)
   const finalResults = useMemo<TrendSimFinalResult<SimResult>[]>(() => {
-    const startMs = filterStartDate ? new Date(filterStartDate).getTime() : 0;
-    const endMs   = filterEndDate   ? new Date(filterEndDate).getTime()   : Infinity;
-    const slopeMinNum = slopeMin !== '' ? parseFloat(slopeMin) : null;
-    const slopeMaxNum = slopeMax !== '' ? parseFloat(slopeMax) : null;
-
-    // 기간별로 필터 적용
     const filteredByPeriod: Partial<Record<PeriodKey, SimResult[]>> = {};
 
     for (const [period, results] of Object.entries(resultsByPeriod) as [PeriodKey, SimResult[]][]) {
-      const filtered = results
-        .map(sim => {
-          // 돌파 포인트에 날짜 필터 적용
-          const filteredTouchPoints = sim.touchPoints.filter(
-            tp => tp.type === 'touch' || (tp.x >= startMs && tp.x <= endMs)
-          );
-          const breakoutCount      = filteredTouchPoints.filter(tp => tp.type === 'breakout').length;
-          const closeBreakoutCount = filteredTouchPoints.filter(tp => tp.type === 'breakout' && tp.priceType === 'close').length;
-          const highBreakoutCount  = filteredTouchPoints.filter(tp => tp.type === 'breakout' && tp.priceType === 'high').length;
-          const totalCount         = sim.touchCount + breakoutCount;
+      const filtered = enablePatternFilter
+        ? results.filter(sim => {
+            if ((sim.breakoutCount ?? 0) === 0) return false;
+            if ((sim.touchCount ?? 0) < minTouchesPattern) return false;
+            return true;
+          })
+        : results;
 
-          return { ...sim, filteredTouchPoints, breakoutCount, closeBreakoutCount, highBreakoutCount, totalCount };
-        })
-        .filter(sim => {
-          // 조건 만족 종목만 (터치 or 돌파 > 0)
-          if ((sim.totalCount ?? 0) === 0) return false;
-
-          // 돌파 패턴 필터
-          if (enablePatternFilter) {
-            if (sim.breakoutCount === 0) return false;
-            const touchesBefore = sim.touchPoints.filter(
-              tp => tp.type === 'touch' && tp.x < (startMs > 0 ? startMs : Infinity)
-            );
-            if (touchesBefore.length < minTouchesPattern) return false;
-          }
-
-          // 기울기 필터
-          if (slopeFilter === 'positive' && sim.slopeType !== 'positive') return false;
-          if (slopeFilter === 'negative' && sim.slopeType !== 'negative') return false;
-
-          const slope = sim.slope ?? 0;
-          if (slopeMinNum !== null && slope < slopeMinNum) return false;
-          if (slopeMaxNum !== null && slope > slopeMaxNum) return false;
-
-          return true;
-        });
-
-      filtered.sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
       filteredByPeriod[period] = filtered;
     }
 
-    // AND 교집합 계산
     return intersectSimResults(filteredByPeriod);
-  }, [resultsByPeriod, filterStartDate, filterEndDate, enablePatternFilter, minTouchesPattern, slopeFilter, slopeMin, slopeMax]);
+  }, [resultsByPeriod, enablePatternFilter, minTouchesPattern]);
 
   // ── 시뮬레이션 실행 ──────────────────────────────────────────────────
   const runSimulation = useCallback(() => {
@@ -371,8 +335,35 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           });
         }
 
-        results.sort((a, b) => (b.touchCount + b.breakoutCount) - (a.touchCount + a.breakoutCount));
-        newResultsByPeriod[p] = results;
+        // 날짜 필터 + 기울기 필터 적용 (시뮬레이션 클릭 시점의 입력값 사용)
+        const startMs    = filterStartDate ? new Date(filterStartDate).getTime() : 0;
+        const endMs      = filterEndDate   ? new Date(filterEndDate).getTime()   : Infinity;
+        const slopeMinNum = slopeMin !== '' ? parseFloat(slopeMin) : null;
+        const slopeMaxNum = slopeMax !== '' ? parseFloat(slopeMax) : null;
+
+        const processed = results
+          .map(sim => {
+            const filteredTouchPoints = sim.touchPoints.filter(
+              tp => tp.type === 'touch' || (tp.x >= startMs && tp.x <= endMs)
+            );
+            const breakoutCount      = filteredTouchPoints.filter(tp => tp.type === 'breakout').length;
+            const closeBreakoutCount = filteredTouchPoints.filter(tp => tp.type === 'breakout' && tp.priceType === 'close').length;
+            const highBreakoutCount  = filteredTouchPoints.filter(tp => tp.type === 'breakout' && tp.priceType === 'high').length;
+            const totalCount         = sim.touchCount + breakoutCount;
+            return { ...sim, filteredTouchPoints, breakoutCount, closeBreakoutCount, highBreakoutCount, totalCount };
+          })
+          .filter(sim => {
+            if ((sim.totalCount ?? 0) === 0) return false;
+            if (slopeFilter === 'positive' && sim.slopeType !== 'positive') return false;
+            if (slopeFilter === 'negative' && sim.slopeType !== 'negative') return false;
+            const slope = sim.slope ?? 0;
+            if (slopeMinNum !== null && slope < slopeMinNum) return false;
+            if (slopeMaxNum !== null && slope > slopeMaxNum) return false;
+            return true;
+          });
+
+        processed.sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
+        newResultsByPeriod[p] = processed;
       }
 
       setResultsByPeriod(newResultsByPeriod);
@@ -390,6 +381,11 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
     trendTouchTolerance,
     trendBreakoutTolerance,
     trendTouchBasis,
+    filterStartDate,
+    filterEndDate,
+    slopeFilter,
+    slopeMin,
+    slopeMax,
   ]);
 
   return {
