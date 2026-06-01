@@ -2,7 +2,7 @@
 
 import type { SimResult, UseChartIndicatorsReturn } from 'src/sections/indicators/hooks/use-chart-indicators';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ChartApex from 'react-apexcharts';
 
 import Box from '@mui/material/Box';
@@ -43,6 +43,27 @@ export function SimulationResultsModal({ indicators }: Props) {
   const [enablePatternFilter, setEnablePatternFilter] = useState(false);
   const [minTouchesPattern, setMinTouchesPattern] = useState(3);
 
+  // Date range filter states
+  const [filterStartDate, setFilterStartDate] = useState<string>('');
+  const [filterEndDate, setFilterEndDate] = useState<string>('');
+  const [excludeZeroCount, setExcludeZeroCount] = useState(true);
+
+  // Set default date range to 7 days ago to latest date when simResults is available
+  useEffect(() => {
+    if (simResults.length > 0) {
+      const latestDate = simResults[0].prices[simResults[0].prices.length - 1]?.date;
+      if (latestDate) {
+        setFilterEndDate(latestDate);
+        const latestObj = new Date(latestDate);
+        const sevenDaysAgoObj = new Date(latestObj.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const y = sevenDaysAgoObj.getFullYear();
+        const m = String(sevenDaysAgoObj.getMonth() + 1).padStart(2, '0');
+        const d = String(sevenDaysAgoObj.getDate()).padStart(2, '0');
+        setFilterStartDate(`${y}-${m}-${d}`);
+      }
+    }
+  }, [simResults]);
+
   const handleClose = () => {
     setShowSimModal(false);
     setPage(0);
@@ -68,7 +89,8 @@ export function SimulationResultsModal({ indicators }: Props) {
   };
 
   const getPatternDetails = (sim: SimResult) => {
-    const sortedPoints = [...sim.touchPoints].sort((a, b) => a.x - b.x);
+    const pointsToUse = sim.filteredTouchPoints || sim.touchPoints;
+    const sortedPoints = [...pointsToUse].sort((a, b) => a.x - b.x);
     const breakouts = sortedPoints.filter((p) => p.type === 'breakout');
     if (breakouts.length === 0) return null;
 
@@ -84,8 +106,53 @@ export function SimulationResultsModal({ indicators }: Props) {
     return null;
   };
 
-  // Filter results by slope type, slope range, and Touch-then-Breakout pattern
-  const filteredResults = simResults.filter((sim) => {
+  // Recalculate touch & breakout counts within the selected date range
+  const processedResults = simResults.map((sim) => {
+    const startMs = filterStartDate ? new Date(filterStartDate).getTime() : 0;
+    const endMs = filterEndDate ? new Date(filterEndDate).getTime() : Infinity;
+
+    const filteredTouchPoints = sim.touchPoints.filter((tp) => tp.x >= startMs && tp.x <= endMs);
+
+    const closeTouchCount = filteredTouchPoints.filter(
+      (tp) => tp.type === 'touch' && tp.priceType === 'close'
+    ).length;
+    const highTouchCount = filteredTouchPoints.filter(
+      (tp) => tp.type === 'touch' && tp.priceType === 'high'
+    ).length;
+    const touchCount = closeTouchCount + highTouchCount;
+
+    const closeBreakoutCount = filteredTouchPoints.filter(
+      (tp) => tp.type === 'breakout' && tp.priceType === 'close'
+    ).length;
+    const highBreakoutCount = filteredTouchPoints.filter(
+      (tp) => tp.type === 'breakout' && tp.priceType === 'high'
+    ).length;
+    const breakoutCount = closeBreakoutCount + highBreakoutCount;
+
+    const totalCount = touchCount + breakoutCount;
+
+    return {
+      ...sim,
+      filteredTouchPoints,
+      touchCount,
+      closeTouchCount,
+      highTouchCount,
+      breakoutCount,
+      closeBreakoutCount,
+      highBreakoutCount,
+      totalCount,
+    };
+  });
+
+  // Sort by totalCount in descending order
+  const sortedProcessed = [...processedResults].sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
+
+  // Filter results by slope type, slope range, Touch-then-Breakout pattern, and zero-count exclusion
+  const filteredResults = sortedProcessed.filter((sim) => {
+    if (excludeZeroCount && (sim.totalCount ?? 0) === 0) {
+      return false;
+    }
+
     const slopeVal = sim.slope ?? 0;
     if (slopeFilter === 'positive') {
       if (sim.slopeType !== 'positive') return false;
@@ -115,8 +182,9 @@ export function SimulationResultsModal({ indicators }: Props) {
   const getMiniChartOptions = (sim: SimResult) => {
     const annotations: any = { points: [] };
 
-    // Push pre-calculated touch/breakout points
-    sim.touchPoints.forEach((tp) => {
+    // Push pre-calculated touch/breakout points (filtered)
+    const pointsToUse = sim.filteredTouchPoints || sim.touchPoints;
+    pointsToUse.forEach((tp) => {
       const isClose = tp.priceType === 'close';
       const isBreak = tp.type === 'breakout';
       let color = theme.palette.warning.main;
@@ -264,6 +332,105 @@ export function SimulationResultsModal({ indicators }: Props) {
 
       {/* Filters Panel */}
       <Stack spacing={2} sx={{ mb: 3 }}>
+        {/* 📅 Date Range Filter */}
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems={{ xs: 'flex-start', sm: 'center' }}>
+          <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}>
+            📅 분석 날짜 범위 필터:
+          </Typography>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <input
+              type="date"
+              value={filterStartDate}
+              onChange={(e) => {
+                setFilterStartDate(e.target.value);
+                setPage(0);
+              }}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: `1px solid ${theme.palette.divider}`,
+                backgroundColor: theme.palette.background.paper,
+                color: theme.palette.text.primary,
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                outline: 'none',
+              }}
+            />
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 800 }}>
+              ~
+            </Typography>
+            <input
+              type="date"
+              value={filterEndDate}
+              onChange={(e) => {
+                setFilterEndDate(e.target.value);
+                setPage(0);
+              }}
+              style={{
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: `1px solid ${theme.palette.divider}`,
+                backgroundColor: theme.palette.background.paper,
+                color: theme.palette.text.primary,
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                outline: 'none',
+              }}
+            />
+
+            {/* Quick Filter Buttons */}
+            <Button
+              size="small"
+              variant="outlined"
+              color="primary"
+              onClick={() => {
+                if (simResults.length > 0) {
+                  const latestDate = simResults[0].prices[simResults[0].prices.length - 1]?.date;
+                  if (latestDate) {
+                    setFilterEndDate(latestDate);
+                    const latestObj = new Date(latestDate);
+                    const sevenDaysAgoObj = new Date(latestObj.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    const y = sevenDaysAgoObj.getFullYear();
+                    const m = String(sevenDaysAgoObj.getMonth() + 1).padStart(2, '0');
+                    const d = String(sevenDaysAgoObj.getDate()).padStart(2, '0');
+                    setFilterStartDate(`${y}-${m}-${d}`);
+                  }
+                }
+                setPage(0);
+              }}
+              sx={{ fontWeight: 800, fontSize: '0.75rem', p: '4px 10px', ml: 1 }}
+            >
+              최근 7일
+            </Button>
+
+            <Button
+              size="small"
+              variant="text"
+              color="warning"
+              onClick={() => {
+                setFilterStartDate('');
+                setFilterEndDate('');
+                setPage(0);
+              }}
+              sx={{ fontWeight: 800, fontSize: '0.75rem', p: '4px 10px' }}
+            >
+              전체 기간
+            </Button>
+
+            {/* Zero Count Exclusion Toggle */}
+            <Chip
+              label={excludeZeroCount ? '터치/돌파 없는 종목 제외 ON' : '모든 종목 표시'}
+              color={excludeZeroCount ? 'warning' : 'default'}
+              variant={excludeZeroCount ? 'filled' : 'outlined'}
+              onClick={() => {
+                setExcludeZeroCount(!excludeZeroCount);
+                setPage(0);
+              }}
+              sx={{ fontWeight: 800, cursor: 'pointer', ml: 2 }}
+            />
+          </Stack>
+        </Stack>
+
         {/* Dynamic Slope Filter Chips */}
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems={{ xs: 'flex-start', sm: 'center' }}>
           <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}>
@@ -447,146 +614,157 @@ export function SimulationResultsModal({ indicators }: Props) {
       <Divider sx={{ mb: 3 }} />
 
       {/* Tickers ranked cards Grid */}
-      <Grid container spacing={3}>
-        {paginatedResults.map((sim, index) => {
-          const rank = page * rowsPerPage + index + 1;
-          const chartSeries = getMiniChartSeries(sim);
-          const chartOptions = getMiniChartOptions(sim);
-          const colors = ['#00E676', theme.palette.success.main, theme.palette.error.main];
-          const patternDetails = getPatternDetails(sim);
+      {filteredResults.length === 0 ? (
+        <Box sx={{ py: 10, textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 700 }}>
+            🔍 해당 날짜 범위 및 필터 조건에 부합하는 시뮬레이션 결과가 없습니다.
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.disabled', mt: 1 }}>
+            날짜 범위를 넓히거나 필터링 조건을 완화해 보세요.
+          </Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          {paginatedResults.map((sim, index) => {
+            const rank = page * rowsPerPage + index + 1;
+            const chartSeries = getMiniChartSeries(sim);
+            const chartOptions = getMiniChartOptions(sim);
+            const colors = ['#00E676', theme.palette.success.main, theme.palette.error.main];
+            const patternDetails = getPatternDetails(sim);
 
-          return (
-            <Grid key={sim.ticker} size={{ xs: 12, md: 4 }}>
-              <Card
-                sx={{
-                  p: 2.5,
-                  border: `1px solid ${theme.palette.divider}`,
-                  borderRadius: 2,
-                  boxShadow: theme.customShadows?.card,
-                  background: theme.palette.background.paper,
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: theme.customShadows?.z16,
-                  },
-                }}
-              >
-                {/* Card Top Information */}
-                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
-                  <Box sx={{ maxWidth: '60%' }}>
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
-                      <Chip
-                        label={`#${rank}`}
-                        size="small"
-                        color={rank <= 3 ? 'warning' : 'default'}
-                        sx={{ fontWeight: 900, px: 0.5, borderRadius: 1 }}
-                      />
-                      <Typography variant="subtitle2" noWrap sx={{ fontWeight: 800 }}>
-                        {sim.name}
+            return (
+              <Grid key={sim.ticker} size={{ xs: 12, md: 4 }}>
+                <Card
+                  sx={{
+                    p: 2.5,
+                    border: `1px solid ${theme.palette.divider}`,
+                    borderRadius: 2,
+                    boxShadow: theme.customShadows?.card,
+                    background: theme.palette.background.paper,
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: theme.customShadows?.z16,
+                    },
+                  }}
+                >
+                  {/* Card Top Information */}
+                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+                    <Box sx={{ maxWidth: '60%' }}>
+                      <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+                        <Chip
+                          label={`#${rank}`}
+                          size="small"
+                          color={rank <= 3 ? 'warning' : 'default'}
+                          sx={{ fontWeight: 900, px: 0.5, borderRadius: 1 }}
+                        />
+                        <Typography variant="subtitle2" noWrap sx={{ fontWeight: 800 }}>
+                          {sim.name}
+                        </Typography>
+                      </Stack>
+                      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                        코드: {sim.ticker}
+                      </Typography>
+                      <Box sx={{ mt: 0.5 }}>
+                        <Chip
+                          label={`기울기: ${(sim.slope ?? 0) > 0 ? '+' : ''}${(sim.slope ?? 0).toFixed(2)}%`}
+                          size="small"
+                          sx={{
+                            height: 20,
+                            fontSize: '0.7rem',
+                            fontWeight: 800,
+                            bgcolor: alpha(
+                              sim.slopeType === 'positive'
+                                ? theme.palette.error.main
+                                : sim.slopeType === 'negative'
+                                  ? theme.palette.info.main
+                                  : theme.palette.text.secondary,
+                              0.12
+                            ),
+                            color:
+                              sim.slopeType === 'positive'
+                                ? 'error.main'
+                                : sim.slopeType === 'negative'
+                                  ? 'info.main'
+                                  : 'text.secondary',
+                            border: `1px solid ${alpha(
+                              sim.slopeType === 'positive'
+                                ? theme.palette.error.main
+                                : sim.slopeType === 'negative'
+                                  ? theme.palette.info.main
+                                  : theme.palette.text.secondary,
+                              0.25
+                            )}`,
+                          }}
+                        />
+                      </Box>
+                    </Box>
+
+                    {/* Touch & Breakout Badges */}
+                    <Stack spacing={0.5} alignItems="flex-end">
+                      <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 900, fontSize: '0.85rem' }}>
+                        ✨ 총합: {sim.touchCount + sim.breakoutCount}회
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 800, fontSize: '0.75rem' }}>
+                        🔴 터치: {sim.touchCount}회 (종 {sim.closeTouchCount}/고 {sim.highTouchCount})
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'secondary.main', fontWeight: 800, fontSize: '0.75rem' }}>
+                        ⚡ 돌파: {sim.breakoutCount}회 (종 {sim.closeBreakoutCount}/고 {sim.highBreakoutCount})
                       </Typography>
                     </Stack>
-                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                      코드: {sim.ticker}
-                    </Typography>
-                    <Box sx={{ mt: 0.5 }}>
+                  </Stack>
+
+                  {/* Sparkline Candlestick Chart */}
+                  <Box sx={{ height: 180, mb: 2, bgcolor: alpha(theme.palette.action.hover, 0.3), borderRadius: 1.5, p: 1 }}>
+                    <ChartApex
+                      options={chartOptions}
+                      series={chartSeries}
+                      type="line"
+                      height="100%"
+                      colors={colors}
+                    />
+                  </Box>
+
+                  {patternDetails && (
+                    <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'center' }}>
                       <Chip
-                        label={`기울기: ${(sim.slope ?? 0) > 0 ? '+' : ''}${(sim.slope ?? 0).toFixed(2)}%`}
+                        label={`🎯 패턴: 저항선 ${patternDetails.touchesCount}회 터치 후 돌파 완료`}
                         size="small"
+                        color="success"
                         sx={{
-                          height: 20,
-                          fontSize: '0.7rem',
                           fontWeight: 800,
-                          bgcolor: alpha(
-                            sim.slopeType === 'positive'
-                              ? theme.palette.error.main
-                              : sim.slopeType === 'negative'
-                                ? theme.palette.info.main
-                                : theme.palette.text.secondary,
-                            0.12
-                          ),
-                          color:
-                            sim.slopeType === 'positive'
-                              ? 'error.main'
-                              : sim.slopeType === 'negative'
-                                ? 'info.main'
-                                : 'text.secondary',
-                          border: `1px solid ${alpha(
-                            sim.slopeType === 'positive'
-                              ? theme.palette.error.main
-                              : sim.slopeType === 'negative'
-                                ? theme.palette.info.main
-                                : theme.palette.text.secondary,
-                            0.25
-                          )}`,
+                          fontSize: '0.75rem',
+                          px: 1,
+                          py: 1.5,
+                          background: `linear-gradient(135deg, ${theme.palette.success.main} 0%, ${theme.palette.success.dark} 100%)`,
+                          color: '#fff',
+                          boxShadow: `0 2px 8px ${alpha(theme.palette.success.main, 0.25)}`,
                         }}
                       />
                     </Box>
-                  </Box>
+                  )}
 
-                  {/* Touch & Breakout Badges */}
-                  <Stack spacing={0.5} alignItems="flex-end">
-                    <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 900, fontSize: '0.85rem' }}>
-                      ✨ 총합: {sim.touchCount + sim.breakoutCount}회
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 800, fontSize: '0.75rem' }}>
-                      🔴 터치: {sim.touchCount}회 (종 {sim.closeTouchCount}/고 {sim.highTouchCount})
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'secondary.main', fontWeight: 800, fontSize: '0.75rem' }}>
-                      ⚡ 돌파: {sim.breakoutCount}회 (종 {sim.closeBreakoutCount}/고 {sim.highBreakoutCount})
-                    </Typography>
-                  </Stack>
-                </Stack>
-
-                {/* Sparkline Candlestick Chart */}
-                <Box sx={{ height: 180, mb: 2, bgcolor: alpha(theme.palette.action.hover, 0.3), borderRadius: 1.5, p: 1 }}>
-                  <ChartApex
-                    options={chartOptions}
-                    series={chartSeries}
-                    type="line"
-                    height="100%"
-                    colors={colors}
-                  />
-                </Box>
-
-                {patternDetails && (
-                  <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'center' }}>
-                    <Chip
-                      label={`🎯 패턴: 저항선 ${patternDetails.touchesCount}회 터치 후 돌파 완료`}
-                      size="small"
-                      color="success"
-                      sx={{
-                        fontWeight: 800,
-                        fontSize: '0.75rem',
-                        px: 1,
-                        py: 1.5,
-                        background: `linear-gradient(135deg, ${theme.palette.success.main} 0%, ${theme.palette.success.dark} 100%)`,
-                        color: '#fff',
-                        boxShadow: `0 2px 8px ${alpha(theme.palette.success.main, 0.25)}`,
-                      }}
-                    />
-                  </Box>
-                )}
-
-                {/* Action button */}
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  color="warning"
-                  onClick={() => handleSelectTicker(sim.ticker, sim.name)}
-                  sx={{
-                    fontWeight: 700,
-                    borderRadius: 1.5,
-                    borderWidth: 1.5,
-                    '&:hover': { borderWidth: 1.5 },
-                  }}
-                >
-                  🔍 이 종목 차트 분석하기
-                </Button>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
+                  {/* Action button */}
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    color="warning"
+                    onClick={() => handleSelectTicker(sim.ticker, sim.name)}
+                    sx={{
+                      fontWeight: 700,
+                      borderRadius: 1.5,
+                      borderWidth: 1.5,
+                      '&:hover': { borderWidth: 1.5 },
+                    }}
+                  >
+                    🔍 이 종목 차트 분석하기
+                  </Button>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
 
       {/* Pagination Controller */}
       <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>

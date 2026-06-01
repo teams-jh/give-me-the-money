@@ -123,6 +123,8 @@ export interface SimResult {
   touchPoints: TouchPoint[];
   slopeType: 'positive' | 'negative' | 'flat';
   slope?: number;
+  filteredTouchPoints?: TouchPoint[];
+  totalCount?: number;
 }
 
 export interface DynamicLinesResult {
