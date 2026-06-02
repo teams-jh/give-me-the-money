@@ -6,6 +6,8 @@ export { detectHighLowBreakout, detectPriceVolumeDivergence } from "./signals";
 
 export { calcMarketBreadth, buildSnapshotDates, getMarketCondition } from "./breadth";
 export { calcMA, calcEMA, calcRSI, calcATR, calcOBV, calcMDD, calcMACD, calcBollingerBands } from "./indicators";
+export { convertToWeeklyBars } from "./indicators";
+export type { OHLCBar } from "./indicators";
 export { detectValuation, detectOwnership, analyzeFundamentals, detectEarningsAcceleration } from "./fundamentals";
 export { analyzeSignals, detectRSISignal, detectMACDCross, detectBBBreakout, detectRiskSignal, detectGoldenCross, detectVolumeSpike, detectOBVDivergence } from "./signals";
 

@@ -1303,3 +1303,78 @@ export function calcZigZagSupportResistance(
 
   return result;
 }
+
+
+// ── convertToWeeklyBars ───────────────────────────────────────────────────────
+
+/**
+ * 일봉 시계열 데이터를 주봉으로 변환한다.
+ *
+ * 주(week) 기준: ISO 8601 주차 (월~일)
+ * - date:  해당 주의 마지막 거래일 날짜
+ * - open:  해당 주의 첫 거래일 시가
+ * - high:  해당 주 전체 고가 최대값
+ * - low:   해당 주 전체 저가 최소값
+ * - close: 해당 주의 마지막 거래일 종가
+ *
+ * 입력 데이터는 날짜 오름차순 정렬을 가정한다.
+ */
+export interface OHLCBar {
+  date:  string;
+  open:  number;
+  high:  number;
+  low:   number;
+  close: number;
+  [key: string]: unknown;  // 기타 필드 허용 (volume 등)
+}
+
+/** ISO 주차 키 캐시 — 같은 날짜 문자열은 한 번만 계산 */
+const weekKeyCache = new Map<string, string>();
+
+/** ISO 주차 키 반환 (YYYY-Www 형식, e.g. "2025-W03")
+ *  "YYYY-MM-DD" 파싱 시 로컬 Getter 대신 UTC 기반으로 분해하여 타임존 버그 방지 */
+function isoWeekKey(dateStr: string): string {
+  const cached = weekKeyCache.get(dateStr);
+  if (cached) return cached;
+
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  // ISO 8601: 목요일이 속한 연도를 기준
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const week      = Math.ceil(((date.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
+  const result    = `${date.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+
+  weekKeyCache.set(dateStr, result);
+  return result;
+}
+
+export function convertToWeeklyBars(dailyPrices: OHLCBar[]): OHLCBar[] {
+  if (dailyPrices.length === 0) return [];
+
+  const weekMap = new Map<string, OHLCBar>();
+
+  for (const bar of dailyPrices) {
+    const key   = isoWeekKey(bar.date);
+    // 누락 필드는 close로 폴백 → NaN 방지
+    const open  = bar.open  ?? bar.close;
+    const high  = bar.high  ?? bar.close;
+    const low   = bar.low   ?? bar.close;
+    const close = bar.close;
+
+    if (!weekMap.has(key)) {
+      // 주의 첫 거래일 → open 확정, 나머지는 이 봉으로 초기화
+      weekMap.set(key, { ...bar, open, high, low, close, date: bar.date });
+    } else {
+      // 이후 거래일 → high/low 갱신, close·date 최신화
+      const prev = weekMap.get(key)!;
+      prev.high  = Math.max(prev.high, high);
+      prev.low   = Math.min(prev.low,  low);
+      prev.close = close;
+      prev.date  = bar.date;
+    }
+  }
+
+  // Map은 삽입 순서를 유지 → 날짜 오름차순 보장
+  return Array.from(weekMap.values());
+}

@@ -9,6 +9,7 @@ import {
   calcSupportResistance,
   calcLinearRegressionChannel,
   calcZigZagSupportResistance,
+  convertToWeeklyBars,
 } from 'src/library/shared/indicators';
 import { calcTrendTouchPoints, intersectSimResults } from 'src/library/shared/signals';
 import type { TrendSimFinalResult, TrendTouchPoint } from 'src/library/shared/signals';
@@ -20,7 +21,10 @@ import type { SimResult, PriceDataPoint } from './use-chart-indicators';
 export type { TrendSimFinalResult };
 
 /** 기간별 독립 입력 묶음 */
+export type BarUnit = 'daily' | 'weekly';
+
 export interface PeriodConfig {
+  barUnit:                BarUnit;
   trendBase:              'highlow' | 'close' | 'open';
   trendAlgo:              'swing' | 'zigzag' | 'regression';
   zigzagThreshold:        number;
@@ -55,13 +59,15 @@ export interface UseTrendSimulationReturn {
 
 // ----------------------------------------------------------------------
 
-const PERIOD_DAYS: Record<PeriodKey, number> = {
-  '3m': 63, '1y': 252, '2y': 504, '3y': 756,
+const PERIOD_BARS: Record<BarUnit, Record<PeriodKey, number>> = {
+  daily:  { '3m': 63,  '1y': 252, '2y': 504, '3y': 756 },
+  weekly: { '3m': 13,  '1y': 52,  '2y': 104, '3y': 156 },
 };
 
 const PERIOD_ORDER: PeriodKey[] = ['3m', '1y', '2y', '3y'];
 
 const DEFAULT_CONFIG: Omit<PeriodConfig, 'trendStartDate' | 'trendEndDate' | 'filterStartDate' | 'filterEndDate'> = {
+  barUnit:                'daily',
   trendBase:              'highlow',
   trendAlgo:              'swing',
   zigzagThreshold:        5,
@@ -93,8 +99,14 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
     const dates    = prices.map(p => p.date);
     const lastDate = dates[dates.length - 1];
     const getNDaysAgo  = (n: number): string => dates[Math.max(0, dates.length - 1 - n)] ?? lastDate;
-    const getPeriodStart = (period: PeriodKey): string =>
-      dates[Math.max(0, dates.length - PERIOD_DAYS[period])] ?? dates[0];
+    // 주봉 변환 후 날짜 배열
+    const weeklyBars  = convertToWeeklyBars(prices as any[]);
+    const weeklyDates = weeklyBars.map(b => b.date);
+
+    const getPeriodStart = (period: PeriodKey, barUnit: BarUnit = 'daily'): string => {
+      const bars = barUnit === 'weekly' ? weeklyDates : dates;
+      return bars[Math.max(0, bars.length - PERIOD_BARS[barUnit][period])] ?? bars[0];
+    };
     return { lastDate, getNDaysAgo, getPeriodStart };
   }, []);
 
@@ -105,7 +117,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
     setPeriodConfigs({
       '1y': {
         ...DEFAULT_CONFIG,
-        trendStartDate: getPeriodStart('1y'),
+        trendStartDate: getPeriodStart('1y', 'daily'),
         trendEndDate:   lastDate,
         filterStartDate: getNDaysAgo(3),
         filterEndDate:   lastDate,
@@ -135,7 +147,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
         const src = cfg[srcPeriod] ?? Object.values(cfg)[0];
         const newConfig: PeriodConfig = {
           ...(src ?? DEFAULT_CONFIG),
-          trendStartDate:  referenceInfo?.getPeriodStart(p) ?? '',
+          trendStartDate:  referenceInfo?.getPeriodStart(p, src?.barUnit ?? 'daily') ?? '',
           trendEndDate:    referenceInfo?.lastDate ?? '',
           filterStartDate: src?.filterStartDate ?? referenceInfo?.getNDaysAgo(3) ?? '',
           filterEndDate:   src?.filterEndDate   ?? referenceInfo?.lastDate ?? '',
@@ -193,7 +205,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
         if (!cfg) continue;
 
         const results: SimResult[] = [];
-        const days = PERIOD_DAYS[p];
+        const days = PERIOD_BARS[cfg.barUnit ?? 'daily'][p];
 
         const isKr = simMarket === 'KR';
         const tickerOptions = allTickersList
@@ -209,7 +221,10 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           if (!rawData) continue;
 
           const allPrices = (rawData.prices || []) as PriceDataPoint[];
-          const slice = allPrices.slice(-days);
+          const bars = cfg.barUnit === 'weekly'
+            ? convertToWeeklyBars(allPrices as any[]) as PriceDataPoint[]
+            : allPrices;
+          const slice = bars.slice(-days);
           if (slice.length === 0) continue;
 
           const closePrices = slice.map(d => d.close);
@@ -219,10 +234,25 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           const dates       = slice.map(d => d.date);
           const timestamps  = slice.map(d => new Date(d.date).getTime());
 
+          // 주봉 선택 시 날짜를 실제 주봉 날짜(마지막 거래일)로 스냅
+          // start → 입력일 이상인 첫 번째 주봉 날짜 (올림)
+          // end   → 입력일 이하인 마지막 주봉 날짜 (내림)
+          const snapUp   = (d: string) => dates.find(x => x >= d) ?? dates[dates.length - 1];
+          const snapDown = (d: string) => [...dates].reverse().find(x => x <= d) ?? dates[0];
+
+          const effectiveTrendStart = cfg.barUnit === 'weekly' && cfg.trendStartDate
+            ? snapUp(cfg.trendStartDate)   : cfg.trendStartDate;
+          const effectiveTrendEnd   = cfg.barUnit === 'weekly' && cfg.trendEndDate
+            ? snapDown(cfg.trendEndDate)   : cfg.trendEndDate;
+          const effectiveFilterStart = cfg.barUnit === 'weekly' && cfg.filterStartDate
+            ? snapUp(cfg.filterStartDate)  : cfg.filterStartDate;
+          const effectiveFilterEnd   = cfg.barUnit === 'weekly' && cfg.filterEndDate
+            ? snapDown(cfg.filterEndDate)  : cfg.filterEndDate;
+
           let simTrendIndices: number[] = [];
-          if (cfg.trendStartDate && cfg.trendEndDate) {
+          if (effectiveTrendStart && effectiveTrendEnd) {
             dates.forEach((d, idx) => {
-              if (d >= cfg.trendStartDate && d <= cfg.trendEndDate) simTrendIndices.push(idx);
+              if (d >= effectiveTrendStart && d <= effectiveTrendEnd) simTrendIndices.push(idx);
             });
           }
           if (simTrendIndices.length === 0) simTrendIndices = dates.map((_, idx) => idx);
@@ -279,8 +309,8 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
 
           const { touchPoints: itemTouchPoints, touchCount, closeTouchCount, highTouchCount, breakoutCount, closeBreakoutCount, highBreakoutCount } = touchResult;
 
-          const startMs     = cfg.filterStartDate ? new Date(cfg.filterStartDate).getTime() : 0;
-          const endMs       = cfg.filterEndDate   ? new Date(cfg.filterEndDate).getTime()   : Infinity;
+          const startMs     = effectiveFilterStart ? new Date(effectiveFilterStart).getTime() : 0;
+          const endMs       = effectiveFilterEnd   ? new Date(effectiveFilterEnd).getTime()   : Infinity;
           const slopeMinNum = cfg.slopeMin !== '' ? parseFloat(cfg.slopeMin) : null;
           const slopeMaxNum = cfg.slopeMax !== '' ? parseFloat(cfg.slopeMax) : null;
 
