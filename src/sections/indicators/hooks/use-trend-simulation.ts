@@ -234,10 +234,25 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           const dates       = slice.map(d => d.date);
           const timestamps  = slice.map(d => new Date(d.date).getTime());
 
+          // 주봉 선택 시 날짜를 실제 주봉 날짜(마지막 거래일)로 스냅
+          // start → 입력일 이상인 첫 번째 주봉 날짜 (올림)
+          // end   → 입력일 이하인 마지막 주봉 날짜 (내림)
+          const snapUp   = (d: string) => dates.find(x => x >= d) ?? dates[dates.length - 1];
+          const snapDown = (d: string) => [...dates].reverse().find(x => x <= d) ?? dates[0];
+
+          const effectiveTrendStart = cfg.barUnit === 'weekly' && cfg.trendStartDate
+            ? snapUp(cfg.trendStartDate)   : cfg.trendStartDate;
+          const effectiveTrendEnd   = cfg.barUnit === 'weekly' && cfg.trendEndDate
+            ? snapDown(cfg.trendEndDate)   : cfg.trendEndDate;
+          const effectiveFilterStart = cfg.barUnit === 'weekly' && cfg.filterStartDate
+            ? snapUp(cfg.filterStartDate)  : cfg.filterStartDate;
+          const effectiveFilterEnd   = cfg.barUnit === 'weekly' && cfg.filterEndDate
+            ? snapDown(cfg.filterEndDate)  : cfg.filterEndDate;
+
           let simTrendIndices: number[] = [];
-          if (cfg.trendStartDate && cfg.trendEndDate) {
+          if (effectiveTrendStart && effectiveTrendEnd) {
             dates.forEach((d, idx) => {
-              if (d >= cfg.trendStartDate && d <= cfg.trendEndDate) simTrendIndices.push(idx);
+              if (d >= effectiveTrendStart && d <= effectiveTrendEnd) simTrendIndices.push(idx);
             });
           }
           if (simTrendIndices.length === 0) simTrendIndices = dates.map((_, idx) => idx);
@@ -294,8 +309,8 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
 
           const { touchPoints: itemTouchPoints, touchCount, closeTouchCount, highTouchCount, breakoutCount, closeBreakoutCount, highBreakoutCount } = touchResult;
 
-          const startMs     = cfg.filterStartDate ? new Date(cfg.filterStartDate).getTime() : 0;
-          const endMs       = cfg.filterEndDate   ? new Date(cfg.filterEndDate).getTime()   : Infinity;
+          const startMs     = effectiveFilterStart ? new Date(effectiveFilterStart).getTime() : 0;
+          const endMs       = effectiveFilterEnd   ? new Date(effectiveFilterEnd).getTime()   : Infinity;
           const slopeMinNum = cfg.slopeMin !== '' ? parseFloat(cfg.slopeMin) : null;
           const slopeMaxNum = cfg.slopeMax !== '' ? parseFloat(cfg.slopeMax) : null;
 

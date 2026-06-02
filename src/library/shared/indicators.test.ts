@@ -881,3 +881,54 @@ describe('convertToWeeklyBars', () => {
   });
 
 });
+
+
+// ── convertToWeeklyBars: 날짜 스냅 동작 검증 ─────────────────────────────────
+// (주봉 변환 후 날짜 배열을 이용한 스냅 함수의 기대 동작 확인)
+
+describe('주봉 날짜 스냅 동작', () => {
+  const weeklyDates = ['2025-01-10', '2025-01-17', '2025-01-24', '2025-01-31'];
+
+  const snapUp   = (d: string) => weeklyDates.find(x => x >= d) ?? weeklyDates[weeklyDates.length - 1];
+  const snapDown = (d: string) => [...weeklyDates].reverse().find(x => x <= d) ?? weeklyDates[0];
+
+  it('이미 주봉 날짜면 그대로 반환 (snapUp)', () => {
+    expect(snapUp('2025-01-17')).toBe('2025-01-17');
+  });
+
+  it('이미 주봉 날짜면 그대로 반환 (snapDown)', () => {
+    expect(snapDown('2025-01-17')).toBe('2025-01-17');
+  });
+
+  it('주 중간 날짜(화요일) → 그 주 금요일로 올림 (snapUp)', () => {
+    expect(snapUp('2025-01-14')).toBe('2025-01-17');  // 화요일 → 금요일
+  });
+
+  it('주 중간 날짜(화요일) → 이전 주 금요일로 내림 (snapDown)', () => {
+    expect(snapDown('2025-01-14')).toBe('2025-01-10'); // 화요일 → 이전 금요일
+  });
+
+  it('주봉 최초일 이전 날짜 → 첫 주봉 날짜 (snapUp)', () => {
+    expect(snapUp('2024-12-01')).toBe('2025-01-10');
+  });
+
+  it('주봉 최후일 이후 날짜 → 마지막 주봉 날짜 (snapDown)', () => {
+    expect(snapDown('2026-01-01')).toBe('2025-01-31');
+  });
+
+  it('trendStartDate 스냅: 화요일 입력 → 그 주 포함 (올림)', () => {
+    // trendStartDate = '2025-01-14'(화), effectiveTrendStart = '2025-01-17'(금)
+    // dates.filter(d >= '2025-01-17') → ['2025-01-17', '2025-01-24', '2025-01-31']
+    const effective = snapUp('2025-01-14');
+    const included = weeklyDates.filter(d => d >= effective);
+    expect(included).toEqual(['2025-01-17', '2025-01-24', '2025-01-31']);
+  });
+
+  it('trendEndDate 스냅: 화요일 입력 → 이전 주까지만 포함 (내림)', () => {
+    // trendEndDate = '2025-01-14'(화), effectiveTrendEnd = '2025-01-10'(금)
+    // dates.filter(d <= '2025-01-10') → ['2025-01-10']
+    const effective = snapDown('2025-01-14');
+    const included = weeklyDates.filter(d => d <= effective);
+    expect(included).toEqual(['2025-01-10']);
+  });
+});
