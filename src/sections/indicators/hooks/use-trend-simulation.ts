@@ -279,8 +279,8 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
 
           const { touchPoints: itemTouchPoints, touchCount, closeTouchCount, highTouchCount, breakoutCount, closeBreakoutCount, highBreakoutCount } = touchResult;
 
-          const startMs    = cfg.filterStartDate ? new Date(cfg.filterStartDate).getTime() : 0;
-          const endMs      = cfg.filterEndDate   ? new Date(cfg.filterEndDate).getTime()   : Infinity;
+          const startMs     = cfg.filterStartDate ? new Date(cfg.filterStartDate).getTime() : 0;
+          const endMs       = cfg.filterEndDate   ? new Date(cfg.filterEndDate).getTime()   : Infinity;
           const slopeMinNum = cfg.slopeMin !== '' ? parseFloat(cfg.slopeMin) : null;
           const slopeMaxNum = cfg.slopeMax !== '' ? parseFloat(cfg.slopeMax) : null;
 
@@ -294,29 +294,18 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
 
           if (totalCount === 0) continue;
 
-          if (cfg.slopeFilter !== 'all') {
-            const resistanceData = cResistance != null ? [
-              { x: new Date(dates[0]).getTime(), y: cResistance },
-              { x: new Date(dates[dates.length - 1]).getTime(), y: mResistance * (dates.length - 1) + cResistance },
-            ] : [];
-            const firstR  = resistanceData[0]?.y ?? 0;
-            const lastR   = resistanceData[resistanceData.length - 1]?.y ?? 0;
-            const slopeVal = lastR - firstR;
-            if (cfg.slopeFilter === 'positive' && slopeVal <= 0.001) continue;
-            if (cfg.slopeFilter === 'negative' && slopeVal >= -0.001) continue;
-          }
-
+          // timestamps 재사용 (new Date() 중복 호출 방지)
           const resistanceData = cResistance != null ? [
-            { x: new Date(dates[0]).getTime(), y: cResistance },
-            { x: new Date(dates[dates.length - 1]).getTime(), y: mResistance * (dates.length - 1) + cResistance },
+            { x: timestamps[0],                     y: cResistance },
+            { x: timestamps[timestamps.length - 1], y: mResistance * (dates.length - 1) + cResistance },
           ] : [];
           const supportData = cSupport != null ? [
-            { x: new Date(dates[0]).getTime(), y: cSupport },
-            { x: new Date(dates[dates.length - 1]).getTime(), y: mSupport * (dates.length - 1) + cSupport },
+            { x: timestamps[0],                     y: cSupport },
+            { x: timestamps[timestamps.length - 1], y: mSupport * (dates.length - 1) + cSupport },
           ] : undefined;
           const zigzagData = cfg.trendAlgo === 'zigzag'
             ? srRaw
-                .map((pt, idx) => ({ x: new Date(dates[simTrendIndices[idx]]).getTime(), y: pt.zigzag }))
+                .map((pt, idx) => ({ x: timestamps[simTrendIndices[idx]], y: pt.zigzag }))
                 .filter((pt): pt is { x: number; y: number } => pt.y != null)
             : undefined;
 
@@ -327,6 +316,8 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           const slopeType: 'positive' | 'negative' | 'flat' =
             slope > 0.001 ? 'positive' : slope < -0.001 ? 'negative' : 'flat';
 
+          if (cfg.slopeFilter === 'positive' && slope <= 0.001) continue;
+          if (cfg.slopeFilter === 'negative' && slope >= -0.001) continue;
           if (slopeMinNum !== null && slopePercent < slopeMinNum) continue;
           if (slopeMaxNum !== null && slopePercent > slopeMaxNum) continue;
 

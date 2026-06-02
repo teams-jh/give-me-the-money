@@ -131,6 +131,14 @@ function PeriodConfigPanel({
             onChange={e => onChange({ trendEndDate: e.target.value })}
             style={inputStyle(theme)}
           />
+          {(config.trendStartDate || config.trendEndDate) && (
+            <Button size="small" variant="outlined"
+              onClick={() => onChange({ trendStartDate: '', trendEndDate: '' })}
+              sx={{ whiteSpace: 'nowrap', px: 1, minWidth: 'auto', flexShrink: 0 }}
+            >
+              초기화
+            </Button>
+          )}
         </Stack>
       </Grid>
 
@@ -341,6 +349,10 @@ export function TrendInputPanel({ sim }: Props) {
             onChange={updates => updatePeriodConfig(activeTab, updates)}
             theme={theme}
           />
+        ) : simPeriods.length > 0 ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+            <CircularProgress size={24} />
+          </Box>
         ) : (
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             기간을 선택해주세요.
