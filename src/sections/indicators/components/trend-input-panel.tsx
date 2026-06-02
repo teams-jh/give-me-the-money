@@ -101,14 +101,17 @@ function PeriodConfigPanel({
           {([
             { key: 'daily',  label: '일봉' },
             { key: 'weekly', label: '주봉' },
-          ] as const).map(({ key, label }) => (
-            <Chip key={key} label={label} size="small"
-              color={config.barUnit === key ? 'secondary' : 'default'}
-              variant={config.barUnit === key ? 'filled' : 'outlined'}
-              onClick={() => onChange({ barUnit: key })}
-              sx={{ flex: 1, fontWeight: config.barUnit === key ? 700 : 500, cursor: 'pointer' }}
-            />
-          ))}
+          ] as const).map(({ key, label }) => {
+            const isSelected = (config.barUnit ?? 'daily') === key;
+            return (
+              <Chip key={key} label={label} size="small"
+                color={isSelected ? 'secondary' : 'default'}
+                variant={isSelected ? 'filled' : 'outlined'}
+                onClick={() => onChange({ barUnit: key })}
+                sx={{ flex: 1, fontWeight: isSelected ? 700 : 500, cursor: 'pointer' }}
+              />
+            );
+          })}
         </Stack>
       </Grid>
 
