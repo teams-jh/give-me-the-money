@@ -780,3 +780,104 @@ describe('calcZigZagSupportResistance 추가 브랜치', () => {
     });
   });
 });
+
+
+// ── convertToWeeklyBars ───────────────────────────────────────────────────────
+
+import { convertToWeeklyBars } from './indicators.ts';
+import type { OHLCBar } from './indicators.ts';
+
+function bar(date: string, open: number, high: number, low: number, close: number): OHLCBar {
+  return { date, open, high, low, close };
+}
+
+describe('convertToWeeklyBars', () => {
+
+  it('빈 배열 → 빈 배열', () => {
+    expect(convertToWeeklyBars([])).toHaveLength(0);
+  });
+
+  it('단일 거래일 → 단일 주봉', () => {
+    const result = convertToWeeklyBars([bar('2025-01-06', 100, 110, 95, 105)]);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({ open: 100, high: 110, low: 95, close: 105, date: '2025-01-06' });
+  });
+
+  it('같은 주 복수 일봉 → 단일 주봉으로 합산', () => {
+    // 2025-01-06(월) ~ 2025-01-10(금)
+    const daily = [
+      bar('2025-01-06', 100, 110, 98,  105),
+      bar('2025-01-07', 105, 115, 103, 112),
+      bar('2025-01-08', 112, 120, 108, 118),
+      bar('2025-01-09', 118, 122, 111, 115),
+      bar('2025-01-10', 115, 119, 109, 113),
+    ];
+    const result = convertToWeeklyBars(daily);
+    expect(result).toHaveLength(1);
+    expect(result[0].open).toBe(100);          // 월요일 시가
+    expect(result[0].high).toBe(122);          // 주간 최고
+    expect(result[0].low).toBe(98);            // 주간 최저
+    expect(result[0].close).toBe(113);         // 금요일 종가
+    expect(result[0].date).toBe('2025-01-10'); // 마지막 거래일
+  });
+
+  it('주 경계 → 2개 주봉으로 분리', () => {
+    // 2025-01-10(금) 과 2025-01-13(월)은 다른 주
+    const daily = [
+      bar('2025-01-10', 100, 110, 95,  105),
+      bar('2025-01-13', 106, 115, 104, 112),
+    ];
+    const result = convertToWeeklyBars(daily);
+    expect(result).toHaveLength(2);
+    expect(result[0].date).toBe('2025-01-10');
+    expect(result[1].date).toBe('2025-01-13');
+  });
+
+  it('연말-연초 경계 — 주차 계산 정확성', () => {
+    // 2024-12-30(월)과 2025-01-02(목)는 ISO 기준 같은 주 (2025-W01)
+    const daily = [
+      bar('2024-12-30', 100, 105, 98, 103),
+      bar('2025-01-02', 103, 108, 101, 107),
+    ];
+    const result = convertToWeeklyBars(daily);
+    expect(result).toHaveLength(1);
+    expect(result[0].open).toBe(100);
+    expect(result[0].close).toBe(107);
+    expect(result[0].date).toBe('2025-01-02');
+  });
+
+  it('여러 주에 걸친 데이터 → 주 순서 오름차순 유지', () => {
+    const daily = [
+      bar('2025-01-06', 100, 110, 95, 105),  // W02
+      bar('2025-01-13', 106, 115, 104, 112), // W03
+      bar('2025-01-20', 112, 120, 109, 118), // W04
+    ];
+    const result = convertToWeeklyBars(daily);
+    expect(result).toHaveLength(3);
+    expect(result[0].date).toBe('2025-01-06');
+    expect(result[1].date).toBe('2025-01-13');
+    expect(result[2].date).toBe('2025-01-20');
+  });
+
+  it('주봉 고가/저가가 해당 주 전체 일봉의 최대/최소와 일치', () => {
+    const daily = [
+      bar('2025-01-06', 100, 108, 97, 105),
+      bar('2025-01-07', 105, 112, 99, 110),
+      bar('2025-01-08', 110, 125, 95, 120), // 이 날 고가 최대, 저가 최소
+    ];
+    const result = convertToWeeklyBars(daily);
+    expect(result[0].high).toBe(125);
+    expect(result[0].low).toBe(95);
+  });
+
+  it('기타 필드(volume 등) 첫 번째 일봉 기준으로 유지', () => {
+    const daily = [
+      { date: '2025-01-06', open: 100, high: 110, low: 95, close: 105, volume: 1000 },
+      { date: '2025-01-07', open: 105, high: 115, low: 103, close: 112, volume: 2000 },
+    ];
+    const result = convertToWeeklyBars(daily as OHLCBar[]);
+    expect(result).toHaveLength(1);
+    expect((result[0] as any).volume).toBe(1000); // 첫 일봉의 기타 필드 유지
+  });
+
+});

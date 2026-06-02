@@ -1303,3 +1303,70 @@ export function calcZigZagSupportResistance(
 
   return result;
 }
+
+
+// ── convertToWeeklyBars ───────────────────────────────────────────────────────
+
+/**
+ * 일봉 시계열 데이터를 주봉으로 변환한다.
+ *
+ * 주(week) 기준: ISO 8601 주차 (월~일)
+ * - date:  해당 주의 마지막 거래일 날짜
+ * - open:  해당 주의 첫 거래일 시가
+ * - high:  해당 주 전체 고가 최대값
+ * - low:   해당 주 전체 저가 최소값
+ * - close: 해당 주의 마지막 거래일 종가
+ *
+ * 입력 데이터는 날짜 오름차순 정렬을 가정한다.
+ */
+export interface OHLCBar {
+  date:  string;
+  open:  number;
+  high:  number;
+  low:   number;
+  close: number;
+  [key: string]: unknown;  // 기타 필드 허용 (volume 등)
+}
+
+/** ISO 주차 키 반환 (YYYY-Www 형식, e.g. "2025-W03") */
+function isoWeekKey(dateStr: string): string {
+  const d    = new Date(dateStr);
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  // ISO 8601: 목요일이 속한 연도를 기준
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const week      = Math.ceil(((date.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
+  return `${date.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+
+export function convertToWeeklyBars(dailyPrices: OHLCBar[]): OHLCBar[] {
+  if (dailyPrices.length === 0) return [];
+
+  const weekMap = new Map<string, OHLCBar>();
+
+  for (const bar of dailyPrices) {
+    const key = isoWeekKey(bar.date);
+
+    if (!weekMap.has(key)) {
+      // 주의 첫 거래일 → open 확정, 나머지는 이 봉으로 초기화
+      weekMap.set(key, {
+        ...bar,
+        open:  bar.open,
+        high:  bar.high,
+        low:   bar.low,
+        close: bar.close,
+        date:  bar.date,   // 마지막 거래일로 덮어쓸 예정
+      });
+    } else {
+      // 이후 거래일 → high/low 갱신, close·date 최신화
+      const prev = weekMap.get(key)!;
+      prev.high  = Math.max(prev.high, bar.high);
+      prev.low   = Math.min(prev.low,  bar.low);
+      prev.close = bar.close;
+      prev.date  = bar.date;  // 해당 주 마지막 거래일
+    }
+  }
+
+  // Map은 삽입 순서를 유지 → 날짜 오름차순 보장
+  return Array.from(weekMap.values());
+}
