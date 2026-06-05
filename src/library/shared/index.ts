@@ -35,6 +35,7 @@ export {
   calcSlopeInfo,
   filterTouchPoints,
   runTickerSim,
+  sortSimResults,
   applyPatternFilter,
   convertToWeeklyBars as convertToWeeklyBarsSim,
 } from "./trendSim";

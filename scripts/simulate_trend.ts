@@ -26,6 +26,7 @@ import { fileURLToPath } from "url";
 import {
   PERIOD_BARS,
   runTickerSim,
+  sortSimResults,
   applyPatternFilter,
   convertToWeeklyBars,
 } from "../src/library/shared/trendSim.ts";
@@ -247,7 +248,7 @@ function runMarketSim(cfg: MarketSimConfig): void {
       }
     }
 
-    results.sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
+    sortSimResults(results);
     resultsByPeriod[period] = results;
     log(`✅ ${period} 완료: ${results.length}개  ❌ 스킵: ${skipped}개`);
   }

@@ -28,6 +28,7 @@ import {
   calcSlopeInfo,
   filterTouchPoints,
   runTickerSim,
+  sortSimResults,
   applyPatternFilter,
 } from './trendSim.ts';
 import type { PriceDataPoint, PeriodConfig, TouchPoint, SimResult } from './trendSim.ts';
@@ -340,6 +341,34 @@ describe('runTickerSim', () => {
     const prices = makePrices(80, 100, 0.5);
     const cfg: PeriodConfig = { ...BASE_CFG, barUnit: 'weekly' };
     expect(() => runTickerSim('TEST', 'Test', prices, cfg)).not.toThrow();
+  });
+});
+
+// ── sortSimResults ────────────────────────────────────────────────────────────
+
+describe('sortSimResults', () => {
+  function makeResult(totalCount: number): SimResult {
+    return {
+      ticker: 'X', name: 'X',
+      touchCount: 0, closeTouchCount: 0, highTouchCount: 0,
+      breakoutCount: 0, closeBreakoutCount: 0, highBreakoutCount: 0,
+      prices: [], resistanceData: [], latestResistance: null,
+      touchPoints: [], slopeType: 'flat', totalCount,
+    };
+  }
+
+  it('totalCount 내림차순 정렬', () => {
+    const results = [makeResult(1), makeResult(5), makeResult(3)];
+    sortSimResults(results);
+    expect(results.map(r => r.totalCount)).toEqual([5, 3, 1]);
+  });
+  it('totalCount undefined → 0으로 처리', () => {
+    const results = [makeResult(2), { ...makeResult(0), totalCount: undefined }];
+    sortSimResults(results);
+    expect(results[0]!.totalCount).toBe(2);
+  });
+  it('빈 배열 → 그대로', () => {
+    expect(sortSimResults([])).toHaveLength(0);
   });
 });
 

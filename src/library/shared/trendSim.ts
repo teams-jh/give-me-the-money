@@ -460,6 +460,15 @@ export function runTickerSim(
   };
 }
 
+// ── 결과 정렬 ─────────────────────────────────────────────────────────────────
+
+/**
+ * SimResult 배열을 totalCount 내림차순으로 정렬한다. (in-place)
+ */
+export function sortSimResults(results: SimResult[]): SimResult[] {
+  return results.sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
+}
+
 // ── 패턴 필터 ─────────────────────────────────────────────────────────────────
 
 /**

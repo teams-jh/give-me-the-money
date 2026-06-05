@@ -8,6 +8,7 @@ import type { TrendSimFinalResult } from 'src/library/shared/signals';
 import {
   PERIOD_BARS,
   runTickerSim,
+  sortSimResults,
   applyPatternFilter,
   convertToWeeklyBars,
 } from 'src/library/shared/trendSim';
@@ -197,7 +198,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
           if (simResult) results.push(simResult);
         }
 
-        results.sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
+        sortSimResults(results);
         newResultsByPeriod[p] = results;
       }
 
