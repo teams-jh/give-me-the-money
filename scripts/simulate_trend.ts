@@ -94,11 +94,11 @@ interface SimOutput {
 
 // ── 유틸 ──────────────────────────────────────────────────────────────────────
 
-function now(): string {
+export function now(): string {
   return new Date().toISOString().slice(0, 16).replace("T", " ");
 }
 
-function datetimeTag(): string {
+export function datetimeTag(): string {
   return new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "").slice(0, 15).replace(/(\d{8})(\d{6})/, "$1_$2");
 }
 
@@ -106,13 +106,13 @@ function log(msg: string): void {
   console.log(`${new Date().toISOString()} ${msg}`);
 }
 
-function tickerToFilename(ticker: string): string {
+export function tickerToFilename(ticker: string): string {
   return ticker.split(".")[0] ?? ticker;
 }
 
 // ── CLI 파싱 ──────────────────────────────────────────────────────────────────
 
-function parseArgs(): { market: string | null } {
+export function parseArgs(): { market: string | null } {
   const args = process.argv.slice(2);
   let market: string | null = null;
   for (let i = 0; i < args.length; i++) {
@@ -123,7 +123,7 @@ function parseArgs(): { market: string | null } {
 
 // ── config 로드 ───────────────────────────────────────────────────────────────
 
-function loadConfig(market: string | null): MarketSimConfig[] {
+export function loadConfig(market: string | null): MarketSimConfig[] {
   const configPath = path.join(__dirname, "simulate_trend.config.json");
   if (!fs.existsSync(configPath)) {
     console.error(`❌ config 파일이 없습니다: ${configPath}`);
@@ -141,7 +141,7 @@ function loadConfig(market: string | null): MarketSimConfig[] {
  *   filterEndDate   == "" → prices 마지막 날짜
  *   filterStartDate == "" → prices 마지막 날짜 -3 거래일
  */
-function resolveDates(cfg: PeriodConfig, dates: string[]): PeriodConfig {
+export function resolveDates(cfg: PeriodConfig, dates: string[]): PeriodConfig {
   if (dates.length === 0) return cfg;
   const lastDate  = dates[dates.length - 1]!;
   const minus3    = dates[Math.max(0, dates.length - 1 - 3)]!;
@@ -328,4 +328,6 @@ function main(): void {
   log("🏁 전체 완료");
 }
 
-main();
+const _isEntry = process.argv[1] !== undefined &&
+  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+if (_isEntry) main();
