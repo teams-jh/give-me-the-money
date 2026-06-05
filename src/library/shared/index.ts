@@ -24,3 +24,29 @@ export type { StockInput, RankingRow, SectorSeries, QuarterRanking, SectorQuarte
 export type { Alert, RSISignal, OBVSignal, RiskSignal, CrossSignal, VolumeSignal, SignalSummary, SignalStrength, SignalDirection, MACDCrossSignal, BBBreakoutSignal } from "./signals";
 export { calcTrendTouchPoints, intersectSimResults } from "./signals";
 export type { CalcTrendTouchPointsParams, TrendTouchPoint, CalcTrendTouchPointsResult, TrendPeriodKey, TrendSimEntry, TrendPeriodStat, TrendSimFinalResult } from "./signals";
+
+export {
+  PERIOD_BARS,
+  snapDateUp, snapDateDown,
+  buildTrendIndices,
+  selectPriceBasis,
+  calcTrendLine,
+  buildChartData,
+  calcSlopeInfo,
+  filterTouchPoints,
+  runTickerSim,
+  applyPatternFilter,
+  convertToWeeklyBars as convertToWeeklyBarsSim,
+} from "./trendSim";
+export type {
+  PeriodKey,
+  BarUnit,
+  PeriodConfig,
+  PriceDataPoint,
+  TouchPoint,
+  SimResult,
+  TrendLineResult,
+  ChartData,
+  SlopeInfo,
+  FilterTouchPointsResult,
+} from "./trendSim";
