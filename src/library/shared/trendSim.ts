@@ -1,0 +1,503 @@
+/**
+ * trendSim.ts
+ *
+ * 추세선 시뮬레이션 순수 함수 모음.
+ * 외부 라이브러리 없음 — 프론트엔드(use-trend-simulation) / 백엔드(scripts) 공용.
+ *
+ * 제공 기능:
+ *   - 타입: PriceDataPoint, TouchPoint, SimResult, BarUnit, PeriodConfig
+ *   - 상수: PERIOD_BARS
+ *   - 날짜 유틸: snapDateUp, snapDateDown
+ *   - 인덱스: buildTrendIndices
+ *   - 가격 선택: selectPriceBasis
+ *   - 추세선 계산: calcTrendLine
+ *   - 차트 데이터 조립: buildChartData
+ *   - 기울기 정보: calcSlopeInfo
+ *   - 터치포인트 필터: filterTouchPoints
+ *   - 티커 시뮬레이션: runTickerSim
+ *   - 패턴 필터: applyPatternFilter
+ */
+
+import type { SRPoint } from './indicators.ts';
+import {
+  calcSupportResistance,
+  calcLinearRegressionChannel,
+  calcZigZagSupportResistance,
+  convertToWeeklyBars,
+} from './indicators.ts';
+import { calcTrendTouchPoints } from './signals.ts';
+import type { TrendTouchPoint, TrendPeriodKey } from './signals.ts';
+
+// ── 공용 타입 ─────────────────────────────────────────────────────────────────
+
+export type PeriodKey = TrendPeriodKey;
+
+export type BarUnit = 'daily' | 'weekly';
+
+/** OHLC 일봉/주봉 한 개 */
+export interface PriceDataPoint {
+  date:  string;
+  open:  number;
+  high:  number;
+  low:   number;
+  close: number;
+}
+
+/** 터치/돌파 마커 한 개 */
+export interface TouchPoint {
+  x:         number;           // Unix ms 타임스탬프
+  y:         number;           // 판정된 가격
+  priceType: 'high' | 'close';
+  type:      'touch' | 'breakout';
+}
+
+/** 티커 1개의 시뮬레이션 결과 */
+export interface SimResult {
+  ticker:             string;
+  name:               string;
+  touchCount:         number;
+  closeTouchCount:    number;
+  highTouchCount:     number;
+  breakoutCount:      number;
+  closeBreakoutCount: number;
+  highBreakoutCount:  number;
+  prices:             PriceDataPoint[];
+  resistanceData:     { x: number; y: number | null }[];
+  supportData?:       { x: number; y: number | null }[];
+  zigzagData?:        { x: number; y: number }[];
+  latestResistance:   number | null;
+  touchPoints:        TouchPoint[];
+  filteredTouchPoints?: TouchPoint[];
+  slopeType:          'positive' | 'negative' | 'flat';
+  slope?:             number;
+  totalCount?:        number;
+}
+
+/** 기간별 시뮬레이션 설정 */
+export interface PeriodConfig {
+  barUnit:                BarUnit;
+  trendBase:              'highlow' | 'close' | 'open';
+  trendAlgo:              'swing' | 'zigzag' | 'regression';
+  zigzagThreshold:        number;
+  regressionStdDev:       number;
+  trendStartDate:         string;
+  trendEndDate:           string;
+  trendTouchBasis:        'close' | 'high' | 'both';
+  trendTouchTolerance:    number;
+  trendBreakoutTolerance: number;
+  filterStartDate:        string;
+  filterEndDate:          string;
+  slopeFilter:            'all' | 'positive' | 'negative';
+  slopeMin:               string;
+  slopeMax:               string;
+}
+
+// ── 상수 ──────────────────────────────────────────────────────────────────────
+
+/** 기간 × 봉 단위 → 봉 수 */
+export const PERIOD_BARS: Record<BarUnit, Record<PeriodKey, number>> = {
+  daily:  { '3m': 63,  '1y': 252, '2y': 504, '3y': 756 },
+  weekly: { '3m': 13,  '1y': 52,  '2y': 104, '3y': 156 },
+};
+
+// ── 날짜 유틸 ─────────────────────────────────────────────────────────────────
+
+/**
+ * 주봉 날짜 올림 스냅.
+ * target 이상인 첫 번째 날짜를 반환한다.
+ * 없으면 마지막 날짜를 반환.
+ */
+export function snapDateUp(dates: string[], target: string): string {
+  return dates.find(x => x >= target) ?? dates[dates.length - 1] ?? target;
+}
+
+/**
+ * 주봉 날짜 내림 스냅.
+ * target 이하인 마지막 날짜를 반환한다.
+ * 없으면 첫 번째 날짜를 반환.
+ */
+export function snapDateDown(dates: string[], target: string): string {
+  return [...dates].reverse().find(x => x <= target) ?? dates[0] ?? target;
+}
+
+// ── 인덱스 빌더 ───────────────────────────────────────────────────────────────
+
+/**
+ * 날짜 범위에 해당하는 인덱스 배열을 반환한다.
+ * start / end 가 빈 문자열이면 전체 인덱스를 반환.
+ */
+export function buildTrendIndices(
+  dates: string[],
+  start: string,
+  end:   string,
+): number[] {
+  if (!start || !end) return dates.map((_, i) => i);
+
+  const indices: number[] = [];
+  dates.forEach((d, i) => {
+    if (d >= start && d <= end) indices.push(i);
+  });
+  return indices.length > 0 ? indices : dates.map((_, i) => i);
+}
+
+// ── 가격 기준 선택 ────────────────────────────────────────────────────────────
+
+/**
+ * trendBase 설정에 따라 추세선 계산에 사용할 가격 배열을 선택한다.
+ *
+ * highlow → 고가/저가/종가/시가 그대로
+ * close   → 모든 기준을 종가로 통일
+ * open    → 모든 기준을 시가로 통일
+ */
+export function selectPriceBasis(
+  trendBase: PeriodConfig['trendBase'],
+  highs:  number[],
+  lows:   number[],
+  closes: number[],
+  opens:  number[],
+): {
+  currentHighs:  number[];
+  currentLows:   number[];
+  currentCloses: number[];
+  currentOpens:  number[];
+} {
+  if (trendBase === 'close') {
+    return {
+      currentHighs:  closes,
+      currentLows:   closes,
+      currentCloses: closes,
+      currentOpens:  closes,
+    };
+  }
+  if (trendBase === 'open') {
+    return {
+      currentHighs:  opens,
+      currentLows:   opens,
+      currentCloses: opens,
+      currentOpens:  opens,
+    };
+  }
+  // highlow (default)
+  return {
+    currentHighs:  highs,
+    currentLows:   lows,
+    currentCloses: closes,
+    currentOpens:  opens,
+  };
+}
+
+// ── 추세선 기울기·절편 계산 ───────────────────────────────────────────────────
+
+export interface TrendLineResult {
+  mR: number;        // 저항선 기울기
+  cR: number | null; // 저항선 절편
+  mS: number;        // 지지선 기울기
+  cS: number | null; // 지지선 절편
+}
+
+/**
+ * SRPoint 배열과 인덱스 범위로부터 저항선/지지선의 기울기(m)와 절편(c)을 계산한다.
+ * R_i = m * i + c 형태.
+ */
+export function calcTrendLine(
+  srRaw:    SRPoint[],
+  firstIdx: number,
+  lastIdx:  number,
+): TrendLineResult {
+  const deltaX = lastIdx - firstIdx || 1;
+
+  const resistanceStart = srRaw[0]?.resistance;
+  const resistanceEnd   = srRaw[srRaw.length - 1]?.resistance;
+  const supportStart    = srRaw[0]?.support;
+  const supportEnd      = srRaw[srRaw.length - 1]?.support;
+
+  const mR = resistanceStart != null && resistanceEnd != null
+    ? (resistanceEnd - resistanceStart) / deltaX : 0;
+  const cR = resistanceStart != null
+    ? resistanceStart - mR * firstIdx : null;
+
+  const mS = supportStart != null && supportEnd != null
+    ? (supportEnd - supportStart) / deltaX : 0;
+  const cS = supportStart != null
+    ? supportStart - mS * firstIdx : null;
+
+  return { mR, cR, mS, cS };
+}
+
+// ── 차트 좌표 데이터 조립 ─────────────────────────────────────────────────────
+
+export interface ChartData {
+  resistanceData: { x: number; y: number | null }[];
+  supportData:    { x: number; y: number | null }[] | undefined;
+  zigzagData:     { x: number; y: number }[]        | undefined;
+}
+
+/**
+ * 저항선/지지선/지그재그 차트 좌표 데이터를 조립한다.
+ *
+ * @param timestamps      - 전체 봉의 Unix ms 타임스탬프 배열
+ * @param totalBars       - 전체 봉 수 (dates.length)
+ * @param simTrendIndices - 추세선 작도 범위 인덱스
+ * @param srRaw           - 추세선 계산 결과 (SRPoint[])
+ * @param line            - calcTrendLine() 결과
+ * @param trendAlgo       - 알고리즘 종류 (zigzag 여부 판단용)
+ */
+export function buildChartData(
+  timestamps:      number[],
+  totalBars:       number,
+  simTrendIndices: number[],
+  srRaw:           SRPoint[],
+  line:            TrendLineResult,
+  trendAlgo:       PeriodConfig['trendAlgo'],
+): ChartData {
+  const { mR, cR, mS, cS } = line;
+
+  const resistanceData: { x: number; y: number | null }[] = cR != null ? [
+    { x: timestamps[0]!,               y: cR },
+    { x: timestamps[totalBars - 1]!,   y: mR * (totalBars - 1) + cR },
+  ] : [];
+
+  const supportData: { x: number; y: number | null }[] | undefined = cS != null ? [
+    { x: timestamps[0]!,               y: cS },
+    { x: timestamps[totalBars - 1]!,   y: mS * (totalBars - 1) + cS },
+  ] : undefined;
+
+  const zigzagData: { x: number; y: number }[] | undefined = trendAlgo === 'zigzag'
+    ? srRaw
+        .map((pt, idx) => ({
+          x: timestamps[simTrendIndices[idx]!]!,
+          y: pt.zigzag,
+        }))
+        .filter((pt): pt is { x: number; y: number } => pt.y != null)
+    : undefined;
+
+  return { resistanceData, supportData, zigzagData };
+}
+
+// ── 기울기 정보 계산 ──────────────────────────────────────────────────────────
+
+export interface SlopeInfo {
+  slope:     number;                        // 기울기 (%)
+  slopeType: 'positive' | 'negative' | 'flat';
+}
+
+/**
+ * resistanceData의 시작/끝 y값으로부터 기울기 정보를 계산한다.
+ */
+export function calcSlopeInfo(
+  resistanceData: { x: number; y: number | null }[],
+): SlopeInfo {
+  const firstR = resistanceData[0]?.y ?? 0;
+  const lastR  = resistanceData[resistanceData.length - 1]?.y ?? 0;
+  const slope  = lastR - firstR;
+  const slopePercent = firstR !== 0 ? (slope / firstR) * 100 : 0;
+  const slopeType: SlopeInfo['slopeType'] =
+    slope > 0.001 ? 'positive' : slope < -0.001 ? 'negative' : 'flat';
+
+  return { slope: slopePercent, slopeType };
+}
+
+// ── 터치포인트 날짜 범위 필터 ─────────────────────────────────────────────────
+
+export interface FilterTouchPointsResult {
+  filteredTouchPoints:    TouchPoint[];
+  breakoutCount:          number;
+  closeBreakoutCount:     number;
+  highBreakoutCount:      number;
+}
+
+/**
+ * touchPoints에서 터치는 전부 유지하고,
+ * 돌파는 filterStart~filterEnd 범위 내의 것만 남긴다.
+ */
+export function filterTouchPoints(
+  touchPoints:    TrendTouchPoint[],
+  filterStartMs:  number,
+  filterEndMs:    number,
+): FilterTouchPointsResult {
+  const filteredTouchPoints = (touchPoints as TouchPoint[]).filter(
+    tp => tp.type === 'touch' || (tp.x >= filterStartMs && tp.x <= filterEndMs)
+  );
+
+  const breakoutCount          = filteredTouchPoints.filter(tp => tp.type === 'breakout').length;
+  const closeBreakoutCount     = filteredTouchPoints.filter(tp => tp.type === 'breakout' && tp.priceType === 'close').length;
+  const highBreakoutCount      = filteredTouchPoints.filter(tp => tp.type === 'breakout' && tp.priceType === 'high').length;
+
+  return { filteredTouchPoints, breakoutCount, closeBreakoutCount, highBreakoutCount };
+}
+
+// ── 티커 1개 시뮬레이션 ───────────────────────────────────────────────────────
+
+/**
+ * 티커 1개에 대해 추세선 시뮬레이션을 실행하고 SimResult를 반환한다.
+ * 조건을 만족하지 않으면 null을 반환한다.
+ *
+ * @param ticker - 티커 심볼
+ * @param name   - 종목명
+ * @param prices - 전체 가격 데이터 (이미 barUnit 변환 및 슬라이싱 완료된 것)
+ * @param cfg    - 기간별 시뮬레이션 설정
+ */
+export function runTickerSim(
+  ticker: string,
+  name:   string,
+  prices: PriceDataPoint[],
+  cfg:    PeriodConfig,
+): SimResult | null {
+  if (prices.length === 0) return null;
+
+  const closePrices = prices.map(d => d.close);
+  const openPrices  = prices.map(d => d.open  || d.close);
+  const highPrices  = prices.map(d => d.high  || d.close);
+  const lowPrices   = prices.map(d => d.low   || d.close);
+  const dates       = prices.map(d => d.date);
+  const timestamps  = prices.map(d => new Date(d.date).getTime());
+
+  // ── 주봉 날짜 스냅 ────────────────────────────────────────────────────
+  const effectiveTrendStart = cfg.barUnit === 'weekly' && cfg.trendStartDate
+    ? snapDateUp(dates, cfg.trendStartDate)   : cfg.trendStartDate;
+  const effectiveTrendEnd   = cfg.barUnit === 'weekly' && cfg.trendEndDate
+    ? snapDateDown(dates, cfg.trendEndDate)   : cfg.trendEndDate;
+  const effectiveFilterStart = cfg.barUnit === 'weekly' && cfg.filterStartDate
+    ? snapDateUp(dates, cfg.filterStartDate)  : cfg.filterStartDate;
+  const effectiveFilterEnd   = cfg.barUnit === 'weekly' && cfg.filterEndDate
+    ? snapDateDown(dates, cfg.filterEndDate)  : cfg.filterEndDate;
+
+  // ── 추세선 작도 인덱스 ────────────────────────────────────────────────
+  const simTrendIndices = buildTrendIndices(dates, effectiveTrendStart, effectiveTrendEnd);
+
+  const simHighs  = simTrendIndices.map(i => highPrices[i]!);
+  const simLows   = simTrendIndices.map(i => lowPrices[i]!);
+  const simCloses = simTrendIndices.map(i => closePrices[i]!);
+  const simOpens  = simTrendIndices.map(i => openPrices[i] || closePrices[i]!);
+
+  // ── 가격 기준 선택 ────────────────────────────────────────────────────
+  const { currentHighs, currentLows, currentCloses, currentOpens } =
+    selectPriceBasis(cfg.trendBase, simHighs, simLows, simCloses, simOpens);
+
+  // ── 추세선 알고리즘 계산 ──────────────────────────────────────────────
+  let srRaw: SRPoint[] = [];
+  if (cfg.trendAlgo === 'regression') {
+    srRaw = calcLinearRegressionChannel(currentCloses, cfg.regressionStdDev);
+  } else if (cfg.trendAlgo === 'zigzag') {
+    srRaw = calcZigZagSupportResistance(currentHighs, currentLows, currentCloses, currentOpens, cfg.zigzagThreshold);
+  } else {
+    srRaw = calcSupportResistance(currentHighs, currentLows, currentCloses, currentOpens);
+  }
+
+  // ── 저항선/지지선 m, c 계산 ───────────────────────────────────────────
+  const firstIdx = simTrendIndices[0]!;
+  const lastIdx  = simTrendIndices[simTrendIndices.length - 1]!;
+  const line     = calcTrendLine(srRaw, firstIdx, lastIdx);
+  const { mR, cR } = line;
+
+  // ── 터치/돌파 판정 ────────────────────────────────────────────────────
+  const touchResult = cR != null
+    ? calcTrendTouchPoints({
+        timestamps, highPrices, closePrices,
+        m: mR, c: cR,
+        trendMinIdx:       firstIdx,
+        trendMaxIdx:       lastIdx,
+        touchTolerance:    cfg.trendTouchTolerance,
+        breakoutTolerance: cfg.trendBreakoutTolerance,
+        touchBasis:        cfg.trendTouchBasis,
+      })
+    : {
+        touchPoints: [] as TrendTouchPoint[],
+        touchCount: 0, closeTouchCount: 0, highTouchCount: 0,
+        breakoutCount: 0, closeBreakoutCount: 0, highBreakoutCount: 0,
+      };
+
+  const {
+    touchPoints: rawTouchPoints,
+    touchCount, closeTouchCount, highTouchCount,
+  } = touchResult;
+
+  // ── 돌파 날짜 필터 ────────────────────────────────────────────────────
+  const parsedStart  = effectiveFilterStart ? new Date(effectiveFilterStart).getTime() : 0;
+  const filterStartMs = isNaN(parsedStart) ? 0 : parsedStart;
+  const parsedEnd    = effectiveFilterEnd   ? new Date(effectiveFilterEnd).getTime()   : Infinity;
+  const filterEndMs  = isNaN(parsedEnd) ? Infinity : parsedEnd;
+
+  const {
+    filteredTouchPoints,
+    breakoutCount,
+    closeBreakoutCount,
+    highBreakoutCount,
+  } = filterTouchPoints(rawTouchPoints, filterStartMs, filterEndMs);
+
+  const totalCount = touchCount + breakoutCount;
+  if (totalCount === 0) return null;
+
+  // ── 기울기 필터 ───────────────────────────────────────────────────────
+  const { resistanceData, supportData, zigzagData } =
+    buildChartData(timestamps, prices.length, simTrendIndices, srRaw, line, cfg.trendAlgo);
+
+  const { slope, slopeType } = calcSlopeInfo(resistanceData);
+
+  const slopeMinNum = cfg.slopeMin !== '' ? parseFloat(cfg.slopeMin) : null;
+  const slopeMaxNum = cfg.slopeMax !== '' ? parseFloat(cfg.slopeMax) : null;
+
+  if (cfg.slopeFilter === 'positive' && slopeType !== 'positive') return null;
+  if (cfg.slopeFilter === 'negative' && slopeType !== 'negative') return null;
+  if (slopeMinNum !== null && slope < slopeMinNum) return null;
+  if (slopeMaxNum !== null && slope > slopeMaxNum) return null;
+
+  // ── 결과 조립 ─────────────────────────────────────────────────────────
+  const latestResistance = cR != null
+    ? mR * (prices.length - 1) + cR : null;
+
+  return {
+    ticker, name,
+    touchCount, closeTouchCount, highTouchCount,
+    breakoutCount, closeBreakoutCount, highBreakoutCount,
+    prices, resistanceData, supportData, zigzagData,
+    latestResistance,
+    touchPoints:         rawTouchPoints as TouchPoint[],
+    filteredTouchPoints,
+    slopeType, slope,
+    totalCount,
+  };
+}
+
+// ── 결과 정렬 ─────────────────────────────────────────────────────────────────
+
+/**
+ * SimResult 배열을 totalCount 내림차순으로 정렬한다. (in-place)
+ */
+export function sortSimResults(results: SimResult[]): SimResult[] {
+  return results.sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
+}
+
+// ── 패턴 필터 ─────────────────────────────────────────────────────────────────
+
+/**
+ * "돌파 이전 터치 N회 이상" 패턴을 만족하는 종목만 남긴다.
+ *
+ * 조건:
+ *   1. breakoutCount > 0  (돌파가 존재해야 함)
+ *   2. 돌파 이전 touch 횟수 >= minTouches  (저항선 검증 횟수 충족)
+ *
+ * 돌파 이전 기준: filterStartMs 이전의 touch (filteredTouchPoints 기준)
+ * → filterStart가 돌파 탐지 구간 시작이므로 그 이전 = 돌파 이전
+ *
+ * @param results      - SimResult 배열
+ * @param filterStartMs - 돌파 탐지 구간 시작 Unix ms
+ * @param minTouches   - 최소 터치 횟수
+ */
+export function applyPatternFilter(
+  results:       SimResult[],
+  filterStartMs: number,
+  minTouches:    number,
+): SimResult[] {
+  return results.filter(sim => {
+    if ((sim.breakoutCount ?? 0) === 0) return false;
+    const touchesBefore = sim.touchPoints.filter(
+      tp => tp.type === 'touch' && tp.x < (filterStartMs > 0 ? filterStartMs : Infinity)
+    );
+    return touchesBefore.length >= minTouches;
+  });
+}
+
+// ── 주봉 변환 re-export ───────────────────────────────────────────────────────
+
+export { convertToWeeklyBars };

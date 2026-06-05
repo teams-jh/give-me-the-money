@@ -1,6 +1,6 @@
 'use client';
 
-import type { SimResult } from '../hooks/use-chart-indicators';
+import type { SimResult } from 'src/library/shared/trendSim';
 import type { TrendSimFinalResult } from 'src/library/shared/signals';
 import type { UseTrendSimulationReturn } from '../hooks/use-trend-simulation';
 

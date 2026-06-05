@@ -1,45 +1,24 @@
 'use client';
 
-import type { PeriodKey } from 'src/sections/top100/types';
-
 import { useMemo, useState, useCallback, useEffect } from 'react';
 
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
+import { intersectSimResults } from 'src/library/shared/signals';
+import type { TrendSimFinalResult } from 'src/library/shared/signals';
 import {
-  calcSupportResistance,
-  calcLinearRegressionChannel,
-  calcZigZagSupportResistance,
+  PERIOD_BARS,
+  runTickerSim,
+  sortSimResults,
+  applyPatternFilter,
   convertToWeeklyBars,
-} from 'src/library/shared/indicators';
-import { calcTrendTouchPoints, intersectSimResults } from 'src/library/shared/signals';
-import type { TrendSimFinalResult, TrendTouchPoint } from 'src/library/shared/signals';
+} from 'src/library/shared/trendSim';
+import type { SimResult, PriceDataPoint, BarUnit, PeriodConfig } from 'src/library/shared/trendSim';
 
-import type { SimResult, PriceDataPoint } from './use-chart-indicators';
+export type { PeriodConfig, BarUnit };
 
 // ----------------------------------------------------------------------
 
 export type { TrendSimFinalResult };
-
-/** 기간별 독립 입력 묶음 */
-export type BarUnit = 'daily' | 'weekly';
-
-export interface PeriodConfig {
-  barUnit:                BarUnit;
-  trendBase:              'highlow' | 'close' | 'open';
-  trendAlgo:              'swing' | 'zigzag' | 'regression';
-  zigzagThreshold:        number;
-  regressionStdDev:       number;
-  trendStartDate:         string;
-  trendEndDate:           string;
-  trendTouchBasis:        'close' | 'high' | 'both';
-  trendTouchTolerance:    number;
-  trendBreakoutTolerance: number;
-  filterStartDate:        string;
-  filterEndDate:          string;
-  slopeFilter:            'all' | 'positive' | 'negative';
-  slopeMin:               string;
-  slopeMax:               string;
-}
 
 export interface UseTrendSimulationReturn {
   simMarket:          'US' | 'KR';
@@ -59,10 +38,7 @@ export interface UseTrendSimulationReturn {
 
 // ----------------------------------------------------------------------
 
-const PERIOD_BARS: Record<BarUnit, Record<PeriodKey, number>> = {
-  daily:  { '3m': 63,  '1y': 252, '2y': 504, '3y': 756 },
-  weekly: { '3m': 13,  '1y': 52,  '2y': 104, '3y': 156 },
-};
+type PeriodKey = keyof (typeof PERIOD_BARS)['daily'];
 
 const PERIOD_ORDER: PeriodKey[] = ['3m', '1y', '2y', '3y'];
 
@@ -171,20 +147,12 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
     const filteredByPeriod: Partial<Record<PeriodKey, SimResult[]>> = {};
 
     for (const [period, results] of Object.entries(resultsByPeriod) as [PeriodKey, SimResult[]][]) {
-      const config = periodConfigs[period as PeriodKey];
+      const config  = periodConfigs[period as PeriodKey];
       const startMs = config?.filterStartDate ? new Date(config.filterStartDate).getTime() : 0;
 
-      const filtered = enablePatternFilter
-        ? results.filter(sim => {
-            if ((sim.breakoutCount ?? 0) === 0) return false;
-            const touchesBefore = sim.touchPoints.filter(
-              tp => tp.type === 'touch' && tp.x < (startMs > 0 ? startMs : Infinity)
-            );
-            if (touchesBefore.length < minTouchesPattern) return false;
-            return true;
-          })
+      filteredByPeriod[period as PeriodKey] = enablePatternFilter
+        ? applyPatternFilter(results, startMs, minTouchesPattern)
         : results;
-      filteredByPeriod[period as PeriodKey] = filtered;
     }
 
     return intersectSimResults(filteredByPeriod);
@@ -225,149 +193,12 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
             ? convertToWeeklyBars(allPrices as any[]) as PriceDataPoint[]
             : allPrices;
           const slice = bars.slice(-days);
-          if (slice.length === 0) continue;
 
-          const closePrices = slice.map(d => d.close);
-          const openPrices  = slice.map(d => d.open  || d.close);
-          const highPrices  = slice.map(d => d.high  || d.close);
-          const lowPrices   = slice.map(d => d.low   || d.close);
-          const dates       = slice.map(d => d.date);
-          const timestamps  = slice.map(d => new Date(d.date).getTime());
-
-          // 주봉 선택 시 날짜를 실제 주봉 날짜(마지막 거래일)로 스냅
-          // start → 입력일 이상인 첫 번째 주봉 날짜 (올림)
-          // end   → 입력일 이하인 마지막 주봉 날짜 (내림)
-          const snapUp   = (d: string) => dates.find(x => x >= d) ?? dates[dates.length - 1];
-          const snapDown = (d: string) => [...dates].reverse().find(x => x <= d) ?? dates[0];
-
-          const effectiveTrendStart = cfg.barUnit === 'weekly' && cfg.trendStartDate
-            ? snapUp(cfg.trendStartDate)   : cfg.trendStartDate;
-          const effectiveTrendEnd   = cfg.barUnit === 'weekly' && cfg.trendEndDate
-            ? snapDown(cfg.trendEndDate)   : cfg.trendEndDate;
-          const effectiveFilterStart = cfg.barUnit === 'weekly' && cfg.filterStartDate
-            ? snapUp(cfg.filterStartDate)  : cfg.filterStartDate;
-          const effectiveFilterEnd   = cfg.barUnit === 'weekly' && cfg.filterEndDate
-            ? snapDown(cfg.filterEndDate)  : cfg.filterEndDate;
-
-          let simTrendIndices: number[] = [];
-          if (effectiveTrendStart && effectiveTrendEnd) {
-            dates.forEach((d, idx) => {
-              if (d >= effectiveTrendStart && d <= effectiveTrendEnd) simTrendIndices.push(idx);
-            });
-          }
-          if (simTrendIndices.length === 0) simTrendIndices = dates.map((_, idx) => idx);
-
-          const simHighs  = simTrendIndices.map(i => highPrices[i]);
-          const simLows   = simTrendIndices.map(i => lowPrices[i]);
-          const simCloses = simTrendIndices.map(i => closePrices[i]);
-          const simOpens  = simTrendIndices.map(i => openPrices[i] || closePrices[i]);
-
-          const currentHighs  = cfg.trendBase === 'close' ? simCloses : cfg.trendBase === 'open' ? simOpens : simHighs;
-          const currentLows   = cfg.trendBase === 'close' ? simCloses : cfg.trendBase === 'open' ? simOpens : simLows;
-          const currentCloses = cfg.trendBase === 'close' ? simCloses : cfg.trendBase === 'open' ? simOpens : simCloses;
-          const currentOpens  = cfg.trendBase === 'close' ? simCloses : cfg.trendBase === 'open' ? simOpens : simOpens;
-
-          let srRaw: { support: number | null; resistance: number | null; zigzag?: number | null }[] = [];
-          if (cfg.trendAlgo === 'regression') {
-            srRaw = calcLinearRegressionChannel(currentCloses, cfg.regressionStdDev);
-          } else if (cfg.trendAlgo === 'zigzag') {
-            srRaw = calcZigZagSupportResistance(currentHighs, currentLows, currentCloses, currentOpens, cfg.zigzagThreshold);
-          } else {
-            srRaw = calcSupportResistance(currentHighs, currentLows, currentCloses, currentOpens);
-          }
-
-          const firstIdx = simTrendIndices[0];
-          const lastIdx  = simTrendIndices[simTrendIndices.length - 1];
-          const deltaX   = lastIdx - firstIdx || 1;
-
-          const resistanceStart = srRaw[0]?.resistance;
-          const resistanceEnd   = srRaw[srRaw.length - 1]?.resistance;
-          const supportStart    = srRaw[0]?.support;
-          const supportEnd      = srRaw[srRaw.length - 1]?.support;
-
-          const mResistance = resistanceStart != null && resistanceEnd != null
-            ? (resistanceEnd - resistanceStart) / deltaX : 0;
-          const cResistance = resistanceStart != null
-            ? resistanceStart - mResistance * firstIdx : null;
-
-          const mSupport = supportStart != null && supportEnd != null
-            ? (supportEnd - supportStart) / deltaX : 0;
-          const cSupport = supportStart != null
-            ? supportStart - mSupport * firstIdx : null;
-
-          const touchResult = (cResistance !== null && cResistance !== undefined)
-            ? calcTrendTouchPoints({
-                timestamps, highPrices, closePrices,
-                m: mResistance, c: cResistance,
-                trendMinIdx:       simTrendIndices[0],
-                trendMaxIdx:       simTrendIndices[simTrendIndices.length - 1],
-                touchTolerance:    cfg.trendTouchTolerance,
-                breakoutTolerance: cfg.trendBreakoutTolerance,
-                touchBasis:        cfg.trendTouchBasis,
-              })
-            : { touchPoints: [] as TrendTouchPoint[], touchCount: 0, closeTouchCount: 0, highTouchCount: 0, breakoutCount: 0, closeBreakoutCount: 0, highBreakoutCount: 0 };
-
-          const { touchPoints: itemTouchPoints, touchCount, closeTouchCount, highTouchCount, breakoutCount, closeBreakoutCount, highBreakoutCount } = touchResult;
-
-          const startMs     = effectiveFilterStart ? new Date(effectiveFilterStart).getTime() : 0;
-          const endMs       = effectiveFilterEnd   ? new Date(effectiveFilterEnd).getTime()   : Infinity;
-          const slopeMinNum = cfg.slopeMin !== '' ? parseFloat(cfg.slopeMin) : null;
-          const slopeMaxNum = cfg.slopeMax !== '' ? parseFloat(cfg.slopeMax) : null;
-
-          const filteredTouchPoints = itemTouchPoints.filter(
-            tp => tp.type === 'touch' || (tp.x >= startMs && tp.x <= endMs)
-          );
-          const filteredBreakoutCount      = filteredTouchPoints.filter(tp => tp.type === 'breakout').length;
-          const filteredCloseBreakoutCount = filteredTouchPoints.filter(tp => tp.type === 'breakout' && tp.priceType === 'close').length;
-          const filteredHighBreakoutCount  = filteredTouchPoints.filter(tp => tp.type === 'breakout' && tp.priceType === 'high').length;
-          const totalCount = touchCount + filteredBreakoutCount;
-
-          if (totalCount === 0) continue;
-
-          // timestamps 재사용 (new Date() 중복 호출 방지)
-          const resistanceData = cResistance != null ? [
-            { x: timestamps[0],                     y: cResistance },
-            { x: timestamps[timestamps.length - 1], y: mResistance * (dates.length - 1) + cResistance },
-          ] : [];
-          const supportData = cSupport != null ? [
-            { x: timestamps[0],                     y: cSupport },
-            { x: timestamps[timestamps.length - 1], y: mSupport * (dates.length - 1) + cSupport },
-          ] : undefined;
-          const zigzagData = cfg.trendAlgo === 'zigzag'
-            ? srRaw
-                .map((pt, idx) => ({ x: timestamps[simTrendIndices[idx]], y: pt.zigzag }))
-                .filter((pt): pt is { x: number; y: number } => pt.y != null)
-            : undefined;
-
-          const firstR       = resistanceData[0]?.y ?? 0;
-          const lastR        = resistanceData[resistanceData.length - 1]?.y ?? 0;
-          const slope        = lastR - firstR;
-          const slopePercent = firstR !== 0 ? (slope / firstR) * 100 : 0;
-          const slopeType: 'positive' | 'negative' | 'flat' =
-            slope > 0.001 ? 'positive' : slope < -0.001 ? 'negative' : 'flat';
-
-          if (cfg.slopeFilter === 'positive' && slope <= 0.001) continue;
-          if (cfg.slopeFilter === 'negative' && slope >= -0.001) continue;
-          if (slopeMinNum !== null && slopePercent < slopeMinNum) continue;
-          if (slopeMaxNum !== null && slopePercent > slopeMaxNum) continue;
-
-          results.push({
-            ticker: opt.ticker, name: opt.name,
-            touchCount, closeTouchCount, highTouchCount,
-            breakoutCount:      filteredBreakoutCount,
-            closeBreakoutCount: filteredCloseBreakoutCount,
-            highBreakoutCount:  filteredHighBreakoutCount,
-            prices: slice, resistanceData, supportData,
-            zigzagData,
-            latestResistance: cResistance != null
-              ? mResistance * (dates.length - 1) + cResistance : null,
-            touchPoints: itemTouchPoints, filteredTouchPoints,
-            slopeType, slope: slopePercent,
-            totalCount,
-          });
+          const simResult = runTickerSim(opt.ticker, opt.name, slice, cfg);
+          if (simResult) results.push(simResult);
         }
 
-        results.sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
+        sortSimResults(results);
         newResultsByPeriod[p] = results;
       }
 

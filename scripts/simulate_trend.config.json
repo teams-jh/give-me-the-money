@@ -1,0 +1,58 @@
+[
+  {
+    "market": "us",
+    "n": null,
+    "periods": ["1y"],
+    "periodConfigs": {
+      "1y": {
+        "barUnit": "daily",
+        "trendBase": "highlow",
+        "trendAlgo": "swing",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2.0,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 2,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "all",
+        "slopeMin": "",
+        "slopeMax": ""
+      }
+    },
+    "patternFilter": {
+      "enabled": false,
+      "minTouches": 3
+    }
+  },
+  {
+    "market": "kr",
+    "n": null,
+    "periods": ["1y"],
+    "periodConfigs": {
+      "1y": {
+        "barUnit": "daily",
+        "trendBase": "highlow",
+        "trendAlgo": "swing",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2.0,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 2,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "all",
+        "slopeMin": "",
+        "slopeMax": ""
+      }
+    },
+    "patternFilter": {
+      "enabled": false,
+      "minTouches": 3
+    }
+  }
+]

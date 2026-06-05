@@ -20,6 +20,10 @@ import {
 } from 'src/library/shared/indicators';
 import { calcTrendTouchPoints } from 'src/library/shared/signals';
 import type { TrendTouchPoint } from 'src/library/shared/signals';
+import type { PriceDataPoint, TouchPoint, SimResult } from 'src/library/shared/trendSim';
+
+// trendSim.ts로 이동한 타입 re-export (하위 호환)
+export type { PriceDataPoint, TouchPoint, SimResult };
 
 // ----------------------------------------------------------------------
 
@@ -32,14 +36,6 @@ export interface FibonacciData {
   fib382: number;
   fib500: number;
   fib618: number;
-}
-
-export interface PriceDataPoint {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
 }
 
 export interface TickerOption {
@@ -99,34 +95,6 @@ export interface VisibleHighLowResult {
   maxIdx: number;
   minIdx: number;
   visibleIndices: number[];
-}
-
-export interface TouchPoint {
-  x: number;
-  y: number;
-  priceType: 'high' | 'close';
-  type: 'touch' | 'breakout';
-}
-
-export interface SimResult {
-  ticker: string;
-  name: string;
-  touchCount: number;
-  closeTouchCount: number;
-  highTouchCount: number;
-  breakoutCount: number;
-  closeBreakoutCount: number;
-  highBreakoutCount: number;
-  prices: PriceDataPoint[];
-  resistanceData: { x: number; y: number | null }[];
-  supportData?: { x: number; y: number | null }[];
-  zigzagData?: { x: number; y: number }[];
-  latestResistance: number | null;
-  touchPoints: TouchPoint[];
-  slopeType: 'positive' | 'negative' | 'flat';
-  slope?: number;
-  filteredTouchPoints?: TouchPoint[];
-  totalCount?: number;
 }
 
 export interface DynamicLinesResult {
