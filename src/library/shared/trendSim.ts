@@ -437,9 +437,8 @@ export function runTickerSim(
   const slopeMinNum = cfg.slopeMin !== '' ? parseFloat(cfg.slopeMin) : null;
   const slopeMaxNum = cfg.slopeMax !== '' ? parseFloat(cfg.slopeMax) : null;
 
-  const rawSlope = (resistanceData[resistanceData.length - 1]?.y ?? 0) - (resistanceData[0]?.y ?? 0);
-  if (cfg.slopeFilter === 'positive' && rawSlope <= 0.001) return null;
-  if (cfg.slopeFilter === 'negative' && rawSlope >= -0.001) return null;
+  if (cfg.slopeFilter === 'positive' && slopeType !== 'positive') return null;
+  if (cfg.slopeFilter === 'negative' && slopeType !== 'negative') return null;
   if (slopeMinNum !== null && slope < slopeMinNum) return null;
   if (slopeMaxNum !== null && slope > slopeMaxNum) return null;
 
