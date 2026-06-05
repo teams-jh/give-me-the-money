@@ -413,8 +413,10 @@ export function runTickerSim(
   } = touchResult;
 
   // ── 돌파 날짜 필터 ────────────────────────────────────────────────────
-  const filterStartMs = effectiveFilterStart ? new Date(effectiveFilterStart).getTime() : 0;
-  const filterEndMs   = effectiveFilterEnd   ? new Date(effectiveFilterEnd).getTime()   : Infinity;
+  const parsedStart  = effectiveFilterStart ? new Date(effectiveFilterStart).getTime() : 0;
+  const filterStartMs = isNaN(parsedStart) ? 0 : parsedStart;
+  const parsedEnd    = effectiveFilterEnd   ? new Date(effectiveFilterEnd).getTime()   : Infinity;
+  const filterEndMs  = isNaN(parsedEnd) ? Infinity : parsedEnd;
 
   const {
     filteredTouchPoints,

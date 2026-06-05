@@ -63,7 +63,8 @@ SLOPE_LABELS = {
 
 def ts_to_date(ts_ms: int):
     """Unix ms → matplotlib date number"""
-    return mdates.date2num(datetime.utcfromtimestamp(ts_ms / 1000))
+    from datetime import timezone
+    return mdates.date2num(datetime.fromtimestamp(ts_ms / 1000, tz=timezone.utc))
 
 
 def draw_candlestick(ax, prices: list, color_up=CANDLE_UP, color_down=CANDLE_DOWN):
@@ -107,7 +108,7 @@ def draw_zigzag(ax, data: list, color=ZIGZAG_COLOR):
 
 def draw_markers(ax, touch_points: list, filtered_touch_points: list | None):
     """터치/돌파 마커를 ax에 그린다."""
-    points = filtered_touch_points if filtered_touch_points else touch_points
+    points = filtered_touch_points if filtered_touch_points is not None else touch_points
     for tp in points:
         key   = (tp.get("priceType", "close"), tp.get("type", "touch"))
         color = MARKER_COLORS.get(key, "#FFFFFF")
@@ -162,8 +163,8 @@ def render_card(ax, result: dict, periods: list, trendAlgo: str):
     draw_markers(ax, sim.get("touchPoints", []), sim.get("filteredTouchPoints"))
 
     # y축 범위
-    highs  = [p["high"]  for p in prices if p.get("high")]
-    lows   = [p["low"]   for p in prices if p.get("low")]
+    highs  = [p["high"]  for p in prices if p.get("high") is not None]
+    lows   = [p["low"]   for p in prices if p.get("low")  is not None]
     if highs and lows:
         margin = (max(highs) - min(lows)) * 0.05
         ax.set_ylim(min(lows) - margin, max(highs) + margin)
@@ -226,12 +227,13 @@ def main():
 
     results    = data.get("results", [])
     market     = data.get("market", "")
-    config     = data.get("config", {})
+    config     = data.get("config") or {}
     periods    = config.get("periods", ["1y"])
     generated  = data.get("generated_at", "")
 
     # trendAlgo는 첫 번째 period config에서 가져옴
-    first_period_cfg = config.get("periodConfigs", {}).get(periods[0] if periods else "1y", {})
+    period_configs   = config.get("periodConfigs") or {}
+    first_period_cfg = period_configs.get(periods[0] if periods else "1y") or {}
     trend_algo = first_period_cfg.get("trendAlgo", "swing")
 
     if not results:

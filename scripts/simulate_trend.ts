@@ -20,7 +20,7 @@
 
 import fs            from "fs";
 import path          from "path";
-import { execSync }  from "child_process";
+import { spawnSync }  from "child_process";
 import { fileURLToPath } from "url";
 
 import {
@@ -206,7 +206,7 @@ function runMarketSim(cfg: MarketSimConfig): void {
       }
 
       const raw      = JSON.parse(fs.readFileSync(file, "utf-8"));
-      const info     = raw.info ?? {};
+      const info     = raw.info || {};
       const name     = cfg.market === "kr"
         ? info.kr_name || info.name || ""
         : info.name || "";
@@ -257,8 +257,9 @@ function runMarketSim(cfg: MarketSimConfig): void {
     log(`\n🔍 패턴 필터 적용 (최소 터치: ${cfg.patternFilter.minTouches}회)`);
     for (const period of cfg.periods) {
       const periodCfg  = cfg.periodConfigs[period];
-      const filterStart = periodCfg?.filterStartDate
+      const parsedStart = periodCfg?.filterStartDate
         ? new Date(periodCfg.filterStartDate).getTime() : 0;
+      const filterStart = isNaN(parsedStart) ? 0 : parsedStart;
       const before = resultsByPeriod[period]?.length ?? 0;
       resultsByPeriod[period] = applyPatternFilter(
         resultsByPeriod[period] ?? [],
@@ -297,7 +298,9 @@ function runMarketSim(cfg: MarketSimConfig): void {
   if (fs.existsSync(chartScript)) {
     log(`🎨 PNG 렌더링 시작...`);
     try {
-      execSync(`python3 "${chartScript}" "${outPath}"`, { stdio: "inherit" });
+      const { status, error } = spawnSync("python3", [chartScript, outPath], { stdio: "inherit" });
+      if (error) throw error;
+      if (status !== 0) throw new Error(`Exit code: ${status}`);
     } catch (e) {
       console.error(`❌ PNG 렌더링 실패:`, e);
     }
