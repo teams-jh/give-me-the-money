@@ -2,56 +2,90 @@
   {
     "market": "us",
     "n": null,
-    "periods": ["1y"],
+    "periods": ["3m", "1y"],
     "periodConfigs": {
-      "1y": {
+      "3m": {
         "barUnit": "daily",
         "trendBase": "highlow",
-        "trendAlgo": "swing",
+        "trendAlgo": "regression",
         "zigzagThreshold": 5,
         "regressionStdDev": 2.0,
         "trendStartDate": "",
         "trendEndDate": "",
         "trendTouchBasis": "both",
         "trendTouchTolerance": 2,
-        "trendBreakoutTolerance": 2,
+        "trendBreakoutTolerance": 5,
         "filterStartDate": "",
         "filterEndDate": "",
-        "slopeFilter": "all",
+        "slopeFilter": "negative",
+        "slopeMin": "",
+        "slopeMax": ""
+      },
+      "1y": {
+        "barUnit": "weekly",
+        "trendBase": "highlow",
+        "trendAlgo": "regression",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2.0,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 5,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "negative",
         "slopeMin": "",
         "slopeMax": ""
       }
     },
     "patternFilter": {
-      "enabled": false,
+      "enabled": true,
       "minTouches": 3
     }
   },
   {
     "market": "kr",
     "n": null,
-    "periods": ["1y"],
+    "periods": ["3m", "1y"],
     "periodConfigs": {
-      "1y": {
+      "3m": {
         "barUnit": "daily",
         "trendBase": "highlow",
-        "trendAlgo": "swing",
+        "trendAlgo": "regression",
         "zigzagThreshold": 5,
         "regressionStdDev": 2.0,
         "trendStartDate": "",
         "trendEndDate": "",
         "trendTouchBasis": "both",
         "trendTouchTolerance": 2,
-        "trendBreakoutTolerance": 2,
+        "trendBreakoutTolerance": 5,
         "filterStartDate": "",
         "filterEndDate": "",
-        "slopeFilter": "all",
+        "slopeFilter": "negative",
+        "slopeMin": "",
+        "slopeMax": ""
+      },
+      "1y": {
+        "barUnit": "weekly",
+        "trendBase": "highlow",
+        "trendAlgo": "regression",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2.0,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 5,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "negative",
         "slopeMin": "",
         "slopeMax": ""
       }
     },
     "patternFilter": {
-      "enabled": false,
+      "enabled": true,
       "minTouches": 3
     }
   }
