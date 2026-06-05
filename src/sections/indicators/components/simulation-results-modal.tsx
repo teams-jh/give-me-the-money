@@ -1,6 +1,7 @@
 'use client';
 
-import type { SimResult, UseChartIndicatorsReturn } from 'src/sections/indicators/hooks/use-chart-indicators';
+import type { SimResult } from 'src/library/shared/trendSim';
+import type { UseChartIndicatorsReturn } from 'src/sections/indicators/hooks/use-chart-indicators';
 
 import { useState, useEffect } from 'react';
 import ChartApex from 'react-apexcharts';
