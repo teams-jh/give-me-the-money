@@ -478,6 +478,24 @@ describe('resolvePeriodDates', () => {
     const r = resolvePeriodDates(BASE_CFG, dates, 100);
     expect(r.filterStartDate).toBe('2024-01-01');
   });
+
+  it('잘못된 날짜 문자열 → 자동 채움으로 폴백 (resolveFilterStartMs와 일관)', () => {
+    const cfg: PeriodConfig = {
+      ...BASE_CFG,
+      trendStartDate:  'invalid-date',
+      filterStartDate: 'invalid-date',
+    };
+    const r = resolvePeriodDates(cfg, dates);
+    expect(r.trendStartDate).toBe('2024-01-01');
+    expect(r.filterStartDate).toBe('2024-01-02');
+  });
+
+  it('잘못된 filterStartDate → resolvePeriodDates와 resolveFilterStartMs 결과가 일치', () => {
+    const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: 'invalid-date' };
+    const resolved = resolvePeriodDates(cfg, dates);
+    const ms       = resolveFilterStartMs(cfg, dates);
+    expect(new Date(resolved.filterStartDate).getTime()).toBe(ms);
+  });
 });
 
 // ── resolveFilterStartMs ─────────────────────────────────────────────────────

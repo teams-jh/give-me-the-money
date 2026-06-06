@@ -178,12 +178,16 @@ export function resolvePeriodDates(
   const lastDate = dates[dates.length - 1]!;
   const minusN   = dates[Math.max(0, dates.length - 1 - lookback)]!;
 
+  // 빈 값뿐 아니라 파싱 불가한 잘못된 날짜도 자동 채움 대상으로 본다.
+  // (resolveFilterStartMs와 동일한 판정 기준 → 두 함수 결과 일관성 보장)
+  const isValid = (d: string): boolean => !!d && !isNaN(new Date(d).getTime());
+
   return {
     ...cfg,
-    trendStartDate:  cfg.trendStartDate  || dates[0]!,
-    trendEndDate:    cfg.trendEndDate    || lastDate,
-    filterEndDate:   cfg.filterEndDate   || lastDate,
-    filterStartDate: cfg.filterStartDate || minusN,
+    trendStartDate:  isValid(cfg.trendStartDate)  ? cfg.trendStartDate  : dates[0]!,
+    trendEndDate:    isValid(cfg.trendEndDate)    ? cfg.trendEndDate    : lastDate,
+    filterEndDate:   isValid(cfg.filterEndDate)   ? cfg.filterEndDate   : lastDate,
+    filterStartDate: isValid(cfg.filterStartDate) ? cfg.filterStartDate : minusN,
   };
 }
 
@@ -205,15 +209,9 @@ export function resolveFilterStartMs(
 ): number {
   if (dates.length === 0) return 0;
 
-  // 명시된 값이 유효하면 그대로 사용
-  if (cfg.filterStartDate) {
-    const direct = new Date(cfg.filterStartDate).getTime();
-    if (!isNaN(direct)) return direct;
-    // 유효하지 않으면 아래 자동 채움으로 폴백
-  }
-
-  const minusN = dates[Math.max(0, dates.length - 1 - lookback)]!;
-  const parsed = new Date(minusN).getTime();
+  // 날짜 검증·자동 채움 규칙을 resolvePeriodDates 한 곳에서 재사용 (중복 제거)
+  const resolved = resolvePeriodDates(cfg, dates, lookback);
+  const parsed   = new Date(resolved.filterStartDate).getTime();
   return isNaN(parsed) ? 0 : parsed;
 }
 
