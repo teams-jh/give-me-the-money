@@ -424,7 +424,8 @@ export function runTickerSim(
 ): SimResult | null {
   if (prices.length === 0) return null;
   // 추세선은 마지막 1봉(장중 잠정/미확정 가능)을 제외하고 작도한다.
-  // 봉이 1개뿐이면 제외 후 남는 봉이 없어 작도가 불가능하므로 작도를 생략한다.
+  // 봉이 1개뿐이면 제외 후 남는 봉이 없어 작도가 불가능하므로 조기 종료한다.
+  // (2봉 이상이어도 실제 작도 범위가 2점 미만이면 아래 simTrendIndices 가드에서 다시 걸러진다.)
   if (prices.length < 2) return null;
 
   const closePrices = prices.map(d => d.close);
@@ -446,6 +447,11 @@ export function runTickerSim(
 
   // ── 추세선 작도 인덱스 ────────────────────────────────────────────────
   const simTrendIndices = buildTrendIndices(dates, effectiveTrendStart, effectiveTrendEnd);
+
+  // 유효한 추세선은 시작·끝 2개 점이 필요하다. 작도 범위가 1봉 이하이면
+  // 기울기 0의 수평선만 나와 의미가 없고 불필요한 연산·렌더 오류를 유발하므로 종료한다.
+  // (마지막 1봉 제외 자동 채움에서는 전체 2봉 → 작도 가용 1봉이 되어 여기서 걸러진다.)
+  if (simTrendIndices.length < 2) return null;
 
   const simHighs  = simTrendIndices.map(i => highPrices[i]!);
   const simLows   = simTrendIndices.map(i => lowPrices[i]!);
