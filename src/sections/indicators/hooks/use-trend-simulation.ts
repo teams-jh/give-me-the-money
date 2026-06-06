@@ -96,7 +96,9 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
       '1y': {
         ...DEFAULT_CONFIG,
         trendStartDate: getPeriodStart('1y', 'daily'),
-        trendEndDate:   lastDate,
+        // 추세선 작도는 마지막 1봉(장중 잠정/미확정 가능)을 제외한다.
+        // 빈 값으로 두면 resolvePeriodDates()가 barUnit 변환된 dates 기준 마지막-1로 채운다.
+        trendEndDate:   '',
         filterStartDate: getNDaysAgo(3),
         filterEndDate:   lastDate,
       },
@@ -126,7 +128,8 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
         const newConfig: PeriodConfig = {
           ...(src ?? DEFAULT_CONFIG),
           trendStartDate:  referenceInfo?.getPeriodStart(p, src?.barUnit ?? 'daily') ?? '',
-          trendEndDate:    referenceInfo?.lastDate ?? '',
+          // 마지막 1봉 제외 → 빈 값 위임 (resolvePeriodDates가 마지막-1로 채움)
+          trendEndDate:    '',
           filterStartDate: src?.filterStartDate ?? referenceInfo?.getNDaysAgo(3) ?? '',
           filterEndDate:   src?.filterEndDate   ?? referenceInfo?.lastDate ?? '',
         };

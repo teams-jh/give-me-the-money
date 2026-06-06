@@ -243,10 +243,12 @@ export function useChartIndicators() {
     if (activeStockDataSlice && activeStockDataSlice.dates.length > 0) {
       const dates = activeStockDataSlice.dates;
       setTrendStartDate(dates[0]);
+      // 추세선 작도는 마지막 1봉(장중 잠정/미확정 가능)을 제외하고 직전 봉까지 사용한다.
+      // 봉이 1개뿐이면 직전 봉이 없어 작도가 불가하므로 빈 값으로 두어 작도를 생략한다.
       if (dates.length >= 2) {
         setTrendEndDate(dates[dates.length - 2]);
       } else {
-        setTrendEndDate(dates[0]);
+        setTrendEndDate('');
       }
     } else {
       setTrendStartDate('');

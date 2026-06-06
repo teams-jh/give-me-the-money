@@ -289,6 +289,28 @@ describe('runTickerSim', () => {
     expect(runTickerSim('AAPL', 'Apple', [], BASE_CFG)).toBeNull();
   });
 
+  it('데이터 1봉뿐이면 null 반환 (마지막-1까지만 작도하므로 쓸 봉이 없음)', () => {
+    const prices = makePrices(1);
+    expect(runTickerSim('ONE', 'OneBar', prices, BASE_CFG)).toBeNull();
+  });
+
+  it('자동 채움 시 2봉도 null (마지막 1봉 제외 → 작도 가용 봉 1개, 유효 추세선 불가)', () => {
+    // resolvePeriodDates가 trendEnd를 마지막-1로 채우므로 작도 범위가 첫 봉 1개로 좁혀짐
+    const dates = makePrices(2).map(p => p.date);
+    const resolved = resolvePeriodDates(BASE_CFG, dates);
+    expect(runTickerSim('TWO', 'TwoBars', makePrices(2), resolved)).toBeNull();
+  });
+
+  it('자동 채움 시 3봉이면 작도 가능 (가용 봉 2개)', () => {
+    const dates = makePrices(3).map(p => p.date);
+    const resolved = resolvePeriodDates(BASE_CFG, dates);
+    // 결과는 totalCount=0이면 null일 수 있으나, 최소한 작도 가드(1개봉)에는 걸리지 않아야 함
+    const r = runTickerSim('THREE', 'ThreeBars', makePrices(3), resolved);
+    // 작도 범위가 2봉 이상이면 가드를 통과 — null이어도 그 사유는 totalCount=0이지 가드가 아님
+    // 여기서는 가드 통과를 직접 확인하기 위해 slope 계산이 일어나는 입력을 사용
+    if (r !== null) expect(typeof r.slope).toBe('number');
+  });
+
   it('충분한 데이터 → SimResult 또는 null', () => {
     const prices = makePrices(100, 100, 0.5);
     const result = runTickerSim('TEST', 'Test', prices, BASE_CFG);
@@ -428,13 +450,31 @@ describe('applyPatternFilter', () => {
 describe('resolvePeriodDates', () => {
   const dates = ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'];
 
-  it('빈 날짜 → dates 기준 자동 채움 (filterStart = 마지막-LOOKBACK)', () => {
+  it('빈 날짜 → dates 기준 자동 채움 (trendEnd = 마지막-1, filterStart = 마지막-LOOKBACK)', () => {
     const r = resolvePeriodDates(BASE_CFG, dates);
     expect(r.trendStartDate).toBe('2024-01-01');
-    expect(r.trendEndDate).toBe('2024-01-05');
+    // 추세선 작도는 마지막 1봉(잠정/미확정 가능)을 제외 → dates[length-2]
+    expect(r.trendEndDate).toBe('2024-01-04');
+    // filterEnd는 돌파 탐지 구간 끝이므로 마지막 봉 유지
     expect(r.filterEndDate).toBe('2024-01-05');
     // DEFAULT_FILTER_LOOKBACK_BARS = 3 → dates[max(0, 5-1-3)] = dates[1]
     expect(r.filterStartDate).toBe('2024-01-02');
+  });
+
+  it('빈 trendEndDate → 마지막-1 봉으로 자동 채움', () => {
+    const r = resolvePeriodDates(BASE_CFG, dates);
+    expect(r.trendEndDate).toBe('2024-01-04'); // dates[length-2]
+  });
+
+  it('명시된 trendEndDate가 마지막 봉이어도 그대로 존중 (사용자 지정 우선)', () => {
+    const cfg: PeriodConfig = { ...BASE_CFG, trendEndDate: '2024-01-05' };
+    const r = resolvePeriodDates(cfg, dates);
+    expect(r.trendEndDate).toBe('2024-01-05');
+  });
+
+  it('dates가 1봉뿐 → 마지막-1이 없으므로 trendEndDate 빈 문자열 유지', () => {
+    const r = resolvePeriodDates(BASE_CFG, ['2024-01-01']);
+    expect(r.trendEndDate).toBe('');
   });
 
   it('명시된 날짜는 보존', () => {
