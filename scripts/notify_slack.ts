@@ -97,6 +97,11 @@ export async function uploadFileToSlack(token: string, filePath: string): Promis
     body: params.toString(),
   });
 
+  if (!getRes.ok) {
+    const text = await getRes.text();
+    throw new Error(`files.getUploadURLExternal HTTP 에러 (status ${getRes.status}): ${text} (${filename})`);
+  }
+
   const getData = (await getRes.json()) as GetUploadUrlResponse;
   if (!getData.ok || !getData.upload_url || !getData.file_id) {
     throw new Error(`files.getUploadURLExternal 실패: ${getData.error ?? "unknown"} (${filename})`);
@@ -140,6 +145,11 @@ export async function completeUpload(
       initial_comment: initialComment,
     }),
   });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`files.completeUploadExternal HTTP 에러 (status ${res.status}): ${text}`);
+  }
 
   const data = (await res.json()) as SlackApiResponse;
   if (!data.ok) {

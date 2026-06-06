@@ -103,6 +103,17 @@ describe('uploadFileToSlack', () => {
     await expect(uploadFileToSlack('bad', '/path/x.png')).rejects.toThrow(/invalid_auth/);
   });
 
+  it('getUploadURLExternal HTTP 5xx(non-ok) → 에러 (json 파싱 전 차단)', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      text: async () => '<html>Bad Gateway</html>',
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(uploadFileToSlack('t', '/path/x.png')).rejects.toThrow(/502/);
+  });
+
   it('업로드 URL PUT 실패(non-2xx) → 에러', async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce({
@@ -150,6 +161,17 @@ describe('completeUpload', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(completeUpload('t', 'C1', ['F1'], 'x')).rejects.toThrow(/channel_not_found/);
+  });
+
+  it('HTTP 5xx(non-ok) → 에러 (json 파싱 전 차단)', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: false,
+      status: 504,
+      text: async () => '<html>Gateway Timeout</html>',
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(completeUpload('t', 'C1', ['F1'], 'x')).rejects.toThrow(/504/);
   });
 });
 
