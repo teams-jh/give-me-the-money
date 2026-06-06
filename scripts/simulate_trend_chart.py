@@ -19,7 +19,6 @@ simulate_trend.ts 가 생성한 JSON을 읽어 종목별 차트를 PNG로 렌더
 
 import sys
 import json
-import math
 from pathlib import Path
 from datetime import datetime
 
@@ -46,9 +45,8 @@ plt.rcParams["axes.unicode_minus"] = False  # 마이너스 기호 깨짐 방지
 
 # ── 설정 ─────────────────────────────────────────────────────────────────────
 
-COLS        = 4       # 한 행에 카드 수
-CARD_W      = 5.0     # 카드 너비 (인치)
-CARD_H      = 4.2     # 카드 높이 (인치)
+CARD_W      = 10.0    # 차트 너비 (인치) — 종목 1장 기준
+CARD_H      = 6.0     # 차트 높이 (인치)
 CANDLE_UP   = "#D32F2F"   # 양봉 (한국식: 빨강 — 라이트모드용 진한 빨강)
 CANDLE_DOWN = "#1565C0"   # 음봉 (한국식: 파랑 — 라이트모드용 진한 파랑)
 RESIST_COLOR = "#E53935"  # 저항선
@@ -146,14 +144,14 @@ def render_card(ax, result: dict, periods: list, trendAlgo: str):
     slope_val  = sim.get("slope", 0.0)
 
     ax.set_facecolor(BG_COLOR)
-    ax.tick_params(colors=TEXT_COLOR, labelsize=5.5)
+    ax.tick_params(colors=TEXT_COLOR, labelsize=9)
     for spine in ax.spines.values():
         spine.set_color(GRID_COLOR)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%y/%m"))
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3))
-    plt.setp(ax.xaxis.get_majorticklabels(), rotation=30, ha="right", fontsize=5)
-    ax.yaxis.set_tick_params(labelsize=5.5)
-    ax.grid(True, color=GRID_COLOR, linewidth=0.4, alpha=0.8)
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+    plt.setp(ax.xaxis.get_majorticklabels(), rotation=30, ha="right", fontsize=8)
+    ax.yaxis.set_tick_params(labelsize=9)
+    ax.grid(True, color=GRID_COLOR, linewidth=0.6, alpha=0.8)
 
     if not prices:
         ax.text(0.5, 0.5, "데이터 없음", transform=ax.transAxes,
@@ -187,27 +185,27 @@ def render_card(ax, result: dict, periods: list, trendAlgo: str):
 
     # 티커
     ax.text(0.02, 0.98, ticker, transform=ax.transAxes,
-            fontsize=8, fontweight="bold", color=TEXT_COLOR,
+            fontsize=14, fontweight="bold", color=TEXT_COLOR,
             va="top", ha="left")
     # 기울기 배지
     slope_text = f"{slope_sym} {slope_val:+.1f}%"
     ax.text(0.98, 0.98, slope_text, transform=ax.transAxes,
-            fontsize=6.5, fontweight="bold", color=slope_color,
+            fontsize=11, fontweight="bold", color=slope_color,
             va="top", ha="right")
     # 종목명
-    ax.text(0.02, 0.91, name[:22], transform=ax.transAxes,
-            fontsize=5.5, color="#616161", va="top", ha="left")
+    ax.text(0.02, 0.93, name[:30], transform=ax.transAxes,
+            fontsize=9, color="#616161", va="top", ha="left")
 
     # 기간별 터치/돌파 통계
-    y_offset = 0.84
+    y_offset = 0.87
     for p in periods:
         stat = period_stats.get(p)
         if not stat:
             continue
         label = f"{p}: 터치 {stat.get('touchCount', 0)}  돌파 {stat.get('breakoutCount', 0)}"
         ax.text(0.02, y_offset, label, transform=ax.transAxes,
-                fontsize=5.2, color="#424242", va="top", ha="left")
-        y_offset -= 0.07
+                fontsize=8, color="#424242", va="top", ha="left")
+        y_offset -= 0.06
 
 
 # ── 범례 패치 ────────────────────────────────────────────────────────────────
@@ -223,47 +221,39 @@ def make_legend_patches():
     ]
 
 
-def calc_period_stats_summary(results: list, periods: list) -> dict:
-    """전체 종목의 기간별 터치/돌파 합계를 계산한다.
+# ── 메인 ─────────────────────────────────────────────────────────────────────
 
-    반환: { "1y": {"touch": 42, "breakout": 7}, ... }
-    """
-    summary = {p: {"touch": 0, "breakout": 0} for p in periods}
-    for result in results:
-        period_stats = result.get("periodStats", {})
-        for p in periods:
-            stat = period_stats.get(p)
-            if not stat:
-                continue
-            summary[p]["touch"]    += stat.get("touchCount", 0)
-            summary[p]["breakout"] += stat.get("breakoutCount", 0)
-    return summary
+def render_single(result: dict, periods: list, trend_algo: str,
+                  market: str, generated: str) -> plt.Figure:
+    """종목 1개짜리 figure를 생성하고 반환한다."""
+    fig, ax = plt.subplots(figsize=(CARD_W, CARD_H), facecolor=FIG_BG)
+    fig.subplots_adjust(left=0.08, right=0.97, top=0.97, bottom=0.14)
 
+    render_card(ax, result, periods, trend_algo)
 
-def draw_legend_stats(fig, summary: dict, periods: list, fig_h: float):
-    """하단 범례 왼쪽에 기간별 터치/돌파 집계를 표시한다."""
+    # 하단 색상 범례
+    patches = make_legend_patches()
+    fig.legend(handles=patches, loc="lower right", ncol=1,
+               fontsize=7, facecolor="#FFFFFF", edgecolor="#BDBDBD",
+               labelcolor=TEXT_COLOR, framealpha=0.95,
+               bbox_to_anchor=(0.99, 0.01))
+
+    # 하단 터치/돌파 집계 (해당 종목만)
+    period_stats = result.get("periodStats", {})
     lines = []
     for p in periods:
-        s = summary.get(p, {})
-        touch    = s.get("touch", 0)
-        breakout = s.get("breakout", 0)
-        lines.append(f"[{p}]  터치 {touch}회  돌파 {breakout}회")
+        stat = period_stats.get(p)
+        if stat:
+            lines.append(f"[{p}]  터치 {stat.get('touchCount', 0)}회  돌파 {stat.get('breakoutCount', 0)}회")
+    if lines:
+        fig.text(0.01, 0.01, "\n".join(lines),
+                 ha="left", va="bottom", fontsize=7, color=TEXT_COLOR,
+                 linespacing=1.5,
+                 bbox=dict(boxstyle="round,pad=0.3",
+                           facecolor="#FFFFFF", edgecolor="#BDBDBD", alpha=0.95))
 
-    text = "\n".join(lines)
-    fig.text(
-        0.02, 0.012, text,
-        ha="left", va="bottom",
-        fontsize=6.5, color=TEXT_COLOR,
-        linespacing=1.6,
-        bbox=dict(
-            boxstyle="round,pad=0.4",
-            facecolor="#FFFFFF", edgecolor="#BDBDBD",
-            alpha=0.95,
-        ),
-    )
+    return fig
 
-
-# ── 메인 ─────────────────────────────────────────────────────────────────────
 
 def main():
     if len(sys.argv) < 2:
@@ -278,11 +268,11 @@ def main():
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
 
-    results    = data.get("results", [])
-    market     = data.get("market", "")
-    config     = data.get("config") or {}
-    periods    = config.get("periods", ["1y"])
-    generated  = data.get("generated_at", "")
+    results   = data.get("results", [])
+    market    = data.get("market", "")
+    config    = data.get("config") or {}
+    periods   = config.get("periods", ["1y"])
+    generated = data.get("generated_at", "")
 
     # trendAlgo는 첫 번째 period config에서 가져옴
     period_configs   = config.get("periodConfigs") or {}
@@ -293,52 +283,21 @@ def main():
         print("⚠️  결과 없음 — PNG 생성 건너뜀")
         sys.exit(0)
 
-    n     = len(results)
-    rows  = math.ceil(n / COLS)
-    extra = 1  # 타이틀 행
+    # 출력 디렉토리 = JSON과 동일 경로, 동일 파일명 접두어
+    stem = json_path.stem  # e.g. sim_us_3m+1y_20250605_120000
+    out_dir = json_path.parent
 
-    fig_w = COLS * CARD_W
-    fig_h = CARD_H * rows + 0.8 * extra
+    saved = []
+    for result in results:
+        ticker = result.get("ticker", "unknown")
+        fig = render_single(result, periods, trend_algo, market, generated)
+        png_path = out_dir / f"{stem}_{ticker}.png"
+        fig.savefig(png_path, dpi=200, bbox_inches="tight", facecolor=FIG_BG)
+        plt.close(fig)
+        saved.append(str(png_path))
+        print(f"🖼️  PNG 저장: {png_path}")
 
-    fig = plt.figure(figsize=(fig_w, fig_h), facecolor=FIG_BG)
-    # 범례 + 통계 영역을 위한 하단 여백 확보
-    fig.subplots_adjust(
-        left=0.04, right=0.96,
-        top=1 - (0.6 / fig_h),
-        bottom=0.06,
-        hspace=0.55, wspace=0.12,
-    )
-
-    # 타이틀
-    period_str = " + ".join(periods)
-    title = (
-        f"추세선 시뮬레이션  [{market.upper()}]  {period_str}  —  {n}개 종목  |  {generated}"
-    )
-    fig.text(0.5, 1 - (0.3 / fig_h), title, ha="center", va="top",
-             color=TEXT_COLOR, fontsize=10, fontweight="bold")
-
-    # 카드 그리기
-    for idx, result in enumerate(results):
-        ax = fig.add_subplot(rows, COLS, idx + 1)
-        render_card(ax, result, periods, trend_algo)
-
-    # 색상 범례 (오른쪽)
-    patches = make_legend_patches()
-    fig.legend(handles=patches, loc="lower right", ncol=1,
-               fontsize=6.5, facecolor="#FFFFFF", edgecolor="#BDBDBD",
-               labelcolor=TEXT_COLOR, framealpha=0.95,
-               bbox_to_anchor=(0.98, 0.005))
-
-    # 기간별 터치/돌파 집계 (왼쪽)
-    summary = calc_period_stats_summary(results, periods)
-    draw_legend_stats(fig, summary, periods, fig_h)
-
-    # 저장
-    png_path = json_path.with_suffix(".png")
-    fig.savefig(png_path, dpi=200, bbox_inches="tight",
-                facecolor=FIG_BG)
-    plt.close(fig)
-    print(f"🖼️  PNG 저장: {png_path}")
+    print(f"✅ 총 {len(saved)}개 PNG 생성 완료")
 
 
 if __name__ == "__main__":
