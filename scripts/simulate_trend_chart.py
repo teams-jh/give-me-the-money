@@ -30,16 +30,18 @@ import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
 import matplotlib.dates as mdates
 from matplotlib.collections import LineCollection
-import matplotlib.font_manager as fm
 import numpy as np
 
 # ── 한글 폰트 설정 ────────────────────────────────────────────────────────────
-# 우선순위: NanumGothic → NanumBarunGothic → DejaVu Sans (폴백)
-_KR_FONT_CANDIDATES = ["NanumGothic", "NanumBarunGothic", "NanumSquare"]
-_available_fonts = {f.name for f in fm.fontManager.ttflist}
-_kr_font = next((f for f in _KR_FONT_CANDIDATES if f in _available_fonts), None)
-if _kr_font:
-    plt.rcParams["font.family"] = _kr_font
+# font.sans-serif 목록 앞에 한글 폰트 후보를 prepend → matplotlib 폴백 자동 적용
+# 폰트명 공백 여부가 OS마다 다를 수 있으므로 두 가지 형태를 모두 포함
+_KR_FONT_CANDIDATES = [
+    "NanumGothic", "Nanum Gothic",
+    "NanumBarunGothic", "Nanum Barun Gothic",
+    "NanumSquare", "Nanum Square",
+]
+plt.rcParams["font.sans-serif"] = _KR_FONT_CANDIDATES + list(plt.rcParams["font.sans-serif"])
+plt.rcParams["font.family"] = "sans-serif"
 plt.rcParams["axes.unicode_minus"] = False  # 마이너스 기호 깨짐 방지
 
 # ── 설정 ─────────────────────────────────────────────────────────────────────
