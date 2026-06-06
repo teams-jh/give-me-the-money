@@ -91,6 +91,10 @@ jobs:
         working-directory: server_node
         run: npx tsx scripts/merge/merge_us_tickers.ts
 
+      - name: Generate all-tickers-data.ts
+        if: ${{ github.event.inputs.command == 'add' || github.event.inputs.command == 'remove' }}
+        run: node scripts/generate-tickers.cjs
+
       - name: Commit and push
         if: ${{ github.event.inputs.command == 'add' || github.event.inputs.command == 'remove' }}
         run: |
@@ -99,7 +103,8 @@ jobs:
 
           MARKET="${{ github.event.inputs.market }}"
           git add src/db/stock_market_index/manual_${MARKET}_tickers.json \
-                  src/db/metadata/all_${MARKET}_tickers.json
+                  src/db/metadata/all_${MARKET}_tickers.json \
+                  src/library/all-tickers-data.ts
 
           if git diff --cached --quiet; then
             echo "변경 없음 (이미 등록된 종목이거나 미등록 종목 제거)"
