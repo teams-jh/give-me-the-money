@@ -193,6 +193,7 @@ function runMarketSim(cfg: MarketSimConfig): void {
     const days    = PERIOD_BARS[periodCfg.barUnit ?? "daily"][period];
     const results: SimResult[] = [];
     let   skipped = 0;
+    let   datePrinted = false;  // 날짜 로그는 첫 유효 티커 기준 1회만 출력
 
     log(`\n📅 기간: ${period} (${days}봉)`);
 
@@ -235,8 +236,18 @@ function runMarketSim(cfg: MarketSimConfig): void {
       const slice = bars.slice(-days);
 
       // 날짜 자동 채우기
-      const dates     = slice.map(p => p.date);
+      const dates       = slice.map(p => p.date);
       const resolvedCfg = resolveDates(periodCfg, dates);
+
+      // 첫 유효 티커 기준으로 날짜 로그 1회 출력
+      if (!datePrinted) {
+        log(`📆 날짜 (${ticker} 기준)`);
+        log(`   trendStart:  ${resolvedCfg.trendStartDate}`);
+        log(`   trendEnd:    ${resolvedCfg.trendEndDate}`);
+        log(`   filterStart: ${resolvedCfg.filterStartDate}`);
+        log(`   filterEnd:   ${resolvedCfg.filterEndDate}`);
+        datePrinted = true;
+      }
 
       // 시뮬레이션
       const simResult = runTickerSim(ticker, name, slice, resolvedCfg);
