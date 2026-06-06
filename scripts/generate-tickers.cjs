@@ -30,25 +30,25 @@ content += "import type { TickerData } from './tickers';\n\n";
 
 // KR Tickers
 krEntries.forEach(({ ticker, file }) => {
-  const varName = `data_kr_${file.replace('.json', '')}`;
+  const varName = `data_kr_${file.replace('.json', '').replace(/-/g, '_')}`;
   content += `import ${varName} from '../db/kr/tickers/${file}';\n`;
 });
 
 // US Tickers
 usEntries.forEach(({ ticker, file }) => {
-  const varName = `data_us_${file.replace('.json', '')}`;
+  const varName = `data_us_${file.replace('.json', '').replace(/-/g, '_')}`;
   content += `import ${varName} from '../db/us/tickers/${file}';\n`;
 });
 
 content += '\nexport const allTickersData: Record<string, TickerData> = {\n';
 
 krEntries.forEach(({ ticker, file }) => {
-  const varName = `data_kr_${file.replace('.json', '')}`;
+  const varName = `data_kr_${file.replace('.json', '').replace(/-/g, '_')}`;
   content += `  '${ticker}': ${varName} as unknown as TickerData,\n`;
 });
 
 usEntries.forEach(({ ticker, file }) => {
-  const varName = `data_us_${file.replace('.json', '')}`;
+  const varName = `data_us_${file.replace('.json', '').replace(/-/g, '_')}`;
   content += `  '${ticker}': ${varName} as unknown as TickerData,\n`;
 });
 

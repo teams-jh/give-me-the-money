@@ -539,7 +539,7 @@ import data_us_ALB from '../db/us/tickers/ALB.json';
 import data_us_ALC from '../db/us/tickers/ALC.json';
 import data_us_ALGN from '../db/us/tickers/ALGN.json';
 import data_us_ALL from '../db/us/tickers/ALL.json';
-import data_us_ALL-PH from '../db/us/tickers/ALL-PH.json';
+import data_us_ALL_PH from '../db/us/tickers/ALL-PH.json';
 import data_us_ALLE from '../db/us/tickers/ALLE.json';
 import data_us_ALLY from '../db/us/tickers/ALLY.json';
 import data_us_ALNY from '../db/us/tickers/ALNY.json';
@@ -589,8 +589,8 @@ import data_us_AVGO from '../db/us/tickers/AVGO.json';
 import data_us_AVY from '../db/us/tickers/AVY.json';
 import data_us_AWK from '../db/us/tickers/AWK.json';
 import data_us_AXIA from '../db/us/tickers/AXIA.json';
-import data_us_AXIA-P from '../db/us/tickers/AXIA-P.json';
-import data_us_AXIA-PC from '../db/us/tickers/AXIA-PC.json';
+import data_us_AXIA_P from '../db/us/tickers/AXIA-P.json';
+import data_us_AXIA_PC from '../db/us/tickers/AXIA-PC.json';
 import data_us_AXON from '../db/us/tickers/AXON.json';
 import data_us_AXP from '../db/us/tickers/AXP.json';
 import data_us_AXSM from '../db/us/tickers/AXSM.json';
@@ -617,8 +617,8 @@ import data_us_BE from '../db/us/tickers/BE.json';
 import data_us_BEKE from '../db/us/tickers/BEKE.json';
 import data_us_BEN from '../db/us/tickers/BEN.json';
 import data_us_BEP from '../db/us/tickers/BEP.json';
-import data_us_BF-A from '../db/us/tickers/BF-A.json';
-import data_us_BF-B from '../db/us/tickers/BF-B.json';
+import data_us_BF_A from '../db/us/tickers/BF-A.json';
+import data_us_BF_B from '../db/us/tickers/BF-B.json';
 import data_us_BG from '../db/us/tickers/BG.json';
 import data_us_BHP from '../db/us/tickers/BHP.json';
 import data_us_BIDU from '../db/us/tickers/BIDU.json';
@@ -639,8 +639,8 @@ import data_us_BNT from '../db/us/tickers/BNT.json';
 import data_us_BNTX from '../db/us/tickers/BNTX.json';
 import data_us_BP from '../db/us/tickers/BP.json';
 import data_us_BR from '../db/us/tickers/BR.json';
-import data_us_BRK-A from '../db/us/tickers/BRK-A.json';
-import data_us_BRK-B from '../db/us/tickers/BRK-B.json';
+import data_us_BRK_A from '../db/us/tickers/BRK-A.json';
+import data_us_BRK_B from '../db/us/tickers/BRK-B.json';
 import data_us_BRO from '../db/us/tickers/BRO.json';
 import data_us_BSAC from '../db/us/tickers/BSAC.json';
 import data_us_BSBR from '../db/us/tickers/BSBR.json';
@@ -907,7 +907,7 @@ import data_us_HCA from '../db/us/tickers/HCA.json';
 import data_us_HD from '../db/us/tickers/HD.json';
 import data_us_HDB from '../db/us/tickers/HDB.json';
 import data_us_HEI from '../db/us/tickers/HEI.json';
-import data_us_HEI-A from '../db/us/tickers/HEI-A.json';
+import data_us_HEI_A from '../db/us/tickers/HEI-A.json';
 import data_us_HIG from '../db/us/tickers/HIG.json';
 import data_us_HII from '../db/us/tickers/HII.json';
 import data_us_HL from '../db/us/tickers/HL.json';
@@ -981,7 +981,7 @@ import data_us_KB from '../db/us/tickers/KB.json';
 import data_us_KDP from '../db/us/tickers/KDP.json';
 import data_us_KEP from '../db/us/tickers/KEP.json';
 import data_us_KEY from '../db/us/tickers/KEY.json';
-import data_us_KEY-PK from '../db/us/tickers/KEY-PK.json';
+import data_us_KEY_PK from '../db/us/tickers/KEY-PK.json';
 import data_us_KEYS from '../db/us/tickers/KEYS.json';
 import data_us_KGC from '../db/us/tickers/KGC.json';
 import data_us_KHC from '../db/us/tickers/KHC.json';
@@ -1002,7 +1002,7 @@ import data_us_LAMR from '../db/us/tickers/LAMR.json';
 import data_us_LDOS from '../db/us/tickers/LDOS.json';
 import data_us_LECO from '../db/us/tickers/LECO.json';
 import data_us_LEN from '../db/us/tickers/LEN.json';
-import data_us_LEN-B from '../db/us/tickers/LEN-B.json';
+import data_us_LEN_B from '../db/us/tickers/LEN-B.json';
 import data_us_LFUS from '../db/us/tickers/LFUS.json';
 import data_us_LH from '../db/us/tickers/LH.json';
 import data_us_LHX from '../db/us/tickers/LHX.json';
@@ -1049,7 +1049,7 @@ import data_us_MFG from '../db/us/tickers/MFG.json';
 import data_us_MGA from '../db/us/tickers/MGA.json';
 import data_us_MGM from '../db/us/tickers/MGM.json';
 import data_us_MKC from '../db/us/tickers/MKC.json';
-import data_us_MKC-V from '../db/us/tickers/MKC-V.json';
+import data_us_MKC_V from '../db/us/tickers/MKC-V.json';
 import data_us_MKL from '../db/us/tickers/MKL.json';
 import data_us_MKSI from '../db/us/tickers/MKSI.json';
 import data_us_MLI from '../db/us/tickers/MLI.json';
@@ -1058,8 +1058,8 @@ import data_us_MMM from '../db/us/tickers/MMM.json';
 import data_us_MNST from '../db/us/tickers/MNST.json';
 import data_us_MO from '../db/us/tickers/MO.json';
 import data_us_MOD from '../db/us/tickers/MOD.json';
-import data_us_MOG-A from '../db/us/tickers/MOG-A.json';
-import data_us_MOG-B from '../db/us/tickers/MOG-B.json';
+import data_us_MOG_A from '../db/us/tickers/MOG-A.json';
+import data_us_MOG_B from '../db/us/tickers/MOG-B.json';
 import data_us_MP from '../db/us/tickers/MP.json';
 import data_us_MPC from '../db/us/tickers/MPC.json';
 import data_us_MPLX from '../db/us/tickers/MPLX.json';
@@ -1146,7 +1146,7 @@ import data_us_PAYP from '../db/us/tickers/PAYP.json';
 import data_us_PAYX from '../db/us/tickers/PAYX.json';
 import data_us_PBA from '../db/us/tickers/PBA.json';
 import data_us_PBR from '../db/us/tickers/PBR.json';
-import data_us_PBR-A from '../db/us/tickers/PBR-A.json';
+import data_us_PBR_A from '../db/us/tickers/PBR-A.json';
 import data_us_PCAR from '../db/us/tickers/PCAR.json';
 import data_us_PCG from '../db/us/tickers/PCG.json';
 import data_us_PDD from '../db/us/tickers/PDD.json';
@@ -1414,7 +1414,7 @@ import data_us_WELL from '../db/us/tickers/WELL.json';
 import data_us_WES from '../db/us/tickers/WES.json';
 import data_us_WF from '../db/us/tickers/WF.json';
 import data_us_WFC from '../db/us/tickers/WFC.json';
-import data_us_WFC-PC from '../db/us/tickers/WFC-PC.json';
+import data_us_WFC_PC from '../db/us/tickers/WFC-PC.json';
 import data_us_WIT from '../db/us/tickers/WIT.json';
 import data_us_WLK from '../db/us/tickers/WLK.json';
 import data_us_WM from '../db/us/tickers/WM.json';
@@ -1428,7 +1428,7 @@ import data_us_WRB from '../db/us/tickers/WRB.json';
 import data_us_WSE from '../db/us/tickers/WSE.json';
 import data_us_WSM from '../db/us/tickers/WSM.json';
 import data_us_WSO from '../db/us/tickers/WSO.json';
-import data_us_WSO-B from '../db/us/tickers/WSO-B.json';
+import data_us_WSO_B from '../db/us/tickers/WSO-B.json';
 import data_us_WST from '../db/us/tickers/WST.json';
 import data_us_WTFC from '../db/us/tickers/WTFC.json';
 import data_us_WTRG from '../db/us/tickers/WTRG.json';
@@ -1989,7 +1989,7 @@ export const allTickersData: Record<string, TickerData> = {
   'ALC': data_us_ALC as unknown as TickerData,
   'ALGN': data_us_ALGN as unknown as TickerData,
   'ALL': data_us_ALL as unknown as TickerData,
-  'ALL-PH': data_us_ALL-PH as unknown as TickerData,
+  'ALL-PH': data_us_ALL_PH as unknown as TickerData,
   'ALLE': data_us_ALLE as unknown as TickerData,
   'ALLY': data_us_ALLY as unknown as TickerData,
   'ALNY': data_us_ALNY as unknown as TickerData,
@@ -2039,8 +2039,8 @@ export const allTickersData: Record<string, TickerData> = {
   'AVY': data_us_AVY as unknown as TickerData,
   'AWK': data_us_AWK as unknown as TickerData,
   'AXIA': data_us_AXIA as unknown as TickerData,
-  'AXIA-P': data_us_AXIA-P as unknown as TickerData,
-  'AXIA-PC': data_us_AXIA-PC as unknown as TickerData,
+  'AXIA-P': data_us_AXIA_P as unknown as TickerData,
+  'AXIA-PC': data_us_AXIA_PC as unknown as TickerData,
   'AXON': data_us_AXON as unknown as TickerData,
   'AXP': data_us_AXP as unknown as TickerData,
   'AXSM': data_us_AXSM as unknown as TickerData,
@@ -2067,8 +2067,8 @@ export const allTickersData: Record<string, TickerData> = {
   'BEKE': data_us_BEKE as unknown as TickerData,
   'BEN': data_us_BEN as unknown as TickerData,
   'BEP': data_us_BEP as unknown as TickerData,
-  'BF-A': data_us_BF-A as unknown as TickerData,
-  'BF-B': data_us_BF-B as unknown as TickerData,
+  'BF-A': data_us_BF_A as unknown as TickerData,
+  'BF-B': data_us_BF_B as unknown as TickerData,
   'BG': data_us_BG as unknown as TickerData,
   'BHP': data_us_BHP as unknown as TickerData,
   'BIDU': data_us_BIDU as unknown as TickerData,
@@ -2089,8 +2089,8 @@ export const allTickersData: Record<string, TickerData> = {
   'BNTX': data_us_BNTX as unknown as TickerData,
   'BP': data_us_BP as unknown as TickerData,
   'BR': data_us_BR as unknown as TickerData,
-  'BRK-A': data_us_BRK-A as unknown as TickerData,
-  'BRK-B': data_us_BRK-B as unknown as TickerData,
+  'BRK-A': data_us_BRK_A as unknown as TickerData,
+  'BRK-B': data_us_BRK_B as unknown as TickerData,
   'BRO': data_us_BRO as unknown as TickerData,
   'BSAC': data_us_BSAC as unknown as TickerData,
   'BSBR': data_us_BSBR as unknown as TickerData,
@@ -2357,7 +2357,7 @@ export const allTickersData: Record<string, TickerData> = {
   'HD': data_us_HD as unknown as TickerData,
   'HDB': data_us_HDB as unknown as TickerData,
   'HEI': data_us_HEI as unknown as TickerData,
-  'HEI-A': data_us_HEI-A as unknown as TickerData,
+  'HEI-A': data_us_HEI_A as unknown as TickerData,
   'HIG': data_us_HIG as unknown as TickerData,
   'HII': data_us_HII as unknown as TickerData,
   'HL': data_us_HL as unknown as TickerData,
@@ -2431,7 +2431,7 @@ export const allTickersData: Record<string, TickerData> = {
   'KDP': data_us_KDP as unknown as TickerData,
   'KEP': data_us_KEP as unknown as TickerData,
   'KEY': data_us_KEY as unknown as TickerData,
-  'KEY-PK': data_us_KEY-PK as unknown as TickerData,
+  'KEY-PK': data_us_KEY_PK as unknown as TickerData,
   'KEYS': data_us_KEYS as unknown as TickerData,
   'KGC': data_us_KGC as unknown as TickerData,
   'KHC': data_us_KHC as unknown as TickerData,
@@ -2452,7 +2452,7 @@ export const allTickersData: Record<string, TickerData> = {
   'LDOS': data_us_LDOS as unknown as TickerData,
   'LECO': data_us_LECO as unknown as TickerData,
   'LEN': data_us_LEN as unknown as TickerData,
-  'LEN-B': data_us_LEN-B as unknown as TickerData,
+  'LEN-B': data_us_LEN_B as unknown as TickerData,
   'LFUS': data_us_LFUS as unknown as TickerData,
   'LH': data_us_LH as unknown as TickerData,
   'LHX': data_us_LHX as unknown as TickerData,
@@ -2499,7 +2499,7 @@ export const allTickersData: Record<string, TickerData> = {
   'MGA': data_us_MGA as unknown as TickerData,
   'MGM': data_us_MGM as unknown as TickerData,
   'MKC': data_us_MKC as unknown as TickerData,
-  'MKC-V': data_us_MKC-V as unknown as TickerData,
+  'MKC-V': data_us_MKC_V as unknown as TickerData,
   'MKL': data_us_MKL as unknown as TickerData,
   'MKSI': data_us_MKSI as unknown as TickerData,
   'MLI': data_us_MLI as unknown as TickerData,
@@ -2508,8 +2508,8 @@ export const allTickersData: Record<string, TickerData> = {
   'MNST': data_us_MNST as unknown as TickerData,
   'MO': data_us_MO as unknown as TickerData,
   'MOD': data_us_MOD as unknown as TickerData,
-  'MOG-A': data_us_MOG-A as unknown as TickerData,
-  'MOG-B': data_us_MOG-B as unknown as TickerData,
+  'MOG-A': data_us_MOG_A as unknown as TickerData,
+  'MOG-B': data_us_MOG_B as unknown as TickerData,
   'MP': data_us_MP as unknown as TickerData,
   'MPC': data_us_MPC as unknown as TickerData,
   'MPLX': data_us_MPLX as unknown as TickerData,
@@ -2596,7 +2596,7 @@ export const allTickersData: Record<string, TickerData> = {
   'PAYX': data_us_PAYX as unknown as TickerData,
   'PBA': data_us_PBA as unknown as TickerData,
   'PBR': data_us_PBR as unknown as TickerData,
-  'PBR-A': data_us_PBR-A as unknown as TickerData,
+  'PBR-A': data_us_PBR_A as unknown as TickerData,
   'PCAR': data_us_PCAR as unknown as TickerData,
   'PCG': data_us_PCG as unknown as TickerData,
   'PDD': data_us_PDD as unknown as TickerData,
@@ -2864,7 +2864,7 @@ export const allTickersData: Record<string, TickerData> = {
   'WES': data_us_WES as unknown as TickerData,
   'WF': data_us_WF as unknown as TickerData,
   'WFC': data_us_WFC as unknown as TickerData,
-  'WFC-PC': data_us_WFC-PC as unknown as TickerData,
+  'WFC-PC': data_us_WFC_PC as unknown as TickerData,
   'WIT': data_us_WIT as unknown as TickerData,
   'WLK': data_us_WLK as unknown as TickerData,
   'WM': data_us_WM as unknown as TickerData,
@@ -2878,7 +2878,7 @@ export const allTickersData: Record<string, TickerData> = {
   'WSE': data_us_WSE as unknown as TickerData,
   'WSM': data_us_WSM as unknown as TickerData,
   'WSO': data_us_WSO as unknown as TickerData,
-  'WSO-B': data_us_WSO-B as unknown as TickerData,
+  'WSO-B': data_us_WSO_B as unknown as TickerData,
   'WST': data_us_WST as unknown as TickerData,
   'WTFC': data_us_WTFC as unknown as TickerData,
   'WTRG': data_us_WTRG as unknown as TickerData,
