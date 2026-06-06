@@ -52,8 +52,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Korean fonts
+        run: sudo apt-get install -y fonts-nanum
+
       - name: Install Python dependencies
-        run: pip install matplotlib --break-system-packages
+        run: pip install matplotlib numpy --break-system-packages
 
       - name: Run simulate_trend (KR)
         run: |
@@ -131,8 +134,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Korean fonts
+        run: sudo apt-get install -y fonts-nanum
+
       - name: Install Python dependencies
-        run: pip install matplotlib --break-system-packages
+        run: pip install matplotlib numpy --break-system-packages
 
       - name: Run simulate_trend (US)
         run: |
