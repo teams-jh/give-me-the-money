@@ -29,6 +29,8 @@ import {
   sortSimResults,
   applyPatternFilter,
   convertToWeeklyBars,
+  resolvePeriodDates,
+  resolveFilterStartMs,
 } from "../src/library/shared/trendSim.ts";
 import type { SimResult, PeriodConfig, PeriodKey } from "../src/library/shared/trendSim.ts";
 import { intersectSimResults } from "../src/library/shared/signals.ts";
@@ -137,26 +139,10 @@ export function loadConfig(market: string | null): MarketSimConfig[] {
 }
 
 // ── 날짜 자동 계산 ────────────────────────────────────────────────────────────
-
-/**
- * filterStartDate/filterEndDate가 빈 문자열이면
- * prices의 마지막 날짜 기준으로 자동 채운다.
- *   filterEndDate   == "" → prices 마지막 날짜
- *   filterStartDate == "" → prices 마지막 날짜 -3 거래일
- */
-export function resolveDates(cfg: PeriodConfig, dates: string[]): PeriodConfig {
-  if (dates.length === 0) return cfg;
-  const lastDate  = dates[dates.length - 1]!;
-  const minus3    = dates[Math.max(0, dates.length - 1 - 3)]!;
-
-  return {
-    ...cfg,
-    trendStartDate:  cfg.trendStartDate  || dates[0]!,
-    trendEndDate:    cfg.trendEndDate    || lastDate,
-    filterEndDate:   cfg.filterEndDate   || lastDate,
-    filterStartDate: cfg.filterStartDate || minus3,
-  };
-}
+//
+// 날짜 자동 채우기 로직은 src/library/shared/trendSim.ts 의
+// resolvePeriodDates / resolveFilterStartMs 로 일원화되었다.
+// (웹 use-trend-simulation 과 동일 함수를 공유하여 싱크를 보장)
 
 // ── 마켓 1개 시뮬레이션 ───────────────────────────────────────────────────────
 
@@ -235,9 +221,9 @@ function runMarketSim(cfg: MarketSimConfig): void {
         : allPrices;
       const slice = bars.slice(-days);
 
-      // 날짜 자동 채우기
+      // 날짜 자동 채우기 (종목별 dates 기준 — 공통 함수)
       const dates       = slice.map(p => p.date);
-      const resolvedCfg = resolveDates(periodCfg, dates);
+      const resolvedCfg = resolvePeriodDates(periodCfg, dates);
 
       // 첫 유효 티커 기준으로 날짜 로그 1회 출력
       if (!datePrinted) {
@@ -273,16 +259,13 @@ function runMarketSim(cfg: MarketSimConfig): void {
       const periodCfg = cfg.periodConfigs[period];
       if (!periodCfg) continue;
 
-      // filterStartDate가 빈 문자열이면 resolveDates와 동일한 방식으로 계산
-      // (기준: 해당 period의 첫 번째 유효 티커 dates 사용)
+      // filterStartDate가 빈 문자열이면 resolveFilterStartMs가
+      // 종목별 dates 기준으로 동일하게 자동 산출 (공통 함수)
       let filterStartMs = 0;
       const firstResult = resultsByPeriod[period]?.[0];
       if (firstResult) {
         const dates = firstResult.prices.map((p: { date: string }) => p.date);
-        const resolved = resolveDates(periodCfg, dates);
-        const parsed = resolved.filterStartDate
-          ? new Date(resolved.filterStartDate).getTime() : 0;
-        filterStartMs = isNaN(parsed) ? 0 : parsed;
+        filterStartMs = resolveFilterStartMs(periodCfg, dates);
       }
 
       const before = resultsByPeriod[period]?.length ?? 0;
