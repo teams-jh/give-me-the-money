@@ -11,6 +11,8 @@ import {
   sortSimResults,
   applyPatternFilter,
   convertToWeeklyBars,
+  resolvePeriodDates,
+  resolveFilterStartMs,
 } from 'src/library/shared/trendSim';
 import type { SimResult, PriceDataPoint, BarUnit, PeriodConfig } from 'src/library/shared/trendSim';
 
@@ -149,19 +151,13 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
     for (const [period, results] of Object.entries(resultsByPeriod) as [PeriodKey, SimResult[]][]) {
       const config = periodConfigs[period as PeriodKey];
 
-      // filterStartDate가 빈 문자열이면 첫 번째 결과의 prices 기준으로 자동 계산
+      // 패턴 필터용 filterStart ms — 빈 값이면 종목별(첫 결과) dates 기준 자동 산출.
+      // 스크립트(simulate_trend)와 동일한 공통 함수를 사용해 싱크를 보장한다.
       let startMs = 0;
-      const rawStart = config?.filterStartDate
-        ? new Date(config.filterStartDate).getTime() : 0;
-      if (!isNaN(rawStart) && rawStart > 0) {
-        startMs = rawStart;
-      } else {
+      if (config) {
         const firstPrices = results[0]?.prices;
-        if (firstPrices && firstPrices.length > 0) {
-          const dates  = firstPrices.map(p => p.date);
-          const minus3 = dates[Math.max(0, dates.length - 1 - 3)] ?? dates[dates.length - 1]!;
-          startMs = new Date(minus3).getTime();
-        }
+        const dates = firstPrices ? firstPrices.map(p => p.date) : [];
+        startMs = resolveFilterStartMs(config, dates);
       }
 
       filteredByPeriod[period as PeriodKey] = enablePatternFilter
@@ -208,7 +204,11 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
             : allPrices;
           const slice = bars.slice(-days);
 
-          const simResult = runTickerSim(opt.ticker, opt.name, slice, cfg);
+          // 종목별 dates 기준으로 빈 날짜 자동 채움 (스크립트와 동일 공통 함수)
+          // → 동일 설정에서 웹/스크립트가 같은 결과를 내도록 보장
+          const resolvedCfg = resolvePeriodDates(cfg, slice.map(d => d.date));
+
+          const simResult = runTickerSim(opt.ticker, opt.name, slice, resolvedCfg);
           if (simResult) results.push(simResult);
         }
 

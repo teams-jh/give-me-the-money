@@ -41,7 +41,6 @@ import {
   tickerToFilename,
   parseArgs,
   loadConfig,
-  resolveDates,
   datetimeTag,
   now,
 } from './simulate_trend.ts';
@@ -143,40 +142,8 @@ describe('loadConfig', () => {
   });
 });
 
-// ── resolveDates ──────────────────────────────────────────────────────────────
-
-describe('resolveDates', () => {
-  const dates = ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'];
-
-  const baseCfg = {
-    barUnit: 'daily' as const, trendBase: 'highlow' as const, trendAlgo: 'swing' as const,
-    zigzagThreshold: 5, regressionStdDev: 2.0,
-    trendStartDate: '', trendEndDate: '',
-    trendTouchBasis: 'both' as const, trendTouchTolerance: 2, trendBreakoutTolerance: 2,
-    filterStartDate: '', filterEndDate: '',
-    slopeFilter: 'all' as const, slopeMin: '', slopeMax: '',
-  };
-
-  it('빈 날짜 → 자동 채움', () => {
-    const r = resolveDates(baseCfg, dates);
-    expect(r.trendStartDate).toBe('2024-01-01');
-    expect(r.trendEndDate).toBe('2024-01-05');
-    expect(r.filterEndDate).toBe('2024-01-05');
-    expect(r.filterStartDate).toBe('2024-01-02'); // dates[max(0, 5-1-3)] = dates[1]
-  });
-
-  it('날짜 직접 지정 → 그대로 유지', () => {
-    const cfg = { ...baseCfg, trendStartDate: '2024-01-02', trendEndDate: '2024-01-04' };
-    const r = resolveDates(cfg, dates);
-    expect(r.trendStartDate).toBe('2024-01-02');
-    expect(r.trendEndDate).toBe('2024-01-04');
-  });
-
-  it('빈 dates → cfg 그대로 반환', () => {
-    const r = resolveDates(baseCfg, []);
-    expect(r).toEqual(baseCfg);
-  });
-});
+// ── resolveDates 테스트는 src/library/shared/trendSim.test.ts 의
+//    resolvePeriodDates / resolveFilterStartMs 로 이관됨 ──────────────────────
 
 // ── datetimeTag / now ────────────────────────────────────────────────────────
 

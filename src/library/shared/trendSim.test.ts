@@ -30,6 +30,9 @@ import {
   runTickerSim,
   sortSimResults,
   applyPatternFilter,
+  resolvePeriodDates,
+  resolveFilterStartMs,
+  DEFAULT_FILTER_LOOKBACK_BARS,
 } from './trendSim.ts';
 import type { PriceDataPoint, PeriodConfig, TouchPoint, SimResult } from './trendSim.ts';
 
@@ -417,5 +420,112 @@ describe('applyPatternFilter', () => {
     const results = [makeResult()];
     // filterStartMs=0 → Infinity 기준으로 모든 touch 포함 불가 (x < Infinity)
     expect(applyPatternFilter(results, 0, 3)).toHaveLength(1);
+  });
+});
+
+// ── resolvePeriodDates ───────────────────────────────────────────────────────
+
+describe('resolvePeriodDates', () => {
+  const dates = ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'];
+
+  it('빈 날짜 → dates 기준 자동 채움 (filterStart = 마지막-LOOKBACK)', () => {
+    const r = resolvePeriodDates(BASE_CFG, dates);
+    expect(r.trendStartDate).toBe('2024-01-01');
+    expect(r.trendEndDate).toBe('2024-01-05');
+    expect(r.filterEndDate).toBe('2024-01-05');
+    // DEFAULT_FILTER_LOOKBACK_BARS = 3 → dates[max(0, 5-1-3)] = dates[1]
+    expect(r.filterStartDate).toBe('2024-01-02');
+  });
+
+  it('명시된 날짜는 보존', () => {
+    const cfg: PeriodConfig = {
+      ...BASE_CFG,
+      trendStartDate:  '2024-01-02',
+      trendEndDate:    '2024-01-04',
+      filterStartDate: '2024-01-03',
+      filterEndDate:   '2024-01-04',
+    };
+    const r = resolvePeriodDates(cfg, dates);
+    expect(r.trendStartDate).toBe('2024-01-02');
+    expect(r.trendEndDate).toBe('2024-01-04');
+    expect(r.filterStartDate).toBe('2024-01-03');
+    expect(r.filterEndDate).toBe('2024-01-04');
+  });
+
+  it('빈 dates → cfg 그대로 반환', () => {
+    const r = resolvePeriodDates(BASE_CFG, []);
+    expect(r).toEqual(BASE_CFG);
+  });
+
+  it('종목별 dates가 다르면 각자 자기 마지막-LOOKBACK으로 채움', () => {
+    const datesA = ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'];
+    const datesB = ['2024-02-01', '2024-02-02', '2024-02-03', '2024-02-04', '2024-02-05', '2024-02-06'];
+    const rA = resolvePeriodDates(BASE_CFG, datesA);
+    const rB = resolvePeriodDates(BASE_CFG, datesB);
+    expect(rA.filterStartDate).toBe('2024-01-02'); // datesA[1]
+    expect(rB.filterStartDate).toBe('2024-02-03'); // datesB[max(0,6-1-3)] = datesB[2]
+    expect(rA.filterEndDate).toBe('2024-01-05');
+    expect(rB.filterEndDate).toBe('2024-02-06');
+  });
+
+  it('lookback 커스텀 인자 반영', () => {
+    const r = resolvePeriodDates(BASE_CFG, dates, 1);
+    // dates[max(0, 5-1-1)] = dates[3]
+    expect(r.filterStartDate).toBe('2024-01-04');
+  });
+
+  it('lookback이 dates 길이보다 크면 첫 날짜로 클램프', () => {
+    const r = resolvePeriodDates(BASE_CFG, dates, 100);
+    expect(r.filterStartDate).toBe('2024-01-01');
+  });
+
+  it('잘못된 날짜 문자열 → 자동 채움으로 폴백 (resolveFilterStartMs와 일관)', () => {
+    const cfg: PeriodConfig = {
+      ...BASE_CFG,
+      trendStartDate:  'invalid-date',
+      filterStartDate: 'invalid-date',
+    };
+    const r = resolvePeriodDates(cfg, dates);
+    expect(r.trendStartDate).toBe('2024-01-01');
+    expect(r.filterStartDate).toBe('2024-01-02');
+  });
+
+  it('잘못된 filterStartDate → resolvePeriodDates와 resolveFilterStartMs 결과가 일치', () => {
+    const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: 'invalid-date' };
+    const resolved = resolvePeriodDates(cfg, dates);
+    const ms       = resolveFilterStartMs(cfg, dates);
+    expect(new Date(resolved.filterStartDate).getTime()).toBe(ms);
+  });
+});
+
+// ── resolveFilterStartMs ─────────────────────────────────────────────────────
+
+describe('resolveFilterStartMs', () => {
+  const dates = ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'];
+
+  it('filterStartDate 명시 → 해당 날짜 ms', () => {
+    const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: '2024-01-03' };
+    expect(resolveFilterStartMs(cfg, dates)).toBe(new Date('2024-01-03').getTime());
+  });
+
+  it('빈 filterStartDate → 마지막-LOOKBACK 날짜 ms', () => {
+    expect(resolveFilterStartMs(BASE_CFG, dates)).toBe(new Date('2024-01-02').getTime());
+  });
+
+  it('빈 dates → 0', () => {
+    expect(resolveFilterStartMs(BASE_CFG, [])).toBe(0);
+  });
+
+  it('잘못된 filterStartDate → 자동 채움으로 폴백', () => {
+    const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: 'invalid-date' };
+    expect(resolveFilterStartMs(cfg, dates)).toBe(new Date('2024-01-02').getTime());
+  });
+});
+
+// ── DEFAULT_FILTER_LOOKBACK_BARS ─────────────────────────────────────────────
+
+describe('DEFAULT_FILTER_LOOKBACK_BARS', () => {
+  it('값은 3', () => {
+    expect(DEFAULT_FILTER_LOOKBACK_BARS).toBe(3);
   });
 });
