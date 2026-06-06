@@ -1,0 +1,188 @@
+name: Update Sim Config
+
+# 슬랙봇이 GitHub API (workflow_dispatch) 로 호출.
+# inputs 로 받은 파라미터를 simulate_trend.config.json 에 반영 후 커밋.
+
+on:
+  workflow_dispatch:
+    inputs:
+      market:
+        description: "대상 마켓 (kr / us / all)"
+        required: true
+        default: "all"
+      period:
+        description: "대상 기간 (3m / 1y / all)"
+        required: true
+        default: "all"
+      slopeFilter:
+        description: "추세 방향 필터 (positive / negative / both)"
+        required: false
+        default: ""
+      zigzagThreshold:
+        description: "zigzag 임계값 (숫자, 예: 5)"
+        required: false
+        default: ""
+      regressionStdDev:
+        description: "회귀 표준편차 (숫자, 예: 2.0)"
+        required: false
+        default: ""
+      trendTouchTolerance:
+        description: "추세 터치 허용 오차 (숫자, 예: 2)"
+        required: false
+        default: ""
+      trendBreakoutTolerance:
+        description: "돌파 허용 오차 (숫자, 예: 5)"
+        required: false
+        default: ""
+      minTouches:
+        description: "최소 터치 횟수 (숫자, 예: 3)"
+        required: false
+        default: ""
+      requested_by:
+        description: "요청자 슬랙 유저명 (알림용)"
+        required: false
+        default: "unknown"
+
+jobs:
+  update-config:
+    name: "Sim Config 업데이트"
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Apply config patch
+        id: patch
+        run: |
+          node << 'EOF'
+          const fs = require("fs");
+          const CONFIG_PATH = "scripts/simulate_trend.config.json";
+
+          const config = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
+
+          const targetMarket  = "${{ github.event.inputs.market }}";
+          const targetPeriod  = "${{ github.event.inputs.period }}";
+
+          // 숫자/문자 파라미터 (빈 문자열이면 변경 안 함)
+          const patches = {
+            slopeFilter:             "${{ github.event.inputs.slopeFilter }}",
+            zigzagThreshold:         "${{ github.event.inputs.zigzagThreshold }}",
+            regressionStdDev:        "${{ github.event.inputs.regressionStdDev }}",
+            trendTouchTolerance:     "${{ github.event.inputs.trendTouchTolerance }}",
+            trendBreakoutTolerance:  "${{ github.event.inputs.trendBreakoutTolerance }}",
+          };
+          const minTouches = "${{ github.event.inputs.minTouches }}";
+
+          let changed = false;
+
+          for (const entry of config) {
+            // 마켓 필터
+            if (targetMarket !== "all" && entry.market !== targetMarket) continue;
+
+            // periodConfigs 패치
+            for (const [period, cfg] of Object.entries(entry.periodConfigs)) {
+              if (targetPeriod !== "all" && period !== targetPeriod) continue;
+
+              for (const [key, raw] of Object.entries(patches)) {
+                if (raw === "") continue;
+                const val = isNaN(Number(raw)) ? raw : Number(raw);
+                if (cfg[key] !== val) { cfg[key] = val; changed = true; }
+              }
+            }
+
+            // patternFilter.minTouches
+            if (minTouches !== "") {
+              const val = Number(minTouches);
+              if (entry.patternFilter.minTouches !== val) {
+                entry.patternFilter.minTouches = val;
+                changed = true;
+              }
+            }
+          }
+
+          if (!changed) {
+            console.log("변경 없음 — 커밋 건너뜀");
+            fs.writeFileSync("__no_change__", "1");
+          } else {
+            fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2) + "\n");
+            console.log("✅ config 패치 완료");
+          }
+          EOF
+
+      - name: Commit and push
+        id: commit
+        run: |
+          if [ -f "__no_change__" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scripts/simulate_trend.config.json
+
+          TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+          REQUESTER="${{ github.event.inputs.requested_by }}"
+          git commit -m "feat: sim config 업데이트 (${TIMESTAMP}) by ${REQUESTER}"
+          git push
+          echo "skip=false" >> $GITHUB_OUTPUT
+
+      - name: Notify Slack — success
+        if: steps.commit.outputs.skip == 'false'
+        env:
+          SLACK_BOT_TOKEN:  ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          REQUESTER="${{ github.event.inputs.requested_by }}"
+          MARKET="${{ github.event.inputs.market }}"
+          PERIOD="${{ github.event.inputs.period }}"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"$SLACK_CHANNEL_ID\",
+              \"text\": \"✅ *sim config 업데이트 완료*\n요청자: @${REQUESTER}\n마켓: ${MARKET} / 기간: ${PERIOD}\n<${RUN_URL}|Actions 로그 보기>\"
+            }"
+
+      - name: Notify Slack — no change
+        if: steps.commit.outputs.skip == 'true'
+        env:
+          SLACK_BOT_TOKEN:  ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          REQUESTER="${{ github.event.inputs.requested_by }}"
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"$SLACK_CHANNEL_ID\",
+              \"text\": \"ℹ️ sim config 변경 없음 (기존 값과 동일) — @${REQUESTER}\"
+            }"
+
+      - name: Notify Slack — failure
+        if: failure()
+        env:
+          SLACK_BOT_TOKEN:  ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: |
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"$SLACK_CHANNEL_ID\",
+              \"text\": \"❌ sim config 업데이트 실패! <${RUN_URL}|Actions 로그 확인>\"
+            }"
