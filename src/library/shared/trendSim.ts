@@ -100,6 +100,13 @@ export const PERIOD_BARS: Record<BarUnit, Record<PeriodKey, number>> = {
   weekly: { '3m': 13,  '1y': 52,  '2y': 104, '3y': 156 },
 };
 
+/**
+ * filterStartDate가 비어 있을 때 자동 채우는 기본 lookback 봉 수.
+ * "돌파 탐지 구간 시작 = 마지막 봉에서 N봉 전" 규칙의 N.
+ * 웹/스크립트 양쪽이 이 상수 하나만 참조하도록 단일화한다.
+ */
+export const DEFAULT_FILTER_LOOKBACK_BARS = 3;
+
 // ── 날짜 유틸 ─────────────────────────────────────────────────────────────────
 
 /**
@@ -138,6 +145,76 @@ export function buildTrendIndices(
     if (d >= start && d <= end) indices.push(i);
   });
   return indices.length > 0 ? indices : dates.map((_, i) => i);
+}
+
+// ── 날짜 자동 해석 (빈 값 → 종목별 dates 기준 채움) ───────────────────────────
+
+/**
+ * PeriodConfig의 빈 날짜 필드를 종목별 dates 배열을 기준으로 채운다.
+ *
+ * 규칙:
+ *   trendStartDate  == "" → dates[0]
+ *   trendEndDate    == "" → dates[마지막]
+ *   filterEndDate   == "" → dates[마지막]
+ *   filterStartDate == "" → dates[마지막 - lookback]  (음수면 0으로 클램프)
+ *
+ * 이미 값이 있는 필드는 그대로 보존한다 (사용자 지정 우선).
+ * dates가 비어 있으면 cfg를 그대로 반환한다.
+ *
+ * 웹(use-trend-simulation)과 스크립트(simulate_trend)가 공통으로 호출하여
+ * 동일 설정 → 동일 결과를 보장한다.
+ *
+ * @param cfg      - 기간별 설정
+ * @param dates    - 종목별 날짜 배열 (barUnit 변환·슬라이싱 완료된 것)
+ * @param lookback - filterStart 자동 채움용 봉 수 (기본 DEFAULT_FILTER_LOOKBACK_BARS)
+ */
+export function resolvePeriodDates(
+  cfg:      PeriodConfig,
+  dates:    string[],
+  lookback: number = DEFAULT_FILTER_LOOKBACK_BARS,
+): PeriodConfig {
+  if (dates.length === 0) return cfg;
+
+  const lastDate = dates[dates.length - 1]!;
+  const minusN   = dates[Math.max(0, dates.length - 1 - lookback)]!;
+
+  return {
+    ...cfg,
+    trendStartDate:  cfg.trendStartDate  || dates[0]!,
+    trendEndDate:    cfg.trendEndDate    || lastDate,
+    filterEndDate:   cfg.filterEndDate   || lastDate,
+    filterStartDate: cfg.filterStartDate || minusN,
+  };
+}
+
+/**
+ * 패턴 필터용 filterStart의 Unix ms를 단일 규칙으로 산출한다.
+ *
+ * filterStartDate가 유효한 날짜면 그 값을, 비었거나 파싱 불가면
+ * resolvePeriodDates와 동일한 자동 채움(마지막 - lookback)을 적용한다.
+ * dates가 비어 있으면 0을 반환한다.
+ *
+ * @param cfg      - 기간별 설정
+ * @param dates    - 종목별 날짜 배열
+ * @param lookback - 자동 채움용 봉 수 (기본 DEFAULT_FILTER_LOOKBACK_BARS)
+ */
+export function resolveFilterStartMs(
+  cfg:      PeriodConfig,
+  dates:    string[],
+  lookback: number = DEFAULT_FILTER_LOOKBACK_BARS,
+): number {
+  if (dates.length === 0) return 0;
+
+  // 명시된 값이 유효하면 그대로 사용
+  if (cfg.filterStartDate) {
+    const direct = new Date(cfg.filterStartDate).getTime();
+    if (!isNaN(direct)) return direct;
+    // 유효하지 않으면 아래 자동 채움으로 폴백
+  }
+
+  const minusN = dates[Math.max(0, dates.length - 1 - lookback)]!;
+  const parsed = new Date(minusN).getTime();
+  return isNaN(parsed) ? 0 : parsed;
 }
 
 // ── 가격 기준 선택 ────────────────────────────────────────────────────────────
