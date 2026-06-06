@@ -68,9 +68,6 @@ jobs:
           && echo "changed=false" >> $GITHUB_OUTPUT \
           || echo "changed=true"  >> $GITHUB_OUTPUT
 
-      - name: Generate all-tickers-data.ts (KR)
-        run: node scripts/generate-tickers.cjs
-
       - name: Commit and push (KR index)
         run: |
           git config user.name  "github-actions[bot]"
@@ -78,8 +75,7 @@ jobs:
 
           git add src/db/stock_market_index/kospi300_tickers.json \
                   src/db/stock_market_index/kosdaq200_tickers.json \
-                  src/db/metadata/all_kr_tickers.json \
-                  src/library/all-tickers-data.ts
+                  src/db/metadata/all_kr_tickers.json
 
           if git diff --cached --quiet; then
             echo "KR 구성종목 변경 없음"
@@ -135,9 +131,6 @@ jobs:
           && echo "changed=false" >> $GITHUB_OUTPUT \
           || echo "changed=true"  >> $GITHUB_OUTPUT
 
-      - name: Generate all-tickers-data.ts (US)
-        run: node scripts/generate-tickers.cjs
-
       - name: Commit and push (US index)
         run: |
           git config user.name  "github-actions[bot]"
@@ -146,8 +139,7 @@ jobs:
           git pull --rebase --autostash
 
           git add src/db/stock_market_index/top1000_us_tickers.json \
-                  src/db/metadata/all_us_tickers.json \
-                  src/library/all-tickers-data.ts
+                  src/db/metadata/all_us_tickers.json
 
           if git diff --cached --quiet; then
             echo "US 구성종목 변경 없음"
@@ -158,14 +150,44 @@ jobs:
             git push
           fi
 
-  # ── 구성종목 변경 시 전체 메타데이터 재수집 트리거 ──────────────────────────
-  trigger-metadata-refresh:
-    name: "메타데이터 전체 재수집 안내"
+  # ── KR/US 완료 후 all-tickers-data.ts 재생성 ────────────────────────────
+  generate-tickers:
+    name: "all-tickers-data.ts 재생성"
     runs-on: ubuntu-latest
     needs: [update-kr-index, update-us-index]
     if: always()
 
+    permissions:
+      contents: write
+
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest (KR/US 커밋 반영)
+        run: git pull --rebase --autostash
+
+      - name: Generate all-tickers-data.ts
+        run: node scripts/generate-tickers.cjs
+
+      - name: Commit and push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/library/all-tickers-data.ts
+
+          if git diff --cached --quiet; then
+            echo "all-tickers-data.ts 변경 없음 — 커밋 건너뜀"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: all-tickers-data.ts 재생성 (${TIMESTAMP})"
+            git pull --rebase --autostash
+            git push
+          fi
+
       - name: Summary
         run: |
           echo "## 분기 구성종목 업데이트 완료" >> $GITHUB_STEP_SUMMARY
