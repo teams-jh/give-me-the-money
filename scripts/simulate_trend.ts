@@ -113,13 +113,15 @@ export function tickerToFilename(ticker: string): string {
 
 // ── CLI 파싱 ──────────────────────────────────────────────────────────────────
 
-export function parseArgs(): { market: string | null } {
+export function parseArgs(): { market: string | null; n: number | null } {
   const args = process.argv.slice(2);
   let market: string | null = null;
+  let n: number | null = null;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === "--market") market = args[++i] ?? null;
+    if (args[i] === "--n") { const v = parseInt(args[++i] ?? "", 10); n = isNaN(v) ? null : v; }
   }
-  return { market };
+  return { market, n };
 }
 
 // ── config 로드 ───────────────────────────────────────────────────────────────
@@ -313,15 +315,17 @@ function runMarketSim(cfg: MarketSimConfig): void {
 // ── main ──────────────────────────────────────────────────────────────────────
 
 function main(): void {
-  const { market } = parseArgs();
-  const configs    = loadConfig(market);
+  const { market, n } = parseArgs();
+  const configs = loadConfig(market);
 
   if (configs.length === 0) {
     console.error(`❌ 실행할 config 없음 (--market ${market})`);
     process.exit(1);
   }
 
+  // CLI --n 옵션이 있으면 config의 n을 덮어씀
   for (const cfg of configs) {
+    if (n !== null) cfg.n = n;
     runMarketSim(cfg);
   }
 

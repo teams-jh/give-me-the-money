@@ -1,0 +1,150 @@
+name: Simulate Trend
+
+# daily.yml: 22:00 UTC 시작 → 약 22:20 UTC 완료
+# simulate_trend: 00:00 UTC 실행 (KST 09:00) — 일봉 최신화 완료 후
+on:
+  schedule:
+    - cron: "0 0 * * 1-5"   # 월~금 00:00 UTC (KST 09:00)
+  workflow_dispatch:
+    inputs:
+      market:
+        description: "실행할 마켓 (kr / us / all)"
+        required: false
+        default: "all"
+      n:
+        description: "분석할 티커 수 (기본: 전체, 테스트용: 50)"
+        required: false
+        default: ""
+
+jobs:
+  # ── KR 추세 시뮬레이션 ────────────────────────────────────────────────────
+  simulate-kr:
+    name: "KR 추세 시뮬레이션"
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'schedule' ||
+      github.event.inputs.market == 'kr' ||
+      github.event.inputs.market == 'all' ||
+      github.event.inputs.market == ''
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install Node dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install matplotlib --break-system-packages
+
+      - name: Run simulate_trend (KR)
+        run: |
+          N_OPT=""
+          if [ -n "${{ github.event.inputs.n }}" ]; then
+            N_OPT="--n ${{ github.event.inputs.n }}"
+          fi
+          server_node/node_modules/.bin/tsx scripts/simulate_trend.ts --market kr $N_OPT
+
+      - name: Commit and push (KR)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add src/db/kr/trend_sim/
+
+          if git diff --cached --quiet; then
+            echo "KR 변경 없음 — 커밋 건너뜀"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: KR 추세 시뮬레이션 (${TIMESTAMP})"
+            git pull --rebase --autostash
+            git push
+          fi
+
+  # ── US 추세 시뮬레이션 ────────────────────────────────────────────────────
+  simulate-us:
+    name: "US 추세 시뮬레이션"
+    runs-on: ubuntu-latest
+    needs: simulate-kr   # KR 완료 후 실행 (git 충돌 방지)
+    if: |
+      always() &&
+      (github.event_name == 'schedule' ||
+       github.event.inputs.market == 'us' ||
+       github.event.inputs.market == 'all' ||
+       github.event.inputs.market == '')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install Node dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        run: pip install matplotlib --break-system-packages
+
+      - name: Run simulate_trend (US)
+        run: |
+          N_OPT=""
+          if [ -n "${{ github.event.inputs.n }}" ]; then
+            N_OPT="--n ${{ github.event.inputs.n }}"
+          fi
+          server_node/node_modules/.bin/tsx scripts/simulate_trend.ts --market us $N_OPT
+
+      - name: Commit and push (US)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git pull --rebase --autostash   # KR 커밋 반영
+
+          git add src/db/us/trend_sim/
+
+          if git diff --cached --quiet; then
+            echo "US 변경 없음 — 커밋 건너뜀"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: US 추세 시뮬레이션 (${TIMESTAMP})"
+            git pull --rebase --autostash
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::추세 시뮬레이션 실패! Actions 로그를 확인하세요."

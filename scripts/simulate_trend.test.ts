@@ -72,15 +72,23 @@ describe('parseArgs', () => {
 
   it('--market us → market=us', () => {
     process.argv = ['node', 'script.ts', '--market', 'us'];
-    expect(parseArgs()).toEqual({ market: 'us' });
+    expect(parseArgs()).toEqual({ market: 'us', n: null });
   });
   it('--market kr → market=kr', () => {
     process.argv = ['node', 'script.ts', '--market', 'kr'];
-    expect(parseArgs()).toEqual({ market: 'kr' });
+    expect(parseArgs()).toEqual({ market: 'kr', n: null });
   });
-  it('옵션 없으면 market=null', () => {
+  it('옵션 없으면 market=null, n=null', () => {
     process.argv = ['node', 'script.ts'];
-    expect(parseArgs()).toEqual({ market: null });
+    expect(parseArgs()).toEqual({ market: null, n: null });
+  });
+  it('--n 50 → n=50', () => {
+    process.argv = ['node', 'script.ts', '--market', 'us', '--n', '50'];
+    expect(parseArgs()).toEqual({ market: 'us', n: 50 });
+  });
+  it('--n 잘못된 값 → n=null', () => {
+    process.argv = ['node', 'script.ts', '--n', 'abc'];
+    expect(parseArgs()).toEqual({ market: null, n: null });
   });
 });
 
