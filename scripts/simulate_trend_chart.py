@@ -335,7 +335,7 @@ def main():
 
     # 저장
     png_path = json_path.with_suffix(".png")
-    fig.savefig(png_path, dpi=150, bbox_inches="tight",
+    fig.savefig(png_path, dpi=200, bbox_inches="tight",
                 facecolor=FIG_BG)
     plt.close(fig)
     print(f"🖼️  PNG 저장: {png_path}")
