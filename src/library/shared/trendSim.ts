@@ -154,8 +154,9 @@ export function buildTrendIndices(
  *
  * 규칙:
  *   trendStartDate  == "" → dates[0]
- *   trendEndDate    == "" → dates[마지막]
- *   filterEndDate   == "" → dates[마지막]
+ *   trendEndDate    == "" → dates[마지막-1]  (마지막 1봉은 잠정/미확정일 수 있어 작도에서 제외)
+ *                          단 dates가 1봉뿐이면 채울 마지막-1이 없으므로 "" 유지 → runTickerSim에서 작도 생략
+ *   filterEndDate   == "" → dates[마지막]   (돌파 탐지 구간 끝은 마지막 봉)
  *   filterStartDate == "" → dates[마지막 - lookback]  (음수면 0으로 클램프)
  *
  * 이미 값이 있는 필드는 그대로 보존한다 (사용자 지정 우선).
@@ -176,6 +177,9 @@ export function resolvePeriodDates(
   if (dates.length === 0) return cfg;
 
   const lastDate = dates[dates.length - 1]!;
+  // 추세선 작도는 마지막 1봉(장중 잠정/미확정 가능)을 제외하고 그 직전 봉까지만 사용한다.
+  // dates가 1봉뿐이면 직전 봉이 없으므로 null → 빈 문자열로 두어 runTickerSim에서 작도를 생략시킨다.
+  const trendEndAuto = dates.length >= 2 ? dates[dates.length - 2]! : '';
   const minusN   = dates[Math.max(0, dates.length - 1 - lookback)]!;
 
   // 빈 값뿐 아니라 파싱 불가한 잘못된 날짜도 자동 채움 대상으로 본다.
@@ -185,7 +189,7 @@ export function resolvePeriodDates(
   return {
     ...cfg,
     trendStartDate:  isValid(cfg.trendStartDate)  ? cfg.trendStartDate  : dates[0]!,
-    trendEndDate:    isValid(cfg.trendEndDate)    ? cfg.trendEndDate    : lastDate,
+    trendEndDate:    isValid(cfg.trendEndDate)    ? cfg.trendEndDate    : trendEndAuto,
     filterEndDate:   isValid(cfg.filterEndDate)   ? cfg.filterEndDate   : lastDate,
     filterStartDate: isValid(cfg.filterStartDate) ? cfg.filterStartDate : minusN,
   };
@@ -419,6 +423,9 @@ export function runTickerSim(
   cfg:    PeriodConfig,
 ): SimResult | null {
   if (prices.length === 0) return null;
+  // 추세선은 마지막 1봉(장중 잠정/미확정 가능)을 제외하고 작도한다.
+  // 봉이 1개뿐이면 제외 후 남는 봉이 없어 작도가 불가능하므로 작도를 생략한다.
+  if (prices.length < 2) return null;
 
   const closePrices = prices.map(d => d.close);
   const openPrices  = prices.map(d => d.open  || d.close);

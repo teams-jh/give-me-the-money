@@ -289,6 +289,11 @@ describe('runTickerSim', () => {
     expect(runTickerSim('AAPL', 'Apple', [], BASE_CFG)).toBeNull();
   });
 
+  it('데이터 1봉뿐이면 null 반환 (마지막-1까지만 작도하므로 쓸 봉이 없음)', () => {
+    const prices = makePrices(1);
+    expect(runTickerSim('ONE', 'OneBar', prices, BASE_CFG)).toBeNull();
+  });
+
   it('충분한 데이터 → SimResult 또는 null', () => {
     const prices = makePrices(100, 100, 0.5);
     const result = runTickerSim('TEST', 'Test', prices, BASE_CFG);
@@ -428,13 +433,31 @@ describe('applyPatternFilter', () => {
 describe('resolvePeriodDates', () => {
   const dates = ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'];
 
-  it('빈 날짜 → dates 기준 자동 채움 (filterStart = 마지막-LOOKBACK)', () => {
+  it('빈 날짜 → dates 기준 자동 채움 (trendEnd = 마지막-1, filterStart = 마지막-LOOKBACK)', () => {
     const r = resolvePeriodDates(BASE_CFG, dates);
     expect(r.trendStartDate).toBe('2024-01-01');
-    expect(r.trendEndDate).toBe('2024-01-05');
+    // 추세선 작도는 마지막 1봉(잠정/미확정 가능)을 제외 → dates[length-2]
+    expect(r.trendEndDate).toBe('2024-01-04');
+    // filterEnd는 돌파 탐지 구간 끝이므로 마지막 봉 유지
     expect(r.filterEndDate).toBe('2024-01-05');
     // DEFAULT_FILTER_LOOKBACK_BARS = 3 → dates[max(0, 5-1-3)] = dates[1]
     expect(r.filterStartDate).toBe('2024-01-02');
+  });
+
+  it('빈 trendEndDate → 마지막-1 봉으로 자동 채움', () => {
+    const r = resolvePeriodDates(BASE_CFG, dates);
+    expect(r.trendEndDate).toBe('2024-01-04'); // dates[length-2]
+  });
+
+  it('명시된 trendEndDate가 마지막 봉이어도 그대로 존중 (사용자 지정 우선)', () => {
+    const cfg: PeriodConfig = { ...BASE_CFG, trendEndDate: '2024-01-05' };
+    const r = resolvePeriodDates(cfg, dates);
+    expect(r.trendEndDate).toBe('2024-01-05');
+  });
+
+  it('dates가 1봉뿐 → 마지막-1이 없으므로 trendEndDate 빈 문자열 유지', () => {
+    const r = resolvePeriodDates(BASE_CFG, ['2024-01-01']);
+    expect(r.trendEndDate).toBe('');
   });
 
   it('명시된 날짜는 보존', () => {
