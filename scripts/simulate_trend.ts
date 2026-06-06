@@ -270,14 +270,25 @@ function runMarketSim(cfg: MarketSimConfig): void {
   if (cfg.patternFilter.enabled) {
     log(`\n🔍 패턴 필터 적용 (최소 터치: ${cfg.patternFilter.minTouches}회)`);
     for (const period of cfg.periods) {
-      const periodCfg  = cfg.periodConfigs[period];
-      const parsedStart = periodCfg?.filterStartDate
-        ? new Date(periodCfg.filterStartDate).getTime() : 0;
-      const filterStart = isNaN(parsedStart) ? 0 : parsedStart;
+      const periodCfg = cfg.periodConfigs[period];
+      if (!periodCfg) continue;
+
+      // filterStartDate가 빈 문자열이면 resolveDates와 동일한 방식으로 계산
+      // (기준: 해당 period의 첫 번째 유효 티커 dates 사용)
+      let filterStartMs = 0;
+      const firstResult = resultsByPeriod[period]?.[0];
+      if (firstResult) {
+        const dates = firstResult.prices.map((p: { date: string }) => p.date);
+        const resolved = resolveDates(periodCfg, dates);
+        const parsed = resolved.filterStartDate
+          ? new Date(resolved.filterStartDate).getTime() : 0;
+        filterStartMs = isNaN(parsed) ? 0 : parsed;
+      }
+
       const before = resultsByPeriod[period]?.length ?? 0;
       resultsByPeriod[period] = applyPatternFilter(
         resultsByPeriod[period] ?? [],
-        filterStart,
+        filterStartMs,
         cfg.patternFilter.minTouches,
       );
       log(`  ${period}: ${before}개 → ${resultsByPeriod[period]!.length}개`);
