@@ -30,33 +30,44 @@ import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
 import matplotlib.dates as mdates
 from matplotlib.collections import LineCollection
+import matplotlib.font_manager as fm
 import numpy as np
+
+# ── 한글 폰트 설정 ────────────────────────────────────────────────────────────
+# 우선순위: NanumGothic → NanumBarunGothic → DejaVu Sans (폴백)
+_KR_FONT_CANDIDATES = ["NanumGothic", "NanumBarunGothic", "NanumSquare"]
+_available_fonts = {f.name for f in fm.fontManager.ttflist}
+_kr_font = next((f for f in _KR_FONT_CANDIDATES if f in _available_fonts), None)
+if _kr_font:
+    plt.rcParams["font.family"] = _kr_font
+plt.rcParams["axes.unicode_minus"] = False  # 마이너스 기호 깨짐 방지
 
 # ── 설정 ─────────────────────────────────────────────────────────────────────
 
 COLS        = 4       # 한 행에 카드 수
 CARD_W      = 5.0     # 카드 너비 (인치)
 CARD_H      = 4.2     # 카드 높이 (인치)
-CANDLE_UP   = "#EF5350"   # 양봉 (한국식: 빨강)
-CANDLE_DOWN = "#42A5F5"   # 음봉 (한국식: 파랑)
-RESIST_COLOR = "#FF6B6B"  # 저항선
-SUPPORT_COLOR = "#4ECDC4" # 지지선
-ZIGZAG_COLOR  = "#FFE66D" # 지그재그선
-BG_COLOR    = "#1A1A2E"   # 카드 배경
-GRID_COLOR  = "#2D2D4E"   # 그리드
-TEXT_COLOR  = "#E0E0E0"   # 기본 텍스트
+CANDLE_UP   = "#D32F2F"   # 양봉 (한국식: 빨강 — 라이트모드용 진한 빨강)
+CANDLE_DOWN = "#1565C0"   # 음봉 (한국식: 파랑 — 라이트모드용 진한 파랑)
+RESIST_COLOR = "#E53935"  # 저항선
+SUPPORT_COLOR = "#00897B" # 지지선
+ZIGZAG_COLOR  = "#F9A825" # 지그재그선
+BG_COLOR    = "#FAFAFA"   # 카드 배경 (라이트)
+GRID_COLOR  = "#E0E0E0"   # 그리드 (연회색)
+TEXT_COLOR  = "#212121"   # 기본 텍스트 (진한 검정)
+FIG_BG      = "#F5F5F5"   # 전체 figure 배경
 
 MARKER_COLORS = {
-    ("close", "touch"):    "#FFD700",  # 노란색
-    ("high",  "touch"):    "#FF8C00",  # 주황색
-    ("close", "breakout"): "#9B59B6",  # 보라색
-    ("high",  "breakout"): "#C39BD3",  # 연보라색
+    ("close", "touch"):    "#F9A825",  # 진한 노란색 (라이트모드 가시성)
+    ("high",  "touch"):    "#E65100",  # 진한 주황색
+    ("close", "breakout"): "#6A1B9A",  # 진한 보라색
+    ("high",  "breakout"): "#AB47BC",  # 중간 보라색
 }
 
 SLOPE_LABELS = {
-    "positive": ("↗", "#EF5350"),
-    "negative": ("↘", "#42A5F5"),
-    "flat":     ("→", "#AAAAAA"),
+    "positive": ("↗", "#D32F2F"),
+    "negative": ("↘", "#1565C0"),
+    "flat":     ("→", "#757575"),
 }
 
 # ── 유틸 ─────────────────────────────────────────────────────────────────────
@@ -140,7 +151,7 @@ def render_card(ax, result: dict, periods: list, trendAlgo: str):
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3))
     plt.setp(ax.xaxis.get_majorticklabels(), rotation=30, ha="right", fontsize=5)
     ax.yaxis.set_tick_params(labelsize=5.5)
-    ax.grid(True, color=GRID_COLOR, linewidth=0.4, alpha=0.5)
+    ax.grid(True, color=GRID_COLOR, linewidth=0.4, alpha=0.8)
 
     if not prices:
         ax.text(0.5, 0.5, "데이터 없음", transform=ax.transAxes,
@@ -183,7 +194,7 @@ def render_card(ax, result: dict, periods: list, trendAlgo: str):
             va="top", ha="right")
     # 종목명
     ax.text(0.02, 0.91, name[:22], transform=ax.transAxes,
-            fontsize=5.5, color="#AAAAAA", va="top", ha="left")
+            fontsize=5.5, color="#616161", va="top", ha="left")
 
     # 기간별 터치/돌파 통계
     y_offset = 0.84
@@ -193,7 +204,7 @@ def render_card(ax, result: dict, periods: list, trendAlgo: str):
             continue
         label = f"{p}: 터치 {stat.get('touchCount', 0)}  돌파 {stat.get('breakoutCount', 0)}"
         ax.text(0.02, y_offset, label, transform=ax.transAxes,
-                fontsize=5.2, color="#CCCCCC", va="top", ha="left")
+                fontsize=5.2, color="#424242", va="top", ha="left")
         y_offset -= 0.07
 
 
@@ -247,7 +258,7 @@ def main():
     fig_w = COLS * CARD_W
     fig_h = CARD_H * rows + 0.8 * extra
 
-    fig = plt.figure(figsize=(fig_w, fig_h), facecolor="#0F0F23")
+    fig = plt.figure(figsize=(fig_w, fig_h), facecolor=FIG_BG)
     fig.subplots_adjust(
         left=0.04, right=0.96,
         top=1 - (0.6 / fig_h),
@@ -271,14 +282,14 @@ def main():
     # 범례
     patches = make_legend_patches()
     fig.legend(handles=patches, loc="lower center", ncol=len(patches),
-               fontsize=6.5, facecolor="#1A1A2E", edgecolor=GRID_COLOR,
-               labelcolor=TEXT_COLOR, framealpha=0.9,
+               fontsize=6.5, facecolor="#FFFFFF", edgecolor="#BDBDBD",
+               labelcolor=TEXT_COLOR, framealpha=0.95,
                bbox_to_anchor=(0.5, 0.005))
 
     # 저장
     png_path = json_path.with_suffix(".png")
     fig.savefig(png_path, dpi=150, bbox_inches="tight",
-                facecolor=fig.get_facecolor())
+                facecolor=FIG_BG)
     plt.close(fig)
     print(f"🖼️  PNG 저장: {png_path}")
 
