@@ -223,6 +223,46 @@ def make_legend_patches():
     ]
 
 
+def calc_period_stats_summary(results: list, periods: list) -> dict:
+    """전체 종목의 기간별 터치/돌파 합계를 계산한다.
+
+    반환: { "1y": {"touch": 42, "breakout": 7}, ... }
+    """
+    summary = {p: {"touch": 0, "breakout": 0} for p in periods}
+    for result in results:
+        period_stats = result.get("periodStats", {})
+        for p in periods:
+            stat = period_stats.get(p)
+            if not stat:
+                continue
+            summary[p]["touch"]    += stat.get("touchCount", 0)
+            summary[p]["breakout"] += stat.get("breakoutCount", 0)
+    return summary
+
+
+def draw_legend_stats(fig, summary: dict, periods: list, fig_h: float):
+    """하단 범례 왼쪽에 기간별 터치/돌파 집계를 표시한다."""
+    lines = []
+    for p in periods:
+        s = summary.get(p, {})
+        touch    = s.get("touch", 0)
+        breakout = s.get("breakout", 0)
+        lines.append(f"[{p}]  터치 {touch}회  돌파 {breakout}회")
+
+    text = "\n".join(lines)
+    fig.text(
+        0.02, 0.012, text,
+        ha="left", va="bottom",
+        fontsize=6.5, color=TEXT_COLOR,
+        linespacing=1.6,
+        bbox=dict(
+            boxstyle="round,pad=0.4",
+            facecolor="#FFFFFF", edgecolor="#BDBDBD",
+            alpha=0.95,
+        ),
+    )
+
+
 # ── 메인 ─────────────────────────────────────────────────────────────────────
 
 def main():
@@ -261,10 +301,11 @@ def main():
     fig_h = CARD_H * rows + 0.8 * extra
 
     fig = plt.figure(figsize=(fig_w, fig_h), facecolor=FIG_BG)
+    # 범례 + 통계 영역을 위한 하단 여백 확보
     fig.subplots_adjust(
         left=0.04, right=0.96,
         top=1 - (0.6 / fig_h),
-        bottom=0.04,
+        bottom=0.06,
         hspace=0.55, wspace=0.12,
     )
 
@@ -281,12 +322,16 @@ def main():
         ax = fig.add_subplot(rows, COLS, idx + 1)
         render_card(ax, result, periods, trend_algo)
 
-    # 범례
+    # 색상 범례 (오른쪽)
     patches = make_legend_patches()
-    fig.legend(handles=patches, loc="lower center", ncol=len(patches),
+    fig.legend(handles=patches, loc="lower right", ncol=1,
                fontsize=6.5, facecolor="#FFFFFF", edgecolor="#BDBDBD",
                labelcolor=TEXT_COLOR, framealpha=0.95,
-               bbox_to_anchor=(0.5, 0.005))
+               bbox_to_anchor=(0.98, 0.005))
+
+    # 기간별 터치/돌파 집계 (왼쪽)
+    summary = calc_period_stats_summary(results, periods)
+    draw_legend_stats(fig, summary, periods, fig_h)
 
     # 저장
     png_path = json_path.with_suffix(".png")
