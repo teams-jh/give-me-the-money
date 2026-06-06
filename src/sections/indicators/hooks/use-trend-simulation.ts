@@ -147,8 +147,22 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
     const filteredByPeriod: Partial<Record<PeriodKey, SimResult[]>> = {};
 
     for (const [period, results] of Object.entries(resultsByPeriod) as [PeriodKey, SimResult[]][]) {
-      const config  = periodConfigs[period as PeriodKey];
-      const startMs = config?.filterStartDate ? new Date(config.filterStartDate).getTime() : 0;
+      const config = periodConfigs[period as PeriodKey];
+
+      // filterStartDate가 빈 문자열이면 첫 번째 결과의 prices 기준으로 자동 계산
+      let startMs = 0;
+      const rawStart = config?.filterStartDate
+        ? new Date(config.filterStartDate).getTime() : 0;
+      if (!isNaN(rawStart) && rawStart > 0) {
+        startMs = rawStart;
+      } else {
+        const firstPrices = results[0]?.prices;
+        if (firstPrices && firstPrices.length > 0) {
+          const dates  = firstPrices.map(p => p.date);
+          const minus3 = dates[Math.max(0, dates.length - 1 - 3)] ?? dates[dates.length - 1]!;
+          startMs = new Date(minus3).getTime();
+        }
+      }
 
       filteredByPeriod[period as PeriodKey] = enablePatternFilter
         ? applyPatternFilter(results, startMs, minTouchesPattern)
