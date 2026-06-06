@@ -26,7 +26,7 @@ const krEntries = getTickerFiles(krMetaFile, krTickersDir, 'kr');
 const usEntries = getTickerFiles(usMetaFile, usTickersDir, 'us');
 
 let content = '/**\n * Auto-generated file containing all ticker data.\n * Do not edit manually.\n */\n\n';
-content += "import { TickerData } from './tickers';\n\n";
+content += "import type { TickerData } from './tickers';\n\n";
 
 // KR Tickers
 krEntries.forEach(({ ticker, file }) => {

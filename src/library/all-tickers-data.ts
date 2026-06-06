@@ -3,7 +3,7 @@
  * Do not edit manually.
  */
 
-import { TickerData } from './tickers';
+import type { TickerData } from './tickers';
 
 import data_kr_000080 from '../db/kr/tickers/000080.json';
 import data_kr_000100 from '../db/kr/tickers/000100.json';
