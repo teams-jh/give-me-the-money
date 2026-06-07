@@ -1,10 +1,12 @@
 name: Simulate Trend
 
-# daily.yml: 22:00 UTC 시작 → 약 22:20 UTC 완료
-# simulate_trend: 00:00 UTC 실행 (KST 09:00) — 일봉 최신화 완료 후
+# daily.yml 완료 직후 자동 실행 (workflow_run 체인)
+# workflow_dispatch로 수동 실행도 가능
 on:
-  schedule:
-    - cron: "0 0 * * 1-5"   # 월~금 00:00 UTC (KST 09:00)
+  workflow_run:
+    workflows: ["Daily Update"]
+    types:
+      - completed
   workflow_dispatch:
     inputs:
       market:
@@ -22,10 +24,12 @@ jobs:
     name: "KR 추세 시뮬레이션"
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'schedule' ||
-      github.event.inputs.market == 'kr' ||
-      github.event.inputs.market == 'all' ||
-      github.event.inputs.market == ''
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_dispatch' && (
+        github.event.inputs.market == 'kr' ||
+        github.event.inputs.market == 'all' ||
+        github.event.inputs.market == ''
+      ))
 
     permissions:
       contents: write
@@ -103,11 +107,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: simulate-kr   # KR 완료 후 실행 (git 충돌 방지)
     if: |
-      always() &&
-      (github.event_name == 'schedule' ||
-       github.event.inputs.market == 'us' ||
-       github.event.inputs.market == 'all' ||
-       github.event.inputs.market == '')
+      always() && (
+        (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+        (github.event_name == 'workflow_dispatch' && (
+          github.event.inputs.market == 'us' ||
+          github.event.inputs.market == 'all' ||
+          github.event.inputs.market == ''
+        ))
+      )
 
     permissions:
       contents: write
