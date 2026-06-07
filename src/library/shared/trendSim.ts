@@ -165,14 +165,18 @@ export function buildTrendIndices(
  * 웹(use-trend-simulation)과 스크립트(simulate_trend)가 공통으로 호출하여
  * 동일 설정 → 동일 결과를 보장한다.
  *
- * @param cfg      - 기간별 설정
- * @param dates    - 종목별 날짜 배열 (barUnit 변환·슬라이싱 완료된 것)
- * @param lookback - filterStart 자동 채움용 봉 수 (기본 DEFAULT_FILTER_LOOKBACK_BARS)
+ * @param cfg        - 기간별 설정
+ * @param dates      - 종목별 날짜 배열 (barUnit 변환·슬라이싱 완료된 것)
+ * @param lookback   - filterStart 자동 채움용 봉 수 (기본 DEFAULT_FILTER_LOOKBACK_BARS)
+ * @param dailyDates - (선택) 일봉 원본 날짜 배열. 전달하면 filterStart 계산을 이 배열 기준으로 수행.
+ *                     주봉(barUnit=weekly) 사용 시 dates[-N]이 N주 전이 되는 문제를 방지한다.
+ *                     미전달 시 dates를 그대로 사용 (하위 호환 유지).
  */
 export function resolvePeriodDates(
-  cfg:      PeriodConfig,
-  dates:    string[],
-  lookback: number = DEFAULT_FILTER_LOOKBACK_BARS,
+  cfg:         PeriodConfig,
+  dates:       string[],
+  lookback:    number = DEFAULT_FILTER_LOOKBACK_BARS,
+  dailyDates?: string[],
 ): PeriodConfig {
   if (dates.length === 0) return cfg;
 
@@ -180,7 +184,22 @@ export function resolvePeriodDates(
   // 추세선 작도는 마지막 1봉(장중 잠정/미확정 가능)을 제외하고 그 직전 봉까지만 사용한다.
   // dates가 1봉뿐이면 직전 봉이 없으므로 null → 빈 문자열로 두어 runTickerSim에서 작도를 생략시킨다.
   const trendEndAuto = dates.length >= 2 ? dates[dates.length - 2]! : '';
-  const minusN   = dates[Math.max(0, dates.length - 1 - lookback)]!;
+
+  // filterStart는 barUnit에 무관하게 항상 "거래일 기준 N일 전"이어야 한다.
+  // 주봉 slice의 dates[-N]은 N주 전이 되므로, dailyDates가 있으면 그 기준으로 계산한다.
+  //
+  // dailyDates에서 dates의 마지막 날짜(lastDate) 위치를 찾아 lookback 적용한다.
+  // 단순히 dailyDates[-N]이 아닌 위치 기반 계산을 하는 이유:
+  //   trendEndDate 명시 등으로 slice 마지막이 오늘이 아닌 과거일 경우에도
+  //   "slice 기준 N거래일 전"을 정확히 계산하기 위함.
+  let minusN: string;
+  if (dailyDates && dailyDates.length > 0) {
+    const lastDateIdx = dailyDates.lastIndexOf(lastDate);
+    const anchorIdx   = lastDateIdx !== -1 ? lastDateIdx : dailyDates.length - 1;
+    minusN = dailyDates[Math.max(0, anchorIdx - lookback)]!;
+  } else {
+    minusN = dates[Math.max(0, dates.length - 1 - lookback)]!;
+  }
 
   // 빈 값뿐 아니라 파싱 불가한 잘못된 날짜도 자동 채움 대상으로 본다.
   // (resolveFilterStartMs와 동일한 판정 기준 → 두 함수 결과 일관성 보장)
@@ -202,19 +221,21 @@ export function resolvePeriodDates(
  * resolvePeriodDates와 동일한 자동 채움(마지막 - lookback)을 적용한다.
  * dates가 비어 있으면 0을 반환한다.
  *
- * @param cfg      - 기간별 설정
- * @param dates    - 종목별 날짜 배열
- * @param lookback - 자동 채움용 봉 수 (기본 DEFAULT_FILTER_LOOKBACK_BARS)
+ * @param cfg        - 기간별 설정
+ * @param dates      - 종목별 날짜 배열
+ * @param lookback   - 자동 채움용 봉 수 (기본 DEFAULT_FILTER_LOOKBACK_BARS)
+ * @param dailyDates - (선택) 일봉 원본 날짜 배열. resolvePeriodDates와 동일한 용도.
  */
 export function resolveFilterStartMs(
-  cfg:      PeriodConfig,
-  dates:    string[],
-  lookback: number = DEFAULT_FILTER_LOOKBACK_BARS,
+  cfg:         PeriodConfig,
+  dates:       string[],
+  lookback:    number = DEFAULT_FILTER_LOOKBACK_BARS,
+  dailyDates?: string[],
 ): number {
   if (dates.length === 0) return 0;
 
   // 날짜 검증·자동 채움 규칙을 resolvePeriodDates 한 곳에서 재사용 (중복 제거)
-  const resolved = resolvePeriodDates(cfg, dates, lookback);
+  const resolved = resolvePeriodDates(cfg, dates, lookback, dailyDates);
   const parsed   = new Date(resolved.filterStartDate).getTime();
   return isNaN(parsed) ? 0 : parsed;
 }

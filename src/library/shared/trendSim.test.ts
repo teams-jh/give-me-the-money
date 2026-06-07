@@ -536,6 +536,54 @@ describe('resolvePeriodDates', () => {
     const ms       = resolveFilterStartMs(cfg, dates);
     expect(new Date(resolved.filterStartDate).getTime()).toBe(ms);
   });
+
+  // ── dailyDates 파라미터 (주봉 버그 수정) ────────────────────────────────
+
+  it('주봉 dates + dailyDates 전달 → filterStart는 dailyDates 기준 N거래일 전', () => {
+    // 주봉 dates: 4개 (각 1주 간격) → dates[-4] = dates[0] = 2024-01-01 (4주 전)
+    const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
+    // 일봉 dates: 마지막 3거래일 전 = 2024-01-17
+    const daily = [
+      '2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18',
+      '2024-01-19', '2024-01-22',
+    ];
+    // dailyDates 없이 호출 → 주봉 기준 (버그 상황)
+    const rWithout = resolvePeriodDates(BASE_CFG, weeklyDates);
+    expect(rWithout.filterStartDate).toBe('2024-01-01'); // 4주 전 (버그)
+
+    // dailyDates 전달 → 일봉 기준 (수정 후)
+    const rWith = resolvePeriodDates(BASE_CFG, weeklyDates, 3, daily);
+    expect(rWith.filterStartDate).toBe('2024-01-17'); // daily[-4] = 3거래일 전 (정상)
+  });
+
+  it('dailyDates 빈 배열 → dates 기준 폴백 (하위 호환)', () => {
+    const r = resolvePeriodDates(BASE_CFG, dates, 3, []);
+    expect(r.filterStartDate).toBe('2024-01-02'); // dates[-4] = 기존 동작
+  });
+
+  it('dailyDates에서 lastDate 위치 기반으로 lookback 적용 (slice 마지막이 과거인 경우)', () => {
+    // 주봉 slice가 과거 시점 기준으로 끝나는 경우 (예: trendEndDate 명시 시뮬레이션)
+    // dailyDates: 2024-01-01 ~ 2024-01-22 (15 거래일)
+    const daily = [
+      '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05',
+      '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11',
+      '2024-01-12', '2024-01-15', '2024-01-16', '2024-01-17',
+      '2024-01-18', '2024-01-19', '2024-01-22',
+    ];
+    // 주봉 slice의 마지막이 2024-01-15 (과거)
+    const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15'];
+    const r = resolvePeriodDates(BASE_CFG, weeklyDates, 3, daily);
+    // daily에서 '2024-01-15' 위치(idx=9)에서 3 빼면 idx=6 → '2024-01-10'
+    expect(r.filterStartDate).toBe('2024-01-10');
+  });
+
+  it('filterStartDate 명시 시 dailyDates 무관하게 명시값 우선', () => {
+    const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: '2024-01-03' };
+    const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
+    const daily = ['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22'];
+    const r = resolvePeriodDates(cfg, weeklyDates, 3, daily);
+    expect(r.filterStartDate).toBe('2024-01-03'); // 명시값 그대로
+  });
 });
 
 // ── resolveFilterStartMs ─────────────────────────────────────────────────────
@@ -559,6 +607,13 @@ describe('resolveFilterStartMs', () => {
   it('잘못된 filterStartDate → 자동 채움으로 폴백', () => {
     const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: 'invalid-date' };
     expect(resolveFilterStartMs(cfg, dates)).toBe(new Date('2024-01-02').getTime());
+  });
+
+  it('주봉 dates + dailyDates 전달 → 일봉 기준 ms 반환', () => {
+    const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
+    const daily = ['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22'];
+    const ms = resolveFilterStartMs(BASE_CFG, weeklyDates, 3, daily);
+    expect(ms).toBe(new Date('2024-01-17').getTime()); // daily[-4] = 3거래일 전
   });
 });
 
