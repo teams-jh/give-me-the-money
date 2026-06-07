@@ -74,7 +74,7 @@ export function loadStocks(tickersJson: string, tickersDir: string): StockInput[
   const stocks: StockInput[] = [];
 
   for (const ticker of meta.tickers) {
-    const filename = ticker.replace(/[^a-zA-Z0-9]/g, "_") + ".json";
+    const filename = (ticker.split(".")[0] ?? ticker) + ".json";
     const file     = path.join(tickersDir, filename);
     if (!fs.existsSync(file)) continue;
 
