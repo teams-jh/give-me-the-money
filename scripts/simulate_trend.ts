@@ -25,6 +25,7 @@ import { fileURLToPath } from "url";
 
 import {
   PERIOD_BARS,
+  DEFAULT_FILTER_LOOKBACK_BARS,
   runTickerSim,
   sortSimResults,
   applyPatternFilter,
@@ -167,7 +168,8 @@ function runMarketSim(cfg: MarketSimConfig): void {
   log(`📋 분석 대상: ${tickers.length}개 티커`);
 
   // 2. 기간 루프
-  const resultsByPeriod: Partial<Record<PeriodKey, SimResult[]>> = {};
+  const resultsByPeriod:    Partial<Record<PeriodKey, SimResult[]>> = {};
+  const dailyDatesByPeriod: Partial<Record<PeriodKey, string[]>>    = {}; // 패턴 필터용 일봉 dates
 
   for (const period of cfg.periods) {
     const periodCfg = cfg.periodConfigs[period];
@@ -222,8 +224,16 @@ function runMarketSim(cfg: MarketSimConfig): void {
       const slice = bars.slice(-days);
 
       // 날짜 자동 채우기 (종목별 dates 기준 — 공통 함수)
+      // dailyDates: 주봉 변환 전 일봉 원본 → filterStart를 "N거래일 전"으로 정확히 계산
+      // (주봉 slice의 dates[-N]은 N주 전이 되어 버그 발생하는 것을 방지)
+      const dailyDates  = allPrices.map(p => p.date);
       const dates       = slice.map(p => p.date);
-      const resolvedCfg = resolvePeriodDates(periodCfg, dates);
+      const resolvedCfg = resolvePeriodDates(periodCfg, dates, DEFAULT_FILTER_LOOKBACK_BARS, dailyDates);
+
+      // 패턴 필터에서도 일봉 기준 filterStart를 쓸 수 있도록 첫 티커의 dailyDates 보관
+      if (!dailyDatesByPeriod[period]) {
+        dailyDatesByPeriod[period] = dailyDates;
+      }
 
       // 첫 유효 티커 기준으로 날짜 로그 1회 출력
       if (!datePrinted) {
@@ -261,11 +271,13 @@ function runMarketSim(cfg: MarketSimConfig): void {
 
       // filterStartDate가 빈 문자열이면 resolveFilterStartMs가
       // 종목별 dates 기준으로 동일하게 자동 산출 (공통 함수)
+      // dailyDates 전달 → 주봉 기간도 "N거래일 전" 기준으로 정확히 계산
       let filterStartMs = 0;
       const firstResult = resultsByPeriod[period]?.[0];
       if (firstResult) {
-        const dates = firstResult.prices.map((p: { date: string }) => p.date);
-        filterStartMs = resolveFilterStartMs(periodCfg, dates);
+        const dates      = firstResult.prices.map((p: { date: string }) => p.date);
+        const dailyDates = dailyDatesByPeriod[period];
+        filterStartMs = resolveFilterStartMs(periodCfg, dates, DEFAULT_FILTER_LOOKBACK_BARS, dailyDates);
       }
 
       const before = resultsByPeriod[period]?.length ?? 0;

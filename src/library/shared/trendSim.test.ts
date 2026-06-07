@@ -536,6 +536,38 @@ describe('resolvePeriodDates', () => {
     const ms       = resolveFilterStartMs(cfg, dates);
     expect(new Date(resolved.filterStartDate).getTime()).toBe(ms);
   });
+
+  // ── dailyDates 파라미터 (주봉 버그 수정) ────────────────────────────────
+
+  it('주봉 dates + dailyDates 전달 → filterStart는 dailyDates 기준 N거래일 전', () => {
+    // 주봉 dates: 4개 (각 1주 간격) → dates[-4] = dates[0] = 2024-01-01 (4주 전)
+    const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
+    // 일봉 dates: 마지막 3거래일 전 = 2024-01-17
+    const daily = [
+      '2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18',
+      '2024-01-19', '2024-01-22',
+    ];
+    // dailyDates 없이 호출 → 주봉 기준 (버그 상황)
+    const rWithout = resolvePeriodDates(BASE_CFG, weeklyDates);
+    expect(rWithout.filterStartDate).toBe('2024-01-01'); // 4주 전 (버그)
+
+    // dailyDates 전달 → 일봉 기준 (수정 후)
+    const rWith = resolvePeriodDates(BASE_CFG, weeklyDates, 3, daily);
+    expect(rWith.filterStartDate).toBe('2024-01-17'); // daily[-4] = 3거래일 전 (정상)
+  });
+
+  it('dailyDates 빈 배열 → dates 기준 폴백 (하위 호환)', () => {
+    const r = resolvePeriodDates(BASE_CFG, dates, 3, []);
+    expect(r.filterStartDate).toBe('2024-01-02'); // dates[-4] = 기존 동작
+  });
+
+  it('filterStartDate 명시 시 dailyDates 무관하게 명시값 우선', () => {
+    const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: '2024-01-03' };
+    const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
+    const daily = ['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22'];
+    const r = resolvePeriodDates(cfg, weeklyDates, 3, daily);
+    expect(r.filterStartDate).toBe('2024-01-03'); // 명시값 그대로
+  });
 });
 
 // ── resolveFilterStartMs ─────────────────────────────────────────────────────
@@ -559,6 +591,13 @@ describe('resolveFilterStartMs', () => {
   it('잘못된 filterStartDate → 자동 채움으로 폴백', () => {
     const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: 'invalid-date' };
     expect(resolveFilterStartMs(cfg, dates)).toBe(new Date('2024-01-02').getTime());
+  });
+
+  it('주봉 dates + dailyDates 전달 → 일봉 기준 ms 반환', () => {
+    const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
+    const daily = ['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22'];
+    const ms = resolveFilterStartMs(BASE_CFG, weeklyDates, 3, daily);
+    expect(ms).toBe(new Date('2024-01-17').getTime()); // daily[-4] = 3거래일 전
   });
 });
 
