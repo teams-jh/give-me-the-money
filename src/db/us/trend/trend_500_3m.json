@@ -1,4514 +1,4478 @@
 {
-  "generated_at": "2026-05-17 04:53",
+  "generated_at": "2026-06-07 11:45",
   "period": "3m",
-  "analyzed_count": 500,
-  "skipped_count": 0,
+  "analyzed_count": 496,
+  "skipped_count": 4,
   "summary": {
-    "bullish": 102,
-    "bearish": 101,
-    "sideways": 198,
-    "recovering": 99
+    "bullish": 202,
+    "bearish": 61,
+    "sideways": 166,
+    "recovering": 67
   },
   "stocks": [
     {
-      "ticker": "NVDA",
-      "trend": "recovering",
-      "slopePct": 1.868,
-      "r2": 0.61,
-      "slopeEarlyPct": -0.305,
-      "slopeLatePct": 2.584,
-      "totalReturn": 18.7
+      "ticker": "A",
+      "trend": "bullish",
+      "slopePct": 1.127,
+      "r2": 0.408,
+      "slopeEarlyPct": 0.522,
+      "slopeLatePct": 5.626,
+      "totalReturn": 20.2
     },
     {
-      "ticker": "GOOGL",
-      "trend": "recovering",
-      "slopePct": 2.559,
-      "r2": 0.632,
-      "slopeEarlyPct": -0.544,
-      "slopeLatePct": 4.456,
-      "totalReturn": 26
+      "ticker": "AA",
+      "trend": "bullish",
+      "slopePct": 1.602,
+      "r2": 0.42,
+      "slopeEarlyPct": 1.356,
+      "slopeLatePct": 6.349,
+      "totalReturn": 30.8
     },
     {
-      "ticker": "GOOG",
-      "trend": "recovering",
-      "slopePct": 2.486,
-      "r2": 0.62,
-      "slopeEarlyPct": -0.614,
-      "slopeLatePct": 4.381,
-      "totalReturn": 24.9
+      "ticker": "AAOI",
+      "trend": "bullish",
+      "slopePct": 5.926,
+      "r2": 0.796,
+      "slopeEarlyPct": 9.808,
+      "slopeLatePct": 4.305,
+      "totalReturn": 112.3
+    },
+    {
+      "ticker": "AAON",
+      "trend": "bullish",
+      "slopePct": 5.179,
+      "r2": 0.803,
+      "slopeEarlyPct": 2.032,
+      "slopeLatePct": 0.915,
+      "totalReturn": 62.6
     },
     {
       "ticker": "AAPL",
-      "trend": "recovering",
-      "slopePct": 1.174,
-      "r2": 0.549,
-      "slopeEarlyPct": -0.456,
-      "slopeLatePct": 2.907,
-      "totalReturn": 13.5
-    },
-    {
-      "ticker": "MSFT",
-      "trend": "sideways",
-      "slopePct": 0.642,
-      "r2": 0.201,
-      "slopeEarlyPct": -1.396,
-      "slopeLatePct": -0.268,
-      "totalReturn": 6.2
-    },
-    {
-      "ticker": "AMZN",
       "trend": "bullish",
-      "slopePct": 2.74,
-      "r2": 0.766,
-      "slopeEarlyPct": 0.859,
-      "slopeLatePct": 1.358,
-      "totalReturn": 25.7
-    },
-    {
-      "ticker": "TSM",
-      "trend": "recovering",
-      "slopePct": 1.41,
-      "r2": 0.439,
-      "slopeEarlyPct": -0.761,
-      "slopeLatePct": 1.936,
-      "totalReturn": 9.1
-    },
-    {
-      "ticker": "AVGO",
-      "trend": "bullish",
-      "slopePct": 3.088,
-      "r2": 0.716,
-      "slopeEarlyPct": 0.535,
-      "slopeLatePct": 1.058,
-      "totalReturn": 27.8
-    },
-    {
-      "ticker": "TSLA",
-      "trend": "recovering",
-      "slopePct": 0.248,
-      "r2": 0.023,
-      "slopeEarlyPct": -2.435,
-      "slopeLatePct": 2.361,
-      "totalReturn": 2.5
-    },
-    {
-      "ticker": "META",
-      "trend": "sideways",
-      "slopePct": -0.095,
-      "r2": 0.003,
-      "slopeEarlyPct": -1.806,
-      "slopeLatePct": -3.348,
-      "totalReturn": -6.3
-    },
-    {
-      "ticker": "WMT",
-      "trend": "bullish",
-      "slopePct": 0.544,
-      "r2": 0.51,
-      "slopeEarlyPct": 0.052,
-      "slopeLatePct": 0.646,
-      "totalReturn": 6.9
-    },
-    {
-      "ticker": "BRK-B",
-      "trend": "recovering",
-      "slopePct": -0.461,
-      "r2": 0.537,
-      "slopeEarlyPct": -0.896,
-      "slopeLatePct": 0.481,
-      "totalReturn": -3.1
-    },
-    {
-      "ticker": "BRK-A",
-      "trend": "recovering",
-      "slopePct": -0.437,
-      "r2": 0.517,
-      "slopeEarlyPct": -0.872,
-      "slopeLatePct": 0.521,
-      "totalReturn": -3
-    },
-    {
-      "ticker": "LLY",
-      "trend": "recovering",
-      "slopePct": -0.491,
-      "r2": 0.126,
-      "slopeEarlyPct": -1.84,
-      "slopeLatePct": 2.33,
-      "totalReturn": -0.5
-    },
-    {
-      "ticker": "MU",
-      "trend": "recovering",
-      "slopePct": 5.185,
-      "r2": 0.573,
-      "slopeEarlyPct": -0.97,
-      "slopeLatePct": 13.308,
-      "totalReturn": 69.2
-    },
-    {
-      "ticker": "JPM",
-      "trend": "sideways",
-      "slopePct": 0.316,
-      "r2": 0.114,
-      "slopeEarlyPct": -0.209,
-      "slopeLatePct": -1.017,
-      "totalReturn": -4.2
-    },
-    {
-      "ticker": "AMD",
-      "trend": "bullish",
-      "slopePct": 8.023,
-      "r2": 0.804,
-      "slopeEarlyPct": 2.521,
-      "slopeLatePct": 10.686,
-      "totalReturn": 111.9
-    },
-    {
-      "ticker": "XOM",
-      "trend": "sideways",
-      "slopePct": -0.129,
-      "r2": 0.012,
-      "slopeEarlyPct": 1.069,
-      "slopeLatePct": 1.24,
-      "totalReturn": 7.2
-    },
-    {
-      "ticker": "V",
-      "trend": "recovering",
-      "slopePct": 0.195,
-      "r2": 0.053,
-      "slopeEarlyPct": -1.095,
-      "slopeLatePct": 0.839,
-      "totalReturn": 1.5
-    },
-    {
-      "ticker": "ASML",
-      "trend": "recovering",
-      "slopePct": 0.867,
-      "r2": 0.267,
-      "slopeEarlyPct": -0.525,
-      "slopeLatePct": 1.468,
-      "totalReturn": 2.2
-    },
-    {
-      "ticker": "ORCL",
-      "trend": "recovering",
-      "slopePct": 2.403,
-      "r2": 0.596,
-      "slopeEarlyPct": -0.894,
-      "slopeLatePct": 3.215,
-      "totalReturn": 30.3
-    },
-    {
-      "ticker": "INTC",
-      "trend": "bullish",
-      "slopePct": 9.834,
-      "r2": 0.792,
-      "slopeEarlyPct": 3.747,
-      "slopeLatePct": 12.689,
-      "totalReturn": 146.6
-    },
-    {
-      "ticker": "JNJ",
-      "trend": "bearish",
-      "slopePct": -0.767,
-      "r2": 0.768,
-      "slopeEarlyPct": -0.302,
-      "slopeLatePct": -0.929,
-      "totalReturn": -6.5
-    },
-    {
-      "ticker": "CSCO",
-      "trend": "bullish",
-      "slopePct": 2.713,
-      "r2": 0.632,
-      "slopeEarlyPct": 0.332,
-      "slopeLatePct": 7.417,
-      "totalReturn": 49.3
-    },
-    {
-      "ticker": "COST",
-      "trend": "sideways",
-      "slopePct": 0.276,
-      "r2": 0.334,
-      "slopeEarlyPct": 0.041,
-      "slopeLatePct": 0.942,
-      "totalReturn": 6.5
-    },
-    {
-      "ticker": "MA",
-      "trend": "sideways",
-      "slopePct": -0.356,
-      "r2": 0.269,
-      "slopeEarlyPct": -1.012,
-      "slopeLatePct": -1.252,
-      "totalReturn": -6.1
-    },
-    {
-      "ticker": "CAT",
-      "trend": "bullish",
-      "slopePct": 2.21,
-      "r2": 0.666,
-      "slopeEarlyPct": 0.196,
-      "slopeLatePct": 2.953,
-      "totalReturn": 16.9
-    },
-    {
-      "ticker": "CVX",
-      "trend": "sideways",
-      "slopePct": -0.209,
-      "r2": 0.034,
-      "slopeEarlyPct": 0.99,
-      "slopeLatePct": 0.57,
-      "totalReturn": 3.9
+      "slopePct": 2.016,
+      "r2": 0.91,
+      "slopeEarlyPct": 1.343,
+      "slopeLatePct": 1.562,
+      "totalReturn": 20.9
     },
     {
       "ticker": "ABBV",
-      "trend": "bearish",
-      "slopePct": -1.01,
-      "r2": 0.617,
-      "slopeEarlyPct": -1.704,
-      "slopeLatePct": 0.334,
-      "totalReturn": -6.4
-    },
-    {
-      "ticker": "NFLX",
-      "trend": "sideways",
-      "slopePct": -0.056,
+      "trend": "recovering",
+      "slopePct": -0.038,
       "r2": 0.001,
-      "slopeEarlyPct": 2.043,
-      "slopeLatePct": -2.797,
-      "totalReturn": 10.6
+      "slopeEarlyPct": -1.202,
+      "slopeLatePct": 2.528,
+      "totalReturn": -2.2
     },
     {
-      "ticker": "UNH",
-      "trend": "recovering",
-      "slopePct": 3.052,
-      "r2": 0.693,
-      "slopeEarlyPct": -0.288,
-      "slopeLatePct": 4.486,
-      "totalReturn": 35.8
-    },
-    {
-      "ticker": "LRCX",
+      "ticker": "ABEV",
       "trend": "bullish",
-      "slopePct": 2.394,
-      "r2": 0.574,
-      "slopeEarlyPct": 0.559,
-      "slopeLatePct": 2.207,
-      "totalReturn": 16.3
-    },
-    {
-      "ticker": "BAC",
-      "trend": "sideways",
-      "slopePct": 0.449,
-      "r2": 0.122,
-      "slopeEarlyPct": -0.253,
-      "slopeLatePct": -1.733,
-      "totalReturn": -6.2
-    },
-    {
-      "ticker": "KO",
-      "trend": "recovering",
-      "slopePct": -0.014,
-      "r2": 0,
-      "slopeEarlyPct": -0.727,
-      "slopeLatePct": 1.531,
-      "totalReturn": 1.2
-    },
-    {
-      "ticker": "AMAT",
-      "trend": "bullish",
-      "slopePct": 1.896,
-      "r2": 0.575,
-      "slopeEarlyPct": 0.342,
-      "slopeLatePct": 2.356,
-      "totalReturn": 16.3
-    },
-    {
-      "ticker": "PG",
-      "trend": "bearish",
-      "slopePct": -0.9,
-      "r2": 0.486,
-      "slopeEarlyPct": -2.121,
-      "slopeLatePct": -0.854,
-      "totalReturn": -11.9
-    },
-    {
-      "ticker": "PLTR",
-      "trend": "sideways",
-      "slopePct": -0.4,
-      "r2": 0.075,
-      "slopeEarlyPct": -0.302,
-      "slopeLatePct": -2.133,
-      "totalReturn": -0.9
-    },
-    {
-      "ticker": "BABA",
-      "trend": "sideways",
-      "slopePct": -0.431,
-      "r2": 0.056,
-      "slopeEarlyPct": -3.033,
-      "slopeLatePct": -0.925,
-      "totalReturn": -14.2
-    },
-    {
-      "ticker": "MS",
-      "trend": "bullish",
-      "slopePct": 1.661,
-      "r2": 0.622,
-      "slopeEarlyPct": 0.094,
-      "slopeLatePct": 0.651,
-      "totalReturn": 9.7
-    },
-    {
-      "ticker": "HSBC",
-      "trend": "sideways",
-      "slopePct": 0.596,
-      "r2": 0.13,
-      "slopeEarlyPct": -0.633,
-      "slopeLatePct": -0.784,
-      "totalReturn": 0.3
-    },
-    {
-      "ticker": "HD",
-      "trend": "bearish",
-      "slopePct": -1.462,
-      "r2": 0.598,
-      "slopeEarlyPct": -2.542,
-      "slopeLatePct": -3.763,
-      "totalReturn": -22.2
-    },
-    {
-      "ticker": "PM",
-      "trend": "recovering",
-      "slopePct": -0.328,
-      "r2": 0.041,
-      "slopeEarlyPct": -2.347,
-      "slopeLatePct": 4.148,
-      "totalReturn": 3.4
-    },
-    {
-      "ticker": "GE",
-      "trend": "bearish",
-      "slopePct": -1.325,
-      "r2": 0.498,
-      "slopeEarlyPct": -2.638,
-      "slopeLatePct": -1.123,
-      "totalReturn": -18
-    },
-    {
-      "ticker": "NVS",
-      "trend": "bearish",
-      "slopePct": -0.939,
-      "r2": 0.59,
-      "slopeEarlyPct": -1.348,
-      "slopeLatePct": -0.489,
-      "totalReturn": -9
-    },
-    {
-      "ticker": "GEV",
-      "trend": "bullish",
-      "slopePct": 2.761,
-      "r2": 0.754,
-      "slopeEarlyPct": 2.058,
-      "slopeLatePct": -0.152,
-      "totalReturn": 26.4
-    },
-    {
-      "ticker": "AZN",
-      "trend": "sideways",
-      "slopePct": -0.692,
-      "r2": 0.283,
-      "slopeEarlyPct": -0.3,
-      "slopeLatePct": -2.826,
-      "totalReturn": -11.1
-    },
-    {
-      "ticker": "GS",
-      "trend": "bullish",
-      "slopePct": 1.071,
-      "r2": 0.397,
-      "slopeEarlyPct": -0.152,
-      "slopeLatePct": 0.586,
-      "totalReturn": 2.8
-    },
-    {
-      "ticker": "TXN",
-      "trend": "recovering",
-      "slopePct": 3.824,
-      "r2": 0.647,
-      "slopeEarlyPct": -0.793,
-      "slopeLatePct": 5.676,
-      "totalReturn": 37.8
-    },
-    {
-      "ticker": "MRK",
-      "trend": "bearish",
-      "slopePct": -0.665,
-      "r2": 0.452,
-      "slopeEarlyPct": -0.105,
-      "slopeLatePct": -1.405,
-      "totalReturn": -8.9
-    },
-    {
-      "ticker": "RY",
-      "trend": "recovering",
-      "slopePct": 0.955,
-      "r2": 0.514,
-      "slopeEarlyPct": -0.297,
-      "slopeLatePct": 0.906,
-      "totalReturn": 6.3
-    },
-    {
-      "ticker": "TM",
-      "trend": "bearish",
-      "slopePct": -1.884,
-      "r2": 0.755,
-      "slopeEarlyPct": -2.311,
-      "slopeLatePct": -2.961,
-      "totalReturn": -20.4
-    },
-    {
-      "ticker": "SHEL",
-      "trend": "sideways",
-      "slopePct": 0.293,
-      "r2": 0.063,
-      "slopeEarlyPct": 2.139,
-      "slopeLatePct": -1.156,
-      "totalReturn": 7
-    },
-    {
-      "ticker": "KLAC",
-      "trend": "bullish",
-      "slopePct": 2.548,
-      "r2": 0.697,
-      "slopeEarlyPct": 1.611,
-      "slopeLatePct": -0.219,
-      "totalReturn": 20.6
-    },
-    {
-      "ticker": "LIN",
-      "trend": "sideways",
-      "slopePct": 0.16,
-      "r2": 0.135,
-      "slopeEarlyPct": 0.078,
-      "slopeLatePct": 0.212,
-      "totalReturn": 1.9
-    },
-    {
-      "ticker": "RTX",
-      "trend": "bearish",
-      "slopePct": -1.602,
-      "r2": 0.768,
-      "slopeEarlyPct": -0.723,
-      "slopeLatePct": -2.727,
-      "totalReturn": -16.5
-    },
-    {
-      "ticker": "WFC",
-      "trend": "sideways",
-      "slopePct": -0.602,
-      "r2": 0.191,
-      "slopeEarlyPct": -0.495,
-      "slopeLatePct": -2.529,
-      "totalReturn": -17.2
-    },
-    {
-      "ticker": "ARM",
-      "trend": "bullish",
-      "slopePct": 5.968,
-      "r2": 0.798,
-      "slopeEarlyPct": 3.4,
-      "slopeLatePct": 3.058,
-      "totalReturn": 66.6
-    },
-    {
-      "ticker": "BHP",
-      "trend": "recovering",
-      "slopePct": 1.159,
-      "r2": 0.312,
-      "slopeEarlyPct": -0.852,
-      "slopeLatePct": 1.567,
-      "totalReturn": 9.9
-    },
-    {
-      "ticker": "AXP",
-      "trend": "sideways",
-      "slopePct": 0.088,
-      "r2": 0.005,
-      "slopeEarlyPct": -1.174,
-      "slopeLatePct": -1.081,
-      "totalReturn": -9.4
-    },
-    {
-      "ticker": "MUFG",
-      "trend": "recovering",
-      "slopePct": 0.138,
-      "r2": 0.009,
-      "slopeEarlyPct": -1.164,
-      "slopeLatePct": 0.731,
-      "totalReturn": -2.7
-    },
-    {
-      "ticker": "QCOM",
-      "trend": "recovering",
-      "slopePct": 3.566,
-      "r2": 0.471,
-      "slopeEarlyPct": -1.857,
-      "slopeLatePct": 11.376,
-      "totalReturn": 41
-    },
-    {
-      "ticker": "C",
-      "trend": "bullish",
-      "slopePct": 1.558,
-      "r2": 0.581,
-      "slopeEarlyPct": 0.962,
-      "slopeLatePct": -1.567,
-      "totalReturn": 6.4
-    },
-    {
-      "ticker": "SNDK",
-      "trend": "bullish",
-      "slopePct": 8.42,
-      "r2": 0.785,
-      "slopeEarlyPct": 3.66,
-      "slopeLatePct": 12.737,
-      "totalReturn": 116.6
-    },
-    {
-      "ticker": "IBM",
-      "trend": "bearish",
-      "slopePct": -0.939,
-      "r2": 0.548,
-      "slopeEarlyPct": -1.055,
-      "slopeLatePct": -3.024,
-      "totalReturn": -14.7
-    },
-    {
-      "ticker": "TTE",
-      "trend": "bullish",
-      "slopePct": 1.282,
-      "r2": 0.639,
-      "slopeEarlyPct": 2.828,
-      "slopeLatePct": 1.018,
-      "totalReturn": 18.5
-    },
-    {
-      "ticker": "PEP",
-      "trend": "bearish",
-      "slopePct": -0.603,
-      "r2": 0.439,
-      "slopeEarlyPct": -1.108,
-      "slopeLatePct": -1.157,
-      "totalReturn": -9.6
-    },
-    {
-      "ticker": "ADI",
-      "trend": "recovering",
-      "slopePct": 2.246,
-      "r2": 0.542,
-      "slopeEarlyPct": -0.885,
-      "slopeLatePct": 2.722,
-      "totalReturn": 17.6
-    },
-    {
-      "ticker": "TMUS",
-      "trend": "bearish",
-      "slopePct": -1.402,
-      "r2": 0.876,
-      "slopeEarlyPct": -1.455,
-      "slopeLatePct": -1.095,
-      "totalReturn": -14
-    },
-    {
-      "ticker": "SAP",
-      "trend": "bearish",
-      "slopePct": -1.519,
-      "r2": 0.555,
-      "slopeEarlyPct": -3.587,
-      "slopeLatePct": -1.438,
-      "totalReturn": -16.3
-    },
-    {
-      "ticker": "NVO",
-      "trend": "recovering",
-      "slopePct": 0.916,
-      "r2": 0.135,
-      "slopeEarlyPct": -2.491,
-      "slopeLatePct": 3.083,
-      "totalReturn": -5.7
-    },
-    {
-      "ticker": "PANW",
-      "trend": "bullish",
-      "slopePct": 3.119,
-      "r2": 0.607,
-      "slopeEarlyPct": 0.473,
-      "slopeLatePct": 9.165,
-      "totalReturn": 63.3
-    },
-    {
-      "ticker": "MCD",
-      "trend": "bearish",
-      "slopePct": -1.581,
-      "r2": 0.884,
-      "slopeEarlyPct": -1.562,
-      "slopeLatePct": -3.227,
-      "totalReturn": -16
-    },
-    {
-      "ticker": "NEE",
-      "trend": "sideways",
-      "slopePct": 0.252,
-      "r2": 0.231,
-      "slopeEarlyPct": 0.104,
-      "slopeLatePct": 0.062,
-      "totalReturn": 1.3
-    },
-    {
-      "ticker": "VZ",
-      "trend": "bearish",
-      "slopePct": -0.791,
-      "r2": 0.597,
-      "slopeEarlyPct": -0.719,
-      "slopeLatePct": 0.102,
-      "totalReturn": -5.8
-    },
-    {
-      "ticker": "TD",
-      "trend": "bullish",
-      "slopePct": 1.283,
-      "r2": 0.643,
-      "slopeEarlyPct": 0.018,
-      "slopeLatePct": 0.658,
-      "totalReturn": 11
-    },
-    {
-      "ticker": "ANET",
-      "trend": "sideways",
-      "slopePct": 1.84,
-      "r2": 0.332,
-      "slopeEarlyPct": 0.262,
-      "slopeLatePct": -4.994,
-      "totalReturn": 6.9
-    },
-    {
-      "ticker": "DIS",
-      "trend": "sideways",
-      "slopePct": 0.157,
-      "r2": 0.02,
-      "slopeEarlyPct": -1.418,
-      "slopeLatePct": -0.165,
-      "totalReturn": -2.7
-    },
-    {
-      "ticker": "STX",
-      "trend": "bullish",
-      "slopePct": 7.103,
-      "r2": 0.808,
-      "slopeEarlyPct": 2.501,
-      "slopeLatePct": 10.058,
-      "totalReturn": 93.5
-    },
-    {
-      "ticker": "AMGN",
-      "trend": "bearish",
-      "slopePct": -1.215,
-      "r2": 0.833,
-      "slopeEarlyPct": -1.474,
-      "slopeLatePct": -2.098,
-      "totalReturn": -12.9
-    },
-    {
-      "ticker": "BA",
-      "trend": "sideways",
-      "slopePct": 0.291,
-      "r2": 0.029,
-      "slopeEarlyPct": -1.857,
-      "slopeLatePct": -0.038,
-      "totalReturn": -5
-    },
-    {
-      "ticker": "SAN",
-      "trend": "sideways",
-      "slopePct": 0.346,
-      "r2": 0.04,
-      "slopeEarlyPct": -1.046,
-      "slopeLatePct": -1.608,
-      "totalReturn": -7.9
-    },
-    {
-      "ticker": "RIO",
-      "trend": "recovering",
-      "slopePct": 1.102,
-      "r2": 0.356,
-      "slopeEarlyPct": -0.409,
-      "slopeLatePct": 1.261,
-      "totalReturn": 6.8
-    },
-    {
-      "ticker": "APP",
-      "trend": "recovering",
-      "slopePct": 0.672,
-      "r2": 0.083,
-      "slopeEarlyPct": -2.265,
-      "slopeLatePct": 1.441,
-      "totalReturn": 19.7
-    },
-    {
-      "ticker": "BLK",
-      "trend": "recovering",
-      "slopePct": 0.583,
-      "r2": 0.138,
-      "slopeEarlyPct": -1.417,
-      "slopeLatePct": 0.933,
-      "totalReturn": -1.1
-    },
-    {
-      "ticker": "T",
-      "trend": "bearish",
-      "slopePct": -1.192,
-      "r2": 0.703,
-      "slopeEarlyPct": -0.3,
-      "slopeLatePct": -2.343,
-      "totalReturn": -14.1
-    },
-    {
-      "ticker": "WDC",
-      "trend": "bullish",
-      "slopePct": 5.682,
-      "r2": 0.846,
-      "slopeEarlyPct": 2.466,
-      "slopeLatePct": 6.797,
-      "totalReturn": 68.8
-    },
-    {
-      "ticker": "GLW",
-      "trend": "bullish",
-      "slopePct": 3.181,
-      "r2": 0.681,
-      "slopeEarlyPct": 2.085,
-      "slopeLatePct": 3.756,
-      "totalReturn": 37.5
-    },
-    {
-      "ticker": "TJX",
-      "trend": "sideways",
-      "slopePct": -0.327,
-      "r2": 0.245,
-      "slopeEarlyPct": 0.065,
-      "slopeLatePct": -1.946,
-      "totalReturn": -6.8
-    },
-    {
-      "ticker": "TMO",
-      "trend": "sideways",
-      "slopePct": -0.798,
-      "r2": 0.345,
-      "slopeEarlyPct": -0.794,
-      "slopeLatePct": -3.825,
-      "totalReturn": -14.2
-    },
-    {
-      "ticker": "GILD",
-      "trend": "bearish",
-      "slopePct": -1.215,
-      "r2": 0.841,
-      "slopeEarlyPct": -1.42,
-      "slopeLatePct": -1.15,
-      "totalReturn": -14.4
-    },
-    {
-      "ticker": "UNP",
-      "trend": "recovering",
-      "slopePct": 0.424,
-      "r2": 0.116,
-      "slopeEarlyPct": -1.259,
-      "slopeLatePct": 1.316,
-      "totalReturn": 1.7
-    },
-    {
-      "ticker": "SCHW",
-      "trend": "bearish",
-      "slopePct": -0.49,
-      "r2": 0.593,
-      "slopeEarlyPct": -0.111,
-      "slopeLatePct": -0.298,
-      "totalReturn": -3.3
-    },
-    {
-      "ticker": "DELL",
-      "trend": "bullish",
-      "slopePct": 5.449,
-      "r2": 0.921,
-      "slopeEarlyPct": 4.588,
-      "slopeLatePct": 6.01,
-      "totalReturn": 97.9
-    },
-    {
-      "ticker": "BUD",
-      "trend": "recovering",
-      "slopePct": 0.309,
-      "r2": 0.039,
-      "slopeEarlyPct": -1.474,
-      "slopeLatePct": 2.293,
-      "totalReturn": 3.1
-    },
-    {
-      "ticker": "ETN",
-      "trend": "bullish",
-      "slopePct": 1.354,
-      "r2": 0.546,
-      "slopeEarlyPct": 0.531,
-      "slopeLatePct": -0.874,
-      "totalReturn": 7
-    },
-    {
-      "ticker": "MRVL",
-      "trend": "bullish",
-      "slopePct": 7.696,
-      "r2": 0.924,
-      "slopeEarlyPct": 6.116,
-      "slopeLatePct": 4.916,
-      "totalReturn": 122.6
-    },
-    {
-      "ticker": "APH",
-      "trend": "sideways",
-      "slopePct": -0.368,
-      "r2": 0.035,
-      "slopeEarlyPct": -1.71,
-      "slopeLatePct": -5.301,
-      "totalReturn": -17.2
-    },
-    {
-      "ticker": "UBER",
-      "trend": "sideways",
-      "slopePct": 0.143,
-      "r2": 0.034,
-      "slopeEarlyPct": -0.961,
-      "slopeLatePct": -0.431,
-      "totalReturn": 1.7
-    },
-    {
-      "ticker": "DE",
-      "trend": "bearish",
-      "slopePct": -0.817,
-      "r2": 0.391,
-      "slopeEarlyPct": -1.518,
-      "slopeLatePct": -0.786,
-      "totalReturn": -15.2
-    },
-    {
-      "ticker": "CRWD",
-      "trend": "recovering",
-      "slopePct": 2.758,
-      "r2": 0.519,
-      "slopeEarlyPct": -0.425,
-      "slopeLatePct": 8.571,
-      "totalReturn": 52.9
-    },
-    {
-      "ticker": "WELL",
-      "trend": "recovering",
-      "slopePct": 0.438,
-      "r2": 0.301,
-      "slopeEarlyPct": -0.383,
-      "slopeLatePct": 0.579,
-      "totalReturn": 2.7
-    },
-    {
-      "ticker": "UBS",
-      "trend": "recovering",
-      "slopePct": 1.21,
-      "r2": 0.37,
-      "slopeEarlyPct": -0.725,
-      "slopeLatePct": 1.689,
-      "totalReturn": 7
-    },
-    {
-      "ticker": "ISRG",
-      "trend": "bearish",
-      "slopePct": -1.038,
-      "r2": 0.632,
-      "slopeEarlyPct": -1.848,
-      "slopeLatePct": -2.814,
-      "totalReturn": -16.5
-    },
-    {
-      "ticker": "COP",
-      "trend": "sideways",
-      "slopePct": 0.292,
-      "r2": 0.041,
-      "slopeEarlyPct": 2.191,
-      "slopeLatePct": 0.406,
-      "totalReturn": 10.7
-    },
-    {
-      "ticker": "IBKR",
-      "trend": "recovering",
-      "slopePct": 1.996,
-      "r2": 0.545,
-      "slopeEarlyPct": -0.832,
-      "slopeLatePct": 2.24,
-      "totalReturn": 16.9
-    },
-    {
-      "ticker": "SCCO",
-      "trend": "sideways",
-      "slopePct": -0.64,
-      "r2": 0.071,
-      "slopeEarlyPct": -2.272,
-      "slopeLatePct": -1.467,
-      "totalReturn": -11.2
-    },
-    {
-      "ticker": "ABT",
-      "trend": "bearish",
-      "slopePct": -2.62,
-      "r2": 0.96,
-      "slopeEarlyPct": -1.886,
-      "slopeLatePct": -3.529,
-      "totalReturn": -24.7
-    },
-    {
-      "ticker": "PFE",
-      "trend": "sideways",
-      "slopePct": -0.375,
-      "r2": 0.247,
-      "slopeEarlyPct": 0.246,
-      "slopeLatePct": -2.191,
-      "totalReturn": -5
-    },
-    {
-      "ticker": "BX",
-      "trend": "sideways",
-      "slopePct": 0.867,
-      "r2": 0.299,
-      "slopeEarlyPct": -0.53,
-      "slopeLatePct": -1.637,
-      "totalReturn": -2.8
-    },
-    {
-      "ticker": "VRT",
-      "trend": "bullish",
-      "slopePct": 3.589,
-      "r2": 0.877,
-      "slopeEarlyPct": 1.923,
-      "slopeLatePct": 4.303,
-      "totalReturn": 52.2
-    },
-    {
-      "ticker": "CRM",
-      "trend": "bearish",
-      "slopePct": -0.871,
-      "r2": 0.394,
-      "slopeEarlyPct": -1.556,
-      "slopeLatePct": -0.756,
-      "totalReturn": -6.3
-    },
-    {
-      "ticker": "BTI",
-      "trend": "recovering",
-      "slopePct": -0.059,
-      "r2": 0.003,
-      "slopeEarlyPct": -0.953,
-      "slopeLatePct": 2.865,
-      "totalReturn": 4.8
-    },
-    {
-      "ticker": "SMFG",
-      "trend": "recovering",
-      "slopePct": 0.015,
-      "r2": 0,
-      "slopeEarlyPct": -1.659,
-      "slopeLatePct": 0.748,
-      "totalReturn": -6.6
-    },
-    {
-      "ticker": "PDD",
-      "trend": "bearish",
-      "slopePct": -0.463,
-      "r2": 0.372,
-      "slopeEarlyPct": -0.713,
-      "slopeLatePct": -1.727,
-      "totalReturn": -8.7
-    },
-    {
-      "ticker": "HON",
-      "trend": "bearish",
-      "slopePct": -1.103,
-      "r2": 0.7,
-      "slopeEarlyPct": -0.932,
-      "slopeLatePct": -1.873,
-      "totalReturn": -12.6
-    },
-    {
-      "ticker": "SONY",
-      "trend": "recovering",
-      "slopePct": -0.484,
-      "r2": 0.156,
-      "slopeEarlyPct": -1.216,
-      "slopeLatePct": 0.523,
-      "totalReturn": 1.7
-    },
-    {
-      "ticker": "PLD",
-      "trend": "sideways",
-      "slopePct": 0.41,
-      "r2": 0.142,
-      "slopeEarlyPct": -0.838,
-      "slopeLatePct": -0.501,
-      "totalReturn": -0.7
-    },
-    {
-      "ticker": "SHOP",
-      "trend": "sideways",
-      "slopePct": -0.832,
-      "r2": 0.178,
-      "slopeEarlyPct": -1.805,
-      "slopeLatePct": -6.48,
-      "totalReturn": -20.5
-    },
-    {
-      "ticker": "PBR",
-      "trend": "bullish",
-      "slopePct": 2.012,
-      "r2": 0.651,
-      "slopeEarlyPct": 4.402,
-      "slopeLatePct": -0.763,
-      "totalReturn": 26.2
-    },
-    {
-      "ticker": "CB",
-      "trend": "sideways",
-      "slopePct": -0.237,
-      "r2": 0.288,
-      "slopeEarlyPct": -0.441,
-      "slopeLatePct": -0.61,
-      "totalReturn": -2.3
-    },
-    {
-      "ticker": "HDB",
-      "trend": "bearish",
-      "slopePct": -2.117,
-      "r2": 0.607,
-      "slopeEarlyPct": -4.16,
-      "slopeLatePct": -2.641,
-      "totalReturn": -26.1
-    },
-    {
-      "ticker": "PBR-A",
-      "trend": "bullish",
-      "slopePct": 1.872,
-      "r2": 0.654,
-      "slopeEarlyPct": 4.075,
-      "slopeLatePct": -0.741,
-      "totalReturn": 22.5
-    },
-    {
-      "ticker": "UL",
-      "trend": "bearish",
-      "slopePct": -2.059,
-      "r2": 0.681,
-      "slopeEarlyPct": -4.1,
-      "slopeLatePct": -0.74,
-      "totalReturn": -23.2
-    },
-    {
-      "ticker": "CVS",
-      "trend": "recovering",
-      "slopePct": 1.468,
-      "r2": 0.4,
-      "slopeEarlyPct": -0.657,
-      "slopeLatePct": 5.875,
-      "totalReturn": 25
-    },
-    {
-      "ticker": "LOW",
-      "trend": "bearish",
-      "slopePct": -1.214,
-      "r2": 0.441,
-      "slopeEarlyPct": -2.416,
-      "slopeLatePct": -3.477,
-      "totalReturn": -22.1
-    },
-    {
-      "ticker": "BBVA",
-      "trend": "sideways",
-      "slopePct": 0.057,
-      "r2": 0.002,
-      "slopeEarlyPct": -0.645,
-      "slopeLatePct": -1.569,
-      "totalReturn": -6.9
-    },
-    {
-      "ticker": "MO",
-      "trend": "recovering",
-      "slopePct": 0.469,
-      "r2": 0.171,
-      "slopeEarlyPct": -0.378,
-      "slopeLatePct": 2.751,
-      "totalReturn": 8.2
-    },
-    {
-      "ticker": "SBUX",
-      "trend": "recovering",
-      "slopePct": 0.791,
-      "r2": 0.268,
-      "slopeEarlyPct": -1.098,
-      "slopeLatePct": 1.927,
-      "totalReturn": 9.6
-    },
-    {
-      "ticker": "ENB",
-      "trend": "sideways",
-      "slopePct": 0.244,
-      "r2": 0.266,
-      "slopeEarlyPct": 0.568,
-      "slopeLatePct": 1.033,
-      "totalReturn": 7.4
-    },
-    {
-      "ticker": "BKNG",
-      "trend": "sideways",
-      "slopePct": -0.13,
-      "r2": 0.008,
-      "slopeEarlyPct": 0.059,
-      "slopeLatePct": -5.225,
-      "totalReturn": -5.5
-    },
-    {
-      "ticker": "SPGI",
-      "trend": "sideways",
-      "slopePct": -0.273,
-      "r2": 0.098,
-      "slopeEarlyPct": -0.571,
-      "slopeLatePct": -2.243,
-      "totalReturn": -3.4
-    },
-    {
-      "ticker": "LMT",
-      "trend": "bearish",
-      "slopePct": -2.503,
-      "r2": 0.872,
-      "slopeEarlyPct": -1.256,
-      "slopeLatePct": -3.016,
-      "totalReturn": -21.6
-    },
-    {
-      "ticker": "SYK",
-      "trend": "bearish",
-      "slopePct": -2.016,
-      "r2": 0.774,
-      "slopeEarlyPct": -2.309,
-      "slopeLatePct": -3.696,
-      "totalReturn": -19.3
-    },
-    {
-      "ticker": "WFC-PC",
-      "trend": "sideways",
-      "slopePct": -0.271,
-      "r2": 0.283,
-      "slopeEarlyPct": -0.789,
-      "slopeLatePct": -0.522,
-      "totalReturn": -5.9
-    },
-    {
-      "ticker": "PGR",
-      "trend": "bearish",
-      "slopePct": -0.528,
-      "r2": 0.475,
-      "slopeEarlyPct": -1.148,
-      "slopeLatePct": -0.632,
-      "totalReturn": -2.1
-    },
-    {
-      "ticker": "COF",
-      "trend": "sideways",
-      "slopePct": -0.115,
-      "r2": 0.008,
-      "slopeEarlyPct": -1.328,
-      "slopeLatePct": -2.096,
-      "totalReturn": -10.2
-    },
-    {
-      "ticker": "NEM",
-      "trend": "sideways",
-      "slopePct": -0.4,
-      "r2": 0.039,
-      "slopeEarlyPct": -1.513,
-      "slopeLatePct": -1.669,
-      "totalReturn": -10.7
-    },
-    {
-      "ticker": "BMY",
-      "trend": "bearish",
-      "slopePct": -0.53,
-      "r2": 0.541,
-      "slopeEarlyPct": -0.699,
-      "slopeLatePct": -1.531,
-      "totalReturn": -6
-    },
-    {
-      "ticker": "PWR",
-      "trend": "bullish",
-      "slopePct": 3.008,
-      "r2": 0.732,
-      "slopeEarlyPct": 0.517,
-      "slopeLatePct": 6.55,
-      "totalReturn": 39.3
-    },
-    {
-      "ticker": "DHR",
-      "trend": "bearish",
-      "slopePct": -1.689,
-      "r2": 0.768,
-      "slopeEarlyPct": -1.695,
-      "slopeLatePct": -4.077,
-      "totalReturn": -22.7
-    },
-    {
-      "ticker": "BP",
-      "trend": "bullish",
-      "slopePct": 1.17,
-      "r2": 0.437,
-      "slopeEarlyPct": 3.31,
-      "slopeLatePct": -0.754,
-      "totalReturn": 16.2
-    },
-    {
-      "ticker": "VRTX",
-      "trend": "bearish",
-      "slopePct": -1.037,
-      "r2": 0.698,
-      "slopeEarlyPct": -1.72,
-      "slopeLatePct": -0.207,
-      "totalReturn": -8.4
-    },
-    {
-      "ticker": "INTU",
-      "trend": "sideways",
-      "slopePct": -0.857,
-      "r2": 0.164,
-      "slopeEarlyPct": -0.904,
-      "slopeLatePct": -0.004,
-      "totalReturn": 3.3
-    },
-    {
-      "ticker": "PH",
-      "trend": "sideways",
-      "slopePct": -0.729,
-      "r2": 0.223,
-      "slopeEarlyPct": -1.105,
-      "slopeLatePct": -3.791,
-      "totalReturn": -15.6
-    },
-    {
-      "ticker": "CME",
-      "trend": "recovering",
-      "slopePct": -0.868,
-      "r2": 0.668,
-      "slopeEarlyPct": -0.913,
-      "slopeLatePct": 0.645,
-      "totalReturn": -3
-    },
-    {
-      "ticker": "BMO",
-      "trend": "bullish",
-      "slopePct": 0.852,
-      "r2": 0.37,
-      "slopeEarlyPct": -0.711,
-      "slopeLatePct": 0.119,
-      "totalReturn": 4.4
-    },
-    {
-      "ticker": "MFG",
-      "trend": "sideways",
-      "slopePct": 0.121,
-      "r2": 0.005,
-      "slopeEarlyPct": -1.433,
-      "slopeLatePct": 0.374,
-      "totalReturn": -7.1
-    },
-    {
-      "ticker": "EQIX",
-      "trend": "bullish",
-      "slopePct": 1.416,
-      "r2": 0.782,
-      "slopeEarlyPct": 1.119,
-      "slopeLatePct": -0.878,
-      "totalReturn": 14.2
-    },
-    {
-      "ticker": "SO",
-      "trend": "sideways",
-      "slopePct": -0.295,
-      "r2": 0.263,
-      "slopeEarlyPct": 0.122,
-      "slopeLatePct": -0.598,
-      "totalReturn": -1.9
-    },
-    {
-      "ticker": "HWM",
-      "trend": "recovering",
-      "slopePct": 0.226,
-      "r2": 0.026,
-      "slopeEarlyPct": -1.266,
-      "slopeLatePct": 1.476,
-      "totalReturn": 0.9
-    },
-    {
-      "ticker": "ACN",
-      "trend": "bearish",
-      "slopePct": -1.801,
-      "r2": 0.82,
-      "slopeEarlyPct": -2.081,
-      "slopeLatePct": -3.072,
-      "totalReturn": -21.6
-    },
-    {
-      "ticker": "TT",
-      "trend": "sideways",
-      "slopePct": 0.789,
-      "r2": 0.238,
-      "slopeEarlyPct": -0.647,
-      "slopeLatePct": -0.824,
-      "totalReturn": -0.1
-    },
-    {
-      "ticker": "CM",
-      "trend": "recovering",
-      "slopePct": 1.335,
-      "r2": 0.574,
-      "slopeEarlyPct": -0.238,
-      "slopeLatePct": 0.414,
-      "totalReturn": 11.8
-    },
-    {
-      "ticker": "SNY",
-      "trend": "sideways",
-      "slopePct": -0.343,
-      "r2": 0.1,
-      "slopeEarlyPct": 0.099,
-      "slopeLatePct": -3.131,
-      "totalReturn": -8.7
-    },
-    {
-      "ticker": "BN",
-      "trend": "sideways",
-      "slopePct": 0.904,
-      "r2": 0.22,
-      "slopeEarlyPct": -1.396,
-      "slopeLatePct": -0.109,
-      "totalReturn": -1
-    },
-    {
-      "ticker": "ADBE",
-      "trend": "recovering",
-      "slopePct": -0.601,
-      "r2": 0.177,
-      "slopeEarlyPct": -2.269,
-      "slopeLatePct": 0.56,
-      "totalReturn": -4.3
-    },
-    {
-      "ticker": "CNQ",
-      "trend": "sideways",
-      "slopePct": 0.137,
-      "r2": 0.01,
-      "slopeEarlyPct": 1.487,
-      "slopeLatePct": 2.261,
-      "totalReturn": 13.2
-    },
-    {
-      "ticker": "GSK",
-      "trend": "bearish",
-      "slopePct": -0.941,
-      "r2": 0.354,
-      "slopeEarlyPct": -0.531,
-      "slopeLatePct": -4.044,
-      "totalReturn": -16.5
-    },
-    {
-      "ticker": "EQNR",
-      "trend": "sideways",
-      "slopePct": 1.724,
-      "r2": 0.339,
-      "slopeEarlyPct": 5.255,
-      "slopeLatePct": 1.788,
-      "totalReturn": 37
-    },
-    {
-      "ticker": "NOW",
-      "trend": "bearish",
-      "slopePct": -2.107,
-      "r2": 0.531,
-      "slopeEarlyPct": -2.896,
-      "slopeLatePct": -0.234,
-      "totalReturn": -8.8
-    },
-    {
-      "ticker": "MDT",
-      "trend": "bearish",
-      "slopePct": -1.826,
-      "r2": 0.871,
-      "slopeEarlyPct": -1.786,
-      "slopeLatePct": -3.391,
-      "totalReturn": -21.4
-    },
-    {
-      "ticker": "CEG",
-      "trend": "sideways",
-      "slopePct": -0.541,
-      "r2": 0.123,
-      "slopeEarlyPct": -1.66,
-      "slopeLatePct": -2.282,
-      "totalReturn": -9.4
-    },
-    {
-      "ticker": "SNPS",
-      "trend": "recovering",
-      "slopePct": 1.774,
-      "r2": 0.441,
-      "slopeEarlyPct": -1.699,
-      "slopeLatePct": 2.468,
-      "totalReturn": 14.2
-    },
-    {
-      "ticker": "CMI",
-      "trend": "bullish",
-      "slopePct": 2.04,
-      "r2": 0.61,
-      "slopeEarlyPct": -0.13,
-      "slopeLatePct": 2.371,
-      "totalReturn": 17.4
-    },
-    {
-      "ticker": "CDNS",
-      "trend": "recovering",
-      "slopePct": 1.75,
-      "r2": 0.454,
-      "slopeEarlyPct": -1.696,
-      "slopeLatePct": 3.016,
-      "totalReturn": 17.2
-    },
-    {
-      "ticker": "WMB",
-      "trend": "recovering",
-      "slopePct": 0.097,
-      "r2": 0.025,
-      "slopeEarlyPct": -0.296,
-      "slopeLatePct": 1.753,
+      "slopePct": 0.972,
+      "r2": 0.489,
+      "slopeEarlyPct": 0.594,
+      "slopeLatePct": -0.693,
       "totalReturn": 6.5
-    },
-    {
-      "ticker": "BNS",
-      "trend": "sideways",
-      "slopePct": 0.554,
-      "r2": 0.167,
-      "slopeEarlyPct": -1.206,
-      "slopeLatePct": 0.372,
-      "totalReturn": -0.3
-    },
-    {
-      "ticker": "DUK",
-      "trend": "sideways",
-      "slopePct": -0.416,
-      "r2": 0.341,
-      "slopeEarlyPct": 0.256,
-      "slopeLatePct": -1.372,
-      "totalReturn": -4.6
-    },
-    {
-      "ticker": "HCA",
-      "trend": "bearish",
-      "slopePct": -2.069,
-      "r2": 0.861,
-      "slopeEarlyPct": -1.804,
-      "slopeLatePct": -2.877,
-      "totalReturn": -20.5
-    },
-    {
-      "ticker": "IBN",
-      "trend": "sideways",
-      "slopePct": -0.912,
-      "r2": 0.296,
-      "slopeEarlyPct": -2.415,
-      "slopeLatePct": -2.442,
-      "totalReturn": -15.8
-    },
-    {
-      "ticker": "MAR",
-      "trend": "sideways",
-      "slopePct": 0.843,
-      "r2": 0.315,
-      "slopeEarlyPct": -0.067,
-      "slopeLatePct": -1.757,
-      "totalReturn": 1.5
-    },
-    {
-      "ticker": "BK",
-      "trend": "bullish",
-      "slopePct": 1.498,
-      "r2": 0.731,
-      "slopeEarlyPct": 0.782,
-      "slopeLatePct": -0.278,
-      "totalReturn": 14.2
-    },
-    {
-      "ticker": "MCK",
-      "trend": "bearish",
-      "slopePct": -2.005,
-      "r2": 0.882,
-      "slopeEarlyPct": -1.726,
-      "slopeLatePct": -3.791,
-      "totalReturn": -19.7
-    },
-    {
-      "ticker": "FCX",
-      "trend": "sideways",
-      "slopePct": 0.093,
-      "r2": 0.002,
-      "slopeEarlyPct": -0.45,
-      "slopeLatePct": -2.208,
-      "totalReturn": -2.1
-    },
-    {
-      "ticker": "GD",
-      "trend": "recovering",
-      "slopePct": -0.591,
-      "r2": 0.4,
-      "slopeEarlyPct": -0.713,
-      "slopeLatePct": 0.887,
-      "totalReturn": -4.8
-    },
-    {
-      "ticker": "KKR",
-      "trend": "sideways",
-      "slopePct": 1.017,
-      "r2": 0.315,
-      "slopeEarlyPct": -0.739,
-      "slopeLatePct": -1.236,
-      "totalReturn": -4.2
-    },
-    {
-      "ticker": "AEM",
-      "trend": "bearish",
-      "slopePct": -1.713,
-      "r2": 0.421,
-      "slopeEarlyPct": -2.192,
-      "slopeLatePct": -4.428,
-      "totalReturn": -21
-    },
-    {
-      "ticker": "FTNT",
-      "trend": "recovering",
-      "slopePct": 2.799,
-      "r2": 0.449,
-      "slopeEarlyPct": -0.355,
-      "slopeLatePct": 11.405,
-      "totalReturn": 53.5
-    },
-    {
-      "ticker": "SPOT",
-      "trend": "bearish",
-      "slopePct": -1.315,
-      "r2": 0.357,
-      "slopeEarlyPct": -1.314,
-      "slopeLatePct": -6.37,
-      "totalReturn": -10.9
-    },
-    {
-      "ticker": "FDX",
-      "trend": "sideways",
-      "slopePct": 0.333,
-      "r2": 0.085,
-      "slopeEarlyPct": -0.866,
-      "slopeLatePct": -1.105,
-      "totalReturn": -3.3
-    },
-    {
-      "ticker": "CMCSA",
-      "trend": "bearish",
-      "slopePct": -1.788,
-      "r2": 0.84,
-      "slopeEarlyPct": -2.04,
-      "slopeLatePct": -4.422,
-      "totalReturn": -21
-    },
-    {
-      "ticker": "WM",
-      "trend": "bearish",
-      "slopePct": -0.708,
-      "r2": 0.563,
-      "slopeEarlyPct": -0.525,
-      "slopeLatePct": -1.003,
-      "totalReturn": -4.6
-    },
-    {
-      "ticker": "JCI",
-      "trend": "sideways",
-      "slopePct": 0.363,
-      "r2": 0.108,
-      "slopeEarlyPct": -0.607,
-      "slopeLatePct": 0.142,
-      "totalReturn": -0.5
-    },
-    {
-      "ticker": "ICE",
-      "trend": "sideways",
-      "slopePct": -0.256,
-      "r2": 0.139,
-      "slopeEarlyPct": -0.007,
-      "slopeLatePct": -1.044,
-      "totalReturn": 0.2
-    },
-    {
-      "ticker": "ITUB",
-      "trend": "sideways",
-      "slopePct": -0.291,
-      "r2": 0.026,
-      "slopeEarlyPct": -0.975,
-      "slopeLatePct": -4.134,
-      "totalReturn": -17.6
-    },
-    {
-      "ticker": "ADP",
-      "trend": "recovering",
-      "slopePct": -0.316,
-      "r2": 0.069,
-      "slopeEarlyPct": -1.751,
-      "slopeLatePct": 2.142,
-      "totalReturn": 0
-    },
-    {
-      "ticker": "PNC",
-      "trend": "sideways",
-      "slopePct": 0.208,
-      "r2": 0.032,
-      "slopeEarlyPct": -0.545,
-      "slopeLatePct": -1.231,
-      "totalReturn": -8.6
-    },
-    {
-      "ticker": "ELV",
-      "trend": "recovering",
-      "slopePct": 1.966,
-      "r2": 0.465,
-      "slopeEarlyPct": -1.275,
-      "slopeLatePct": 4.764,
-      "totalReturn": 14.5
-    },
-    {
-      "ticker": "MNST",
-      "trend": "recovering",
-      "slopePct": 0.31,
-      "r2": 0.032,
-      "slopeEarlyPct": -2.1,
-      "slopeLatePct": 3.552,
-      "totalReturn": 4
-    },
-    {
-      "ticker": "EPD",
-      "trend": "sideways",
-      "slopePct": 0.347,
-      "r2": 0.282,
-      "slopeEarlyPct": 0.633,
-      "slopeLatePct": 1.139,
-      "totalReturn": 7.9
-    },
-    {
-      "ticker": "CSX",
-      "trend": "recovering",
-      "slopePct": 1.072,
-      "r2": 0.493,
-      "slopeEarlyPct": -0.287,
-      "slopeLatePct": 0.914,
-      "totalReturn": 7.9
-    },
-    {
-      "ticker": "ING",
-      "trend": "recovering",
-      "slopePct": 0.627,
-      "r2": 0.137,
-      "slopeEarlyPct": -1.062,
-      "slopeLatePct": 1.135,
-      "totalReturn": -1.3
-    },
-    {
-      "ticker": "UPS",
-      "trend": "sideways",
-      "slopePct": -0.555,
-      "r2": 0.099,
-      "slopeEarlyPct": -2.525,
-      "slopeLatePct": -2.041,
-      "totalReturn": -15.2
-    },
-    {
-      "ticker": "SLB",
-      "trend": "bullish",
-      "slopePct": 1.298,
-      "r2": 0.478,
-      "slopeEarlyPct": 0.475,
-      "slopeLatePct": 0.467,
-      "totalReturn": 8.9
-    },
-    {
-      "ticker": "USB",
-      "trend": "sideways",
-      "slopePct": 0.17,
-      "r2": 0.021,
-      "slopeEarlyPct": -0.755,
-      "slopeLatePct": -1.382,
-      "totalReturn": -9.4
-    },
-    {
-      "ticker": "E",
-      "trend": "bullish",
-      "slopePct": 1.446,
-      "r2": 0.536,
-      "slopeEarlyPct": 3.73,
-      "slopeLatePct": 1.068,
-      "totalReturn": 25.5
-    },
-    {
-      "ticker": "SU",
-      "trend": "bullish",
-      "slopePct": 1.416,
-      "r2": 0.648,
-      "slopeEarlyPct": 2.75,
-      "slopeLatePct": 2.195,
-      "totalReturn": 22.5
-    },
-    {
-      "ticker": "NGG",
-      "trend": "sideways",
-      "slopePct": -0.565,
-      "r2": 0.244,
-      "slopeEarlyPct": -0.829,
-      "slopeLatePct": -1.521,
-      "totalReturn": -10.7
-    },
-    {
-      "ticker": "AMX",
-      "trend": "bullish",
-      "slopePct": 1.101,
-      "r2": 0.536,
-      "slopeEarlyPct": 1.122,
-      "slopeLatePct": 0.379,
-      "totalReturn": 10.5
-    },
-    {
-      "ticker": "AMT",
-      "trend": "bearish",
-      "slopePct": -0.617,
-      "r2": 0.403,
-      "slopeEarlyPct": -1.389,
-      "slopeLatePct": -1.413,
-      "totalReturn": -8.9
     },
     {
       "ticker": "ABNB",
       "trend": "sideways",
-      "slopePct": 0.732,
-      "r2": 0.289,
-      "slopeEarlyPct": -0.669,
-      "slopeLatePct": -1.337,
-      "totalReturn": 3.9
+      "slopePct": 0.511,
+      "r2": 0.186,
+      "slopeEarlyPct": 1.454,
+      "slopeLatePct": -1.119,
+      "totalReturn": 0.4
     },
     {
-      "ticker": "BE",
-      "trend": "bullish",
-      "slopePct": 6.711,
-      "r2": 0.724,
-      "slopeEarlyPct": 0.191,
-      "slopeLatePct": 6.555,
-      "totalReturn": 87
-    },
-    {
-      "ticker": "MELI",
-      "trend": "sideways",
-      "slopePct": -0.62,
-      "r2": 0.112,
-      "slopeEarlyPct": -1.619,
-      "slopeLatePct": -4.706,
-      "totalReturn": -22.5
-    },
-    {
-      "ticker": "CIEN",
-      "trend": "bullish",
-      "slopePct": 5.216,
-      "r2": 0.919,
-      "slopeEarlyPct": 6.23,
-      "slopeLatePct": 2.276,
-      "totalReturn": 65.5
-    },
-    {
-      "ticker": "BSX",
-      "trend": "bearish",
-      "slopePct": -2.913,
-      "r2": 0.934,
-      "slopeEarlyPct": -2.845,
-      "slopeLatePct": -5.397,
-      "totalReturn": -29.4
-    },
-    {
-      "ticker": "APO",
+      "ticker": "ABT",
       "trend": "recovering",
-      "slopePct": 1.905,
-      "r2": 0.549,
-      "slopeEarlyPct": -0.977,
-      "slopeLatePct": 2.351,
-      "totalReturn": 13.1
-    },
-    {
-      "ticker": "NOK",
-      "trend": "bullish",
-      "slopePct": 5.51,
-      "r2": 0.844,
-      "slopeEarlyPct": 2.578,
-      "slopeLatePct": 7.922,
-      "totalReturn": 79.5
-    },
-    {
-      "ticker": "MRSH",
-      "trend": "bearish",
-      "slopePct": -0.964,
-      "r2": 0.739,
-      "slopeEarlyPct": -1.191,
-      "slopeLatePct": -2.173,
-      "totalReturn": -10.2
-    },
-    {
-      "ticker": "MDLZ",
-      "trend": "recovering",
-      "slopePct": 0.305,
-      "r2": 0.111,
-      "slopeEarlyPct": -0.366,
-      "slopeLatePct": 1.73,
-      "totalReturn": 2.8
-    },
-    {
-      "ticker": "NOC",
-      "trend": "bearish",
-      "slopePct": -2.731,
-      "r2": 0.855,
-      "slopeEarlyPct": -1.197,
-      "slopeLatePct": -4.739,
-      "totalReturn": -25.3
-    },
-    {
-      "ticker": "BCS",
-      "trend": "sideways",
-      "slopePct": 0.05,
-      "r2": 0.001,
-      "slopeEarlyPct": -1.787,
-      "slopeLatePct": -1.189,
-      "totalReturn": -13.3
-    },
-    {
-      "ticker": "BAM",
-      "trend": "sideways",
-      "slopePct": 0.418,
-      "r2": 0.082,
-      "slopeEarlyPct": -1.575,
-      "slopeLatePct": -0.126,
-      "totalReturn": -5.2
-    },
-    {
-      "ticker": "MMM",
-      "trend": "bearish",
-      "slopePct": -0.952,
-      "r2": 0.438,
-      "slopeEarlyPct": -2.055,
-      "slopeLatePct": -1.321,
-      "totalReturn": -12.5
-    },
-    {
-      "ticker": "MPWR",
-      "trend": "bullish",
-      "slopePct": 4.004,
-      "r2": 0.706,
-      "slopeEarlyPct": 1.091,
-      "slopeLatePct": 0.843,
-      "totalReturn": 28.7
-    },
-    {
-      "ticker": "SPG",
-      "trend": "sideways",
-      "slopePct": 0.332,
-      "r2": 0.09,
-      "slopeEarlyPct": -0.804,
-      "slopeLatePct": -0.566,
-      "totalReturn": -0.8
-    },
-    {
-      "ticker": "LITE",
-      "trend": "bullish",
-      "slopePct": 3.991,
-      "r2": 0.815,
-      "slopeEarlyPct": 4.614,
-      "slopeLatePct": 1.907,
-      "totalReturn": 45.4
-    },
-    {
-      "ticker": "CP",
-      "trend": "recovering",
-      "slopePct": 0.203,
-      "r2": 0.038,
-      "slopeEarlyPct": -1.333,
-      "slopeLatePct": 0.743,
-      "totalReturn": 0
-    },
-    {
-      "ticker": "CI",
-      "trend": "recovering",
-      "slopePct": 0.264,
-      "r2": 0.094,
-      "slopeEarlyPct": -0.857,
-      "slopeLatePct": 0.91,
-      "totalReturn": 1.8
-    },
-    {
-      "ticker": "MCO",
-      "trend": "sideways",
-      "slopePct": -0.232,
-      "r2": 0.056,
-      "slopeEarlyPct": -1.241,
-      "slopeLatePct": -1.282,
-      "totalReturn": -4.2
-    },
-    {
-      "ticker": "COHR",
-      "trend": "bullish",
-      "slopePct": 3.951,
-      "r2": 0.799,
-      "slopeEarlyPct": 2.072,
-      "slopeLatePct": 2.142,
-      "totalReturn": 54.1
-    },
-    {
-      "ticker": "KMI",
-      "trend": "sideways",
-      "slopePct": -0.268,
-      "r2": 0.198,
-      "slopeEarlyPct": -0.038,
-      "slopeLatePct": 0.896,
-      "totalReturn": 2.7
-    },
-    {
-      "ticker": "EOG",
-      "trend": "sideways",
-      "slopePct": 0.521,
-      "r2": 0.133,
-      "slopeEarlyPct": 2.154,
-      "slopeLatePct": 1.532,
-      "totalReturn": 14
-    },
-    {
-      "ticker": "EMR",
-      "trend": "sideways",
-      "slopePct": -0.247,
-      "r2": 0.028,
-      "slopeEarlyPct": -1.492,
-      "slopeLatePct": -1.904,
-      "totalReturn": -10.5
-    },
-    {
-      "ticker": "VLO",
-      "trend": "bullish",
-      "slopePct": 1.268,
-      "r2": 0.492,
-      "slopeEarlyPct": 2.913,
-      "slopeLatePct": 2.478,
-      "totalReturn": 24.9
-    },
-    {
-      "ticker": "MPC",
-      "trend": "bullish",
-      "slopePct": 1.463,
-      "r2": 0.477,
-      "slopeEarlyPct": 2.642,
-      "slopeLatePct": 4.367,
-      "totalReturn": 29.6
-    },
-    {
-      "ticker": "ASX",
-      "trend": "bullish",
-      "slopePct": 4.191,
-      "r2": 0.708,
-      "slopeEarlyPct": -0.155,
-      "slopeLatePct": 3.954,
-      "totalReturn": 41.1
-    },
-    {
-      "ticker": "DDOG",
-      "trend": "recovering",
-      "slopePct": 4.343,
-      "r2": 0.5,
-      "slopeEarlyPct": -0.639,
-      "slopeLatePct": 14.502,
-      "totalReturn": 79.8
-    },
-    {
-      "ticker": "SHW",
-      "trend": "sideways",
-      "slopePct": -0.806,
-      "r2": 0.273,
-      "slopeEarlyPct": -1.635,
-      "slopeLatePct": -3.454,
-      "totalReturn": -16.8
-    },
-    {
-      "ticker": "NXPI",
-      "trend": "recovering",
-      "slopePct": 3.096,
-      "r2": 0.461,
-      "slopeEarlyPct": -2.258,
-      "slopeLatePct": 7.516,
-      "totalReturn": 25.5
-    },
-    {
-      "ticker": "LYG",
-      "trend": "sideways",
-      "slopePct": -0.093,
-      "r2": 0.004,
-      "slopeEarlyPct": -1.077,
-      "slopeLatePct": -2.178,
-      "totalReturn": -12.2
-    },
-    {
-      "ticker": "ORLY",
-      "trend": "sideways",
-      "slopePct": -0.035,
-      "r2": 0.002,
-      "slopeEarlyPct": -0.433,
-      "slopeLatePct": -1.141,
-      "totalReturn": -5.4
-    },
-    {
-      "ticker": "REGN",
-      "trend": "bearish",
-      "slopePct": -0.733,
-      "r2": 0.652,
-      "slopeEarlyPct": -0.62,
-      "slopeLatePct": -1.954,
-      "totalReturn": -10.4
-    },
-    {
-      "ticker": "NTES",
-      "trend": "sideways",
-      "slopePct": -0.159,
-      "r2": 0.054,
-      "slopeEarlyPct": -0.831,
-      "slopeLatePct": -0.374,
-      "totalReturn": -4.2
-    },
-    {
-      "ticker": "RKLB",
-      "trend": "recovering",
-      "slopePct": 4.332,
-      "r2": 0.537,
-      "slopeEarlyPct": -0.97,
-      "slopeLatePct": 11.164,
-      "totalReturn": 76.1
-    },
-    {
-      "ticker": "HLT",
-      "trend": "sideways",
-      "slopePct": 0.641,
-      "r2": 0.246,
-      "slopeEarlyPct": 0.021,
-      "slopeLatePct": -2.106,
-      "totalReturn": 0.1
-    },
-    {
-      "ticker": "ITW",
-      "trend": "bearish",
-      "slopePct": -1.033,
-      "r2": 0.585,
-      "slopeEarlyPct": -1.738,
-      "slopeLatePct": -2.451,
-      "totalReturn": -16
-    },
-    {
-      "ticker": "TRP",
-      "trend": "sideways",
-      "slopePct": 0.329,
-      "r2": 0.181,
-      "slopeEarlyPct": 0.073,
-      "slopeLatePct": 2.789,
-      "totalReturn": 9.4
-    },
-    {
-      "ticker": "NSC",
-      "trend": "recovering",
-      "slopePct": 0.333,
-      "r2": 0.079,
-      "slopeEarlyPct": -1.367,
-      "slopeLatePct": 0.621,
-      "totalReturn": -0.1
-    },
-    {
-      "ticker": "PSX",
-      "trend": "sideways",
-      "slopePct": 0.498,
-      "r2": 0.1,
-      "slopeEarlyPct": 1.438,
-      "slopeLatePct": 2.868,
-      "totalReturn": 13.1
-    },
-    {
-      "ticker": "CL",
-      "trend": "recovering",
-      "slopePct": -0.846,
-      "r2": 0.384,
-      "slopeEarlyPct": -2.353,
-      "slopeLatePct": 0.87,
-      "totalReturn": -7.3
-    },
-    {
-      "ticker": "FIX",
-      "trend": "bullish",
-      "slopePct": 3.507,
-      "r2": 0.778,
-      "slopeEarlyPct": 0.936,
-      "slopeLatePct": 4.956,
-      "totalReturn": 36.3
-    },
-    {
-      "ticker": "NET",
-      "trend": "sideways",
-      "slopePct": 0.695,
-      "r2": 0.105,
-      "slopeEarlyPct": 0.937,
-      "slopeLatePct": -0.873,
-      "totalReturn": 11.5
-    },
-    {
-      "ticker": "RCL",
-      "trend": "bearish",
-      "slopePct": -1.028,
-      "r2": 0.405,
-      "slopeEarlyPct": -2.163,
-      "slopeLatePct": -1.515,
-      "totalReturn": -17.4
-    },
-    {
-      "ticker": "ECL",
-      "trend": "bearish",
-      "slopePct": -1.352,
-      "r2": 0.618,
-      "slopeEarlyPct": -2.218,
-      "slopeLatePct": -2.667,
-      "totalReturn": -18.6
-    },
-    {
-      "ticker": "VALE",
-      "trend": "sideways",
-      "slopePct": 0.565,
-      "r2": 0.1,
-      "slopeEarlyPct": -0.276,
-      "slopeLatePct": -2.058,
-      "totalReturn": -2.3
-    },
-    {
-      "ticker": "HOOD",
-      "trend": "sideways",
-      "slopePct": 0.548,
-      "r2": 0.059,
-      "slopeEarlyPct": -1.961,
-      "slopeLatePct": -4.327,
-      "totalReturn": 1.4
-    },
-    {
-      "ticker": "DASH",
-      "trend": "sideways",
-      "slopePct": -0.237,
-      "r2": 0.016,
-      "slopeEarlyPct": -2.688,
-      "slopeLatePct": -3.62,
-      "totalReturn": -9.7
-    },
-    {
-      "ticker": "ET",
-      "trend": "bullish",
-      "slopePct": 0.416,
-      "r2": 0.46,
-      "slopeEarlyPct": 0.311,
-      "slopeLatePct": 1.458,
-      "totalReturn": 6.2
-    },
-    {
-      "ticker": "CRH",
-      "trend": "sideways",
-      "slopePct": -0.08,
-      "r2": 0.002,
-      "slopeEarlyPct": -1.449,
-      "slopeLatePct": -2.812,
-      "totalReturn": -16.8
-    },
-    {
-      "ticker": "ROST",
-      "trend": "bullish",
-      "slopePct": 0.864,
-      "r2": 0.614,
-      "slopeEarlyPct": 1.209,
-      "slopeLatePct": -1.369,
-      "totalReturn": 5.6
-    },
-    {
-      "ticker": "B",
-      "trend": "sideways",
-      "slopePct": -1.224,
-      "r2": 0.288,
-      "slopeEarlyPct": -2.798,
-      "slopeLatePct": -0.807,
-      "totalReturn": -15.3
-    },
-    {
-      "ticker": "AEP",
-      "trend": "sideways",
-      "slopePct": 0.009,
-      "r2": 0,
-      "slopeEarlyPct": 0.267,
-      "slopeLatePct": -1.634,
-      "totalReturn": -3.3
-    },
-    {
-      "ticker": "CNI",
-      "trend": "sideways",
-      "slopePct": 0.442,
-      "r2": 0.15,
-      "slopeEarlyPct": -0.733,
-      "slopeLatePct": 0.004,
-      "totalReturn": 1.2
-    },
-    {
-      "ticker": "AON",
-      "trend": "bearish",
-      "slopePct": -0.454,
-      "r2": 0.382,
-      "slopeEarlyPct": -0.828,
-      "slopeLatePct": -1.176,
-      "totalReturn": -2.4
-    },
-    {
-      "ticker": "WBD",
-      "trend": "bearish",
-      "slopePct": -0.392,
-      "r2": 0.614,
-      "slopeEarlyPct": -0.679,
-      "slopeLatePct": -0.347,
-      "totalReturn": -6.2
-    },
-    {
-      "ticker": "GM",
-      "trend": "sideways",
-      "slopePct": 0.002,
-      "r2": 0,
-      "slopeEarlyPct": -1.15,
-      "slopeLatePct": -1.565,
-      "totalReturn": -8.2
-    },
-    {
-      "ticker": "DLR",
-      "trend": "bullish",
-      "slopePct": 1.185,
-      "r2": 0.615,
-      "slopeEarlyPct": 0.708,
-      "slopeLatePct": -1.766,
-      "totalReturn": 7.3
-    },
-    {
-      "ticker": "CTAS",
-      "trend": "bearish",
-      "slopePct": -1.649,
-      "r2": 0.709,
-      "slopeEarlyPct": -2.795,
-      "slopeLatePct": -1.782,
-      "totalReturn": -15.9
-    },
-    {
-      "ticker": "IMO",
-      "trend": "bullish",
-      "slopePct": 0.766,
-      "r2": 0.483,
-      "slopeEarlyPct": 1.624,
-      "slopeLatePct": 2.214,
-      "totalReturn": 11.6
-    },
-    {
-      "ticker": "APD",
-      "trend": "bullish",
-      "slopePct": 0.699,
-      "r2": 0.679,
-      "slopeEarlyPct": 1.106,
-      "slopeLatePct": 0.027,
-      "totalReturn": 5.1
-    },
-    {
-      "ticker": "MSI",
-      "trend": "bearish",
-      "slopePct": -1.417,
-      "r2": 0.76,
-      "slopeEarlyPct": -1.329,
-      "slopeLatePct": -3.622,
-      "totalReturn": -15
-    },
-    {
-      "ticker": "TDG",
-      "trend": "bearish",
-      "slopePct": -0.948,
-      "r2": 0.447,
-      "slopeEarlyPct": -2.034,
-      "slopeLatePct": -1.407,
-      "totalReturn": -14.2
-    },
-    {
-      "ticker": "RSG",
-      "trend": "bearish",
-      "slopePct": -0.961,
-      "r2": 0.746,
-      "slopeEarlyPct": -0.609,
-      "slopeLatePct": -0.409,
-      "totalReturn": -5.1
-    },
-    {
-      "ticker": "TRV",
-      "trend": "sideways",
-      "slopePct": -0.127,
-      "r2": 0.058,
-      "slopeEarlyPct": -0.779,
-      "slopeLatePct": -0.225,
-      "totalReturn": -1.7
-    },
-    {
-      "ticker": "BKR",
-      "trend": "sideways",
-      "slopePct": 0.74,
-      "r2": 0.206,
-      "slopeEarlyPct": -0.073,
-      "slopeLatePct": 0.557,
-      "totalReturn": 3.1
-    },
-    {
-      "ticker": "MFC",
-      "trend": "bullish",
-      "slopePct": 1.184,
-      "r2": 0.504,
-      "slopeEarlyPct": -0.139,
-      "slopeLatePct": -0.309,
-      "totalReturn": 2.4
-    },
-    {
-      "ticker": "MSTR",
-      "trend": "recovering",
-      "slopePct": 3.348,
-      "r2": 0.65,
-      "slopeEarlyPct": -0.837,
-      "slopeLatePct": 2.181,
-      "totalReturn": 35.4
-    },
-    {
-      "ticker": "NKE",
-      "trend": "bearish",
-      "slopePct": -3.637,
-      "r2": 0.834,
-      "slopeEarlyPct": -5.947,
-      "slopeLatePct": -2.001,
-      "totalReturn": -36
-    },
-    {
-      "ticker": "URI",
-      "trend": "recovering",
-      "slopePct": 1.497,
-      "r2": 0.245,
-      "slopeEarlyPct": -2.673,
-      "slopeLatePct": 3.168,
-      "totalReturn": 5.7
-    },
-    {
-      "ticker": "GWW",
-      "trend": "bullish",
-      "slopePct": 0.984,
-      "r2": 0.454,
-      "slopeEarlyPct": -0.022,
-      "slopeLatePct": 2.554,
-      "totalReturn": 12.9
-    },
-    {
-      "ticker": "TEL",
-      "trend": "sideways",
-      "slopePct": -0.3,
-      "r2": 0.026,
-      "slopeEarlyPct": -0.863,
-      "slopeLatePct": -4.193,
-      "totalReturn": -12.6
-    },
-    {
-      "ticker": "KEYS",
-      "trend": "bullish",
-      "slopePct": 2.805,
-      "r2": 0.799,
-      "slopeEarlyPct": 2.1,
-      "slopeLatePct": 1.224,
-      "totalReturn": 43.3
-    },
-    {
-      "ticker": "NWG",
-      "trend": "sideways",
-      "slopePct": -0.175,
-      "r2": 0.012,
-      "slopeEarlyPct": -1.036,
-      "slopeLatePct": -2.391,
-      "totalReturn": -11.1
-    },
-    {
-      "ticker": "AFL",
-      "trend": "sideways",
-      "slopePct": 0.307,
-      "r2": 0.175,
-      "slopeEarlyPct": -0.57,
-      "slopeLatePct": 0.268,
-      "totalReturn": 2.4
-    },
-    {
-      "ticker": "OXY",
-      "trend": "sideways",
-      "slopePct": 0.393,
-      "r2": 0.045,
-      "slopeEarlyPct": 2.639,
-      "slopeLatePct": 1.341,
-      "totalReturn": 15
-    },
-    {
-      "ticker": "NU",
-      "trend": "sideways",
-      "slopePct": -1.235,
-      "r2": 0.326,
-      "slopeEarlyPct": -2.027,
-      "slopeLatePct": -4.987,
-      "totalReturn": -30.5
-    },
-    {
-      "ticker": "WPM",
-      "trend": "sideways",
-      "slopePct": -0.923,
-      "r2": 0.145,
-      "slopeEarlyPct": -2.303,
-      "slopeLatePct": -3.241,
-      "totalReturn": -13.3
-    },
-    {
-      "ticker": "DB",
-      "trend": "sideways",
-      "slopePct": -0.507,
-      "r2": 0.06,
-      "slopeEarlyPct": -2.551,
-      "slopeLatePct": -1.667,
-      "totalReturn": -15.8
-    },
-    {
-      "ticker": "SRE",
-      "trend": "sideways",
-      "slopePct": -0.189,
-      "r2": 0.068,
-      "slopeEarlyPct": 0.723,
-      "slopeLatePct": -0.954,
-      "totalReturn": -3.3
-    },
-    {
-      "ticker": "CRWV",
-      "trend": "bullish",
-      "slopePct": 3.774,
-      "r2": 0.654,
-      "slopeEarlyPct": 1.557,
-      "slopeLatePct": -1.33,
-      "totalReturn": 20.2
-    },
-    {
-      "ticker": "TFC",
-      "trend": "sideways",
-      "slopePct": 0.265,
-      "r2": 0.031,
-      "slopeEarlyPct": -0.892,
-      "slopeLatePct": -1.78,
-      "totalReturn": -10.2
-    },
-    {
-      "ticker": "TRGP",
-      "trend": "bullish",
-      "slopePct": 0.822,
-      "r2": 0.537,
-      "slopeEarlyPct": 0.802,
-      "slopeLatePct": 3.215,
-      "totalReturn": 17.6
-    },
-    {
-      "ticker": "OKE",
-      "trend": "sideways",
-      "slopePct": 0.269,
-      "r2": 0.08,
-      "slopeEarlyPct": 0.609,
-      "slopeLatePct": 1.741,
-      "totalReturn": 5.7
-    },
-    {
-      "ticker": "PCAR",
-      "trend": "sideways",
-      "slopePct": -0.486,
-      "r2": 0.114,
-      "slopeEarlyPct": -0.743,
-      "slopeLatePct": -3.75,
-      "totalReturn": -14.1
-    },
-    {
-      "ticker": "CVE",
-      "trend": "bullish",
-      "slopePct": 2.421,
-      "r2": 0.813,
-      "slopeEarlyPct": 2.854,
-      "slopeLatePct": 5.288,
-      "totalReturn": 36.6
-    },
-    {
-      "ticker": "RELX",
-      "trend": "sideways",
-      "slopePct": 0.28,
-      "r2": 0.045,
-      "slopeEarlyPct": -0.179,
-      "slopeLatePct": -3.278,
-      "totalReturn": 3
-    },
-    {
-      "ticker": "FANG",
-      "trend": "bullish",
-      "slopePct": 1.003,
-      "r2": 0.479,
-      "slopeEarlyPct": 1.653,
-      "slopeLatePct": 2.076,
-      "totalReturn": 15.7
-    },
-    {
-      "ticker": "DVN",
-      "trend": "sideways",
-      "slopePct": 0.665,
-      "r2": 0.201,
-      "slopeEarlyPct": 1.992,
-      "slopeLatePct": 1.722,
-      "totalReturn": 11.5
-    },
-    {
-      "ticker": "O",
-      "trend": "sideways",
-      "slopePct": -0.452,
-      "r2": 0.305,
-      "slopeEarlyPct": -1.066,
-      "slopeLatePct": -1.483,
-      "totalReturn": -7.6
-    },
-    {
-      "ticker": "RACE",
-      "trend": "sideways",
-      "slopePct": -0.478,
-      "r2": 0.097,
-      "slopeEarlyPct": -1.454,
-      "slopeLatePct": -3.346,
-      "totalReturn": -12.5
-    },
-    {
-      "ticker": "LHX",
-      "trend": "bearish",
-      "slopePct": -1.566,
-      "r2": 0.763,
-      "slopeEarlyPct": -0.459,
-      "slopeLatePct": -3.528,
-      "totalReturn": -14.8
-    },
-    {
-      "ticker": "ALL",
-      "trend": "sideways",
-      "slopePct": 0.328,
-      "r2": 0.311,
-      "slopeEarlyPct": -0.197,
-      "slopeLatePct": 0.125,
-      "totalReturn": 5.3
-    },
-    {
-      "ticker": "NBIS",
-      "trend": "bullish",
-      "slopePct": 6.846,
-      "r2": 0.828,
-      "slopeEarlyPct": 5.036,
-      "slopeLatePct": 9.085,
-      "totalReturn": 124.6
-    },
-    {
-      "ticker": "MPLX",
-      "trend": "bearish",
-      "slopePct": -0.668,
-      "r2": 0.814,
-      "slopeEarlyPct": -0.65,
-      "slopeLatePct": -0.644,
-      "totalReturn": -5.9
-    },
-    {
-      "ticker": "TGT",
-      "trend": "bullish",
-      "slopePct": 0.842,
-      "r2": 0.556,
-      "slopeEarlyPct": 0.633,
-      "slopeLatePct": -1.312,
-      "totalReturn": 4.2
-    },
-    {
-      "ticker": "AZO",
-      "trend": "sideways",
-      "slopePct": -0.518,
-      "r2": 0.204,
-      "slopeEarlyPct": -1.779,
-      "slopeLatePct": -1.663,
-      "totalReturn": -11.4
-    },
-    {
-      "ticker": "CTVA",
-      "trend": "sideways",
-      "slopePct": 0.448,
-      "r2": 0.283,
-      "slopeEarlyPct": 1.375,
-      "slopeLatePct": 0.627,
-      "totalReturn": 7.7
-    },
-    {
-      "ticker": "STM",
-      "trend": "bullish",
-      "slopePct": 6.334,
-      "r2": 0.812,
-      "slopeEarlyPct": 1.634,
-      "slopeLatePct": 7.948,
-      "totalReturn": 82.7
-    },
-    {
-      "ticker": "SNOW",
-      "trend": "recovering",
-      "slopePct": -1.84,
-      "r2": 0.422,
-      "slopeEarlyPct": -3.947,
-      "slopeLatePct": 2.66,
-      "totalReturn": -8.7
-    },
-    {
-      "ticker": "D",
-      "trend": "sideways",
-      "slopePct": -0.187,
-      "r2": 0.08,
-      "slopeEarlyPct": -0.471,
-      "slopeLatePct": -0.331,
-      "totalReturn": -6.4
-    },
-    {
-      "ticker": "SE",
-      "trend": "sideways",
-      "slopePct": -1.603,
-      "r2": 0.273,
-      "slopeEarlyPct": -5.02,
-      "slopeLatePct": -0.561,
-      "totalReturn": -23.3
-    },
-    {
-      "ticker": "CARR",
-      "trend": "recovering",
-      "slopePct": 0.754,
-      "r2": 0.164,
-      "slopeEarlyPct": -1.184,
-      "slopeLatePct": 1.954,
-      "totalReturn": 0.8
-    },
-    {
-      "ticker": "F",
-      "trend": "recovering",
-      "slopePct": -0.354,
-      "r2": 0.035,
-      "slopeEarlyPct": -2.716,
-      "slopeLatePct": 0.796,
-      "totalReturn": -4.4
-    },
-    {
-      "ticker": "CVNA",
-      "trend": "bullish",
-      "slopePct": 1.785,
-      "r2": 0.353,
-      "slopeEarlyPct": -0.639,
-      "slopeLatePct": -3.223,
-      "totalReturn": -0.2
-    },
-    {
-      "ticker": "TER",
-      "trend": "bullish",
-      "slopePct": 2.01,
-      "r2": 0.38,
-      "slopeEarlyPct": 1.242,
-      "slopeLatePct": -3.891,
-      "totalReturn": 4
-    },
-    {
-      "ticker": "TAK",
-      "trend": "bearish",
-      "slopePct": -0.997,
-      "r2": 0.673,
-      "slopeEarlyPct": -0.259,
-      "slopeLatePct": -1.539,
-      "totalReturn": -11
-    },
-    {
-      "ticker": "AME",
-      "trend": "sideways",
-      "slopePct": 0.245,
-      "r2": 0.043,
-      "slopeEarlyPct": -0.739,
-      "slopeLatePct": -0.744,
-      "totalReturn": -2.4
-    },
-    {
-      "ticker": "NUE",
-      "trend": "bullish",
-      "slopePct": 2.944,
-      "r2": 0.694,
-      "slopeEarlyPct": -0.003,
-      "slopeLatePct": 3.461,
-      "totalReturn": 26.1
-    },
-    {
-      "ticker": "EBAY",
-      "trend": "bullish",
-      "slopePct": 2.021,
-      "r2": 0.764,
-      "slopeEarlyPct": 0.668,
-      "slopeLatePct": 3.083,
-      "totalReturn": 31.9
-    },
-    {
-      "ticker": "NDAQ",
-      "trend": "recovering",
-      "slopePct": 0.585,
-      "r2": 0.373,
-      "slopeEarlyPct": -0.219,
-      "slopeLatePct": 0.435,
-      "totalReturn": 11.2
-    },
-    {
-      "ticker": "COIN",
-      "trend": "sideways",
-      "slopePct": 0.835,
-      "r2": 0.161,
-      "slopeEarlyPct": -1.012,
-      "slopeLatePct": -1.027,
-      "totalReturn": 14.1
-    },
-    {
-      "ticker": "AJG",
-      "trend": "bearish",
-      "slopePct": -0.73,
-      "r2": 0.431,
-      "slopeEarlyPct": -0.713,
-      "slopeLatePct": -2.866,
-      "totalReturn": -7.6
-    },
-    {
-      "ticker": "PSA",
-      "trend": "sideways",
-      "slopePct": 0.122,
-      "r2": 0.008,
-      "slopeEarlyPct": -1.482,
-      "slopeLatePct": -1.01,
-      "totalReturn": -4.1
-    },
-    {
-      "ticker": "MET",
-      "trend": "recovering",
-      "slopePct": 0.903,
-      "r2": 0.305,
-      "slopeEarlyPct": -0.918,
-      "slopeLatePct": 0.48,
-      "totalReturn": 0.9
-    },
-    {
-      "ticker": "MCHP",
-      "trend": "recovering",
-      "slopePct": 3.293,
-      "r2": 0.532,
-      "slopeEarlyPct": -1.684,
-      "slopeLatePct": 4.376,
-      "totalReturn": 20.7
-    },
-    {
-      "ticker": "FLEX",
-      "trend": "bullish",
-      "slopePct": 7.299,
-      "r2": 0.705,
-      "slopeEarlyPct": 2.148,
-      "slopeLatePct": 14.938,
-      "totalReturn": 109.9
-    },
-    {
-      "ticker": "LNG",
-      "trend": "sideways",
-      "slopePct": 0.207,
-      "r2": 0.011,
-      "slopeEarlyPct": 2.977,
-      "slopeLatePct": -1.406,
-      "totalReturn": 6.8
-    },
-    {
-      "ticker": "EA",
-      "trend": "sideways",
-      "slopePct": 0.095,
-      "r2": 0.19,
-      "slopeEarlyPct": 0.266,
-      "slopeLatePct": -0.426,
-      "totalReturn": 0.1
-    },
-    {
-      "ticker": "COR",
-      "trend": "bearish",
-      "slopePct": -2.575,
+      "slopePct": -2.114,
       "r2": 0.853,
-      "slopeEarlyPct": -2.374,
-      "slopeLatePct": -6.404,
-      "totalReturn": -28.6
-    },
-    {
-      "ticker": "ADSK",
-      "trend": "sideways",
-      "slopePct": -0.183,
-      "r2": 0.024,
-      "slopeEarlyPct": -0.969,
-      "slopeLatePct": -0.155,
-      "totalReturn": 4.2
-    },
-    {
-      "ticker": "ARGX",
-      "trend": "sideways",
-      "slopePct": 0.566,
-      "r2": 0.087,
-      "slopeEarlyPct": -0.854,
-      "slopeLatePct": -1.221,
-      "totalReturn": -5.3
-    },
-    {
-      "ticker": "ROK",
-      "trend": "recovering",
-      "slopePct": 1.348,
-      "r2": 0.387,
-      "slopeEarlyPct": -0.927,
-      "slopeLatePct": 2.791,
-      "totalReturn": 12.5
-    },
-    {
-      "ticker": "ETR",
-      "trend": "bullish",
-      "slopePct": 0.807,
-      "r2": 0.411,
-      "slopeEarlyPct": 1.501,
-      "slopeLatePct": -1.327,
-      "totalReturn": 4.8
-    },
-    {
-      "ticker": "FAST",
-      "trend": "sideways",
-      "slopePct": -0.331,
-      "r2": 0.152,
-      "slopeEarlyPct": 0.406,
-      "slopeLatePct": -1.248,
-      "totalReturn": -6.4
-    },
-    {
-      "ticker": "INFY",
-      "trend": "bearish",
-      "slopePct": -1.206,
-      "r2": 0.553,
-      "slopeEarlyPct": -1.562,
-      "slopeLatePct": -3.717,
-      "totalReturn": -17.6
-    },
-    {
-      "ticker": "XEL",
-      "trend": "sideways",
-      "slopePct": -0.251,
-      "r2": 0.14,
-      "slopeEarlyPct": -0.378,
-      "slopeLatePct": -0.76,
-      "totalReturn": -4.5
-    },
-    {
-      "ticker": "FER",
-      "trend": "sideways",
-      "slopePct": 0.029,
-      "r2": 0,
-      "slopeEarlyPct": -1.088,
-      "slopeLatePct": -1.294,
-      "totalReturn": -8.1
-    },
-    {
-      "ticker": "ABEV",
-      "trend": "recovering",
-      "slopePct": 0.311,
-      "r2": 0.047,
-      "slopeEarlyPct": -0.318,
-      "slopeLatePct": 1.481,
-      "totalReturn": 0
-    },
-    {
-      "ticker": "VST",
-      "trend": "bearish",
-      "slopePct": -0.995,
-      "r2": 0.388,
-      "slopeEarlyPct": -1.894,
-      "slopeLatePct": -4.166,
-      "totalReturn": -18.5
-    },
-    {
-      "ticker": "EW",
-      "trend": "sideways",
-      "slopePct": -0.074,
-      "r2": 0.011,
-      "slopeEarlyPct": -0.683,
-      "slopeLatePct": -0.415,
-      "totalReturn": 2
-    },
-    {
-      "ticker": "CCJ",
-      "trend": "sideways",
-      "slopePct": 0.219,
-      "r2": 0.019,
-      "slopeEarlyPct": -0.961,
-      "slopeLatePct": -2.697,
-      "totalReturn": -11.4
-    },
-    {
-      "ticker": "AU",
-      "trend": "sideways",
-      "slopePct": -1.075,
-      "r2": 0.118,
-      "slopeEarlyPct": -2.716,
-      "slopeLatePct": -2.606,
-      "totalReturn": -19.3
-    },
-    {
-      "ticker": "DAL",
-      "trend": "bullish",
-      "slopePct": 1.08,
-      "r2": 0.402,
-      "slopeEarlyPct": 0.297,
-      "slopeLatePct": 0.269,
-      "totalReturn": 1.1
-    },
-    {
-      "ticker": "BIDU",
-      "trend": "recovering",
-      "slopePct": 0.647,
-      "r2": 0.085,
-      "slopeEarlyPct": -3.045,
-      "slopeLatePct": 2.339,
-      "totalReturn": -0.4
-    },
-    {
-      "ticker": "MT",
-      "trend": "sideways",
-      "slopePct": 0.252,
-      "r2": 0.009,
-      "slopeEarlyPct": -2.415,
-      "slopeLatePct": -0.248,
-      "totalReturn": -7.7
-    },
-    {
-      "ticker": "CAH",
-      "trend": "bearish",
-      "slopePct": -1.376,
-      "r2": 0.756,
-      "slopeEarlyPct": -0.996,
-      "slopeLatePct": -2.722,
-      "totalReturn": -13
-    },
-    {
-      "ticker": "DEO",
-      "trend": "recovering",
-      "slopePct": -0.822,
-      "r2": 0.125,
-      "slopeEarlyPct": -3.941,
-      "slopeLatePct": 0.569,
-      "totalReturn": -18.6
-    },
-    {
-      "ticker": "TTWO",
-      "trend": "recovering",
-      "slopePct": 0.935,
-      "r2": 0.335,
-      "slopeEarlyPct": -0.883,
-      "slopeLatePct": 3.2,
-      "totalReturn": 21.4
-    },
-    {
-      "ticker": "WAB",
-      "trend": "sideways",
-      "slopePct": 0.549,
-      "r2": 0.2,
-      "slopeEarlyPct": -0.209,
-      "slopeLatePct": -0.011,
-      "totalReturn": -0.3
-    },
-    {
-      "ticker": "EXC",
-      "trend": "bearish",
-      "slopePct": -0.845,
-      "r2": 0.58,
-      "slopeEarlyPct": -0.043,
-      "slopeLatePct": -2.259,
-      "totalReturn": -9.2
-    },
-    {
-      "ticker": "ON",
-      "trend": "recovering",
-      "slopePct": 5.782,
-      "r2": 0.716,
-      "slopeEarlyPct": -0.372,
-      "slopeLatePct": 6.49,
-      "totalReturn": 63.7
-    },
-    {
-      "ticker": "HPE",
-      "trend": "bullish",
-      "slopePct": 3.91,
-      "r2": 0.913,
-      "slopeEarlyPct": 2.577,
-      "slopeLatePct": 5.592,
-      "totalReturn": 54.9
-    },
-    {
-      "ticker": "GRMN",
-      "trend": "sideways",
-      "slopePct": -0.073,
-      "r2": 0.003,
-      "slopeEarlyPct": -0.301,
-      "slopeLatePct": -4.155,
-      "totalReturn": -9.3
-    },
-    {
-      "ticker": "FNV",
-      "trend": "bearish",
-      "slopePct": -1.126,
-      "r2": 0.356,
-      "slopeEarlyPct": -1,
-      "slopeLatePct": -3.552,
-      "totalReturn": -13.4
-    },
-    {
-      "ticker": "FERG",
-      "trend": "sideways",
-      "slopePct": 0.213,
-      "r2": 0.013,
-      "slopeEarlyPct": -0.692,
-      "slopeLatePct": -3.813,
-      "totalReturn": -12.2
-    },
-    {
-      "ticker": "JD",
-      "trend": "bullish",
-      "slopePct": 1.367,
-      "r2": 0.793,
-      "slopeEarlyPct": 1.037,
-      "slopeLatePct": 0.221,
-      "totalReturn": 16.8
-    },
-    {
-      "ticker": "UMC",
-      "trend": "recovering",
-      "slopePct": 4.631,
-      "r2": 0.581,
-      "slopeEarlyPct": -1.978,
-      "slopeLatePct": 10.214,
-      "totalReturn": 65.4
-    },
-    {
-      "ticker": "FITB",
-      "trend": "sideways",
-      "slopePct": 0.115,
-      "r2": 0.006,
-      "slopeEarlyPct": -1.243,
-      "slopeLatePct": -1.277,
-      "totalReturn": -11.7
-    },
-    {
-      "ticker": "VTR",
-      "trend": "recovering",
-      "slopePct": 0.171,
-      "r2": 0.086,
-      "slopeEarlyPct": -0.482,
-      "slopeLatePct": 0.967,
-      "totalReturn": 1.8
-    },
-    {
-      "ticker": "STT",
-      "trend": "bullish",
-      "slopePct": 2.147,
-      "r2": 0.761,
-      "slopeEarlyPct": 0.813,
-      "slopeLatePct": 0.905,
-      "totalReturn": 19.5
-    },
-    {
-      "ticker": "AMP",
-      "trend": "recovering",
-      "slopePct": 0.107,
-      "r2": 0.018,
-      "slopeEarlyPct": -1.178,
-      "slopeLatePct": 0.641,
-      "totalReturn": -0.3
-    },
-    {
-      "ticker": "ODFL",
-      "trend": "sideways",
-      "slopePct": 0.657,
-      "r2": 0.191,
-      "slopeEarlyPct": 0.06,
-      "slopeLatePct": -2.437,
-      "totalReturn": 0.9
-    },
-    {
-      "ticker": "CMG",
-      "trend": "sideways",
-      "slopePct": -0.797,
-      "r2": 0.288,
-      "slopeEarlyPct": -1.985,
-      "slopeLatePct": -2.402,
-      "totalReturn": -13
-    },
-    {
-      "ticker": "XYZ",
-      "trend": "bullish",
-      "slopePct": 2.091,
-      "r2": 0.582,
-      "slopeEarlyPct": 0.234,
-      "slopeLatePct": 0.197,
-      "totalReturn": 32.2
-    },
-    {
-      "ticker": "IDXX",
-      "trend": "bearish",
-      "slopePct": -1.213,
-      "r2": 0.639,
-      "slopeEarlyPct": -2.192,
-      "slopeLatePct": -2.254,
-      "totalReturn": -16.8
-    },
-    {
-      "ticker": "ERIC",
-      "trend": "bullish",
-      "slopePct": 0.55,
-      "r2": 0.402,
-      "slopeEarlyPct": 0.388,
-      "slopeLatePct": 2.441,
-      "totalReturn": 10.3
-    },
-    {
-      "ticker": "FMX",
-      "trend": "bullish",
-      "slopePct": 0.957,
-      "r2": 0.483,
-      "slopeEarlyPct": 0.25,
-      "slopeLatePct": 1.245,
-      "totalReturn": 6.9
-    },
-    {
-      "ticker": "YUM",
-      "trend": "bearish",
-      "slopePct": -0.511,
-      "r2": 0.398,
-      "slopeEarlyPct": -0.695,
-      "slopeLatePct": -2.168,
-      "totalReturn": -8.2
-    },
-    {
-      "ticker": "CLS",
-      "trend": "bullish",
-      "slopePct": 3.923,
-      "r2": 0.672,
-      "slopeEarlyPct": 2.483,
-      "slopeLatePct": -2.796,
-      "totalReturn": 22.5
-    },
-    {
-      "ticker": "MSCI",
-      "trend": "sideways",
-      "slopePct": 0.423,
-      "r2": 0.189,
-      "slopeEarlyPct": -0.697,
-      "slopeLatePct": -0.361,
-      "totalReturn": 3.2
-    },
-    {
-      "ticker": "ARES",
-      "trend": "recovering",
-      "slopePct": 0.815,
-      "r2": 0.161,
-      "slopeEarlyPct": -2.363,
-      "slopeLatePct": 1.852,
-      "totalReturn": 0.2
-    },
-    {
-      "ticker": "KR",
-      "trend": "sideways",
-      "slopePct": -0.637,
-      "r2": 0.248,
-      "slopeEarlyPct": 0.448,
-      "slopeLatePct": -0.885,
-      "totalReturn": -0.5
-    },
-    {
-      "ticker": "EME",
-      "trend": "bullish",
-      "slopePct": 2.125,
-      "r2": 0.672,
-      "slopeEarlyPct": 0.291,
-      "slopeLatePct": 3.011,
-      "totalReturn": 12.3
-    },
-    {
-      "ticker": "AIG",
-      "trend": "sideways",
-      "slopePct": -0.276,
-      "r2": 0.13,
-      "slopeEarlyPct": -1.082,
-      "slopeLatePct": -0.509,
-      "totalReturn": -5.4
-    },
-    {
-      "ticker": "HEI",
-      "trend": "recovering",
-      "slopePct": -1.281,
-      "r2": 0.369,
-      "slopeEarlyPct": -3.131,
-      "slopeLatePct": 0.819,
-      "totalReturn": -17.9
-    },
-    {
-      "ticker": "IX",
-      "trend": "recovering",
-      "slopePct": 0.242,
-      "r2": 0.015,
-      "slopeEarlyPct": -2.445,
-      "slopeLatePct": 3.664,
-      "totalReturn": 3.7
-    },
-    {
-      "ticker": "TEVA",
-      "trend": "recovering",
-      "slopePct": 0.707,
-      "r2": 0.12,
-      "slopeEarlyPct": -1.915,
-      "slopeLatePct": 2.64,
-      "totalReturn": 0.2
-    },
-    {
-      "ticker": "BSBR",
-      "trend": "sideways",
-      "slopePct": -1.035,
-      "r2": 0.269,
-      "slopeEarlyPct": -1.584,
-      "slopeLatePct": -3.756,
-      "totalReturn": -24.4
-    },
-    {
-      "ticker": "ALAB",
-      "trend": "bullish",
-      "slopePct": 6.367,
-      "r2": 0.755,
-      "slopeEarlyPct": 0.995,
-      "slopeLatePct": 5.098,
-      "totalReturn": 79.4
-    },
-    {
-      "ticker": "SLF",
-      "trend": "bullish",
-      "slopePct": 1.091,
-      "r2": 0.513,
-      "slopeEarlyPct": -0.525,
-      "slopeLatePct": 0.254,
-      "totalReturn": 8.4
-    },
-    {
-      "ticker": "WCN",
-      "trend": "bearish",
-      "slopePct": -0.611,
-      "r2": 0.455,
-      "slopeEarlyPct": -0.655,
-      "slopeLatePct": -1.276,
-      "totalReturn": -4.3
-    },
-    {
-      "ticker": "SATS",
-      "trend": "bullish",
-      "slopePct": 1.714,
-      "r2": 0.616,
-      "slopeEarlyPct": 2.289,
-      "slopeLatePct": 1.386,
-      "totalReturn": 24.3
-    },
-    {
-      "ticker": "HLN",
-      "trend": "bearish",
-      "slopePct": -1.617,
-      "r2": 0.877,
-      "slopeEarlyPct": -1.98,
-      "slopeLatePct": -2.191,
-      "totalReturn": -20.5
-    },
-    {
-      "ticker": "CCEP",
-      "trend": "bearish",
-      "slopePct": -1.065,
-      "r2": 0.452,
-      "slopeEarlyPct": -2.197,
-      "slopeLatePct": -2.355,
-      "totalReturn": -15.5
-    },
-    {
-      "ticker": "BDX",
-      "trend": "bearish",
-      "slopePct": -1.635,
-      "r2": 0.751,
-      "slopeEarlyPct": -2.707,
-      "slopeLatePct": -2.182,
-      "totalReturn": -22.6
-    },
-    {
-      "ticker": "KDP",
-      "trend": "recovering",
-      "slopePct": -0.037,
-      "r2": 0.001,
-      "slopeEarlyPct": -2.272,
-      "slopeLatePct": 1.546,
-      "totalReturn": -2.1
-    },
-    {
-      "ticker": "LYV",
-      "trend": "recovering",
-      "slopePct": 0.313,
-      "r2": 0.097,
-      "slopeEarlyPct": -0.634,
-      "slopeLatePct": 1.945,
-      "totalReturn": 3.8
-    },
-    {
-      "ticker": "PYPL",
-      "trend": "sideways",
-      "slopePct": 0.694,
-      "r2": 0.191,
-      "slopeEarlyPct": 0.259,
-      "slopeLatePct": -3.708,
-      "totalReturn": 6.6
-    },
-    {
-      "ticker": "GFS",
-      "trend": "recovering",
-      "slopePct": 4.602,
-      "r2": 0.704,
-      "slopeEarlyPct": -0.275,
-      "slopeLatePct": 6.872,
-      "totalReturn": 53.8
-    },
-    {
-      "ticker": "ED",
-      "trend": "sideways",
-      "slopePct": -0.392,
-      "r2": 0.319,
-      "slopeEarlyPct": 0.355,
-      "slopeLatePct": -1.139,
-      "totalReturn": -4.1
-    },
-    {
-      "ticker": "ADM",
-      "trend": "bullish",
-      "slopePct": 1.072,
-      "r2": 0.469,
-      "slopeEarlyPct": 0.775,
-      "slopeLatePct": 4.759,
-      "totalReturn": 18.4
-    },
-    {
-      "ticker": "DHI",
-      "trend": "sideways",
-      "slopePct": -0.47,
-      "r2": 0.068,
-      "slopeEarlyPct": -2.463,
-      "slopeLatePct": -2.768,
-      "totalReturn": -17.5
-    },
-    {
-      "ticker": "PUK",
-      "trend": "sideways",
-      "slopePct": 0.339,
-      "r2": 0.118,
-      "slopeEarlyPct": -0.688,
-      "slopeLatePct": -0.042,
-      "totalReturn": -1.4
-    },
-    {
-      "ticker": "ALNY",
-      "trend": "bearish",
-      "slopePct": -1.066,
-      "r2": 0.815,
-      "slopeEarlyPct": -0.666,
-      "slopeLatePct": -1.87,
-      "totalReturn": -14.6
-    },
-    {
-      "ticker": "PEG",
-      "trend": "bearish",
-      "slopePct": -0.772,
-      "r2": 0.717,
-      "slopeEarlyPct": -0.725,
-      "slopeLatePct": -1.754,
-      "totalReturn": -10.7
-    },
-    {
-      "ticker": "CBRE",
-      "trend": "sideways",
-      "slopePct": 0.011,
-      "r2": 0,
-      "slopeEarlyPct": -0.971,
-      "slopeLatePct": -3.14,
-      "totalReturn": -11.6
-    },
-    {
-      "ticker": "HSY",
-      "trend": "bearish",
-      "slopePct": -2.017,
-      "r2": 0.906,
-      "slopeEarlyPct": -1.8,
-      "slopeLatePct": -0.896,
-      "totalReturn": -15.7
-    },
-    {
-      "ticker": "CCI",
-      "trend": "sideways",
-      "slopePct": 0.059,
-      "r2": 0.003,
-      "slopeEarlyPct": -1.059,
-      "slopeLatePct": 0.015,
-      "totalReturn": -1.5
-    },
-    {
-      "ticker": "RKT",
-      "trend": "sideways",
-      "slopePct": -1.081,
-      "r2": 0.171,
-      "slopeEarlyPct": -3.299,
-      "slopeLatePct": -4.262,
-      "totalReturn": -25.8
-    },
-    {
-      "ticker": "UI",
-      "trend": "sideways",
-      "slopePct": 1.501,
-      "r2": 0.131,
-      "slopeEarlyPct": 2.546,
-      "slopeLatePct": -12.098,
-      "totalReturn": -16.9
-    },
-    {
-      "ticker": "VIK",
-      "trend": "bullish",
-      "slopePct": 1.343,
-      "r2": 0.388,
-      "slopeEarlyPct": -0.471,
-      "slopeLatePct": -0.403,
-      "totalReturn": 6.2
-    },
-    {
-      "ticker": "IRM",
-      "trend": "recovering",
-      "slopePct": 1.74,
-      "r2": 0.553,
-      "slopeEarlyPct": -0.673,
-      "slopeLatePct": 2.179,
-      "totalReturn": 13.4
-    },
-    {
-      "ticker": "KB",
-      "trend": "sideways",
-      "slopePct": 0.114,
-      "r2": 0.006,
-      "slopeEarlyPct": -1.266,
-      "slopeLatePct": -1.069,
-      "totalReturn": -11.5
-    },
-    {
-      "ticker": "HIG",
-      "trend": "sideways",
-      "slopePct": -0.337,
-      "r2": 0.265,
-      "slopeEarlyPct": -0.688,
-      "slopeLatePct": -1.055,
-      "totalReturn": -5.8
-    },
-    {
-      "ticker": "BBD",
-      "trend": "sideways",
-      "slopePct": -0.291,
-      "r2": 0.024,
-      "slopeEarlyPct": -1.254,
-      "slopeLatePct": -4.347,
-      "totalReturn": -17.2
-    },
-    {
-      "ticker": "HUM",
-      "trend": "recovering",
-      "slopePct": 4.216,
-      "r2": 0.621,
-      "slopeEarlyPct": -0.485,
-      "slopeLatePct": 10.522,
-      "totalReturn": 60.7
-    },
-    {
-      "ticker": "TRI",
-      "trend": "sideways",
-      "slopePct": -0.687,
-      "r2": 0.107,
-      "slopeEarlyPct": -1.275,
-      "slopeLatePct": -1.918,
-      "totalReturn": -0.6
-    },
-    {
-      "ticker": "GFI",
-      "trend": "bearish",
-      "slopePct": -1.837,
-      "r2": 0.357,
-      "slopeEarlyPct": -2.959,
-      "slopeLatePct": -4.544,
-      "totalReturn": -25.6
-    },
-    {
-      "ticker": "JBL",
-      "trend": "bullish",
-      "slopePct": 3.216,
-      "r2": 0.784,
-      "slopeEarlyPct": 1.262,
-      "slopeLatePct": 1.463,
-      "totalReturn": 25.4
-    },
-    {
-      "ticker": "WEC",
-      "trend": "sideways",
-      "slopePct": -0.232,
-      "r2": 0.154,
-      "slopeEarlyPct": 0.166,
-      "slopeLatePct": -1.438,
-      "totalReturn": -4.5
-    },
-    {
-      "ticker": "PCG",
-      "trend": "bearish",
-      "slopePct": -1.205,
-      "r2": 0.732,
-      "slopeEarlyPct": -0.576,
-      "slopeLatePct": -1.697,
-      "totalReturn": -12.1
-    },
-    {
-      "ticker": "PRU",
-      "trend": "recovering",
-      "slopePct": 0.206,
-      "r2": 0.045,
-      "slopeEarlyPct": -0.743,
-      "slopeLatePct": 0.72,
-      "totalReturn": -1.5
-    },
-    {
-      "ticker": "VG",
-      "trend": "sideways",
-      "slopePct": 0.86,
-      "r2": 0.037,
-      "slopeEarlyPct": 5.896,
-      "slopeLatePct": 4.12,
-      "totalReturn": 46.9
-    },
-    {
-      "ticker": "EQT",
-      "trend": "bearish",
-      "slopePct": -0.942,
-      "r2": 0.429,
-      "slopeEarlyPct": -0.082,
-      "slopeLatePct": -1.296,
-      "totalReturn": -7.1
-    },
-    {
-      "ticker": "ESLT",
-      "trend": "sideways",
-      "slopePct": -0.254,
-      "r2": 0.014,
-      "slopeEarlyPct": 2.557,
-      "slopeLatePct": -3.51,
-      "totalReturn": 3.5
-    },
-    {
-      "ticker": "HAL",
-      "trend": "bullish",
-      "slopePct": 1.566,
-      "r2": 0.698,
-      "slopeEarlyPct": 1.638,
-      "slopeLatePct": 2.164,
-      "totalReturn": 18.9
-    },
-    {
-      "ticker": "VMC",
-      "trend": "sideways",
-      "slopePct": -0.167,
-      "r2": 0.012,
-      "slopeEarlyPct": -1.129,
-      "slopeLatePct": -1.958,
-      "totalReturn": -12.3
-    },
-    {
-      "ticker": "SYY",
-      "trend": "bearish",
-      "slopePct": -2.006,
-      "r2": 0.785,
-      "slopeEarlyPct": -3.405,
-      "slopeLatePct": -1.549,
-      "totalReturn": -19.5
-    },
-    {
-      "ticker": "QSR",
-      "trend": "bullish",
-      "slopePct": 1.058,
-      "r2": 0.696,
-      "slopeEarlyPct": 1.151,
-      "slopeLatePct": -0.779,
-      "totalReturn": 10.2
-    },
-    {
-      "ticker": "NTR",
-      "trend": "sideways",
-      "slopePct": -0.59,
-      "r2": 0.224,
-      "slopeEarlyPct": 0.158,
-      "slopeLatePct": -0.19,
-      "totalReturn": 0.5
-    },
-    {
-      "ticker": "CCL",
-      "trend": "sideways",
-      "slopePct": -0.878,
-      "r2": 0.118,
-      "slopeEarlyPct": -2.756,
-      "slopeLatePct": -3.711,
-      "totalReturn": -23
-    },
-    {
-      "ticker": "HMC",
-      "trend": "recovering",
-      "slopePct": -1.459,
-      "r2": 0.432,
-      "slopeEarlyPct": -3.809,
-      "slopeLatePct": 1.019,
-      "totalReturn": -13.5
-    },
-    {
-      "ticker": "LVS",
-      "trend": "sideways",
-      "slopePct": -0.506,
-      "r2": 0.252,
-      "slopeEarlyPct": -1.103,
-      "slopeLatePct": -2.357,
-      "totalReturn": -11.8
-    },
-    {
-      "ticker": "KGC",
-      "trend": "sideways",
-      "slopePct": -0.718,
-      "r2": 0.094,
-      "slopeEarlyPct": -1.522,
-      "slopeLatePct": -4.581,
-      "totalReturn": -15.2
-    },
-    {
-      "ticker": "VOD",
-      "trend": "sideways",
-      "slopePct": 0.437,
-      "r2": 0.153,
-      "slopeEarlyPct": -0.049,
-      "slopeLatePct": -0.659,
-      "totalReturn": -6.2
-    },
-    {
-      "ticker": "CHT",
-      "trend": "sideways",
-      "slopePct": 0.16,
-      "r2": 0.182,
-      "slopeEarlyPct": -0.317,
-      "slopeLatePct": -0.028,
-      "totalReturn": 1.4
-    },
-    {
-      "ticker": "MLM",
-      "trend": "sideways",
-      "slopePct": -0.811,
-      "r2": 0.238,
-      "slopeEarlyPct": -1.778,
-      "slopeLatePct": -2.527,
-      "totalReturn": -18.6
-    },
-    {
-      "ticker": "STLD",
-      "trend": "recovering",
-      "slopePct": 2.442,
-      "r2": 0.564,
-      "slopeEarlyPct": -0.811,
-      "slopeLatePct": 2.96,
-      "totalReturn": 18.6
-    },
-    {
-      "ticker": "BBDO",
-      "trend": "sideways",
-      "slopePct": -0.308,
-      "r2": 0.027,
-      "slopeEarlyPct": -1.085,
-      "slopeLatePct": -4.085,
-      "totalReturn": -17.2
-    },
-    {
-      "ticker": "Q",
-      "trend": "bullish",
-      "slopePct": 2.939,
-      "r2": 0.726,
-      "slopeEarlyPct": 0.747,
-      "slopeLatePct": 3.069,
-      "totalReturn": 38.6
-    },
-    {
-      "ticker": "KVUE",
-      "trend": "bearish",
-      "slopePct": -0.648,
-      "r2": 0.52,
-      "slopeEarlyPct": -1.477,
-      "slopeLatePct": -0.516,
-      "totalReturn": -8.6
+      "slopeEarlyPct": -2.514,
+      "slopeLatePct": 1.624,
+      "totalReturn": -17.1
     },
     {
       "ticker": "ACGL",
       "trend": "sideways",
-      "slopePct": -0.293,
-      "r2": 0.215,
-      "slopeEarlyPct": -0.586,
-      "slopeLatePct": -1.011,
-      "totalReturn": -4.6
-    },
-    {
-      "ticker": "PAYX",
-      "trend": "sideways",
-      "slopePct": -0.261,
-      "r2": 0.08,
-      "slopeEarlyPct": -0.991,
-      "slopeLatePct": 0.355,
-      "totalReturn": 0.3
-    },
-    {
-      "ticker": "MTZ",
-      "trend": "bullish",
-      "slopePct": 3.742,
-      "r2": 0.934,
-      "slopeEarlyPct": 3.215,
-      "slopeLatePct": 3.165,
-      "totalReturn": 46.2
-    },
-    {
-      "ticker": "TSEM",
-      "trend": "bullish",
-      "slopePct": 6.423,
-      "r2": 0.863,
-      "slopeEarlyPct": 8.652,
-      "slopeLatePct": 4.67,
-      "totalReturn": 113.3
-    },
-    {
-      "ticker": "ASTS",
-      "trend": "sideways",
-      "slopePct": -0.637,
-      "r2": 0.081,
-      "slopeEarlyPct": 1.946,
-      "slopeLatePct": -0.647,
-      "totalReturn": 4.3
-    },
-    {
-      "ticker": "ROP",
-      "trend": "sideways",
-      "slopePct": -0.212,
-      "r2": 0.056,
-      "slopeEarlyPct": 0.087,
-      "slopeLatePct": -2.68,
-      "totalReturn": -4.4
-    },
-    {
-      "ticker": "WAT",
-      "trend": "recovering",
-      "slopePct": 0.579,
-      "r2": 0.135,
-      "slopeEarlyPct": -0.763,
-      "slopeLatePct": 1.478,
-      "totalReturn": -1.2
-    },
-    {
-      "ticker": "KMB",
-      "trend": "bearish",
-      "slopePct": -0.96,
-      "r2": 0.576,
-      "slopeEarlyPct": -2.072,
-      "slopeLatePct": -0.553,
-      "totalReturn": -12
-    },
-    {
-      "ticker": "CRDO",
-      "trend": "recovering",
-      "slopePct": 5.36,
-      "r2": 0.601,
-      "slopeEarlyPct": -1.546,
-      "slopeLatePct": 0.912,
-      "totalReturn": 38.8
-    },
-    {
-      "ticker": "CASY",
-      "trend": "bullish",
-      "slopePct": 2.445,
-      "r2": 0.888,
-      "slopeEarlyPct": 1.607,
-      "slopeLatePct": 3.12,
-      "totalReturn": 27.8
-    },
-    {
-      "ticker": "AXON",
-      "trend": "bearish",
-      "slopePct": -2.744,
-      "r2": 0.505,
-      "slopeEarlyPct": -4.328,
-      "slopeLatePct": -0.388,
-      "totalReturn": -9.7
-    },
-    {
-      "ticker": "A",
-      "trend": "sideways",
-      "slopePct": -0.286,
-      "r2": 0.096,
-      "slopeEarlyPct": -1.022,
-      "slopeLatePct": -1.75,
+      "slopePct": -0.335,
+      "r2": 0.222,
+      "slopeEarlyPct": 0.135,
+      "slopeLatePct": -1.685,
       "totalReturn": -9.1
     },
     {
-      "ticker": "SUNB",
-      "trend": "sideways",
-      "slopePct": 1.037,
-      "r2": 0.223,
-      "slopeEarlyPct": -0.976,
-      "slopeLatePct": -0.735,
-      "totalReturn": 2.5
-    },
-    {
-      "ticker": "TCOM",
-      "trend": "sideways",
-      "slopePct": -0.14,
-      "r2": 0.02,
-      "slopeEarlyPct": -1.164,
-      "slopeLatePct": -2.188,
-      "totalReturn": -9.1
-    },
-    {
-      "ticker": "HBAN",
-      "trend": "sideways",
-      "slopePct": -0.317,
-      "r2": 0.056,
-      "slopeEarlyPct": -1.5,
-      "slopeLatePct": -1.941,
-      "totalReturn": -14.4
-    },
-    {
-      "ticker": "WDAY",
+      "ticker": "ACN",
       "trend": "recovering",
-      "slopePct": -1.182,
-      "r2": 0.393,
-      "slopeEarlyPct": -2.356,
-      "slopeLatePct": 0.837,
-      "totalReturn": -9.3
+      "slopePct": -1.228,
+      "r2": 0.591,
+      "slopeEarlyPct": -1.838,
+      "slopeLatePct": 0.846,
+      "totalReturn": -16.8
     },
     {
-      "ticker": "TS",
-      "trend": "bullish",
-      "slopePct": 1.591,
-      "r2": 0.815,
-      "slopeEarlyPct": 1.978,
-      "slopeLatePct": 0.462,
-      "totalReturn": 18.2
-    },
-    {
-      "ticker": "ZTS",
-      "trend": "bearish",
-      "slopePct": -2.795,
-      "r2": 0.565,
-      "slopeEarlyPct": -1.648,
-      "slopeLatePct": -12.769,
-      "totalReturn": -42.4
-    },
-    {
-      "ticker": "CPRT",
-      "trend": "bearish",
-      "slopePct": -1.05,
-      "r2": 0.499,
-      "slopeEarlyPct": -2.285,
-      "slopeLatePct": -0.431,
-      "totalReturn": -11.5
-    },
-    {
-      "ticker": "ALC",
-      "trend": "bearish",
-      "slopePct": -1.816,
-      "r2": 0.592,
-      "slopeEarlyPct": -1.866,
-      "slopeLatePct": -6.799,
-      "totalReturn": -23
-    },
-    {
-      "ticker": "RVMD",
-      "trend": "bullish",
-      "slopePct": 4.104,
-      "r2": 0.641,
-      "slopeEarlyPct": -0.842,
-      "slopeLatePct": 0.04,
-      "totalReturn": 43
-    },
-    {
-      "ticker": "CQP",
-      "trend": "sideways",
-      "slopePct": 0.216,
-      "r2": 0.056,
-      "slopeEarlyPct": 0.952,
-      "slopeLatePct": 0.958,
-      "totalReturn": 6.4
-    },
-    {
-      "ticker": "RBLX",
-      "trend": "bearish",
-      "slopePct": -3.099,
-      "r2": 0.682,
-      "slopeEarlyPct": -2.418,
-      "slopeLatePct": -9.979,
-      "totalReturn": -30.9
-    },
-    {
-      "ticker": "MDLN",
-      "trend": "sideways",
-      "slopePct": -1.179,
-      "r2": 0.306,
-      "slopeEarlyPct": -1.381,
-      "slopeLatePct": -6.61,
-      "totalReturn": -27.3
-    },
-    {
-      "ticker": "ALL-PH",
-      "trend": "sideways",
-      "slopePct": -0.205,
-      "r2": 0.152,
-      "slopeEarlyPct": -0.84,
-      "slopeLatePct": -0.822,
-      "totalReturn": -5.1
-    },
-    {
-      "ticker": "CRCL",
-      "trend": "sideways",
-      "slopePct": 1.96,
-      "r2": 0.213,
-      "slopeEarlyPct": 2.44,
-      "slopeLatePct": 2.832,
-      "totalReturn": 80.9
-    },
-    {
-      "ticker": "RDDT",
-      "trend": "sideways",
-      "slopePct": 1.274,
-      "r2": 0.307,
-      "slopeEarlyPct": -1.442,
-      "slopeLatePct": -0.648,
-      "totalReturn": 5.3
-    },
-    {
-      "ticker": "RPRX",
-      "trend": "bullish",
-      "slopePct": 1.233,
-      "r2": 0.87,
-      "slopeEarlyPct": 0.868,
-      "slopeLatePct": 1.408,
-      "totalReturn": 17.1
-    },
-    {
-      "ticker": "ONC",
-      "trend": "sideways",
-      "slopePct": -0.527,
-      "r2": 0.079,
-      "slopeEarlyPct": -1.799,
-      "slopeLatePct": -1.637,
-      "totalReturn": -19
-    },
-    {
-      "ticker": "NTRS",
-      "trend": "bullish",
-      "slopePct": 1.657,
-      "r2": 0.673,
-      "slopeEarlyPct": 0.305,
-      "slopeLatePct": 0.357,
-      "totalReturn": 13.2
-    },
-    {
-      "ticker": "EXR",
-      "trend": "sideways",
-      "slopePct": -0.428,
-      "r2": 0.105,
-      "slopeEarlyPct": -2.094,
-      "slopeLatePct": -1.107,
-      "totalReturn": -10.4
-    },
-    {
-      "ticker": "SHG",
-      "trend": "sideways",
-      "slopePct": 0.352,
-      "r2": 0.048,
-      "slopeEarlyPct": -0.896,
-      "slopeLatePct": -1.159,
-      "totalReturn": -10.6
-    },
-    {
-      "ticker": "HEI-A",
-      "trend": "bearish",
-      "slopePct": -1.179,
-      "r2": 0.41,
-      "slopeEarlyPct": -2.773,
-      "slopeLatePct": 0.349,
-      "totalReturn": -17.3
-    },
-    {
-      "ticker": "UAL",
-      "trend": "sideways",
-      "slopePct": -0.585,
-      "r2": 0.084,
-      "slopeEarlyPct": -2.42,
-      "slopeLatePct": -1.18,
-      "totalReturn": -17.9
-    },
-    {
-      "ticker": "TWLO",
-      "trend": "bullish",
-      "slopePct": 4.732,
-      "r2": 0.7,
-      "slopeEarlyPct": 0.554,
-      "slopeLatePct": 10.048,
-      "totalReturn": 75.3
-    },
-    {
-      "ticker": "TECK",
+      "ticker": "ADBE",
       "trend": "recovering",
-      "slopePct": 1.371,
-      "r2": 0.259,
-      "slopeEarlyPct": -1.371,
-      "slopeLatePct": 1.422,
-      "totalReturn": 3.3
+      "slopePct": -0.029,
+      "r2": 0.001,
+      "slopeEarlyPct": -1.08,
+      "slopeLatePct": 0.886,
+      "totalReturn": -8.9
     },
     {
-      "ticker": "VICI",
-      "trend": "sideways",
-      "slopePct": -0.357,
-      "r2": 0.127,
-      "slopeEarlyPct": -1.564,
-      "slopeLatePct": -0.63,
-      "totalReturn": -7.3
+      "ticker": "ADI",
+      "trend": "bullish",
+      "slopePct": 2.913,
+      "r2": 0.877,
+      "slopeEarlyPct": 3.778,
+      "slopeLatePct": 0.502,
+      "totalReturn": 35.8
     },
     {
-      "ticker": "RJF",
-      "trend": "sideways",
-      "slopePct": 0.15,
-      "r2": 0.025,
-      "slopeEarlyPct": -1.395,
-      "slopeLatePct": 0.366,
-      "totalReturn": -2.6
+      "ticker": "ADM",
+      "trend": "bullish",
+      "slopePct": 1.46,
+      "r2": 0.677,
+      "slopeEarlyPct": 0.498,
+      "slopeLatePct": 1.354,
+      "totalReturn": 23.6
     },
     {
-      "ticker": "MTB",
-      "trend": "sideways",
-      "slopePct": -0.129,
-      "r2": 0.011,
-      "slopeEarlyPct": -0.842,
-      "slopeLatePct": -1.432,
-      "totalReturn": -11.9
-    },
-    {
-      "ticker": "ZM",
+      "ticker": "ADP",
       "trend": "recovering",
-      "slopePct": 2.652,
-      "r2": 0.572,
-      "slopeEarlyPct": -0.484,
-      "slopeLatePct": 4.206,
-      "totalReturn": 10.9
+      "slopePct": 0.596,
+      "r2": 0.183,
+      "slopeEarlyPct": -0.917,
+      "slopeLatePct": 1.988,
+      "totalReturn": 2.2
     },
     {
-      "ticker": "FISV",
+      "ticker": "ADSK",
       "trend": "sideways",
-      "slopePct": -0.434,
-      "r2": 0.08,
-      "slopeEarlyPct": -1.95,
-      "slopeLatePct": -3.802,
-      "totalReturn": -10
-    },
-    {
-      "ticker": "ATO",
-      "trend": "sideways",
-      "slopePct": -0.097,
-      "r2": 0.029,
-      "slopeEarlyPct": 0.404,
-      "slopeLatePct": -1.345,
-      "totalReturn": -2.5
+      "slopePct": -0.444,
+      "r2": 0.187,
+      "slopeEarlyPct": -0.906,
+      "slopeLatePct": -1.139,
+      "totalReturn": -10.5
     },
     {
       "ticker": "AEE",
       "trend": "sideways",
-      "slopePct": -0.098,
-      "r2": 0.028,
-      "slopeEarlyPct": 0.015,
-      "slopeLatePct": -1.334,
-      "totalReturn": -3.4
+      "slopePct": -0.174,
+      "r2": 0.095,
+      "slopeEarlyPct": 0.351,
+      "slopeLatePct": -0.235,
+      "totalReturn": -4.1
     },
     {
-      "ticker": "RMD",
+      "ticker": "AEG",
+      "trend": "bullish",
+      "slopePct": 1.888,
+      "r2": 0.838,
+      "slopeEarlyPct": 2.687,
+      "slopeLatePct": 0.048,
+      "totalReturn": 18
+    },
+    {
+      "ticker": "AEIS",
+      "trend": "sideways",
+      "slopePct": 0.467,
+      "r2": 0.037,
+      "slopeEarlyPct": 4.058,
+      "slopeLatePct": -2.883,
+      "totalReturn": 10.4
+    },
+    {
+      "ticker": "AEM",
       "trend": "bearish",
-      "slopePct": -1.937,
-      "r2": 0.843,
-      "slopeEarlyPct": -2.381,
-      "slopeLatePct": -3.088,
-      "totalReturn": -22.1
+      "slopePct": -1.309,
+      "r2": 0.407,
+      "slopeEarlyPct": -0.527,
+      "slopeLatePct": -1.655,
+      "totalReturn": -20
     },
     {
-      "ticker": "DTE",
+      "ticker": "AEP",
       "trend": "sideways",
-      "slopePct": -0.252,
-      "r2": 0.161,
-      "slopeEarlyPct": 0.055,
-      "slopeLatePct": -1.43,
-      "totalReturn": -3.6
+      "slopePct": -0.202,
+      "r2": 0.085,
+      "slopeEarlyPct": 0.574,
+      "slopeLatePct": -0.251,
+      "totalReturn": -3.1
     },
     {
-      "ticker": "EL",
-      "trend": "recovering",
-      "slopePct": -2.716,
-      "r2": 0.396,
-      "slopeEarlyPct": -7.779,
-      "slopeLatePct": 2.069,
-      "totalReturn": -29.7
-    },
-    {
-      "ticker": "CPNG",
+      "ticker": "AER",
       "trend": "sideways",
-      "slopePct": -0.2,
-      "r2": 0.01,
-      "slopeEarlyPct": 0.243,
-      "slopeLatePct": -7.514,
-      "totalReturn": -14
+      "slopePct": 0.336,
+      "r2": 0.133,
+      "slopeEarlyPct": 0.944,
+      "slopeLatePct": -1.953,
+      "totalReturn": 0.2
     },
     {
-      "ticker": "CNC",
-      "trend": "recovering",
-      "slopePct": 2.835,
-      "r2": 0.295,
-      "slopeEarlyPct": -3.916,
-      "slopeLatePct": 10.975,
-      "totalReturn": 34.8
-    },
-    {
-      "ticker": "MTSI",
+      "ticker": "AES",
       "trend": "bullish",
-      "slopePct": 4.183,
-      "r2": 0.677,
-      "slopeEarlyPct": 0.551,
-      "slopeLatePct": 8.505,
-      "totalReturn": 54.2
+      "slopePct": 0.324,
+      "r2": 0.751,
+      "slopeEarlyPct": 0.298,
+      "slopeLatePct": 0.686,
+      "totalReturn": 4.1
     },
     {
-      "ticker": "TDY",
+      "ticker": "AFG",
       "trend": "sideways",
-      "slopePct": -0.448,
-      "r2": 0.229,
-      "slopeEarlyPct": -1.185,
-      "slopeLatePct": -1.04,
-      "totalReturn": -7.8
+      "slopePct": 0.291,
+      "r2": 0.256,
+      "slopeEarlyPct": 0.382,
+      "slopeLatePct": -0.758,
+      "totalReturn": -1.7
     },
     {
-      "ticker": "BIIB",
-      "trend": "recovering",
-      "slopePct": 0.035,
-      "r2": 0.001,
-      "slopeEarlyPct": -1.358,
-      "slopeLatePct": 2.153,
-      "totalReturn": 0.5
-    },
-    {
-      "ticker": "PBA",
-      "trend": "sideways",
-      "slopePct": 0.464,
-      "r2": 0.249,
-      "slopeEarlyPct": 0.316,
-      "slopeLatePct": 3.385,
-      "totalReturn": 12.2
-    },
-    {
-      "ticker": "FTI",
+      "ticker": "AFL",
       "trend": "bullish",
-      "slopePct": 1.312,
-      "r2": 0.619,
-      "slopeEarlyPct": 2.17,
-      "slopeLatePct": -0.404,
-      "totalReturn": 12.3
+      "slopePct": 0.568,
+      "r2": 0.568,
+      "slopeEarlyPct": 0.678,
+      "slopeLatePct": -0.001,
+      "totalReturn": 3.6
     },
     {
-      "ticker": "DOV",
-      "trend": "sideways",
-      "slopePct": -0.004,
-      "r2": 0,
-      "slopeEarlyPct": -1.192,
-      "slopeLatePct": -0.979,
-      "totalReturn": -9.7
+      "ticker": "AFRM",
+      "trend": "bullish",
+      "slopePct": 3.845,
+      "r2": 0.754,
+      "slopeEarlyPct": 5.087,
+      "slopeLatePct": 2.55,
+      "totalReturn": 32.9
     },
     {
-      "ticker": "IQV",
+      "ticker": "AGI",
       "trend": "sideways",
-      "slopePct": -0.096,
-      "r2": 0.009,
-      "slopeEarlyPct": -0.325,
-      "slopeLatePct": 0.104,
+      "slopePct": -1.331,
+      "r2": 0.332,
+      "slopeEarlyPct": -0.587,
+      "slopeLatePct": -2.227,
+      "totalReturn": -22.6
+    },
+    {
+      "ticker": "AGNC",
+      "trend": "sideways",
+      "slopePct": 0.236,
+      "r2": 0.061,
+      "slopeEarlyPct": 1.064,
+      "slopeLatePct": -1.027,
+      "totalReturn": -3.3
+    },
+    {
+      "ticker": "AIG",
+      "trend": "sideways",
+      "slopePct": -0.125,
+      "r2": 0.044,
+      "slopeEarlyPct": 0.172,
+      "slopeLatePct": -1.023,
+      "totalReturn": -6.7
+    },
+    {
+      "ticker": "AIT",
+      "trend": "bullish",
+      "slopePct": 1.671,
+      "r2": 0.854,
+      "slopeEarlyPct": 2.157,
+      "slopeLatePct": 0.203,
+      "totalReturn": 17.1
+    },
+    {
+      "ticker": "AIZ",
+      "trend": "bullish",
+      "slopePct": 1.442,
+      "r2": 0.816,
+      "slopeEarlyPct": 0.784,
+      "slopeLatePct": 0.73,
+      "totalReturn": 12.9
+    },
+    {
+      "ticker": "AJG",
+      "trend": "recovering",
+      "slopePct": -0.579,
+      "r2": 0.364,
+      "slopeEarlyPct": -0.292,
+      "slopeLatePct": 1.251,
+      "totalReturn": -7.5
+    },
+    {
+      "ticker": "AKAM",
+      "trend": "recovering",
+      "slopePct": 3.638,
+      "r2": 0.563,
+      "slopeEarlyPct": -1.179,
+      "slopeLatePct": 1.405,
+      "totalReturn": 59.2
+    },
+    {
+      "ticker": "ALAB",
+      "trend": "bullish",
+      "slopePct": 9.713,
+      "r2": 0.874,
+      "slopeEarlyPct": 8.658,
+      "slopeLatePct": 14.813,
+      "totalReturn": 200.4
+    },
+    {
+      "ticker": "ALB",
+      "trend": "sideways",
+      "slopePct": 0.697,
+      "r2": 0.128,
+      "slopeEarlyPct": 2.767,
+      "slopeLatePct": -4.44,
       "totalReturn": 2.1
     },
     {
-      "ticker": "DOW",
-      "trend": "bullish",
-      "slopePct": 1.645,
-      "r2": 0.441,
-      "slopeEarlyPct": 4.463,
-      "slopeLatePct": 1.186,
-      "totalReturn": 27
-    },
-    {
-      "ticker": "FTS",
-      "trend": "sideways",
-      "slopePct": -0.184,
-      "r2": 0.148,
-      "slopeEarlyPct": -0.08,
-      "slopeLatePct": -0.811,
-      "totalReturn": -2.8
-    },
-    {
-      "ticker": "RYAAY",
-      "trend": "bearish",
-      "slopePct": -1.389,
-      "r2": 0.632,
-      "slopeEarlyPct": -1.494,
-      "slopeLatePct": -2.8,
-      "totalReturn": -17.2
-    },
-    {
-      "ticker": "GEHC",
-      "trend": "bearish",
-      "slopePct": -2.237,
-      "r2": 0.708,
-      "slopeEarlyPct": -2.608,
-      "slopeLatePct": -5.043,
-      "totalReturn": -27.9
-    },
-    {
-      "ticker": "IR",
-      "trend": "bearish",
-      "slopePct": -1.709,
-      "r2": 0.62,
-      "slopeEarlyPct": -2.433,
-      "slopeLatePct": -4.948,
-      "totalReturn": -26.4
-    },
-    {
-      "ticker": "NVT",
-      "trend": "bullish",
-      "slopePct": 3.888,
-      "r2": 0.806,
-      "slopeEarlyPct": 1.358,
-      "slopeLatePct": 6.223,
-      "totalReturn": 44.6
-    },
-    {
-      "ticker": "FOXA",
-      "trend": "bullish",
-      "slopePct": 1.154,
-      "r2": 0.792,
-      "slopeEarlyPct": 0.771,
-      "slopeLatePct": -0.055,
-      "totalReturn": 13.7
-    },
-    {
-      "ticker": "OTIS",
-      "trend": "bearish",
-      "slopePct": -1.866,
-      "r2": 0.765,
-      "slopeEarlyPct": -2.924,
-      "slopeLatePct": -3.135,
-      "totalReturn": -23.4
-    },
-    {
-      "ticker": "KHC",
+      "ticker": "ALC",
       "trend": "recovering",
-      "slopePct": -0.464,
-      "r2": 0.163,
-      "slopeEarlyPct": -1.385,
-      "slopeLatePct": 1.283,
+      "slopePct": -1.547,
+      "r2": 0.572,
+      "slopeEarlyPct": -0.294,
+      "slopeLatePct": 1.635,
+      "totalReturn": -18.1
+    },
+    {
+      "ticker": "ALGN",
+      "trend": "sideways",
+      "slopePct": -0.126,
+      "r2": 0.01,
+      "slopeEarlyPct": 1.294,
+      "slopeLatePct": 1.004,
+      "totalReturn": -3.3
+    },
+    {
+      "ticker": "ALL",
+      "trend": "sideways",
+      "slopePct": 0.235,
+      "r2": 0.186,
+      "slopeEarlyPct": 0.528,
+      "slopeLatePct": -0.747,
+      "totalReturn": -0.7
+    },
+    {
+      "ticker": "ALL-PH",
+      "trend": "sideways",
+      "slopePct": -0.226,
+      "r2": 0.209,
+      "slopeEarlyPct": 0.076,
+      "slopeLatePct": -0.894,
+      "totalReturn": -6
+    },
+    {
+      "ticker": "ALLE",
+      "trend": "bearish",
+      "slopePct": -1.152,
+      "r2": 0.759,
+      "slopeEarlyPct": -0.618,
+      "slopeLatePct": -0.278,
+      "totalReturn": -13.3
+    },
+    {
+      "ticker": "ALLY",
+      "trend": "bullish",
+      "slopePct": 1.18,
+      "r2": 0.526,
+      "slopeEarlyPct": 2.585,
+      "slopeLatePct": -0.664,
+      "totalReturn": 11.4
+    },
+    {
+      "ticker": "ALNY",
+      "trend": "recovering",
+      "slopePct": -0.639,
+      "r2": 0.573,
+      "slopeEarlyPct": -0.65,
+      "slopeLatePct": 1.083,
+      "totalReturn": -5.3
+    },
+    {
+      "ticker": "AM",
+      "trend": "bearish",
+      "slopePct": -0.647,
+      "r2": 0.575,
+      "slopeEarlyPct": -1.064,
+      "slopeLatePct": 0.139,
       "totalReturn": -6.1
     },
     {
-      "ticker": "CNP",
+      "ticker": "AMAT",
+      "trend": "bullish",
+      "slopePct": 2.924,
+      "r2": 0.895,
+      "slopeEarlyPct": 2.835,
+      "slopeLatePct": 3.235,
+      "totalReturn": 54.5
+    },
+    {
+      "ticker": "AMCR",
+      "trend": "bearish",
+      "slopePct": -0.66,
+      "r2": 0.357,
+      "slopeEarlyPct": -0.712,
+      "slopeLatePct": -0.64,
+      "totalReturn": -13
+    },
+    {
+      "ticker": "AMD",
+      "trend": "bullish",
+      "slopePct": 8.919,
+      "r2": 0.942,
+      "slopeEarlyPct": 8.932,
+      "slopeLatePct": 4.778,
+      "totalReturn": 171.9
+    },
+    {
+      "ticker": "AME",
       "trend": "sideways",
-      "slopePct": -0.261,
-      "r2": 0.297,
-      "slopeEarlyPct": -0.052,
-      "slopeLatePct": -0.87,
-      "totalReturn": -3.4
+      "slopePct": 0.522,
+      "r2": 0.298,
+      "slopeEarlyPct": 1.261,
+      "slopeLatePct": -0.409,
+      "totalReturn": 3.1
+    },
+    {
+      "ticker": "AMGN",
+      "trend": "recovering",
+      "slopePct": -0.651,
+      "r2": 0.556,
+      "slopeEarlyPct": -0.98,
+      "slopeLatePct": 1.139,
+      "totalReturn": -6.5
+    },
+    {
+      "ticker": "AMH",
+      "trend": "bullish",
+      "slopePct": 1.21,
+      "r2": 0.731,
+      "slopeEarlyPct": 1.337,
+      "slopeLatePct": 1.016,
+      "totalReturn": 10.1
+    },
+    {
+      "ticker": "AMKR",
+      "trend": "bullish",
+      "slopePct": 4.591,
+      "r2": 0.727,
+      "slopeEarlyPct": 8.463,
+      "slopeLatePct": -0.894,
+      "totalReturn": 77.4
+    },
+    {
+      "ticker": "AMP",
+      "trend": "sideways",
+      "slopePct": 0.241,
+      "r2": 0.137,
+      "slopeEarlyPct": 0.442,
+      "slopeLatePct": -0.996,
+      "totalReturn": -2.1
     },
     {
       "ticker": "AMRZ",
-      "trend": "bearish",
-      "slopePct": -1.517,
-      "r2": 0.509,
-      "slopeEarlyPct": -2.465,
-      "slopeLatePct": -4.073,
-      "totalReturn": -24.8
-    },
-    {
-      "ticker": "VRSN",
-      "trend": "bullish",
-      "slopePct": 2.305,
-      "r2": 0.949,
-      "slopeEarlyPct": 2.363,
-      "slopeLatePct": 2.356,
-      "totalReturn": 37.8
-    },
-    {
-      "ticker": "NRG",
-      "trend": "bearish",
-      "slopePct": -1.537,
-      "r2": 0.401,
-      "slopeEarlyPct": -1.97,
-      "slopeLatePct": -6.798,
-      "totalReturn": -28.7
-    },
-    {
-      "ticker": "EC",
       "trend": "sideways",
-      "slopePct": 0.308,
-      "r2": 0.027,
-      "slopeEarlyPct": 2.997,
-      "slopeLatePct": -1.552,
-      "totalReturn": 4.7
+      "slopePct": -0.563,
+      "r2": 0.204,
+      "slopeEarlyPct": 0.046,
+      "slopeLatePct": 1.596,
+      "totalReturn": -6.5
+    },
+    {
+      "ticker": "AMT",
+      "trend": "recovering",
+      "slopePct": 0.226,
+      "r2": 0.061,
+      "slopeEarlyPct": -0.238,
+      "slopeLatePct": 2.801,
+      "totalReturn": 2.8
+    },
+    {
+      "ticker": "AMX",
+      "trend": "bullish",
+      "slopePct": 0.782,
+      "r2": 0.366,
+      "slopeEarlyPct": 1.975,
+      "slopeLatePct": -1.894,
+      "totalReturn": 6.8
+    },
+    {
+      "ticker": "AMZN",
+      "trend": "bullish",
+      "slopePct": 2.4,
+      "r2": 0.733,
+      "slopeEarlyPct": 3.782,
+      "slopeLatePct": -1.178,
+      "totalReturn": 19
+    },
+    {
+      "ticker": "ANET",
+      "trend": "bullish",
+      "slopePct": 1.834,
+      "r2": 0.399,
+      "slopeEarlyPct": 4.385,
+      "slopeLatePct": 4.322,
+      "totalReturn": 24.9
+    },
+    {
+      "ticker": "AON",
+      "trend": "recovering",
+      "slopePct": -0.237,
+      "r2": 0.152,
+      "slopeEarlyPct": -0.548,
+      "slopeLatePct": 0.557,
+      "totalReturn": -5.4
+    },
+    {
+      "ticker": "APA",
+      "trend": "sideways",
+      "slopePct": 0.156,
+      "r2": 0.007,
+      "slopeEarlyPct": 1.178,
+      "slopeLatePct": 0.737,
+      "totalReturn": 17
+    },
+    {
+      "ticker": "APD",
+      "trend": "sideways",
+      "slopePct": 0.122,
+      "r2": 0.028,
+      "slopeEarlyPct": 1.059,
+      "slopeLatePct": -1.452,
+      "totalReturn": 3.9
+    },
+    {
+      "ticker": "APG",
+      "trend": "sideways",
+      "slopePct": 0.398,
+      "r2": 0.069,
+      "slopeEarlyPct": 2.365,
+      "slopeLatePct": -1.302,
+      "totalReturn": 1.3
+    },
+    {
+      "ticker": "APH",
+      "trend": "sideways",
+      "slopePct": 0.674,
+      "r2": 0.15,
+      "slopeEarlyPct": 1.892,
+      "slopeLatePct": 4.499,
+      "totalReturn": 11.3
+    },
+    {
+      "ticker": "APLD",
+      "trend": "bullish",
+      "slopePct": 5.776,
+      "r2": 0.87,
+      "slopeEarlyPct": 4.221,
+      "slopeLatePct": 2.379,
+      "totalReturn": 75.6
+    },
+    {
+      "ticker": "APO",
+      "trend": "bullish",
+      "slopePct": 1.961,
+      "r2": 0.714,
+      "slopeEarlyPct": 2.455,
+      "slopeLatePct": -1.242,
+      "totalReturn": 18.1
+    },
+    {
+      "ticker": "APP",
+      "trend": "recovering",
+      "slopePct": 1.974,
+      "r2": 0.368,
+      "slopeEarlyPct": -0.456,
+      "slopeLatePct": 5.58,
+      "totalReturn": 11.3
+    },
+    {
+      "ticker": "APTV",
+      "trend": "recovering",
+      "slopePct": -0.772,
+      "r2": 0.113,
+      "slopeEarlyPct": -2.704,
+      "slopeLatePct": 7.014,
+      "totalReturn": 0.3
+    },
+    {
+      "ticker": "AR",
+      "trend": "bearish",
+      "slopePct": -1.154,
+      "r2": 0.469,
+      "slopeEarlyPct": -1.221,
+      "slopeLatePct": -0.046,
+      "totalReturn": -4.5
+    },
+    {
+      "ticker": "ARCC",
+      "trend": "bullish",
+      "slopePct": 0.45,
+      "r2": 0.402,
+      "slopeEarlyPct": 0.669,
+      "slopeLatePct": -0.069,
+      "totalReturn": 0.9
+    },
+    {
+      "ticker": "ARES",
+      "trend": "bullish",
+      "slopePct": 1.946,
+      "r2": 0.782,
+      "slopeEarlyPct": 1.446,
+      "slopeLatePct": 1.073,
+      "totalReturn": 18.6
+    },
+    {
+      "ticker": "ARGX",
+      "trend": "bullish",
+      "slopePct": 1.484,
+      "r2": 0.665,
+      "slopeEarlyPct": 2.185,
+      "slopeLatePct": 1.929,
+      "totalReturn": 17.3
+    },
+    {
+      "ticker": "ARM",
+      "trend": "bullish",
+      "slopePct": 9.401,
+      "r2": 0.844,
+      "slopeEarlyPct": 8.656,
+      "slopeLatePct": 17.093,
+      "totalReturn": 244
+    },
+    {
+      "ticker": "ARMK",
+      "trend": "bullish",
+      "slopePct": 2.615,
+      "r2": 0.883,
+      "slopeEarlyPct": 2.103,
+      "slopeLatePct": 3.283,
+      "totalReturn": 32.5
+    },
+    {
+      "ticker": "ARW",
+      "trend": "bullish",
+      "slopePct": 4.341,
+      "r2": 0.955,
+      "slopeEarlyPct": 4.478,
+      "slopeLatePct": 3.074,
+      "totalReturn": 62.2
+    },
+    {
+      "ticker": "ARWR",
+      "trend": "bullish",
+      "slopePct": 2.726,
+      "r2": 0.857,
+      "slopeEarlyPct": 3.931,
+      "slopeLatePct": 0.819,
+      "totalReturn": 25.6
+    },
+    {
+      "ticker": "ARXS",
+      "trend": "recovering",
+      "slopePct": 2.417,
+      "r2": 0.316,
+      "slopeEarlyPct": -1.89,
+      "slopeLatePct": 8.849,
+      "totalReturn": 10.5
+    },
+    {
+      "ticker": "AS",
+      "trend": "sideways",
+      "slopePct": 0.672,
+      "r2": 0.266,
+      "slopeEarlyPct": 1.578,
+      "slopeLatePct": -0.098,
+      "totalReturn": 1.5
+    },
+    {
+      "ticker": "ASML",
+      "trend": "bullish",
+      "slopePct": 2.167,
+      "r2": 0.852,
+      "slopeEarlyPct": 1.614,
+      "slopeLatePct": 2.728,
+      "totalReturn": 35.9
+    },
+    {
+      "ticker": "ASND",
+      "trend": "sideways",
+      "slopePct": 0.061,
+      "r2": 0.003,
+      "slopeEarlyPct": -0.011,
+      "slopeLatePct": -2.396,
+      "totalReturn": -9.1
+    },
+    {
+      "ticker": "ASTS",
+      "trend": "recovering",
+      "slopePct": 1.326,
+      "r2": 0.152,
+      "slopeEarlyPct": -1.897,
+      "slopeLatePct": 9.708,
+      "totalReturn": 19.9
+    },
+    {
+      "ticker": "ASX",
+      "trend": "bullish",
+      "slopePct": 5.335,
+      "r2": 0.944,
+      "slopeEarlyPct": 6.093,
+      "slopeLatePct": 3.586,
+      "totalReturn": 81.8
+    },
+    {
+      "ticker": "ATI",
+      "trend": "bullish",
+      "slopePct": 1.514,
+      "r2": 0.662,
+      "slopeEarlyPct": 1.382,
+      "slopeLatePct": 3.992,
+      "totalReturn": 20.7
+    },
+    {
+      "ticker": "ATO",
+      "trend": "bearish",
+      "slopePct": -0.669,
+      "r2": 0.51,
+      "slopeEarlyPct": 0.214,
+      "slopeLatePct": -1.901,
+      "totalReturn": -9.2
+    },
+    {
+      "ticker": "AU",
+      "trend": "sideways",
+      "slopePct": -0.177,
+      "r2": 0.007,
+      "slopeEarlyPct": 0.621,
+      "slopeLatePct": -2.623,
+      "totalReturn": -13.5
+    },
+    {
+      "ticker": "AUR",
+      "trend": "bullish",
+      "slopePct": 5.49,
+      "r2": 0.799,
+      "slopeEarlyPct": 4.113,
+      "slopeLatePct": -1.179,
+      "totalReturn": 52.3
+    },
+    {
+      "ticker": "AVB",
+      "trend": "bullish",
+      "slopePct": 0.982,
+      "r2": 0.613,
+      "slopeEarlyPct": 0.65,
+      "slopeLatePct": 0.645,
+      "totalReturn": 6.4
+    },
+    {
+      "ticker": "AVGO",
+      "trend": "bullish",
+      "slopePct": 2.922,
+      "r2": 0.759,
+      "slopeEarlyPct": 4.349,
+      "slopeLatePct": -0.014,
+      "totalReturn": 26.8
+    },
+    {
+      "ticker": "AVY",
+      "trend": "bearish",
+      "slopePct": -0.847,
+      "r2": 0.647,
+      "slopeEarlyPct": -0.554,
+      "slopeLatePct": -1.115,
+      "totalReturn": -14.7
+    },
+    {
+      "ticker": "AWK",
+      "trend": "bearish",
+      "slopePct": -1.099,
+      "r2": 0.893,
+      "slopeEarlyPct": -0.866,
+      "slopeLatePct": -0.534,
+      "totalReturn": -11.1
+    },
+    {
+      "ticker": "AXIA",
+      "trend": "sideways",
+      "slopePct": -0.383,
+      "r2": 0.034,
+      "slopeEarlyPct": 2.345,
+      "slopeLatePct": -4.154,
+      "totalReturn": -11.7
     },
     {
       "ticker": "AXIA-P",
       "trend": "sideways",
-      "slopePct": 0.506,
-      "r2": 0.082,
-      "slopeEarlyPct": 0.541,
-      "slopeLatePct": -3.58,
+      "slopePct": -0.431,
+      "r2": 0.045,
+      "slopeEarlyPct": 2.236,
+      "slopeLatePct": -4.149,
+      "totalReturn": -11.5
+    },
+    {
+      "ticker": "AXIA-PC",
+      "trend": "sideways",
+      "slopePct": -0.355,
+      "r2": 0.032,
+      "slopeEarlyPct": 2.171,
+      "slopeLatePct": -4.051,
+      "totalReturn": -11.4
+    },
+    {
+      "ticker": "AXON",
+      "trend": "recovering",
+      "slopePct": -1.238,
+      "r2": 0.131,
+      "slopeEarlyPct": -4.756,
+      "slopeLatePct": 6.442,
+      "totalReturn": -10.6
+    },
+    {
+      "ticker": "AXP",
+      "trend": "bullish",
+      "slopePct": 0.501,
+      "r2": 0.367,
+      "slopeEarlyPct": 1.142,
+      "slopeLatePct": -0.128,
+      "totalReturn": 3.8
+    },
+    {
+      "ticker": "AXSM",
+      "trend": "bullish",
+      "slopePct": 3.75,
+      "r2": 0.93,
+      "slopeEarlyPct": 3.388,
+      "slopeLatePct": 1.524,
+      "totalReturn": 42.6
+    },
+    {
+      "ticker": "AZN",
+      "trend": "sideways",
+      "slopePct": -0.464,
+      "r2": 0.196,
+      "slopeEarlyPct": 0.169,
+      "slopeLatePct": 0.108,
+      "totalReturn": -6.4
+    },
+    {
+      "ticker": "AZO",
+      "trend": "sideways",
+      "slopePct": -0.779,
+      "r2": 0.297,
+      "slopeEarlyPct": 0.262,
+      "slopeLatePct": -3.739,
+      "totalReturn": -15.4
+    },
+    {
+      "ticker": "B",
+      "trend": "sideways",
+      "slopePct": 0.027,
+      "r2": 0,
+      "slopeEarlyPct": -0.519,
+      "slopeLatePct": 0.3,
+      "totalReturn": -5.8
+    },
+    {
+      "ticker": "BA",
+      "trend": "sideways",
+      "slopePct": 0.668,
+      "r2": 0.195,
+      "slopeEarlyPct": 1.057,
+      "slopeLatePct": -1.298,
+      "totalReturn": -5.9
+    },
+    {
+      "ticker": "BABA",
+      "trend": "sideways",
+      "slopePct": 0.086,
+      "r2": 0.005,
+      "slopeEarlyPct": 0.597,
+      "slopeLatePct": -2.802,
+      "totalReturn": -3.7
+    },
+    {
+      "ticker": "BAC",
+      "trend": "bullish",
+      "slopePct": 0.854,
+      "r2": 0.498,
+      "slopeEarlyPct": 1.78,
+      "slopeLatePct": 1.46,
+      "totalReturn": 11.4
+    },
+    {
+      "ticker": "BALL",
+      "trend": "bearish",
+      "slopePct": -0.956,
+      "r2": 0.46,
+      "slopeEarlyPct": 0.285,
+      "slopeLatePct": -2.192,
+      "totalReturn": -15.7
+    },
+    {
+      "ticker": "BAM",
+      "trend": "bullish",
+      "slopePct": 0.867,
+      "r2": 0.498,
+      "slopeEarlyPct": 1.324,
+      "slopeLatePct": -1.125,
+      "totalReturn": 1.4
+    },
+    {
+      "ticker": "BAP",
+      "trend": "sideways",
+      "slopePct": 0.045,
+      "r2": 0.004,
+      "slopeEarlyPct": 0.036,
+      "slopeLatePct": 0.557,
+      "totalReturn": -1.2
+    },
+    {
+      "ticker": "BAX",
+      "trend": "sideways",
+      "slopePct": -0.981,
+      "r2": 0.214,
+      "slopeEarlyPct": -3.281,
+      "slopeLatePct": -1.13,
+      "totalReturn": -10.2
+    },
+    {
+      "ticker": "BBD",
+      "trend": "sideways",
+      "slopePct": -0.252,
+      "r2": 0.023,
+      "slopeEarlyPct": 1.78,
+      "slopeLatePct": -1.992,
+      "totalReturn": -7.9
+    },
+    {
+      "ticker": "BBDO",
+      "trend": "sideways",
+      "slopePct": -0.296,
+      "r2": 0.033,
+      "slopeEarlyPct": 1.886,
+      "slopeLatePct": -2.193,
+      "totalReturn": -7.1
+    },
+    {
+      "ticker": "BBIO",
+      "trend": "sideways",
+      "slopePct": -0.25,
+      "r2": 0.044,
+      "slopeEarlyPct": 1.073,
+      "slopeLatePct": 0.001,
+      "totalReturn": 3
+    },
+    {
+      "ticker": "BBVA",
+      "trend": "bullish",
+      "slopePct": 0.752,
+      "r2": 0.419,
+      "slopeEarlyPct": 1.246,
+      "slopeLatePct": 1.153,
+      "totalReturn": 7.1
+    },
+    {
+      "ticker": "BBY",
+      "trend": "recovering",
+      "slopePct": 0.447,
+      "r2": 0.049,
+      "slopeEarlyPct": -0.731,
+      "slopeLatePct": 6.874,
+      "totalReturn": 6.5
+    },
+    {
+      "ticker": "BCE",
+      "trend": "recovering",
+      "slopePct": -0.462,
+      "r2": 0.323,
+      "slopeEarlyPct": -1.266,
+      "slopeLatePct": 0.493,
+      "totalReturn": -7.6
+    },
+    {
+      "ticker": "BCH",
+      "trend": "sideways",
+      "slopePct": -0.164,
+      "r2": 0.035,
+      "slopeEarlyPct": 0.35,
+      "slopeLatePct": 1.134,
+      "totalReturn": -2.5
+    },
+    {
+      "ticker": "BCS",
+      "trend": "bullish",
+      "slopePct": 1.38,
+      "r2": 0.646,
+      "slopeEarlyPct": 1.936,
+      "slopeLatePct": 1.923,
+      "totalReturn": 14.4
+    },
+    {
+      "ticker": "BDX",
+      "trend": "bearish",
+      "slopePct": -0.784,
+      "r2": 0.694,
+      "slopeEarlyPct": -0.901,
+      "slopeLatePct": 0.265,
+      "totalReturn": -10.5
+    },
+    {
+      "ticker": "BE",
+      "trend": "bullish",
+      "slopePct": 6.985,
+      "r2": 0.864,
+      "slopeEarlyPct": 9.348,
+      "slopeLatePct": 2.462,
+      "totalReturn": 115.5
+    },
+    {
+      "ticker": "BEKE",
+      "trend": "sideways",
+      "slopePct": 0.618,
+      "r2": 0.169,
+      "slopeEarlyPct": 0.119,
+      "slopeLatePct": -3.502,
+      "totalReturn": -0.3
+    },
+    {
+      "ticker": "BEN",
+      "trend": "bullish",
+      "slopePct": 2.668,
+      "r2": 0.784,
+      "slopeEarlyPct": 2.17,
+      "slopeLatePct": 0.328,
+      "totalReturn": 21.8
+    },
+    {
+      "ticker": "BEP",
+      "trend": "bullish",
+      "slopePct": 1.422,
+      "r2": 0.833,
+      "slopeEarlyPct": 1.787,
+      "slopeLatePct": 2.224,
+      "totalReturn": 21.1
+    },
+    {
+      "ticker": "BF-A",
+      "trend": "sideways",
+      "slopePct": 0.555,
+      "r2": 0.109,
+      "slopeEarlyPct": 2,
+      "slopeLatePct": -1.75,
+      "totalReturn": 2.2
+    },
+    {
+      "ticker": "BF-B",
+      "trend": "sideways",
+      "slopePct": 0.367,
+      "r2": 0.044,
+      "slopeEarlyPct": 1.93,
+      "slopeLatePct": -1.94,
+      "totalReturn": 0.8
+    },
+    {
+      "ticker": "BG",
+      "trend": "sideways",
+      "slopePct": 0.203,
+      "r2": 0.07,
+      "slopeEarlyPct": 0.401,
+      "slopeLatePct": 0.79,
+      "totalReturn": 10.9
+    },
+    {
+      "ticker": "BHP",
+      "trend": "bullish",
+      "slopePct": 2.199,
+      "r2": 0.893,
+      "slopeEarlyPct": 2.25,
+      "slopeLatePct": 1.464,
+      "totalReturn": 23.6
+    },
+    {
+      "ticker": "BIDU",
+      "trend": "bullish",
+      "slopePct": 1.496,
+      "r2": 0.527,
+      "slopeEarlyPct": 0.919,
+      "slopeLatePct": -0.928,
+      "totalReturn": 13.2
+    },
+    {
+      "ticker": "BIIB",
+      "trend": "bullish",
+      "slopePct": 0.725,
+      "r2": 0.557,
+      "slopeEarlyPct": -0.017,
+      "slopeLatePct": 0.465,
+      "totalReturn": 6.3
+    },
+    {
+      "ticker": "BIP",
+      "trend": "recovering",
+      "slopePct": 0.489,
+      "r2": 0.325,
+      "slopeEarlyPct": -0.383,
+      "slopeLatePct": 1.458,
+      "totalReturn": 3.8
+    },
+    {
+      "ticker": "BJ",
+      "trend": "bearish",
+      "slopePct": -0.899,
+      "r2": 0.642,
+      "slopeEarlyPct": -0.7,
+      "slopeLatePct": -2.248,
+      "totalReturn": -8.7
+    },
+    {
+      "ticker": "BKNG",
+      "trend": "sideways",
+      "slopePct": -0.53,
+      "r2": 0.158,
+      "slopeEarlyPct": 0.299,
+      "slopeLatePct": 1.006,
+      "totalReturn": -8
+    },
+    {
+      "ticker": "BKR",
+      "trend": "bullish",
+      "slopePct": 1.014,
+      "r2": 0.453,
+      "slopeEarlyPct": 2.141,
+      "slopeLatePct": 0.648,
+      "totalReturn": 10.5
+    },
+    {
+      "ticker": "BLD",
+      "trend": "bullish",
+      "slopePct": 1.303,
+      "r2": 0.392,
+      "slopeEarlyPct": 2.843,
+      "slopeLatePct": -0.648,
+      "totalReturn": 4.9
+    },
+    {
+      "ticker": "BLK",
+      "trend": "bullish",
+      "slopePct": 1.097,
+      "r2": 0.664,
+      "slopeEarlyPct": 1.756,
+      "slopeLatePct": -1.503,
+      "totalReturn": 7
+    },
+    {
+      "ticker": "BMNR",
+      "trend": "sideways",
+      "slopePct": -0.221,
+      "r2": 0.014,
+      "slopeEarlyPct": 1.907,
+      "slopeLatePct": -4.67,
+      "totalReturn": -5.2
+    },
+    {
+      "ticker": "BMO",
+      "trend": "bullish",
+      "slopePct": 1.615,
+      "r2": 0.833,
+      "slopeEarlyPct": 1.641,
+      "slopeLatePct": 2.152,
+      "totalReturn": 16.2
+    },
+    {
+      "ticker": "BMRN",
+      "trend": "bearish",
+      "slopePct": -1.042,
+      "r2": 0.646,
+      "slopeEarlyPct": -1.78,
+      "slopeLatePct": -0.489,
+      "totalReturn": -14.6
+    },
+    {
+      "ticker": "BMY",
+      "trend": "sideways",
+      "slopePct": -0.308,
+      "r2": 0.326,
+      "slopeEarlyPct": -0.111,
+      "slopeLatePct": 0.185,
+      "totalReturn": -6.1
+    },
+    {
+      "ticker": "BN",
+      "trend": "bullish",
+      "slopePct": 1.414,
+      "r2": 0.65,
+      "slopeEarlyPct": 2.277,
+      "slopeLatePct": -0.877,
+      "totalReturn": 9.3
+    },
+    {
+      "ticker": "BNS",
+      "trend": "bullish",
+      "slopePct": 1.374,
+      "r2": 0.837,
+      "slopeEarlyPct": 1.537,
+      "slopeLatePct": 1.35,
+      "totalReturn": 12.9
+    },
+    {
+      "ticker": "BNT",
+      "trend": "bullish",
+      "slopePct": 0.977,
+      "r2": 0.596,
+      "slopeEarlyPct": 1.587,
+      "slopeLatePct": -0.852,
+      "totalReturn": 6.3
+    },
+    {
+      "ticker": "BNTX",
+      "trend": "sideways",
+      "slopePct": -0.061,
+      "r2": 0.002,
+      "slopeEarlyPct": 1.118,
+      "slopeLatePct": -0.29,
+      "totalReturn": -11.7
+    },
+    {
+      "ticker": "BP",
+      "trend": "sideways",
+      "slopePct": 0.003,
+      "r2": 0,
+      "slopeEarlyPct": 1.258,
+      "slopeLatePct": -0.248,
+      "totalReturn": 8.9
+    },
+    {
+      "ticker": "BR",
+      "trend": "recovering",
+      "slopePct": -1.612,
+      "r2": 0.603,
+      "slopeEarlyPct": -2.668,
+      "slopeLatePct": 1.148,
+      "totalReturn": -21.7
+    },
+    {
+      "ticker": "BRK-A",
+      "trend": "sideways",
+      "slopePct": -0.142,
+      "r2": 0.128,
+      "slopeEarlyPct": -0.562,
+      "slopeLatePct": -0.151,
+      "totalReturn": -3.9
+    },
+    {
+      "ticker": "BRK-B",
+      "trend": "sideways",
+      "slopePct": -0.147,
+      "r2": 0.127,
+      "slopeEarlyPct": -0.582,
+      "slopeLatePct": -0.059,
+      "totalReturn": -4.1
+    },
+    {
+      "ticker": "BRO",
+      "trend": "bearish",
+      "slopePct": -1.914,
+      "r2": 0.784,
+      "slopeEarlyPct": -1.705,
+      "slopeLatePct": 0.322,
+      "totalReturn": -21.9
+    },
+    {
+      "ticker": "BSAC",
+      "trend": "sideways",
+      "slopePct": -0.222,
+      "r2": 0.025,
+      "slopeEarlyPct": 1.227,
+      "slopeLatePct": 0.828,
+      "totalReturn": -2.1
+    },
+    {
+      "ticker": "BSBR",
+      "trend": "sideways",
+      "slopePct": -0.692,
+      "r2": 0.221,
+      "slopeEarlyPct": 0.671,
+      "slopeLatePct": -1.554,
+      "totalReturn": -10.8
+    },
+    {
+      "ticker": "BSX",
+      "trend": "bearish",
+      "slopePct": -2.92,
+      "r2": 0.908,
+      "slopeEarlyPct": -2.518,
+      "slopeLatePct": -2.778,
+      "totalReturn": -31.5
+    },
+    {
+      "ticker": "BSY",
+      "trend": "bearish",
+      "slopePct": -1.363,
+      "r2": 0.614,
+      "slopeEarlyPct": -2.268,
+      "slopeLatePct": 0.357,
+      "totalReturn": -16.9
+    },
+    {
+      "ticker": "BTI",
+      "trend": "sideways",
+      "slopePct": 0.534,
+      "r2": 0.234,
+      "slopeEarlyPct": -0.072,
+      "slopeLatePct": -0.675,
+      "totalReturn": 0
+    },
+    {
+      "ticker": "BTSG",
+      "trend": "bullish",
+      "slopePct": 3.611,
+      "r2": 0.931,
+      "slopeEarlyPct": 3.34,
+      "slopeLatePct": 1.536,
+      "totalReturn": 38.3
+    },
+    {
+      "ticker": "BUD",
+      "trend": "bullish",
+      "slopePct": 1.213,
+      "r2": 0.624,
+      "slopeEarlyPct": 0.757,
+      "slopeLatePct": -0.605,
+      "totalReturn": 5.8
+    },
+    {
+      "ticker": "BURL",
+      "trend": "sideways",
+      "slopePct": 0.221,
+      "r2": 0.038,
+      "slopeEarlyPct": 1.297,
+      "slopeLatePct": 2.077,
+      "totalReturn": 5.3
+    },
+    {
+      "ticker": "BWA",
+      "trend": "bullish",
+      "slopePct": 2.976,
+      "r2": 0.838,
+      "slopeEarlyPct": 1.366,
+      "slopeLatePct": 5.901,
+      "totalReturn": 48.7
+    },
+    {
+      "ticker": "BWXT",
+      "trend": "sideways",
+      "slopePct": -0.102,
+      "r2": 0.004,
+      "slopeEarlyPct": 2.122,
+      "slopeLatePct": -1.9,
+      "totalReturn": -2.3
+    },
+    {
+      "ticker": "BX",
+      "trend": "bullish",
+      "slopePct": 0.828,
+      "r2": 0.357,
+      "slopeEarlyPct": 2.198,
+      "slopeLatePct": -0.954,
+      "totalReturn": 7.4
+    },
+    {
+      "ticker": "C",
+      "trend": "bullish",
+      "slopePct": 1.643,
+      "r2": 0.696,
+      "slopeEarlyPct": 3.022,
+      "slopeLatePct": 1.707,
+      "totalReturn": 26.9
+    },
+    {
+      "ticker": "CACI",
+      "trend": "recovering",
+      "slopePct": -1.684,
+      "r2": 0.714,
+      "slopeEarlyPct": -2.576,
+      "slopeLatePct": 2.561,
+      "totalReturn": -13.6
+    },
+    {
+      "ticker": "CAH",
+      "trend": "recovering",
+      "slopePct": -0.862,
+      "r2": 0.52,
+      "slopeEarlyPct": -0.958,
+      "slopeLatePct": 1.931,
+      "totalReturn": -7.4
+    },
+    {
+      "ticker": "CARR",
+      "trend": "bullish",
+      "slopePct": 1.461,
+      "r2": 0.66,
+      "slopeEarlyPct": 1.923,
+      "slopeLatePct": 0.401,
+      "totalReturn": 17.5
+    },
+    {
+      "ticker": "CASY",
+      "trend": "bullish",
+      "slopePct": 1.679,
+      "r2": 0.598,
+      "slopeEarlyPct": 3.003,
+      "slopeLatePct": -3.461,
+      "totalReturn": 14.6
+    },
+    {
+      "ticker": "CAT",
+      "trend": "bullish",
+      "slopePct": 2.665,
+      "r2": 0.905,
+      "slopeEarlyPct": 3.473,
+      "slopeLatePct": 0.821,
+      "totalReturn": 38.1
+    },
+    {
+      "ticker": "CB",
+      "trend": "sideways",
+      "slopePct": -0.227,
+      "r2": 0.286,
+      "slopeEarlyPct": 0.049,
+      "slopeLatePct": -0.71,
+      "totalReturn": -4.1
+    },
+    {
+      "ticker": "CBRE",
+      "trend": "sideways",
+      "slopePct": -0.235,
+      "r2": 0.03,
+      "slopeEarlyPct": 1.338,
+      "slopeLatePct": -2.689,
+      "totalReturn": -4.3
+    },
+    {
+      "ticker": "CCEP",
+      "trend": "sideways",
+      "slopePct": -0.482,
+      "r2": 0.27,
+      "slopeEarlyPct": -0.194,
+      "slopeLatePct": -0.409,
+      "totalReturn": -8.2
+    },
+    {
+      "ticker": "CCI",
+      "trend": "bullish",
+      "slopePct": 0.656,
+      "r2": 0.359,
+      "slopeEarlyPct": 0.239,
+      "slopeLatePct": 1.242,
+      "totalReturn": 3.7
+    },
+    {
+      "ticker": "CCJ",
+      "trend": "sideways",
+      "slopePct": 0.39,
+      "r2": 0.077,
+      "slopeEarlyPct": 2.02,
+      "slopeLatePct": -0.024,
+      "totalReturn": 4
+    },
+    {
+      "ticker": "CCK",
+      "trend": "bearish",
+      "slopePct": -0.767,
+      "r2": 0.511,
+      "slopeEarlyPct": -0.161,
+      "slopeLatePct": -1.79,
+      "totalReturn": -12
+    },
+    {
+      "ticker": "CCL",
+      "trend": "sideways",
+      "slopePct": 0.746,
+      "r2": 0.244,
+      "slopeEarlyPct": 1.726,
+      "slopeLatePct": 2.393,
+      "totalReturn": 8
+    },
+    {
+      "ticker": "CDE",
+      "trend": "recovering",
+      "slopePct": -0.835,
+      "r2": 0.193,
+      "slopeEarlyPct": -1.211,
+      "slopeLatePct": 0.846,
+      "totalReturn": -18.4
+    },
+    {
+      "ticker": "CDNS",
+      "trend": "bullish",
+      "slopePct": 3.024,
+      "r2": 0.804,
+      "slopeEarlyPct": 2.033,
+      "slopeLatePct": 3.359,
+      "totalReturn": 38.6
+    },
+    {
+      "ticker": "CDW",
+      "trend": "sideways",
+      "slopePct": 0.107,
+      "r2": 0.002,
+      "slopeEarlyPct": 1.892,
+      "slopeLatePct": 7.956,
+      "totalReturn": 13
+    },
+    {
+      "ticker": "CEG",
+      "trend": "sideways",
+      "slopePct": -0.569,
+      "r2": 0.173,
+      "slopeEarlyPct": 0.021,
+      "slopeLatePct": -2.03,
+      "totalReturn": -17.1
+    },
+    {
+      "ticker": "CF",
+      "trend": "sideways",
+      "slopePct": -0.607,
+      "r2": 0.195,
+      "slopeEarlyPct": -0.51,
+      "slopeLatePct": -0.667,
+      "totalReturn": 1.5
+    },
+    {
+      "ticker": "CFG",
+      "trend": "bullish",
+      "slopePct": 0.849,
+      "r2": 0.5,
+      "slopeEarlyPct": 1.956,
+      "slopeLatePct": 0.277,
+      "totalReturn": 10.1
+    },
+    {
+      "ticker": "CG",
+      "trend": "sideways",
+      "slopePct": -0.224,
+      "r2": 0.034,
+      "slopeEarlyPct": 0.797,
+      "slopeLatePct": -3.602,
+      "totalReturn": -11
+    },
+    {
+      "ticker": "CGNX",
+      "trend": "bullish",
+      "slopePct": 2.931,
+      "r2": 0.869,
+      "slopeEarlyPct": 2.048,
+      "slopeLatePct": -0.06,
+      "totalReturn": 30.8
+    },
+    {
+      "ticker": "CHD",
+      "trend": "sideways",
+      "slopePct": -0.222,
+      "r2": 0.198,
+      "slopeEarlyPct": -0.378,
+      "slopeLatePct": 0.31,
+      "totalReturn": -6.5
+    },
+    {
+      "ticker": "CHKP",
+      "trend": "recovering",
+      "slopePct": -1.735,
+      "r2": 0.491,
+      "slopeEarlyPct": -3.47,
+      "slopeLatePct": 4.198,
+      "totalReturn": -17.4
+    },
+    {
+      "ticker": "CHRW",
+      "trend": "sideways",
+      "slopePct": 0.366,
+      "r2": 0.117,
+      "slopeEarlyPct": 0.581,
+      "slopeLatePct": 2.376,
+      "totalReturn": 2.8
+    },
+    {
+      "ticker": "CHT",
+      "trend": "bullish",
+      "slopePct": 0.388,
+      "r2": 0.613,
+      "slopeEarlyPct": 0.236,
+      "slopeLatePct": 0.724,
+      "totalReturn": 5.2
+    },
+    {
+      "ticker": "CHTR",
+      "trend": "bearish",
+      "slopePct": -4.506,
+      "r2": 0.822,
+      "slopeEarlyPct": -2.429,
+      "slopeLatePct": -3.357,
+      "totalReturn": -44.4
+    },
+    {
+      "ticker": "CI",
+      "trend": "bullish",
+      "slopePct": 0.579,
+      "r2": 0.617,
+      "slopeEarlyPct": 0.684,
+      "slopeLatePct": -0.798,
+      "totalReturn": 3.3
+    },
+    {
+      "ticker": "CIB",
+      "trend": "sideways",
+      "slopePct": -0.041,
+      "r2": 0.001,
+      "slopeEarlyPct": 0.919,
+      "slopeLatePct": 2.916,
+      "totalReturn": 10.9
+    },
+    {
+      "ticker": "CIEN",
+      "trend": "bullish",
+      "slopePct": 4.26,
+      "r2": 0.858,
+      "slopeEarlyPct": 7.095,
+      "slopeLatePct": 0.014,
+      "totalReturn": 82.1
+    },
+    {
+      "ticker": "CINF",
+      "trend": "sideways",
+      "slopePct": 0.082,
+      "r2": 0.018,
+      "slopeEarlyPct": 0.133,
+      "slopeLatePct": -0.656,
+      "totalReturn": -2.9
+    },
+    {
+      "ticker": "CL",
+      "trend": "sideways",
+      "slopePct": 0,
+      "r2": 0,
+      "slopeEarlyPct": -0.7,
+      "slopeLatePct": -0.328,
+      "totalReturn": -9
+    },
+    {
+      "ticker": "CLH",
+      "trend": "sideways",
+      "slopePct": 0.183,
+      "r2": 0.038,
+      "slopeEarlyPct": 1.399,
+      "slopeLatePct": -1.077,
+      "totalReturn": 1.4
+    },
+    {
+      "ticker": "CLS",
+      "trend": "bullish",
+      "slopePct": 3.607,
+      "r2": 0.705,
+      "slopeEarlyPct": 7.377,
+      "slopeLatePct": 3.307,
+      "totalReturn": 70.5
+    },
+    {
+      "ticker": "CLX",
+      "trend": "bearish",
+      "slopePct": -1.859,
+      "r2": 0.803,
+      "slopeEarlyPct": -2.356,
+      "slopeLatePct": -0.6,
+      "totalReturn": -21.8
+    },
+    {
+      "ticker": "CM",
+      "trend": "bullish",
+      "slopePct": 1.447,
+      "r2": 0.684,
+      "slopeEarlyPct": 2.198,
+      "slopeLatePct": -0.393,
+      "totalReturn": 9.7
+    },
+    {
+      "ticker": "CMCSA",
+      "trend": "bearish",
+      "slopePct": -1.975,
+      "r2": 0.877,
+      "slopeEarlyPct": -1.494,
+      "slopeLatePct": -1.631,
+      "totalReturn": -26.9
+    },
+    {
+      "ticker": "CME",
+      "trend": "bearish",
+      "slopePct": -1.096,
+      "r2": 0.71,
+      "slopeEarlyPct": -1.265,
+      "slopeLatePct": -2.702,
+      "totalReturn": -19.2
+    },
+    {
+      "ticker": "CMG",
+      "trend": "sideways",
+      "slopePct": -0.674,
+      "r2": 0.243,
+      "slopeEarlyPct": 0.182,
+      "slopeLatePct": -2.977,
+      "totalReturn": -20.3
+    },
+    {
+      "ticker": "CMI",
+      "trend": "bullish",
+      "slopePct": 2.151,
+      "r2": 0.764,
+      "slopeEarlyPct": 3.228,
+      "slopeLatePct": -0.79,
+      "totalReturn": 25.8
+    },
+    {
+      "ticker": "CMS",
+      "trend": "bearish",
+      "slopePct": -0.637,
+      "r2": 0.529,
+      "slopeEarlyPct": 0.014,
+      "slopeLatePct": -0.493,
       "totalReturn": -8.8
     },
     {
-      "ticker": "NTRA",
+      "ticker": "CNA",
+      "trend": "bearish",
+      "slopePct": -0.768,
+      "r2": 0.427,
+      "slopeEarlyPct": 0.437,
+      "slopeLatePct": -1.046,
+      "totalReturn": -12.5
+    },
+    {
+      "ticker": "CNC",
+      "trend": "bullish",
+      "slopePct": 5.178,
+      "r2": 0.772,
+      "slopeEarlyPct": 3.157,
+      "slopeLatePct": 2.504,
+      "totalReturn": 43.6
+    },
+    {
+      "ticker": "CNH",
       "trend": "sideways",
-      "slopePct": -0.284,
-      "r2": 0.051,
-      "slopeEarlyPct": -1.039,
-      "slopeLatePct": -2.679,
-      "totalReturn": -12.1
+      "slopePct": -0.234,
+      "r2": 0.057,
+      "slopeEarlyPct": -0.27,
+      "slopeLatePct": -0.419,
+      "totalReturn": -2.7
     },
     {
-      "ticker": "EIX",
-      "trend": "bearish",
-      "slopePct": -0.501,
-      "r2": 0.365,
-      "slopeEarlyPct": 0.018,
-      "slopeLatePct": -0.444,
-      "totalReturn": -6.2
+      "ticker": "CNI",
+      "trend": "bullish",
+      "slopePct": 1.153,
+      "r2": 0.747,
+      "slopeEarlyPct": 1.276,
+      "slopeLatePct": 1.952,
+      "totalReturn": 11.9
     },
     {
-      "ticker": "TPL",
+      "ticker": "CNP",
+      "trend": "sideways",
+      "slopePct": -0.264,
+      "r2": 0.344,
+      "slopeEarlyPct": -0.104,
+      "slopeLatePct": 0.236,
+      "totalReturn": -4
+    },
+    {
+      "ticker": "CNQ",
+      "trend": "recovering",
+      "slopePct": -0.219,
+      "r2": 0.045,
+      "slopeEarlyPct": -0.916,
+      "slopeLatePct": 0.779,
+      "totalReturn": 2.9
+    },
+    {
+      "ticker": "COF",
+      "trend": "sideways",
+      "slopePct": 0.217,
+      "r2": 0.053,
+      "slopeEarlyPct": 1.052,
+      "slopeLatePct": -0.631,
+      "totalReturn": -2.4
+    },
+    {
+      "ticker": "COHR",
+      "trend": "bullish",
+      "slopePct": 4.345,
+      "r2": 0.903,
+      "slopeEarlyPct": 5.301,
+      "slopeLatePct": 4.053,
+      "totalReturn": 79
+    },
+    {
+      "ticker": "COIN",
+      "trend": "sideways",
+      "slopePct": -0.19,
+      "r2": 0.01,
+      "slopeEarlyPct": 0.117,
+      "slopeLatePct": -4.304,
+      "totalReturn": -16.8
+    },
+    {
+      "ticker": "COKE",
       "trend": "bearish",
-      "slopePct": -2.692,
-      "r2": 0.787,
-      "slopeEarlyPct": -2.597,
-      "slopeLatePct": -2.881,
-      "totalReturn": -22.9
+      "slopePct": -1.54,
+      "r2": 0.631,
+      "slopeEarlyPct": -0.555,
+      "slopeLatePct": -0.295,
+      "totalReturn": -16.7
+    },
+    {
+      "ticker": "COO",
+      "trend": "recovering",
+      "slopePct": -1.673,
+      "r2": 0.784,
+      "slopeEarlyPct": -1.72,
+      "slopeLatePct": 0.923,
+      "totalReturn": -19
+    },
+    {
+      "ticker": "COP",
+      "trend": "sideways",
+      "slopePct": -0.492,
+      "r2": 0.187,
+      "slopeEarlyPct": -0.12,
+      "slopeLatePct": 0.194,
+      "totalReturn": 1.8
+    },
+    {
+      "ticker": "COR",
+      "trend": "recovering",
+      "slopePct": -2.36,
+      "r2": 0.833,
+      "slopeEarlyPct": -1.705,
+      "slopeLatePct": 1.13,
+      "totalReturn": -24.6
+    },
+    {
+      "ticker": "COST",
+      "trend": "sideways",
+      "slopePct": 0.016,
+      "r2": 0.001,
+      "slopeEarlyPct": 0.221,
+      "slopeLatePct": -1.65,
+      "totalReturn": -2.6
+    },
+    {
+      "ticker": "CP",
+      "trend": "bullish",
+      "slopePct": 0.92,
+      "r2": 0.681,
+      "slopeEarlyPct": 0.787,
+      "slopeLatePct": 1.28,
+      "totalReturn": 7.9
+    },
+    {
+      "ticker": "CPAY",
+      "trend": "bullish",
+      "slopePct": 1.462,
+      "r2": 0.604,
+      "slopeEarlyPct": 0.379,
+      "slopeLatePct": 1.724,
+      "totalReturn": 13.6
+    },
+    {
+      "ticker": "CPNG",
+      "trend": "sideways",
+      "slopePct": -1.191,
+      "r2": 0.267,
+      "slopeEarlyPct": 1.653,
+      "slopeLatePct": -0.255,
+      "totalReturn": -13.3
+    },
+    {
+      "ticker": "CPRT",
+      "trend": "sideways",
+      "slopePct": -0.619,
+      "r2": 0.323,
+      "slopeEarlyPct": -0.962,
+      "slopeLatePct": -1.794,
+      "totalReturn": -18.5
+    },
+    {
+      "ticker": "CPT",
+      "trend": "bullish",
+      "slopePct": 0.613,
+      "r2": 0.434,
+      "slopeEarlyPct": 0.2,
+      "slopeLatePct": 1.921,
+      "totalReturn": 5.1
+    },
+    {
+      "ticker": "CQP",
+      "trend": "sideways",
+      "slopePct": -0.27,
+      "r2": 0.108,
+      "slopeEarlyPct": -0.086,
+      "slopeLatePct": -0.074,
+      "totalReturn": 2.3
+    },
+    {
+      "ticker": "CR",
+      "trend": "sideways",
+      "slopePct": 0.319,
+      "r2": 0.064,
+      "slopeEarlyPct": 0.236,
+      "slopeLatePct": 1.393,
+      "totalReturn": -1.4
+    },
+    {
+      "ticker": "CRBG",
+      "trend": "bullish",
+      "slopePct": 1.332,
+      "r2": 0.598,
+      "slopeEarlyPct": 1.769,
+      "slopeLatePct": -0.86,
+      "totalReturn": 4.2
+    },
+    {
+      "ticker": "CRCL",
+      "trend": "sideways",
+      "slopePct": -0.004,
+      "r2": 0,
+      "slopeEarlyPct": -1.66,
+      "slopeLatePct": -4.341,
+      "totalReturn": -11.2
+    },
+    {
+      "ticker": "CRDO",
+      "trend": "bullish",
+      "slopePct": 6.846,
+      "r2": 0.837,
+      "slopeEarlyPct": 8.454,
+      "slopeLatePct": 5.9,
+      "totalReturn": 98
+    },
+    {
+      "ticker": "CRH",
+      "trend": "sideways",
+      "slopePct": 0.304,
+      "r2": 0.039,
+      "slopeEarlyPct": 2.14,
+      "slopeLatePct": -0.826,
+      "totalReturn": 0.2
+    },
+    {
+      "ticker": "CRM",
+      "trend": "recovering",
+      "slopePct": -0.412,
+      "r2": 0.112,
+      "slopeEarlyPct": -1.423,
+      "slopeLatePct": 1.718,
+      "totalReturn": -6.6
+    },
+    {
+      "ticker": "CRS",
+      "trend": "bullish",
+      "slopePct": 1.879,
+      "r2": 0.717,
+      "slopeEarlyPct": 2.458,
+      "slopeLatePct": 4.246,
+      "totalReturn": 27.3
+    },
+    {
+      "ticker": "CRWD",
+      "trend": "bullish",
+      "slopePct": 5.155,
+      "r2": 0.729,
+      "slopeEarlyPct": 0.659,
+      "slopeLatePct": 8.029,
+      "totalReturn": 67.6
+    },
+    {
+      "ticker": "CRWV",
+      "trend": "bullish",
+      "slopePct": 3.145,
+      "r2": 0.619,
+      "slopeEarlyPct": 6.587,
+      "slopeLatePct": -0.919,
+      "totalReturn": 48
+    },
+    {
+      "ticker": "CSCO",
+      "trend": "bullish",
+      "slopePct": 4.407,
+      "r2": 0.852,
+      "slopeEarlyPct": 2.108,
+      "slopeLatePct": 5.897,
+      "totalReturn": 65.3
+    },
+    {
+      "ticker": "CSGP",
+      "trend": "bearish",
+      "slopePct": -2.87,
+      "r2": 0.852,
+      "slopeEarlyPct": -3.558,
+      "slopeLatePct": 0.393,
+      "totalReturn": -30.4
+    },
+    {
+      "ticker": "CSL",
+      "trend": "sideways",
+      "slopePct": 0.091,
+      "r2": 0.01,
+      "slopeEarlyPct": 0.762,
+      "slopeLatePct": -0.631,
+      "totalReturn": -3.4
+    },
+    {
+      "ticker": "CSX",
+      "trend": "bullish",
+      "slopePct": 1.452,
+      "r2": 0.854,
+      "slopeEarlyPct": 2.074,
+      "slopeLatePct": 0.527,
+      "totalReturn": 15.7
+    },
+    {
+      "ticker": "CTAS",
+      "trend": "recovering",
+      "slopePct": -0.815,
+      "r2": 0.327,
+      "slopeEarlyPct": -1.691,
+      "slopeLatePct": 1.683,
+      "totalReturn": -11.6
+    },
+    {
+      "ticker": "CTRE",
+      "trend": "sideways",
+      "slopePct": 0.352,
+      "r2": 0.119,
+      "slopeEarlyPct": 0.006,
+      "slopeLatePct": -2.137,
+      "totalReturn": -6.3
+    },
+    {
+      "ticker": "CTSH",
+      "trend": "recovering",
+      "slopePct": -1.799,
+      "r2": 0.66,
+      "slopeEarlyPct": -2.077,
+      "slopeLatePct": 2.315,
+      "totalReturn": -19.4
+    },
+    {
+      "ticker": "CTVA",
+      "trend": "sideways",
+      "slopePct": -0.036,
+      "r2": 0.002,
+      "slopeEarlyPct": 0.521,
+      "slopeLatePct": -1.414,
+      "totalReturn": 0.6
+    },
+    {
+      "ticker": "CVE",
+      "trend": "bullish",
+      "slopePct": 1.91,
+      "r2": 0.719,
+      "slopeEarlyPct": 2.174,
+      "slopeLatePct": -0.16,
+      "totalReturn": 31.1
+    },
+    {
+      "ticker": "CVNA",
+      "trend": "sideways",
+      "slopePct": 1.414,
+      "r2": 0.272,
+      "slopeEarlyPct": 4.124,
+      "slopeLatePct": -2.506,
+      "totalReturn": 4.2
+    },
+    {
+      "ticker": "CVS",
+      "trend": "bullish",
+      "slopePct": 2.282,
+      "r2": 0.757,
+      "slopeEarlyPct": 0.941,
+      "slopeLatePct": 0.39,
+      "totalReturn": 21.7
+    },
+    {
+      "ticker": "CVX",
+      "trend": "sideways",
+      "slopePct": -0.563,
+      "r2": 0.304,
+      "slopeEarlyPct": -0.774,
+      "slopeLatePct": 0.258,
+      "totalReturn": -0.8
     },
     {
       "ticker": "CW",
-      "trend": "sideways",
-      "slopePct": 0.531,
-      "r2": 0.318,
-      "slopeEarlyPct": 0.106,
-      "slopeLatePct": -0.474,
-      "totalReturn": 0.7
+      "trend": "bullish",
+      "slopePct": 0.871,
+      "r2": 0.728,
+      "slopeEarlyPct": 1.202,
+      "slopeLatePct": 0.864,
+      "totalReturn": 9.1
     },
     {
-      "ticker": "PPL",
+      "ticker": "CX",
+      "trend": "bullish",
+      "slopePct": 1.896,
+      "r2": 0.837,
+      "slopeEarlyPct": 2.402,
+      "slopeLatePct": 0.148,
+      "totalReturn": 18.5
+    },
+    {
+      "ticker": "CYTK",
+      "trend": "bullish",
+      "slopePct": 1.985,
+      "r2": 0.755,
+      "slopeEarlyPct": 1.051,
+      "slopeLatePct": -1.1,
+      "totalReturn": 19.7
+    },
+    {
+      "ticker": "D",
+      "trend": "bullish",
+      "slopePct": 0.551,
+      "r2": 0.39,
+      "slopeEarlyPct": 0.276,
+      "slopeLatePct": 2.222,
+      "totalReturn": 5.2
+    },
+    {
+      "ticker": "DAL",
+      "trend": "bullish",
+      "slopePct": 2.256,
+      "r2": 0.888,
+      "slopeEarlyPct": 2.249,
+      "slopeLatePct": 3.224,
+      "totalReturn": 34.7
+    },
+    {
+      "ticker": "DASH",
       "trend": "sideways",
-      "slopePct": -0.39,
-      "r2": 0.174,
-      "slopeEarlyPct": 0.284,
-      "slopeLatePct": -2.987,
-      "totalReturn": -6.8
+      "slopePct": -0.068,
+      "r2": 0.002,
+      "slopeEarlyPct": 0.941,
+      "slopeLatePct": -0.475,
+      "totalReturn": -10.7
+    },
+    {
+      "ticker": "DB",
+      "trend": "bullish",
+      "slopePct": 0.763,
+      "r2": 0.365,
+      "slopeEarlyPct": 1.223,
+      "slopeLatePct": 0.519,
+      "totalReturn": 3
+    },
+    {
+      "ticker": "DD",
+      "trend": "bullish",
+      "slopePct": 0.784,
+      "r2": 0.608,
+      "slopeEarlyPct": 0.732,
+      "slopeLatePct": -1.05,
+      "totalReturn": 5.3
+    },
+    {
+      "ticker": "DDOG",
+      "trend": "bullish",
+      "slopePct": 6.778,
+      "r2": 0.757,
+      "slopeEarlyPct": 0.916,
+      "slopeLatePct": 5.629,
+      "totalReturn": 93.7
+    },
+    {
+      "ticker": "DE",
+      "trend": "sideways",
+      "slopePct": -0.303,
+      "r2": 0.128,
+      "slopeEarlyPct": 0.015,
+      "slopeLatePct": 0.253,
+      "totalReturn": 0.3
+    },
+    {
+      "ticker": "DECK",
+      "trend": "sideways",
+      "slopePct": 0.516,
+      "r2": 0.125,
+      "slopeEarlyPct": 0.772,
+      "slopeLatePct": 3.57,
+      "totalReturn": 4.5
+    },
+    {
+      "ticker": "DELL",
+      "trend": "bullish",
+      "slopePct": 8.369,
+      "r2": 0.793,
+      "slopeEarlyPct": 4.979,
+      "slopeLatePct": 15.302,
+      "totalReturn": 188.1
+    },
+    {
+      "ticker": "DEO",
+      "trend": "sideways",
+      "slopePct": 0.668,
+      "r2": 0.321,
+      "slopeEarlyPct": 0.36,
+      "slopeLatePct": -1.203,
+      "totalReturn": -3.5
+    },
+    {
+      "ticker": "DG",
+      "trend": "bearish",
+      "slopePct": -2.058,
+      "r2": 0.736,
+      "slopeEarlyPct": -2.122,
+      "slopeLatePct": -1.056,
+      "totalReturn": -29.2
+    },
+    {
+      "ticker": "DGX",
+      "trend": "recovering",
+      "slopePct": -0.231,
+      "r2": 0.235,
+      "slopeEarlyPct": -0.348,
+      "slopeLatePct": 1.341,
+      "totalReturn": -1.6
+    },
+    {
+      "ticker": "DHI",
+      "trend": "sideways",
+      "slopePct": 0.362,
+      "r2": 0.091,
+      "slopeEarlyPct": 1.283,
+      "slopeLatePct": 0.643,
+      "totalReturn": -0.6
+    },
+    {
+      "ticker": "DHR",
+      "trend": "recovering",
+      "slopePct": -0.747,
+      "r2": 0.331,
+      "slopeEarlyPct": -0.827,
+      "slopeLatePct": 2.958,
+      "totalReturn": -4.5
+    },
+    {
+      "ticker": "DINO",
+      "trend": "bullish",
+      "slopePct": 2.058,
+      "r2": 0.733,
+      "slopeEarlyPct": 1.47,
+      "slopeLatePct": 0.096,
+      "totalReturn": 29.5
+    },
+    {
+      "ticker": "DIS",
+      "trend": "sideways",
+      "slopePct": 0.365,
+      "r2": 0.158,
+      "slopeEarlyPct": 0.606,
+      "slopeLatePct": -1.772,
+      "totalReturn": -2.2
+    },
+    {
+      "ticker": "DKNG",
+      "trend": "sideways",
+      "slopePct": 0.414,
+      "r2": 0.077,
+      "slopeEarlyPct": -1.205,
+      "slopeLatePct": -0.323,
+      "totalReturn": 0.9
+    },
+    {
+      "ticker": "DKS",
+      "trend": "bullish",
+      "slopePct": 1.476,
+      "r2": 0.659,
+      "slopeEarlyPct": 2.456,
+      "slopeLatePct": -0.238,
+      "totalReturn": 10.3
+    },
+    {
+      "ticker": "DLR",
+      "trend": "bullish",
+      "slopePct": 0.744,
+      "r2": 0.357,
+      "slopeEarlyPct": 2.084,
+      "slopeLatePct": -0.614,
+      "totalReturn": 7.1
+    },
+    {
+      "ticker": "DLTR",
+      "trend": "recovering",
+      "slopePct": -0.623,
+      "r2": 0.111,
+      "slopeEarlyPct": -1.63,
+      "slopeLatePct": 5.641,
+      "totalReturn": -5.6
+    },
+    {
+      "ticker": "DOC",
+      "trend": "bullish",
+      "slopePct": 1.375,
+      "r2": 0.56,
+      "slopeEarlyPct": -0.426,
+      "slopeLatePct": -0.149,
+      "totalReturn": 13.4
+    },
+    {
+      "ticker": "DOCN",
+      "trend": "bullish",
+      "slopePct": 8.449,
+      "r2": 0.86,
+      "slopeEarlyPct": 5.568,
+      "slopeLatePct": 2.1,
+      "totalReturn": 231.5
+    },
+    {
+      "ticker": "DOV",
+      "trend": "sideways",
+      "slopePct": 0.294,
+      "r2": 0.141,
+      "slopeEarlyPct": 1.265,
+      "slopeLatePct": -0.569,
+      "totalReturn": 2.4
+    },
+    {
+      "ticker": "DOW",
+      "trend": "sideways",
+      "slopePct": -0.282,
+      "r2": 0.029,
+      "slopeEarlyPct": 1.325,
+      "slopeLatePct": -2.542,
+      "totalReturn": 4.5
+    },
+    {
+      "ticker": "DPZ",
+      "trend": "bearish",
+      "slopePct": -2.177,
+      "r2": 0.842,
+      "slopeEarlyPct": -1.653,
+      "slopeLatePct": -0.758,
+      "totalReturn": -24.7
+    },
+    {
+      "ticker": "DRI",
+      "trend": "sideways",
+      "slopePct": -0.083,
+      "r2": 0.024,
+      "slopeEarlyPct": -0.35,
+      "slopeLatePct": 0.125,
+      "totalReturn": -4.8
+    },
+    {
+      "ticker": "DRS",
+      "trend": "recovering",
+      "slopePct": -0.105,
+      "r2": 0.005,
+      "slopeEarlyPct": -1.488,
+      "slopeLatePct": 4.022,
+      "totalReturn": 0.3
+    },
+    {
+      "ticker": "DT",
+      "trend": "recovering",
+      "slopePct": 0.998,
+      "r2": 0.286,
+      "slopeEarlyPct": -1.11,
+      "slopeLatePct": 2.263,
+      "totalReturn": 10.1
+    },
+    {
+      "ticker": "DTE",
+      "trend": "sideways",
+      "slopePct": -0.316,
+      "r2": 0.292,
+      "slopeEarlyPct": 0.029,
+      "slopeLatePct": 0.517,
+      "totalReturn": -4.9
+    },
+    {
+      "ticker": "DTM",
+      "trend": "sideways",
+      "slopePct": 0.6,
+      "r2": 0.341,
+      "slopeEarlyPct": 0.239,
+      "slopeLatePct": -0.574,
+      "totalReturn": 0.8
+    },
+    {
+      "ticker": "DUK",
+      "trend": "bearish",
+      "slopePct": -0.651,
+      "r2": 0.718,
+      "slopeEarlyPct": -0.372,
+      "slopeLatePct": -0.237,
+      "totalReturn": -8.1
+    },
+    {
+      "ticker": "DVA",
+      "trend": "bullish",
+      "slopePct": 2.704,
+      "r2": 0.659,
+      "slopeEarlyPct": -0.003,
+      "slopeLatePct": -0.932,
+      "totalReturn": 27.5
+    },
+    {
+      "ticker": "DVN",
+      "trend": "sideways",
+      "slopePct": -0.177,
+      "r2": 0.021,
+      "slopeEarlyPct": 0.565,
+      "slopeLatePct": -0.911,
+      "totalReturn": 3.4
+    },
+    {
+      "ticker": "DXCM",
+      "trend": "recovering",
+      "slopePct": 0.627,
+      "r2": 0.142,
+      "slopeEarlyPct": -1.023,
+      "slopeLatePct": 5.294,
+      "totalReturn": 6.6
+    },
+    {
+      "ticker": "DY",
+      "trend": "bullish",
+      "slopePct": 2.931,
+      "r2": 0.832,
+      "slopeEarlyPct": 3.001,
+      "slopeLatePct": 4.244,
+      "totalReturn": 36.8
+    },
+    {
+      "ticker": "E",
+      "trend": "sideways",
+      "slopePct": 0.32,
+      "r2": 0.088,
+      "slopeEarlyPct": 1.19,
+      "slopeLatePct": -0.254,
+      "totalReturn": 13.9
+    },
+    {
+      "ticker": "EA",
+      "trend": "sideways",
+      "slopePct": 0.08,
+      "r2": 0.157,
+      "slopeEarlyPct": 0.281,
+      "slopeLatePct": 0.348,
+      "totalReturn": 2.7
+    },
+    {
+      "ticker": "EBAY",
+      "trend": "bullish",
+      "slopePct": 2.035,
+      "r2": 0.794,
+      "slopeEarlyPct": 1.82,
+      "slopeLatePct": -0.353,
+      "totalReturn": 17.7
+    },
+    {
+      "ticker": "EC",
+      "trend": "sideways",
+      "slopePct": 0.134,
+      "r2": 0.008,
+      "slopeEarlyPct": 0.041,
+      "slopeLatePct": 5.385,
+      "totalReturn": 21.1
+    },
+    {
+      "ticker": "ECL",
+      "trend": "bearish",
+      "slopePct": -0.661,
+      "r2": 0.494,
+      "slopeEarlyPct": -0.362,
+      "slopeLatePct": 0.34,
+      "totalReturn": -10
+    },
+    {
+      "ticker": "ED",
+      "trend": "bearish",
+      "slopePct": -0.634,
+      "r2": 0.663,
+      "slopeEarlyPct": -0.318,
+      "slopeLatePct": -0.395,
+      "totalReturn": -7.3
+    },
+    {
+      "ticker": "EFX",
+      "trend": "bearish",
+      "slopePct": -1.205,
+      "r2": 0.485,
+      "slopeEarlyPct": -1.175,
+      "slopeLatePct": -0.135,
+      "totalReturn": -17.7
+    },
+    {
+      "ticker": "EG",
+      "trend": "sideways",
+      "slopePct": 0.395,
+      "r2": 0.139,
+      "slopeEarlyPct": 1.151,
+      "slopeLatePct": -2.697,
+      "totalReturn": -4.4
+    },
+    {
+      "ticker": "EGP",
+      "trend": "bullish",
+      "slopePct": 0.803,
+      "r2": 0.7,
+      "slopeEarlyPct": 1.091,
+      "slopeLatePct": -0.625,
+      "totalReturn": 5.5
+    },
+    {
+      "ticker": "EHC",
+      "trend": "sideways",
+      "slopePct": 0.326,
+      "r2": 0.112,
+      "slopeEarlyPct": 0.614,
+      "slopeLatePct": -1.272,
+      "totalReturn": -6.6
+    },
+    {
+      "ticker": "EIX",
+      "trend": "recovering",
+      "slopePct": -0.174,
+      "r2": 0.074,
+      "slopeEarlyPct": -0.203,
+      "slopeLatePct": 0.926,
+      "totalReturn": 0.1
+    },
+    {
+      "ticker": "EL",
+      "trend": "sideways",
+      "slopePct": 0.282,
+      "r2": 0.015,
+      "slopeEarlyPct": -2.071,
+      "slopeLatePct": 0.243,
+      "totalReturn": -10.6
+    },
+    {
+      "ticker": "ELAN",
+      "trend": "recovering",
+      "slopePct": -0.148,
+      "r2": 0.015,
+      "slopeEarlyPct": -0.329,
+      "slopeLatePct": 2.685,
+      "totalReturn": 5.8
+    },
+    {
+      "ticker": "ELS",
+      "trend": "bearish",
+      "slopePct": -0.557,
+      "r2": 0.554,
+      "slopeEarlyPct": -0.711,
+      "slopeLatePct": -0.35,
+      "totalReturn": -8.2
+    },
+    {
+      "ticker": "ELV",
+      "trend": "bullish",
+      "slopePct": 3.179,
+      "r2": 0.935,
+      "slopeEarlyPct": 3.093,
+      "slopeLatePct": 1.607,
+      "totalReturn": 41.4
+    },
+    {
+      "ticker": "EMA",
+      "trend": "sideways",
+      "slopePct": -0.039,
+      "r2": 0.013,
+      "slopeEarlyPct": 0.137,
+      "slopeLatePct": -0.33,
+      "totalReturn": -1.6
+    },
+    {
+      "ticker": "EMBJ",
+      "trend": "sideways",
+      "slopePct": -0.213,
+      "r2": 0.014,
+      "slopeEarlyPct": 1.726,
+      "slopeLatePct": -0.905,
+      "totalReturn": -8.4
+    },
+    {
+      "ticker": "EME",
+      "trend": "bullish",
+      "slopePct": 1.806,
+      "r2": 0.649,
+      "slopeEarlyPct": 3.214,
+      "slopeLatePct": -2.74,
+      "totalReturn": 19.8
+    },
+    {
+      "ticker": "EMR",
+      "trend": "sideways",
+      "slopePct": 0.525,
+      "r2": 0.225,
+      "slopeEarlyPct": 0.961,
+      "slopeLatePct": 0.881,
+      "totalReturn": 2.7
+    },
+    {
+      "ticker": "ENB",
+      "trend": "sideways",
+      "slopePct": 0.354,
+      "r2": 0.332,
+      "slopeEarlyPct": -0.034,
+      "slopeLatePct": 1.029,
+      "totalReturn": 5
+    },
+    {
+      "ticker": "ENLT",
+      "trend": "bullish",
+      "slopePct": 2.981,
+      "r2": 0.754,
+      "slopeEarlyPct": 2.993,
+      "slopeLatePct": 3.245,
+      "totalReturn": 22.9
+    },
+    {
+      "ticker": "ENSG",
+      "trend": "bearish",
+      "slopePct": -1.886,
+      "r2": 0.922,
+      "slopeEarlyPct": -1.321,
+      "slopeLatePct": -1.427,
+      "totalReturn": -20.7
+    },
+    {
+      "ticker": "ENTG",
+      "trend": "bullish",
+      "slopePct": 2.02,
+      "r2": 0.513,
+      "slopeEarlyPct": 4.546,
+      "slopeLatePct": -0.915,
+      "totalReturn": 24.4
+    },
+    {
+      "ticker": "EOG",
+      "trend": "sideways",
+      "slopePct": 0.045,
+      "r2": 0.002,
+      "slopeEarlyPct": -0.064,
+      "slopeLatePct": 1.081,
+      "totalReturn": 7.2
+    },
+    {
+      "ticker": "EPD",
+      "trend": "sideways",
+      "slopePct": 0.148,
+      "r2": 0.062,
+      "slopeEarlyPct": 0.051,
+      "slopeLatePct": -0.12,
+      "totalReturn": 1.6
+    },
+    {
+      "ticker": "EQH",
+      "trend": "bullish",
+      "slopePct": 1.064,
+      "r2": 0.518,
+      "slopeEarlyPct": 1.465,
+      "slopeLatePct": -1.436,
+      "totalReturn": 2.4
+    },
+    {
+      "ticker": "EQIX",
+      "trend": "bullish",
+      "slopePct": 1.136,
+      "r2": 0.705,
+      "slopeEarlyPct": 2.189,
+      "slopeLatePct": 0.398,
+      "totalReturn": 16.2
+    },
+    {
+      "ticker": "EQNR",
+      "trend": "sideways",
+      "slopePct": 0.005,
+      "r2": 0,
+      "slopeEarlyPct": 0.769,
+      "slopeLatePct": -0.416,
+      "totalReturn": 12.1
+    },
+    {
+      "ticker": "EQR",
+      "trend": "bullish",
+      "slopePct": 0.963,
+      "r2": 0.719,
+      "slopeEarlyPct": 0.773,
+      "slopeLatePct": 0.956,
+      "totalReturn": 8.3
+    },
+    {
+      "ticker": "EQT",
+      "trend": "bearish",
+      "slopePct": -1.291,
+      "r2": 0.711,
+      "slopeEarlyPct": -1.379,
+      "slopeLatePct": -0.487,
+      "totalReturn": -10.8
+    },
+    {
+      "ticker": "EQX",
+      "trend": "sideways",
+      "slopePct": -1.241,
+      "r2": 0.242,
+      "slopeEarlyPct": -0.183,
+      "slopeLatePct": -4.073,
+      "totalReturn": -30.8
+    },
+    {
+      "ticker": "ERIC",
+      "trend": "bullish",
+      "slopePct": 1.435,
+      "r2": 0.739,
+      "slopeEarlyPct": 0.457,
+      "slopeLatePct": 2.722,
+      "totalReturn": 19.9
+    },
+    {
+      "ticker": "ERIE",
+      "trend": "bearish",
+      "slopePct": -1.442,
+      "r2": 0.729,
+      "slopeEarlyPct": -1.357,
+      "slopeLatePct": 0.333,
+      "totalReturn": -15.5
+    },
+    {
+      "ticker": "ES",
+      "trend": "recovering",
+      "slopePct": -0.309,
+      "r2": 0.152,
+      "slopeEarlyPct": -0.46,
+      "slopeLatePct": 1.147,
+      "totalReturn": -6.1
+    },
+    {
+      "ticker": "ESI",
+      "trend": "bullish",
+      "slopePct": 2.833,
+      "r2": 0.833,
+      "slopeEarlyPct": 4.561,
+      "slopeLatePct": -0.873,
+      "totalReturn": 36.7
+    },
+    {
+      "ticker": "ESLT",
+      "trend": "recovering",
+      "slopePct": -1.094,
+      "r2": 0.448,
+      "slopeEarlyPct": -1.149,
+      "slopeLatePct": 3.015,
+      "totalReturn": -10.5
+    },
+    {
+      "ticker": "ESS",
+      "trend": "bullish",
+      "slopePct": 1.083,
+      "r2": 0.767,
+      "slopeEarlyPct": 0.593,
+      "slopeLatePct": 1.748,
+      "totalReturn": 11.6
+    },
+    {
+      "ticker": "ET",
+      "trend": "bullish",
+      "slopePct": 0.381,
+      "r2": 0.402,
+      "slopeEarlyPct": 0.436,
+      "slopeLatePct": -0.214,
+      "totalReturn": 4.7
+    },
+    {
+      "ticker": "ETN",
+      "trend": "bullish",
+      "slopePct": 1.305,
+      "r2": 0.588,
+      "slopeEarlyPct": 2.886,
+      "slopeLatePct": 0.879,
+      "totalReturn": 20.4
+    },
+    {
+      "ticker": "ETR",
+      "trend": "sideways",
+      "slopePct": 0.369,
+      "r2": 0.124,
+      "slopeEarlyPct": 1.639,
+      "slopeLatePct": -0.417,
+      "totalReturn": 4.4
+    },
+    {
+      "ticker": "EVR",
+      "trend": "bullish",
+      "slopePct": 1.832,
+      "r2": 0.613,
+      "slopeEarlyPct": 3.1,
+      "slopeLatePct": 0.541,
+      "totalReturn": 20
+    },
+    {
+      "ticker": "EVRG",
+      "trend": "sideways",
+      "slopePct": 0.026,
+      "r2": 0.004,
+      "slopeEarlyPct": 0.058,
+      "slopeLatePct": 0.215,
+      "totalReturn": -1.8
+    },
+    {
+      "ticker": "EW",
+      "trend": "bullish",
+      "slopePct": 0.497,
+      "r2": 0.38,
+      "slopeEarlyPct": 0.243,
+      "slopeLatePct": 2.383,
+      "totalReturn": 7.1
+    },
+    {
+      "ticker": "EWBC",
+      "trend": "bullish",
+      "slopePct": 1.582,
+      "r2": 0.797,
+      "slopeEarlyPct": 2.573,
+      "slopeLatePct": 0.617,
+      "totalReturn": 17.8
+    },
+    {
+      "ticker": "EXC",
+      "trend": "recovering",
+      "slopePct": -0.832,
+      "r2": 0.638,
+      "slopeEarlyPct": -0.65,
+      "slopeLatePct": 0.827,
+      "totalReturn": -9.6
+    },
+    {
+      "ticker": "EXE",
+      "trend": "bearish",
+      "slopePct": -1.24,
+      "r2": 0.707,
+      "slopeEarlyPct": -1.551,
+      "slopeLatePct": -0.921,
+      "totalReturn": -12.6
+    },
+    {
+      "ticker": "EXEL",
+      "trend": "bullish",
+      "slopePct": 1.945,
+      "r2": 0.899,
+      "slopeEarlyPct": 1.147,
+      "slopeLatePct": 1.792,
+      "totalReturn": 26.3
+    },
+    {
+      "ticker": "EXPD",
+      "trend": "bullish",
+      "slopePct": 0.907,
+      "r2": 0.758,
+      "slopeEarlyPct": 0.232,
+      "slopeLatePct": 0.597,
+      "totalReturn": 9
     },
     {
       "ticker": "EXPE",
       "trend": "sideways",
-      "slopePct": 0.704,
-      "r2": 0.135,
-      "slopeEarlyPct": 0.819,
-      "slopeLatePct": -4.836,
-      "totalReturn": 7
+      "slopePct": -0.452,
+      "r2": 0.089,
+      "slopeEarlyPct": 0.983,
+      "slopeLatePct": 0.11,
+      "totalReturn": -9
     },
     {
-      "ticker": "TPR",
+      "ticker": "EXR",
       "trend": "sideways",
-      "slopePct": -0.873,
-      "r2": 0.336,
-      "slopeEarlyPct": -1.107,
-      "slopeLatePct": -4.628,
-      "totalReturn": -17.7
+      "slopePct": 0.39,
+      "r2": 0.161,
+      "slopeEarlyPct": 0.287,
+      "slopeLatePct": 0.879,
+      "totalReturn": -0.5
     },
     {
-      "ticker": "STRL",
+      "ticker": "F",
       "trend": "bullish",
-      "slopePct": 6.084,
-      "r2": 0.567,
-      "slopeEarlyPct": 0.273,
-      "slopeLatePct": 17.539,
-      "totalReturn": 94.9
+      "slopePct": 2.587,
+      "r2": 0.618,
+      "slopeEarlyPct": 0.629,
+      "slopeLatePct": 6.864,
+      "totalReturn": 26.3
     },
     {
-      "ticker": "VEEV",
+      "ticker": "FANG",
+      "trend": "sideways",
+      "slopePct": 0.595,
+      "r2": 0.291,
+      "slopeEarlyPct": 0.937,
+      "slopeLatePct": 0.83,
+      "totalReturn": 12.4
+    },
+    {
+      "ticker": "FAST",
+      "trend": "sideways",
+      "slopePct": -0.192,
+      "r2": 0.053,
+      "slopeEarlyPct": -0.009,
+      "slopeLatePct": 1.553,
+      "totalReturn": 1.5
+    },
+    {
+      "ticker": "FCFS",
+      "trend": "bullish",
+      "slopePct": 1.561,
+      "r2": 0.848,
+      "slopeEarlyPct": 1.956,
+      "slopeLatePct": -0.761,
+      "totalReturn": 16.9
+    },
+    {
+      "ticker": "FCNCA",
+      "trend": "bullish",
+      "slopePct": 0.767,
+      "r2": 0.576,
+      "slopeEarlyPct": 1.253,
+      "slopeLatePct": 1.276,
+      "totalReturn": 8.2
+    },
+    {
+      "ticker": "FCX",
+      "trend": "sideways",
+      "slopePct": 1.183,
+      "r2": 0.323,
+      "slopeEarlyPct": 1.402,
+      "slopeLatePct": 2.916,
+      "totalReturn": 17.4
+    },
+    {
+      "ticker": "FDX",
+      "trend": "bullish",
+      "slopePct": 1.142,
+      "r2": 0.749,
+      "slopeEarlyPct": 1.554,
+      "slopeLatePct": 2.361,
+      "totalReturn": 13.4
+    },
+    {
+      "ticker": "FE",
+      "trend": "recovering",
+      "slopePct": -1.059,
+      "r2": 0.637,
+      "slopeEarlyPct": -0.547,
+      "slopeLatePct": 1.146,
+      "totalReturn": -10.2
+    },
+    {
+      "ticker": "FER",
+      "trend": "sideways",
+      "slopePct": 0.488,
+      "r2": 0.189,
+      "slopeEarlyPct": 1.46,
+      "slopeLatePct": -1.002,
+      "totalReturn": 0.5
+    },
+    {
+      "ticker": "FERG",
+      "trend": "sideways",
+      "slopePct": 0.139,
+      "r2": 0.007,
+      "slopeEarlyPct": 2.61,
+      "slopeLatePct": -0.844,
+      "totalReturn": 0.2
+    },
+    {
+      "ticker": "FFIV",
+      "trend": "bullish",
+      "slopePct": 3.041,
+      "r2": 0.864,
+      "slopeEarlyPct": 1.406,
+      "slopeLatePct": 3.42,
+      "totalReturn": 42.8
+    },
+    {
+      "ticker": "FHN",
+      "trend": "bullish",
+      "slopePct": 0.813,
+      "r2": 0.579,
+      "slopeEarlyPct": 1.616,
+      "slopeLatePct": -0.025,
+      "totalReturn": 6.3
+    },
+    {
+      "ticker": "FICO",
+      "trend": "recovering",
+      "slopePct": -0.124,
+      "r2": 0.002,
+      "slopeEarlyPct": -3.553,
+      "slopeLatePct": 1.984,
+      "totalReturn": -21
+    },
+    {
+      "ticker": "FIG",
+      "trend": "recovering",
+      "slopePct": -0.844,
+      "r2": 0.054,
+      "slopeEarlyPct": -6.106,
+      "slopeLatePct": 2.747,
+      "totalReturn": -22.7
+    },
+    {
+      "ticker": "FIS",
       "trend": "bearish",
-      "slopePct": -1.302,
-      "r2": 0.549,
-      "slopeEarlyPct": -2.053,
-      "slopeLatePct": -0.785,
-      "totalReturn": -11.9
+      "slopePct": -1.453,
+      "r2": 0.766,
+      "slopeEarlyPct": -1.324,
+      "slopeLatePct": -0.663,
+      "totalReturn": -19.4
+    },
+    {
+      "ticker": "FISV",
+      "trend": "sideways",
+      "slopePct": -0.262,
+      "r2": 0.04,
+      "slopeEarlyPct": 0.692,
+      "slopeLatePct": 0.486,
+      "totalReturn": -10.9
+    },
+    {
+      "ticker": "FITB",
+      "trend": "bullish",
+      "slopePct": 0.965,
+      "r2": 0.564,
+      "slopeEarlyPct": 1.702,
+      "slopeLatePct": 1.517,
+      "totalReturn": 9.5
+    },
+    {
+      "ticker": "FIVE",
+      "trend": "sideways",
+      "slopePct": -0.263,
+      "r2": 0.042,
+      "slopeEarlyPct": 1.074,
+      "slopeLatePct": -2.24,
+      "totalReturn": -10.7
+    },
+    {
+      "ticker": "FIX",
+      "trend": "bullish",
+      "slopePct": 3.398,
+      "r2": 0.857,
+      "slopeEarlyPct": 4.678,
+      "slopeLatePct": -1.261,
+      "totalReturn": 49.7
+    },
+    {
+      "ticker": "FLEX",
+      "trend": "bullish",
+      "slopePct": 8.515,
+      "r2": 0.893,
+      "slopeEarlyPct": 5.985,
+      "slopeLatePct": 3.293,
+      "totalReturn": 166.2
+    },
+    {
+      "ticker": "FLUT",
+      "trend": "bearish",
+      "slopePct": -0.871,
+      "r2": 0.41,
+      "slopeEarlyPct": -0.038,
+      "slopeLatePct": 0.397,
+      "totalReturn": -10.2
+    },
+    {
+      "ticker": "FMS",
+      "trend": "sideways",
+      "slopePct": -0.353,
+      "r2": 0.233,
+      "slopeEarlyPct": 0.236,
+      "slopeLatePct": -0.106,
+      "totalReturn": -4.4
+    },
+    {
+      "ticker": "FMX",
+      "trend": "bullish",
+      "slopePct": 1.191,
+      "r2": 0.745,
+      "slopeEarlyPct": 1.58,
+      "slopeLatePct": 0.026,
+      "totalReturn": 11.9
+    },
+    {
+      "ticker": "FN",
+      "trend": "bullish",
+      "slopePct": 2.814,
+      "r2": 0.691,
+      "slopeEarlyPct": 5.57,
+      "slopeLatePct": 1.743,
+      "totalReturn": 46.1
+    },
+    {
+      "ticker": "FNF",
+      "trend": "sideways",
+      "slopePct": 0.221,
+      "r2": 0.031,
+      "slopeEarlyPct": 1.215,
+      "slopeLatePct": -2.012,
+      "totalReturn": -8.1
+    },
+    {
+      "ticker": "FNV",
+      "trend": "recovering",
+      "slopePct": -0.751,
+      "r2": 0.256,
+      "slopeEarlyPct": -0.367,
+      "slopeLatePct": 0.568,
+      "totalReturn": -9.2
+    },
+    {
+      "ticker": "FORM",
+      "trend": "bullish",
+      "slopePct": 3.183,
+      "r2": 0.51,
+      "slopeEarlyPct": 7.646,
+      "slopeLatePct": -3.378,
+      "totalReturn": 48.9
+    },
+    {
+      "ticker": "FOX",
+      "trend": "bullish",
+      "slopePct": 0.852,
+      "r2": 0.716,
+      "slopeEarlyPct": 1.134,
+      "slopeLatePct": 0.657,
+      "totalReturn": 8.1
+    },
+    {
+      "ticker": "FOXA",
+      "trend": "bullish",
+      "slopePct": 0.954,
+      "r2": 0.754,
+      "slopeEarlyPct": 1.295,
+      "slopeLatePct": 0.665,
+      "totalReturn": 9.6
+    },
+    {
+      "ticker": "FPS",
+      "trend": "bullish",
+      "slopePct": 5.623,
+      "r2": 0.767,
+      "slopeEarlyPct": 2.249,
+      "slopeLatePct": 11.495,
+      "totalReturn": 104.1
+    },
+    {
+      "ticker": "FRT",
+      "trend": "bullish",
+      "slopePct": 1.226,
+      "r2": 0.861,
+      "slopeEarlyPct": 1.167,
+      "slopeLatePct": 1.42,
+      "totalReturn": 12.3
+    },
+    {
+      "ticker": "FSLR",
+      "trend": "bullish",
+      "slopePct": 3.867,
+      "r2": 0.699,
+      "slopeEarlyPct": 0.778,
+      "slopeLatePct": 9.881,
+      "totalReturn": 66.5
+    },
+    {
+      "ticker": "FTAI",
+      "trend": "sideways",
+      "slopePct": 0.495,
+      "r2": 0.14,
+      "slopeEarlyPct": 0.143,
+      "slopeLatePct": -0.709,
+      "totalReturn": -3.9
+    },
+    {
+      "ticker": "FTI",
+      "trend": "sideways",
+      "slopePct": 0.614,
+      "r2": 0.211,
+      "slopeEarlyPct": 2.369,
+      "slopeLatePct": -0.735,
+      "totalReturn": 9.5
+    },
+    {
+      "ticker": "FTNT",
+      "trend": "bullish",
+      "slopePct": 5.356,
+      "r2": 0.743,
+      "slopeEarlyPct": 0.255,
+      "slopeLatePct": 6.56,
+      "totalReturn": 78.9
+    },
+    {
+      "ticker": "FTS",
+      "trend": "sideways",
+      "slopePct": -0.249,
+      "r2": 0.292,
+      "slopeEarlyPct": -0.07,
+      "slopeLatePct": -0.198,
+      "totalReturn": -4.4
+    },
+    {
+      "ticker": "FTV",
+      "trend": "bullish",
+      "slopePct": 0.721,
+      "r2": 0.506,
+      "slopeEarlyPct": 1.223,
+      "slopeLatePct": 0.282,
+      "totalReturn": 7.1
+    },
+    {
+      "ticker": "FUTU",
+      "trend": "sideways",
+      "slopePct": -2.291,
+      "r2": 0.306,
+      "slopeEarlyPct": 2.1,
+      "slopeLatePct": -11.268,
+      "totalReturn": -33.2
+    },
+    {
+      "ticker": "FWONA",
+      "trend": "bullish",
+      "slopePct": 0.667,
+      "r2": 0.44,
+      "slopeEarlyPct": 1.142,
+      "slopeLatePct": -1.413,
+      "totalReturn": 2.2
+    },
+    {
+      "ticker": "FWONK",
+      "trend": "bullish",
+      "slopePct": 0.642,
+      "r2": 0.401,
+      "slopeEarlyPct": 1.1,
+      "slopeLatePct": -1.748,
+      "totalReturn": 2.6
+    },
+    {
+      "ticker": "GD",
+      "trend": "sideways",
+      "slopePct": -0.291,
+      "r2": 0.136,
+      "slopeEarlyPct": -1.05,
+      "slopeLatePct": 0.066,
+      "totalReturn": -6
+    },
+    {
+      "ticker": "GDDY",
+      "trend": "sideways",
+      "slopePct": 0.263,
+      "r2": 0.049,
+      "slopeEarlyPct": -0.263,
+      "slopeLatePct": -1.56,
+      "totalReturn": -9.7
+    },
+    {
+      "ticker": "GE",
+      "trend": "recovering",
+      "slopePct": 0.334,
+      "r2": 0.064,
+      "slopeEarlyPct": -0.742,
+      "slopeLatePct": 3.367,
+      "totalReturn": 1.4
+    },
+    {
+      "ticker": "GEHC",
+      "trend": "bearish",
+      "slopePct": -1.344,
+      "r2": 0.602,
+      "slopeEarlyPct": -1.064,
+      "slopeLatePct": 0.359,
+      "totalReturn": -14.1
+    },
+    {
+      "ticker": "GEN",
+      "trend": "recovering",
+      "slopePct": 2.041,
+      "r2": 0.42,
+      "slopeEarlyPct": -1.689,
+      "slopeLatePct": 4.065,
+      "totalReturn": 17.3
+    },
+    {
+      "ticker": "GEV",
+      "trend": "bullish",
+      "slopePct": 1.872,
+      "r2": 0.491,
+      "slopeEarlyPct": 4.586,
+      "slopeLatePct": -2.318,
+      "totalReturn": 22.1
+    },
+    {
+      "ticker": "GFI",
+      "trend": "sideways",
+      "slopePct": -1.297,
+      "r2": 0.322,
+      "slopeEarlyPct": -0.148,
+      "slopeLatePct": -2.919,
+      "totalReturn": -22.4
+    },
+    {
+      "ticker": "GFL",
+      "trend": "bearish",
+      "slopePct": -1.829,
+      "r2": 0.751,
+      "slopeEarlyPct": -1.27,
+      "slopeLatePct": -1.518,
+      "totalReturn": -19.7
+    },
+    {
+      "ticker": "GFS",
+      "trend": "bullish",
+      "slopePct": 6.185,
+      "r2": 0.903,
+      "slopeEarlyPct": 5.388,
+      "slopeLatePct": 3.806,
+      "totalReturn": 80.7
+    },
+    {
+      "ticker": "GGG",
+      "trend": "bearish",
+      "slopePct": -1.388,
+      "r2": 0.835,
+      "slopeEarlyPct": -0.904,
+      "slopeLatePct": -0.902,
+      "totalReturn": -16.1
+    },
+    {
+      "ticker": "GH",
+      "trend": "bullish",
+      "slopePct": 3.266,
+      "r2": 0.591,
+      "slopeEarlyPct": 0.004,
+      "slopeLatePct": 9.565,
+      "totalReturn": 45.9
+    },
+    {
+      "ticker": "GIB",
+      "trend": "recovering",
+      "slopePct": -0.88,
+      "r2": 0.471,
+      "slopeEarlyPct": -0.669,
+      "slopeLatePct": 0.762,
+      "totalReturn": -11.3
+    },
+    {
+      "ticker": "GIL",
+      "trend": "sideways",
+      "slopePct": 0.129,
+      "r2": 0.017,
+      "slopeEarlyPct": 0.207,
+      "slopeLatePct": 0.292,
+      "totalReturn": -7.3
+    },
+    {
+      "ticker": "GILD",
+      "trend": "bearish",
+      "slopePct": -0.709,
+      "r2": 0.626,
+      "slopeEarlyPct": -1.057,
+      "slopeLatePct": 0.042,
+      "totalReturn": -10.2
+    },
+    {
+      "ticker": "GIS",
+      "trend": "bearish",
+      "slopePct": -1.771,
+      "r2": 0.756,
+      "slopeEarlyPct": -2.478,
+      "slopeLatePct": -1.237,
+      "totalReturn": -27.3
+    },
+    {
+      "ticker": "GL",
+      "trend": "bullish",
+      "slopePct": 1.04,
+      "r2": 0.764,
+      "slopeEarlyPct": 1.448,
+      "slopeLatePct": 0.303,
+      "totalReturn": 8.5
+    },
+    {
+      "ticker": "GLPI",
+      "trend": "sideways",
+      "slopePct": 0.059,
+      "r2": 0.007,
+      "slopeEarlyPct": 0.026,
+      "slopeLatePct": -0.732,
+      "totalReturn": -5.5
+    },
+    {
+      "ticker": "GLW",
+      "trend": "bullish",
+      "slopePct": 3.663,
+      "r2": 0.875,
+      "slopeEarlyPct": 4.441,
+      "slopeLatePct": 0.571,
+      "totalReturn": 60.4
+    },
+    {
+      "ticker": "GM",
+      "trend": "bullish",
+      "slopePct": 0.905,
+      "r2": 0.585,
+      "slopeEarlyPct": 0.879,
+      "slopeLatePct": 2.158,
+      "totalReturn": 10.7
+    },
+    {
+      "ticker": "GMAB",
+      "trend": "sideways",
+      "slopePct": -0.162,
+      "r2": 0.03,
+      "slopeEarlyPct": 0.563,
+      "slopeLatePct": -1.379,
+      "totalReturn": -8.6
+    },
+    {
+      "ticker": "GMED",
+      "trend": "sideways",
+      "slopePct": -0.6,
+      "r2": 0.141,
+      "slopeEarlyPct": 1.345,
+      "slopeLatePct": 1.164,
+      "totalReturn": -8.2
+    },
+    {
+      "ticker": "GNRC",
+      "trend": "bullish",
+      "slopePct": 3.293,
+      "r2": 0.849,
+      "slopeEarlyPct": 2.543,
+      "slopeLatePct": 1.166,
+      "totalReturn": 36.3
+    },
+    {
+      "ticker": "GOOG",
+      "trend": "bullish",
+      "slopePct": 2.602,
+      "r2": 0.753,
+      "slopeEarlyPct": 3.084,
+      "slopeLatePct": -1.891,
+      "totalReturn": 23.8
+    },
+    {
+      "ticker": "GOOGL",
+      "trend": "bullish",
+      "slopePct": 2.66,
+      "r2": 0.758,
+      "slopeEarlyPct": 3.142,
+      "slopeLatePct": -1.905,
+      "totalReturn": 24.7
+    },
+    {
+      "ticker": "GPC",
+      "trend": "sideways",
+      "slopePct": -0.794,
+      "r2": 0.283,
+      "slopeEarlyPct": 0.065,
+      "slopeLatePct": -0.644,
+      "totalReturn": -14.6
+    },
+    {
+      "ticker": "GPN",
+      "trend": "recovering",
+      "slopePct": 0.189,
+      "r2": 0.021,
+      "slopeEarlyPct": -0.28,
+      "slopeLatePct": 0.732,
+      "totalReturn": -11.2
+    },
+    {
+      "ticker": "GRAB",
+      "trend": "sideways",
+      "slopePct": -0.539,
+      "r2": 0.16,
+      "slopeEarlyPct": 0.327,
+      "slopeLatePct": -1.49,
+      "totalReturn": -13.1
+    },
+    {
+      "ticker": "GRMN",
+      "trend": "sideways",
+      "slopePct": -0.009,
+      "r2": 0,
+      "slopeEarlyPct": 1.159,
+      "slopeLatePct": 0.504,
+      "totalReturn": -0.6
+    },
+    {
+      "ticker": "GS",
+      "trend": "bullish",
+      "slopePct": 2.238,
+      "r2": 0.909,
+      "slopeEarlyPct": 2.265,
+      "slopeLatePct": 3.894,
+      "totalReturn": 33
+    },
+    {
+      "ticker": "GSAT",
+      "trend": "bullish",
+      "slopePct": 2.982,
+      "r2": 0.792,
+      "slopeEarlyPct": 5.266,
+      "slopeLatePct": 0.405,
+      "totalReturn": 46.4
+    },
+    {
+      "ticker": "GSK",
+      "trend": "sideways",
+      "slopePct": -0.668,
+      "r2": 0.271,
+      "slopeEarlyPct": 0.272,
+      "slopeLatePct": 0.511,
+      "totalReturn": -5.9
+    },
+    {
+      "ticker": "GTLS",
+      "trend": "sideways",
+      "slopePct": 0.032,
+      "r2": 0.336,
+      "slopeEarlyPct": 0.076,
+      "slopeLatePct": 0.035,
+      "totalReturn": 0.2
+    },
+    {
+      "ticker": "GWRE",
+      "trend": "recovering",
+      "slopePct": -0.832,
+      "r2": 0.155,
+      "slopeEarlyPct": -2.622,
+      "slopeLatePct": 3.365,
+      "totalReturn": -10.5
+    },
+    {
+      "ticker": "GWW",
+      "trend": "bullish",
+      "slopePct": 1.493,
+      "r2": 0.819,
+      "slopeEarlyPct": 1.08,
+      "slopeLatePct": 0.582,
+      "totalReturn": 15.9
+    },
+    {
+      "ticker": "H",
+      "trend": "bullish",
+      "slopePct": 2.168,
+      "r2": 0.845,
+      "slopeEarlyPct": 2.24,
+      "slopeLatePct": 3.158,
+      "totalReturn": 26.4
+    },
+    {
+      "ticker": "HAL",
+      "trend": "bullish",
+      "slopePct": 1.29,
+      "r2": 0.602,
+      "slopeEarlyPct": 2.158,
+      "slopeLatePct": -0.032,
+      "totalReturn": 21.1
+    },
+    {
+      "ticker": "HAS",
+      "trend": "sideways",
+      "slopePct": -0.343,
+      "r2": 0.103,
+      "slopeEarlyPct": 0.419,
+      "slopeLatePct": -3.951,
+      "totalReturn": -10.6
+    },
+    {
+      "ticker": "HBAN",
+      "trend": "sideways",
+      "slopePct": 0.374,
+      "r2": 0.176,
+      "slopeEarlyPct": 1.009,
+      "slopeLatePct": 1.102,
+      "totalReturn": 1.3
+    },
+    {
+      "ticker": "HBM",
+      "trend": "bullish",
+      "slopePct": 2.774,
+      "r2": 0.681,
+      "slopeEarlyPct": 2.507,
+      "slopeLatePct": 5.391,
+      "totalReturn": 35.1
+    },
+    {
+      "ticker": "HCA",
+      "trend": "bearish",
+      "slopePct": -2.71,
+      "r2": 0.914,
+      "slopeEarlyPct": -2.373,
+      "slopeLatePct": -4.797,
+      "totalReturn": -32.1
+    },
+    {
+      "ticker": "HD",
+      "trend": "bearish",
+      "slopePct": -0.794,
+      "r2": 0.445,
+      "slopeEarlyPct": -0.362,
+      "slopeLatePct": 0.149,
+      "totalReturn": -13.4
+    },
+    {
+      "ticker": "HDB",
+      "trend": "bearish",
+      "slopePct": -1.116,
+      "r2": 0.501,
+      "slopeEarlyPct": -1.155,
+      "slopeLatePct": -1.086,
+      "totalReturn": -18.5
+    },
+    {
+      "ticker": "HEI",
+      "trend": "recovering",
+      "slopePct": 1.047,
+      "r2": 0.285,
+      "slopeEarlyPct": -0.987,
+      "slopeLatePct": 4.485,
+      "totalReturn": 9.6
+    },
+    {
+      "ticker": "HEI-A",
+      "trend": "recovering",
+      "slopePct": 0.786,
+      "r2": 0.219,
+      "slopeEarlyPct": -0.858,
+      "slopeLatePct": 3.971,
+      "totalReturn": 5.8
+    },
+    {
+      "ticker": "HIG",
+      "trend": "sideways",
+      "slopePct": -0.341,
+      "r2": 0.255,
+      "slopeEarlyPct": 0.124,
+      "slopeLatePct": -1.232,
+      "totalReturn": -8.6
+    },
+    {
+      "ticker": "HII",
+      "trend": "bearish",
+      "slopePct": -2.8,
+      "r2": 0.925,
+      "slopeEarlyPct": -1.936,
+      "slopeLatePct": -1.964,
+      "totalReturn": -31.4
+    },
+    {
+      "ticker": "HL",
+      "trend": "bearish",
+      "slopePct": -0.938,
+      "r2": 0.431,
+      "slopeEarlyPct": -0.495,
+      "slopeLatePct": -1.953,
+      "totalReturn": -17.5
+    },
+    {
+      "ticker": "HLI",
+      "trend": "sideways",
+      "slopePct": 0.211,
+      "r2": 0.029,
+      "slopeEarlyPct": 1.372,
+      "slopeLatePct": -2.171,
+      "totalReturn": -6.6
+    },
+    {
+      "ticker": "HLN",
+      "trend": "bearish",
+      "slopePct": -1.065,
+      "r2": 0.915,
+      "slopeEarlyPct": -0.939,
+      "slopeLatePct": -0.22,
+      "totalReturn": -12.8
+    },
+    {
+      "ticker": "HLT",
+      "trend": "bullish",
+      "slopePct": 0.948,
+      "r2": 0.539,
+      "slopeEarlyPct": 1.813,
+      "slopeLatePct": 1.674,
+      "totalReturn": 13.2
+    },
+    {
+      "ticker": "HMC",
+      "trend": "recovering",
+      "slopePct": 0.499,
+      "r2": 0.151,
+      "slopeEarlyPct": -1.039,
+      "slopeLatePct": 2.896,
+      "totalReturn": 2.5
+    },
+    {
+      "ticker": "HMY",
+      "trend": "sideways",
+      "slopePct": 0.651,
+      "r2": 0.07,
+      "slopeEarlyPct": 0.199,
+      "slopeLatePct": 0.932,
+      "totalReturn": -11.6
+    },
+    {
+      "ticker": "HON",
+      "trend": "recovering",
+      "slopePct": -0.365,
+      "r2": 0.127,
+      "slopeEarlyPct": -0.877,
+      "slopeLatePct": 1.517,
+      "totalReturn": -7.5
+    },
+    {
+      "ticker": "HOOD",
+      "trend": "sideways",
+      "slopePct": 1.494,
+      "r2": 0.307,
+      "slopeEarlyPct": 1.404,
+      "slopeLatePct": 4.844,
+      "totalReturn": 14.6
+    },
+    {
+      "ticker": "HPE",
+      "trend": "bullish",
+      "slopePct": 6.692,
+      "r2": 0.811,
+      "slopeEarlyPct": 4.069,
+      "slopeLatePct": 13.74,
+      "totalReturn": 154.1
+    },
+    {
+      "ticker": "HPQ",
+      "trend": "bullish",
+      "slopePct": 2.843,
+      "r2": 0.723,
+      "slopeEarlyPct": 0.869,
+      "slopeLatePct": 5.517,
+      "totalReturn": 35.1
+    },
+    {
+      "ticker": "HRL",
+      "trend": "recovering",
+      "slopePct": -0.462,
+      "r2": 0.11,
+      "slopeEarlyPct": -1.485,
+      "slopeLatePct": 4.257,
+      "totalReturn": -4.6
+    },
+    {
+      "ticker": "HSBC",
+      "trend": "bullish",
+      "slopePct": 1.292,
+      "r2": 0.666,
+      "slopeEarlyPct": 2.105,
+      "slopeLatePct": 1.125,
+      "totalReturn": 10.2
+    },
+    {
+      "ticker": "HST",
+      "trend": "bullish",
+      "slopePct": 1.979,
+      "r2": 0.899,
+      "slopeEarlyPct": 1.783,
+      "slopeLatePct": 2.626,
+      "totalReturn": 27.1
+    },
+    {
+      "ticker": "HSY",
+      "trend": "bearish",
+      "slopePct": -1.426,
+      "r2": 0.762,
+      "slopeEarlyPct": -2.395,
+      "slopeLatePct": 0.031,
+      "totalReturn": -18.8
+    },
+    {
+      "ticker": "HTHT",
+      "trend": "bearish",
+      "slopePct": -1.07,
+      "r2": 0.431,
+      "slopeEarlyPct": 0.643,
+      "slopeLatePct": -1.274,
+      "totalReturn": -11.4
+    },
+    {
+      "ticker": "HUBB",
+      "trend": "sideways",
+      "slopePct": 0.071,
+      "r2": 0.003,
+      "slopeEarlyPct": 1.921,
+      "slopeLatePct": -0.436,
+      "totalReturn": 2.9
+    },
+    {
+      "ticker": "HUBS",
+      "trend": "recovering",
+      "slopePct": -2.206,
+      "r2": 0.515,
+      "slopeEarlyPct": -3.181,
+      "slopeLatePct": 3.288,
+      "totalReturn": -25.7
+    },
+    {
+      "ticker": "HUM",
+      "trend": "bullish",
+      "slopePct": 6.222,
+      "r2": 0.899,
+      "slopeEarlyPct": 4.048,
+      "slopeLatePct": 4.859,
+      "totalReturn": 95.3
+    },
+    {
+      "ticker": "HUT",
+      "trend": "bullish",
+      "slopePct": 8.697,
+      "r2": 0.934,
+      "slopeEarlyPct": 7.845,
+      "slopeLatePct": 7.236,
+      "totalReturn": 171.4
+    },
+    {
+      "ticker": "HWM",
+      "trend": "bullish",
+      "slopePct": 0.727,
+      "r2": 0.355,
+      "slopeEarlyPct": 0.334,
+      "slopeLatePct": -1.72,
+      "totalReturn": -0.3
+    },
+    {
+      "ticker": "IAG",
+      "trend": "bearish",
+      "slopePct": -2.007,
+      "r2": 0.449,
+      "slopeEarlyPct": -2.861,
+      "slopeLatePct": -0.371,
+      "totalReturn": -29.3
+    },
+    {
+      "ticker": "IBKR",
+      "trend": "bullish",
+      "slopePct": 2.6,
+      "r2": 0.86,
+      "slopeEarlyPct": 2.948,
+      "slopeLatePct": 0.615,
+      "totalReturn": 30.5
+    },
+    {
+      "ticker": "IBM",
+      "trend": "recovering",
+      "slopePct": 0.888,
+      "r2": 0.144,
+      "slopeEarlyPct": -0.906,
+      "slopeLatePct": 8.542,
+      "totalReturn": 16.6
+    },
+    {
+      "ticker": "IBN",
+      "trend": "sideways",
+      "slopePct": -0.228,
+      "r2": 0.061,
+      "slopeEarlyPct": 0.236,
+      "slopeLatePct": -0.237,
+      "totalReturn": -7.5
+    },
+    {
+      "ticker": "ICE",
+      "trend": "bearish",
+      "slopePct": -0.748,
+      "r2": 0.613,
+      "slopeEarlyPct": -0.36,
+      "slopeLatePct": -2.259,
+      "totalReturn": -14.5
+    },
+    {
+      "ticker": "IDXX",
+      "trend": "recovering",
+      "slopePct": -0.428,
+      "r2": 0.333,
+      "slopeEarlyPct": -0.46,
+      "slopeLatePct": 0.792,
+      "totalReturn": -7.2
+    },
+    {
+      "ticker": "IESC",
+      "trend": "bullish",
+      "slopePct": 4.394,
+      "r2": 0.948,
+      "slopeEarlyPct": 5.328,
+      "slopeLatePct": 2.142,
+      "totalReturn": 72.3
+    },
+    {
+      "ticker": "IEX",
+      "trend": "bullish",
+      "slopePct": 1.119,
+      "r2": 0.699,
+      "slopeEarlyPct": 1.488,
+      "slopeLatePct": 0.089,
+      "totalReturn": 9.3
+    },
+    {
+      "ticker": "IFF",
+      "trend": "sideways",
+      "slopePct": 0.571,
+      "r2": 0.258,
+      "slopeEarlyPct": 0.298,
+      "slopeLatePct": -1.675,
+      "totalReturn": -0.7
+    },
+    {
+      "ticker": "IHG",
+      "trend": "bullish",
+      "slopePct": 1.66,
+      "r2": 0.906,
+      "slopeEarlyPct": 1.711,
+      "slopeLatePct": 1.831,
+      "totalReturn": 21
+    },
+    {
+      "ticker": "ILMN",
+      "trend": "bullish",
+      "slopePct": 2.463,
+      "r2": 0.799,
+      "slopeEarlyPct": 1.26,
+      "slopeLatePct": 4.789,
+      "totalReturn": 34.9
+    },
+    {
+      "ticker": "IMO",
+      "trend": "sideways",
+      "slopePct": 0.285,
+      "r2": 0.084,
+      "slopeEarlyPct": 0.558,
+      "slopeLatePct": -1.262,
+      "totalReturn": 7.4
+    },
+    {
+      "ticker": "INCY",
+      "trend": "bullish",
+      "slopePct": 0.505,
+      "r2": 0.472,
+      "slopeEarlyPct": 0.53,
+      "slopeLatePct": 0.694,
+      "totalReturn": 5.5
+    },
+    {
+      "ticker": "INFY",
+      "trend": "bearish",
+      "slopePct": -0.824,
+      "r2": 0.411,
+      "slopeEarlyPct": -0.738,
+      "slopeLatePct": 0.048,
+      "totalReturn": -13
+    },
+    {
+      "ticker": "ING",
+      "trend": "bullish",
+      "slopePct": 1.654,
+      "r2": 0.838,
+      "slopeEarlyPct": 1.682,
+      "slopeLatePct": 0.851,
+      "totalReturn": 16.1
+    },
+    {
+      "ticker": "INSM",
+      "trend": "bearish",
+      "slopePct": -2.903,
+      "r2": 0.604,
+      "slopeEarlyPct": -0.163,
+      "slopeLatePct": 0.464,
+      "totalReturn": -25.1
+    },
+    {
+      "ticker": "INTC",
+      "trend": "bullish",
+      "slopePct": 9.037,
+      "r2": 0.878,
+      "slopeEarlyPct": 11.22,
+      "slopeLatePct": -1.756,
+      "totalReturn": 157.4
+    },
+    {
+      "ticker": "INTU",
+      "trend": "bearish",
+      "slopePct": -2.737,
+      "r2": 0.761,
+      "slopeEarlyPct": -2.599,
+      "slopeLatePct": -7.176,
+      "totalReturn": -37.2
+    },
+    {
+      "ticker": "INVH",
+      "trend": "bullish",
+      "slopePct": 1.471,
+      "r2": 0.829,
+      "slopeEarlyPct": 1.442,
+      "slopeLatePct": 0.975,
+      "totalReturn": 12.5
+    },
+    {
+      "ticker": "IONQ",
+      "trend": "bullish",
+      "slopePct": 7.065,
+      "r2": 0.799,
+      "slopeEarlyPct": 4.777,
+      "slopeLatePct": 8.752,
+      "totalReturn": 83.8
+    },
+    {
+      "ticker": "IONS",
+      "trend": "bullish",
+      "slopePct": 0.387,
+      "r2": 0.477,
+      "slopeEarlyPct": 0.536,
+      "slopeLatePct": 0.147,
+      "totalReturn": 1.5
+    },
+    {
+      "ticker": "IOT",
+      "trend": "recovering",
+      "slopePct": 0.109,
+      "r2": 0.003,
+      "slopeEarlyPct": -1.81,
+      "slopeLatePct": 5.095,
+      "totalReturn": -0.4
+    },
+    {
+      "ticker": "IP",
+      "trend": "recovering",
+      "slopePct": -1.287,
+      "r2": 0.506,
+      "slopeEarlyPct": -1.745,
+      "slopeLatePct": 1.516,
+      "totalReturn": -14.3
+    },
+    {
+      "ticker": "IQV",
+      "trend": "recovering",
+      "slopePct": 0.503,
+      "r2": 0.192,
+      "slopeEarlyPct": -0.497,
+      "slopeLatePct": 1.663,
+      "totalReturn": 7.1
+    },
+    {
+      "ticker": "IR",
+      "trend": "bearish",
+      "slopePct": -1.386,
+      "r2": 0.621,
+      "slopeEarlyPct": -0.283,
+      "slopeLatePct": -0.858,
+      "totalReturn": -16.7
+    },
+    {
+      "ticker": "IREN",
+      "trend": "bullish",
+      "slopePct": 4.536,
+      "r2": 0.791,
+      "slopeEarlyPct": 3.252,
+      "slopeLatePct": 2.011,
+      "totalReturn": 68.6
+    },
+    {
+      "ticker": "IRM",
+      "trend": "bullish",
+      "slopePct": 2.218,
+      "r2": 0.823,
+      "slopeEarlyPct": 2.494,
+      "slopeLatePct": 0.47,
+      "totalReturn": 23.8
+    },
+    {
+      "ticker": "ISRG",
+      "trend": "bearish",
+      "slopePct": -0.971,
+      "r2": 0.658,
+      "slopeEarlyPct": -0.424,
+      "slopeLatePct": -1.369,
+      "totalReturn": -14.6
+    },
+    {
+      "ticker": "IT",
+      "trend": "recovering",
+      "slopePct": -0.242,
+      "r2": 0.04,
+      "slopeEarlyPct": -1.753,
+      "slopeLatePct": 1.794,
+      "totalReturn": -2.4
+    },
+    {
+      "ticker": "ITT",
+      "trend": "sideways",
+      "slopePct": 0.445,
+      "r2": 0.082,
+      "slopeEarlyPct": 2.458,
+      "slopeLatePct": -1.287,
+      "totalReturn": 4.1
+    },
+    {
+      "ticker": "ITUB",
+      "trend": "sideways",
+      "slopePct": -0.266,
+      "r2": 0.028,
+      "slopeEarlyPct": 1.752,
+      "slopeLatePct": -1.795,
+      "totalReturn": -6.1
+    },
+    {
+      "ticker": "ITW",
+      "trend": "bearish",
+      "slopePct": -0.634,
+      "r2": 0.514,
+      "slopeEarlyPct": -0.246,
+      "slopeLatePct": -0.306,
+      "totalReturn": -9.4
+    },
+    {
+      "ticker": "IVZ",
+      "trend": "bullish",
+      "slopePct": 1.779,
+      "r2": 0.902,
+      "slopeEarlyPct": 1.382,
+      "slopeLatePct": 0.903,
+      "totalReturn": 19
+    },
+    {
+      "ticker": "IX",
+      "trend": "bullish",
+      "slopePct": 2.436,
+      "r2": 0.792,
+      "slopeEarlyPct": 0.835,
+      "slopeLatePct": 3.838,
+      "totalReturn": 26.8
+    },
+    {
+      "ticker": "J",
+      "trend": "recovering",
+      "slopePct": -0.929,
+      "r2": 0.514,
+      "slopeEarlyPct": -0.492,
+      "slopeLatePct": 1.672,
+      "totalReturn": -9.7
+    },
+    {
+      "ticker": "JAZZ",
+      "trend": "bullish",
+      "slopePct": 2.63,
+      "r2": 0.915,
+      "slopeEarlyPct": 1.703,
+      "slopeLatePct": 1.548,
+      "totalReturn": 31.9
+    },
+    {
+      "ticker": "JBHT",
+      "trend": "bullish",
+      "slopePct": 2.674,
+      "r2": 0.915,
+      "slopeEarlyPct": 2.981,
+      "slopeLatePct": 3.395,
+      "totalReturn": 32.8
+    },
+    {
+      "ticker": "JBL",
+      "trend": "bullish",
+      "slopePct": 3.59,
+      "r2": 0.934,
+      "slopeEarlyPct": 4.959,
+      "slopeLatePct": 1.727,
+      "totalReturn": 55.1
+    },
+    {
+      "ticker": "JBS",
+      "trend": "sideways",
+      "slopePct": -1.739,
+      "r2": 0.307,
+      "slopeEarlyPct": 1.524,
+      "slopeLatePct": -6.528,
+      "totalReturn": -21.3
+    },
+    {
+      "ticker": "JCI",
+      "trend": "bullish",
+      "slopePct": 0.701,
+      "r2": 0.464,
+      "slopeEarlyPct": 1.462,
+      "slopeLatePct": 0.48,
+      "totalReturn": 11.3
+    },
+    {
+      "ticker": "JD",
+      "trend": "bullish",
+      "slopePct": 0.72,
+      "r2": 0.366,
+      "slopeEarlyPct": 1.523,
+      "slopeLatePct": -1.679,
+      "totalReturn": 8
+    },
+    {
+      "ticker": "JEF",
+      "trend": "bullish",
+      "slopePct": 3.21,
+      "r2": 0.937,
+      "slopeEarlyPct": 4.019,
+      "slopeLatePct": 0.945,
+      "totalReturn": 44.3
+    },
+    {
+      "ticker": "JHX",
+      "trend": "bullish",
+      "slopePct": 1.12,
+      "r2": 0.35,
+      "slopeEarlyPct": 1.139,
+      "slopeLatePct": 4.1,
+      "totalReturn": 10.6
+    },
+    {
+      "ticker": "JLL",
+      "trend": "sideways",
+      "slopePct": -0.099,
+      "r2": 0.004,
+      "slopeEarlyPct": 1.665,
+      "slopeLatePct": -2.267,
+      "totalReturn": -0.1
+    },
+    {
+      "ticker": "JNJ",
+      "trend": "recovering",
+      "slopePct": -0.558,
+      "r2": 0.597,
+      "slopeEarlyPct": -0.7,
+      "slopeLatePct": 0.542,
+      "totalReturn": -5.1
+    },
+    {
+      "ticker": "JOBY",
+      "trend": "recovering",
+      "slopePct": 2.037,
+      "r2": 0.487,
+      "slopeEarlyPct": -0.855,
+      "slopeLatePct": 1.884,
+      "totalReturn": 16.6
+    },
+    {
+      "ticker": "JPM",
+      "trend": "bullish",
+      "slopePct": 0.572,
+      "r2": 0.45,
+      "slopeEarlyPct": 1.35,
+      "slopeLatePct": 0.629,
+      "totalReturn": 7.4
+    },
+    {
+      "ticker": "KB",
+      "trend": "sideways",
+      "slopePct": 0.528,
+      "r2": 0.234,
+      "slopeEarlyPct": 1.556,
+      "slopeLatePct": -0.951,
+      "totalReturn": 7.7
+    },
+    {
+      "ticker": "KDP",
+      "trend": "bullish",
+      "slopePct": 0.956,
+      "r2": 0.53,
+      "slopeEarlyPct": 0.551,
+      "slopeLatePct": 1.211,
+      "totalReturn": 6.4
+    },
+    {
+      "ticker": "KEP",
+      "trend": "bearish",
+      "slopePct": -1.639,
+      "r2": 0.638,
+      "slopeEarlyPct": -0.76,
+      "slopeLatePct": -3.668,
+      "totalReturn": -21
+    },
+    {
+      "ticker": "KEY",
+      "trend": "bullish",
+      "slopePct": 0.921,
+      "r2": 0.605,
+      "slopeEarlyPct": 1.868,
+      "slopeLatePct": 0.201,
+      "totalReturn": 9.1
+    },
+    {
+      "ticker": "KEY-PK",
+      "trend": "bearish",
+      "slopePct": -0.39,
+      "r2": 0.624,
+      "slopeEarlyPct": -0.218,
+      "slopeLatePct": -1.243,
+      "totalReturn": -8.2
+    },
+    {
+      "ticker": "KEYS",
+      "trend": "bullish",
+      "slopePct": 2.133,
+      "r2": 0.751,
+      "slopeEarlyPct": 3.7,
+      "slopeLatePct": -1.297,
+      "totalReturn": 25.9
+    },
+    {
+      "ticker": "KGC",
+      "trend": "sideways",
+      "slopePct": -0.411,
+      "r2": 0.048,
+      "slopeEarlyPct": 0.88,
+      "slopeLatePct": -1.368,
+      "totalReturn": -12.1
+    },
+    {
+      "ticker": "KHC",
+      "trend": "sideways",
+      "slopePct": 0.178,
+      "r2": 0.038,
+      "slopeEarlyPct": -0.538,
+      "slopeLatePct": -0.807,
+      "totalReturn": -8.4
+    },
+    {
+      "ticker": "KIM",
+      "trend": "bullish",
+      "slopePct": 0.455,
+      "r2": 0.459,
+      "slopeEarlyPct": 0.533,
+      "slopeLatePct": 0.902,
+      "totalReturn": 3.1
+    },
+    {
+      "ticker": "KKR",
+      "trend": "sideways",
+      "slopePct": 0.812,
+      "r2": 0.302,
+      "slopeEarlyPct": 2.249,
+      "slopeLatePct": -1.562,
+      "totalReturn": 4.5
+    },
+    {
+      "ticker": "KLAC",
+      "trend": "bullish",
+      "slopePct": 3.031,
+      "r2": 0.858,
+      "slopeEarlyPct": 4.117,
+      "slopeLatePct": 3.335,
+      "totalReturn": 58.5
+    },
+    {
+      "ticker": "KMB",
+      "trend": "sideways",
+      "slopePct": -0.324,
+      "r2": 0.341,
+      "slopeEarlyPct": -0.519,
+      "slopeLatePct": -0.617,
+      "totalReturn": -9.7
+    },
+    {
+      "ticker": "KMI",
+      "trend": "sideways",
+      "slopePct": -0.354,
+      "r2": 0.257,
+      "slopeEarlyPct": -0.616,
+      "slopeLatePct": -0.609,
+      "totalReturn": -5.6
+    },
+    {
+      "ticker": "KNX",
+      "trend": "bullish",
+      "slopePct": 2.85,
+      "r2": 0.903,
+      "slopeEarlyPct": 2.733,
+      "slopeLatePct": 4.981,
+      "totalReturn": 38.2
+    },
+    {
+      "ticker": "KO",
+      "trend": "bullish",
+      "slopePct": 0.353,
+      "r2": 0.363,
+      "slopeEarlyPct": 0.169,
+      "slopeLatePct": -0.632,
+      "totalReturn": -0.3
+    },
+    {
+      "ticker": "KOF",
+      "trend": "bullish",
+      "slopePct": 0.743,
+      "r2": 0.542,
+      "slopeEarlyPct": 0.549,
+      "slopeLatePct": 0.496,
+      "totalReturn": 2.5
+    },
+    {
+      "ticker": "KR",
+      "trend": "bearish",
+      "slopePct": -1.41,
+      "r2": 0.9,
+      "slopeEarlyPct": -1.541,
+      "slopeLatePct": -1.65,
+      "totalReturn": -16
+    },
+    {
+      "ticker": "KSPI",
+      "trend": "bullish",
+      "slopePct": 2.012,
+      "r2": 0.759,
+      "slopeEarlyPct": 2.798,
+      "slopeLatePct": -0.238,
+      "totalReturn": 12.4
+    },
+    {
+      "ticker": "KTOS",
+      "trend": "recovering",
+      "slopePct": -3.347,
+      "r2": 0.717,
+      "slopeEarlyPct": -4.694,
+      "slopeLatePct": 3.926,
+      "totalReturn": -27.1
+    },
+    {
+      "ticker": "KVUE",
+      "trend": "sideways",
+      "slopePct": -0.268,
+      "r2": 0.327,
+      "slopeEarlyPct": -0.341,
+      "slopeLatePct": -0.723,
+      "totalReturn": -8.2
+    },
+    {
+      "ticker": "L",
+      "trend": "sideways",
+      "slopePct": -0.159,
+      "r2": 0.066,
+      "slopeEarlyPct": 0.502,
+      "slopeLatePct": -0.115,
+      "totalReturn": -4.2
+    },
+    {
+      "ticker": "LAMR",
+      "trend": "bullish",
+      "slopePct": 1.54,
+      "r2": 0.656,
+      "slopeEarlyPct": 0.611,
+      "slopeLatePct": -0.466,
+      "totalReturn": 10.9
     }
   ]
 }
