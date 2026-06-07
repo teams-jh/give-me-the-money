@@ -1,0 +1,70 @@
+name: Intraday US
+
+# US 장 시간: 09:30~16:00 EST = 14:30~21:00 UTC
+# 정각 기준: 15:00~21:00 UTC (7회/일), 16:00 마감 전까지 커버
+# daily.yml(22:00 UTC)과 겹치지 않음
+on:
+  schedule:
+    - cron: "0 15,16,17,18,19,20,21 * * 1-5"   # 월~금 15:00~21:00 UTC (EST 10:00~16:00)
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "강제 재다운로드 (true/false)"
+        required: false
+        default: "false"
+
+jobs:
+  intraday-us:
+    name: "US 장중 업데이트"
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: server_node/package-lock.json
+
+      - name: Install dependencies
+        working-directory: server_node
+        run: npm ci
+
+      - name: Update US ticker metadata (오늘 OHLC 갱신)
+        working-directory: server_node
+        run: npx tsx scripts/fetch/update_ticker_metadata.ts --market us ${{ github.event.inputs.force == 'true' && '--force' || '' }}
+
+      - name: Analyze US signals
+        run: server_node/node_modules/.bin/tsx scripts/analyze_signals.ts --market us
+
+      - name: Commit and push (US intraday)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git pull --rebase --autostash
+
+          git add src/db/us/tickers/ \
+                  src/db/us/signals/ \
+                  src/db/metadata/all_us_tickers.json
+
+          if git diff --cached --quiet; then
+            echo "US 변경 없음 — 커밋 건너뜀"
+          else
+            TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
+            git commit -m "data: US 장중 업데이트 (${TIMESTAMP})"
+            git pull --rebase --autostash
+            git push
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "::error::US 장중 업데이트 실패! Actions 로그를 확인하세요."
