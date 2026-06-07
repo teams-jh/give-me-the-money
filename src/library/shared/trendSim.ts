@@ -187,8 +187,19 @@ export function resolvePeriodDates(
 
   // filterStart는 barUnit에 무관하게 항상 "거래일 기준 N일 전"이어야 한다.
   // 주봉 slice의 dates[-N]은 N주 전이 되므로, dailyDates가 있으면 그 기준으로 계산한다.
-  const refDates = (dailyDates && dailyDates.length > 0) ? dailyDates : dates;
-  const minusN   = refDates[Math.max(0, refDates.length - 1 - lookback)]!;
+  //
+  // dailyDates에서 dates의 마지막 날짜(lastDate) 위치를 찾아 lookback 적용한다.
+  // 단순히 dailyDates[-N]이 아닌 위치 기반 계산을 하는 이유:
+  //   trendEndDate 명시 등으로 slice 마지막이 오늘이 아닌 과거일 경우에도
+  //   "slice 기준 N거래일 전"을 정확히 계산하기 위함.
+  let minusN: string;
+  if (dailyDates && dailyDates.length > 0) {
+    const lastDateIdx = dailyDates.lastIndexOf(lastDate);
+    const anchorIdx   = lastDateIdx !== -1 ? lastDateIdx : dailyDates.length - 1;
+    minusN = dailyDates[Math.max(0, anchorIdx - lookback)]!;
+  } else {
+    minusN = dates[Math.max(0, dates.length - 1 - lookback)]!;
+  }
 
   // 빈 값뿐 아니라 파싱 불가한 잘못된 날짜도 자동 채움 대상으로 본다.
   // (resolveFilterStartMs와 동일한 판정 기준 → 두 함수 결과 일관성 보장)

@@ -561,6 +561,22 @@ describe('resolvePeriodDates', () => {
     expect(r.filterStartDate).toBe('2024-01-02'); // dates[-4] = 기존 동작
   });
 
+  it('dailyDates에서 lastDate 위치 기반으로 lookback 적용 (slice 마지막이 과거인 경우)', () => {
+    // 주봉 slice가 과거 시점 기준으로 끝나는 경우 (예: trendEndDate 명시 시뮬레이션)
+    // dailyDates: 2024-01-01 ~ 2024-01-22 (15 거래일)
+    const daily = [
+      '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05',
+      '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11',
+      '2024-01-12', '2024-01-15', '2024-01-16', '2024-01-17',
+      '2024-01-18', '2024-01-19', '2024-01-22',
+    ];
+    // 주봉 slice의 마지막이 2024-01-15 (과거)
+    const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15'];
+    const r = resolvePeriodDates(BASE_CFG, weeklyDates, 3, daily);
+    // daily에서 '2024-01-15' 위치(idx=9)에서 3 빼면 idx=6 → '2024-01-10'
+    expect(r.filterStartDate).toBe('2024-01-10');
+  });
+
   it('filterStartDate 명시 시 dailyDates 무관하게 명시값 우선', () => {
     const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: '2024-01-03' };
     const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
