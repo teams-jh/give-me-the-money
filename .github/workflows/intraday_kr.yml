@@ -61,9 +61,11 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: KR 장중 업데이트 (${TIMESTAMP})"
-            git pull --rebase --autostash
-            git push
-          fi
+            for i in 1 2 3; do
+              git pull --rebase --autostash && git push && break
+              echo "push 실패 (${i}회) — 재시도..."
+              sleep 5
+            done
 
       - name: Notify on failure
         if: failure()

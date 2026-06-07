@@ -74,8 +74,11 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: KR 일간 업데이트 (${TIMESTAMP})"
-            git pull --rebase --autostash
-            git push
+            for i in 1 2 3; do
+              git pull --rebase --autostash && git push && break
+              echo "push 실패 (${i}회) — 재시도..."
+              sleep 5
+            done
           fi
 
   # ── US 가격 업데이트 + 신호 재계산 ────────────────────────────────────────
@@ -145,8 +148,11 @@ jobs:
           else
             TIMESTAMP=$(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M KST')
             git commit -m "data: US 일간 업데이트 (${TIMESTAMP})"
-            git pull --rebase --autostash
-            git push
+            for i in 1 2 3; do
+              git pull --rebase --autostash && git push && break
+              echo "push 실패 (${i}회) — 재시도..."
+              sleep 5
+            done
           fi
 
       - name: Notify on failure
