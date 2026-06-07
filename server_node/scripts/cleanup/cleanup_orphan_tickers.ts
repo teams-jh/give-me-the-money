@@ -37,11 +37,11 @@ interface MarketConfig {
 
 // ── 유틸 ──────────────────────────────────────────────────────────────────────
 
-function log(msg: string): void {
+export function log(msg: string): void {
   console.log(`${new Date().toISOString()} [INFO] ${msg}`);
 }
 
-function warn(msg: string): void {
+export function warn(msg: string): void {
   console.warn(`${new Date().toISOString()} [WARN] ${msg}`);
 }
 
@@ -64,7 +64,7 @@ interface CleanupResult {
   skipped:  number;     // dry-run 시 삭제 건너뜀
 }
 
-function cleanupMarket(config: MarketConfig, dryRun: boolean): CleanupResult {
+export function cleanupMarket(config: MarketConfig, dryRun: boolean): CleanupResult {
   const { label, metaJson, tickersDir } = config;
 
   log(`=== [${label}] 고아 티커 정리 시작 ===`);
@@ -138,7 +138,7 @@ const MARKET_CONFIGS: Record<string, MarketConfig> = {
 
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
-function parseArgs(): { market: string; dryRun: boolean } {
+export function parseArgs(): { market: string; dryRun: boolean } {
   const args       = process.argv.slice(2);
   const marketIdx  = args.indexOf("--market");
   const market     =
@@ -187,4 +187,6 @@ function main(): void {
   }
 }
 
-main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main();
+}
