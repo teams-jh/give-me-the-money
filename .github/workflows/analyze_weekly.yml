@@ -118,7 +118,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sector_${{ matrix.market }}
-          path: src/db/${{ matrix.market }}_sector/rotation.json
+          path: src/db/${{ matrix.market }}/sector/rotation.json
           retention-days: 1
 
   # ── 시장 breadth 분석 (KR + US × 3m + 1y 병렬) ─────────────────────────────
@@ -154,7 +154,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: breadth_${{ matrix.market }}_${{ matrix.period }}
-          path: src/db/${{ matrix.market }}_breadth/breadth_${{ matrix.period }}.json
+          path: src/db/${{ matrix.market }}/breadth/breadth_${{ matrix.period }}.json
           retention-days: 1
 
   # ── 결과 통합 커밋 ─────────────────────────────────────────────────────────
@@ -196,7 +196,7 @@ jobs:
           for market in kr us; do
             for period in 3m 1y; do
               src="breadth_${market}_${period}/breadth_${period}.json"
-              dst="src/db/${market}_breadth/breadth_${period}.json"
+              dst="src/db/${market}/breadth/breadth_${period}.json"
               [ -f "$src" ] && mv "$src" "$dst"
             done
           done
@@ -214,7 +214,7 @@ jobs:
             for n in 100 200 500; do
               for period in 3m 1y 2y 3y; do
                 src="${market}_trend_${n}_${period}/trend_${n}_${period}.json"
-                dst="src/db/${market}_trend/trend_${n}_${period}.json"
+                dst="src/db/${market}/trend/trend_${n}_${period}.json"
                 [ -f "$src" ] && mv "$src" "$dst"
               done
             done
