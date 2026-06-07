@@ -25,7 +25,7 @@
  *   TC21  isUpdatedToday()  - updated_at 필드 없음 → false
  *   TC22  isUpdatedToday()  - 어제 날짜 → false
  *   TC23  main()            - 정상 흐름: 1개 티커 처리 → writeFileSync 호출
- *   TC24  main()            - force=false, 오늘 날짜 파일 존재 → skipped
+ *   TC24  main()            - force=false, 오늘 날짜 파일 존재 → intraday OHLC 갱신 (quoteSummary 미호출)
  *   TC25  main()            - --force 플래그 → 강제 재처리
  *   TC26  main()            - yahooFinance 에러 → error 카운트
  *   TC27  main()            - --ticker 단일 지정 → sortAllTickersByMarketCap 미호출
@@ -350,7 +350,7 @@ describe("main() 정상 흐름 시나리오", () => {
     process.argv = ["node", "script.ts"];
   });
 
-  it("TC24 - force=false, 오늘 날짜 파일 존재 → skipped (yahooFinance 미호출)", async () => {
+  it("TC24 - force=false, 오늘 날짜 파일 존재 → intraday OHLC 갱신 (quoteSummary 미호출)", async () => {
     process.argv = ["node", "script.ts", "--market", "us"];
     mockExistsSync.mockReturnValue(true);
     mockReadFileSync.mockImplementation((p: string) => {
@@ -360,12 +360,28 @@ describe("main() 정상 흐름 시나리오", () => {
       if (String(p).includes("top1000_us_tickers.json") || String(p).includes("manual_us_tickers.json")) {
         return JSON.stringify({ tickers: ["AAPL"] });
       }
-      return JSON.stringify({ updated_at: new Date().toISOString(), market: { market_cap: 3e12 } });
+      // ticker JSON: 오늘 날짜로 이미 다운로드됨 + prices 배열 포함
+      return JSON.stringify({
+        updated_at: new Date().toISOString(),
+        market: { market_cap: 3e12 },
+        prices: [{ date: "2026-06-06", open: 180, high: 185, low: 175, close: 182, adj_close: 182, volume: 1_000_000 }],
+      });
+    });
+
+    // fetchTodayOhlc()가 호출하는 chart() mock
+    mockChart.mockResolvedValue({
+      quotes: [{ date: new Date(), open: 183, high: 187, low: 181, close: 186, adjclose: 186, volume: 900_000 }],
+      events: {},
     });
 
     await main();
-    expect(mockChart).not.toHaveBeenCalled();
-    expect(mockWriteFileSync).toHaveBeenCalled();  // sortAllTickersByMarketCap은 실행
+    // quoteSummary(풀 다운로드)는 호출되지 않아야 함
+    expect(mockQuoteSummary).not.toHaveBeenCalled();
+    // chart(intraday)는 1번 호출되어야 함
+    expect(mockChart).toHaveBeenCalledTimes(1);
+    expect(mockChart).toHaveBeenCalledWith("AAPL", expect.objectContaining({ interval: "1d" }), expect.any(Object));
+    // prices patch 후 writeFileSync 호출 확인
+    expect(mockWriteFileSync).toHaveBeenCalled();
     process.argv = ["node", "script.ts"];
   });
 
