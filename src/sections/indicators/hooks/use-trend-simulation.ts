@@ -77,28 +77,20 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
     const dates    = prices.map(p => p.date);
     const lastDate = dates[dates.length - 1];
     const getNDaysAgo  = (n: number): string => dates[Math.max(0, dates.length - 1 - n)] ?? lastDate;
-    // 주봉 변환 후 날짜 배열
-    const weeklyBars  = convertToWeeklyBars(prices as any[]);
-    const weeklyDates = weeklyBars.map(b => b.date);
-
-    const getPeriodStart = (period: PeriodKey, barUnit: BarUnit = 'daily'): string => {
-      const bars = barUnit === 'weekly' ? weeklyDates : dates;
-      return bars[Math.max(0, bars.length - PERIOD_BARS[barUnit][period])] ?? bars[0];
-    };
-    return { lastDate, getNDaysAgo, getPeriodStart };
+    return { lastDate, getNDaysAgo };
   }, []);
 
   // ── 최초 기본값 초기화 ────────────────────────────────────────────────
   useEffect(() => {
     if (!referenceInfo) return;
-    const { lastDate, getNDaysAgo, getPeriodStart } = referenceInfo;
+    const { lastDate, getNDaysAgo } = referenceInfo;
     setPeriodConfigs({
       '1y': {
         ...DEFAULT_CONFIG,
-        trendStartDate: getPeriodStart('1y', 'daily'),
-        // 추세선 작도는 마지막 1봉(장중 잠정/미확정 가능)을 제외한다.
-        // 빈 값으로 두면 resolvePeriodDates()가 barUnit 변환된 dates 기준 마지막-1로 채운다.
-        trendEndDate:   '',
+        // trendStartDate/trendEndDate는 빈 문자열로 두어 resolvePeriodDates()에 위임한다.
+        // → slice 첫 봉/마지막-1봉으로 자동 채워져 barUnit·기간 경로와 무관하게 일관됨.
+        trendStartDate:  '',
+        trendEndDate:    '',
         filterStartDate: getNDaysAgo(3),
         filterEndDate:   lastDate,
       },
@@ -127,7 +119,9 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
         const src = cfg[srcPeriod] ?? Object.values(cfg)[0];
         const newConfig: PeriodConfig = {
           ...(src ?? DEFAULT_CONFIG),
-          trendStartDate:  referenceInfo?.getPeriodStart(p, src?.barUnit ?? 'daily') ?? '',
+          // trendStartDate는 빈 문자열로 두어 resolvePeriodDates()에 위임한다.
+          // src.barUnit 기준으로 계산하면 barUnit 경로에 따라 날짜가 달라지는 버그 발생.
+          trendStartDate:  '',
           // 마지막 1봉 제외 → 빈 값 위임 (resolvePeriodDates가 마지막-1로 채움)
           trendEndDate:    '',
           filterStartDate: src?.filterStartDate ?? referenceInfo?.getNDaysAgo(3) ?? '',

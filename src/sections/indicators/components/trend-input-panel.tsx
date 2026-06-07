@@ -107,7 +107,7 @@ function PeriodConfigPanel({
               <Chip key={key} label={label} size="small"
                 color={isSelected ? 'secondary' : 'default'}
                 variant={isSelected ? 'filled' : 'outlined'}
-                onClick={() => onChange({ barUnit: key })}
+                onClick={() => onChange({ barUnit: key, trendStartDate: '', trendEndDate: '' })}
                 sx={{ flex: 1, fontWeight: isSelected ? 700 : 500, cursor: 'pointer' }}
               />
             );
