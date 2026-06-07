@@ -241,9 +241,10 @@ interface TickerData {
 }
 
 type ProcessStatus =
-  | { status: "ok";      priceCount: number }
-  | { status: "skipped"                     }
-  | { status: "error";   message: string    };
+  | { status: "ok";       priceCount: number }
+  | { status: "intraday"; priceCount: number }
+  | { status: "skipped"                      }
+  | { status: "error";    message: string    };
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
 
@@ -342,6 +343,62 @@ async function fetchChartData(ticker: string): Promise<ChartData> {
     .sort((a, b) => a.date.localeCompare(b.date));
 
   return { prices, dividends };
+}
+
+// ── 오늘 OHLC 1봉만 조회 ─────────────────────────────────────────────────────
+
+async function fetchTodayOhlc(ticker: string): Promise<PriceRow | null> {
+  const today = new Date().toISOString().slice(0, 10);
+
+  const chart = await yahooFinance.chart(
+    ticker,
+    {
+      period1:  today,
+      period2:  today,
+      interval: "1d",
+    },
+    { validateResult: false }
+  ) as ChartResultArray;
+
+  const quote = chart.quotes.find(
+    (q: ChartResultArrayQuote) => q.close != null
+  );
+  if (!quote) return null;
+
+  return {
+    date:      quote.date.toISOString().slice(0, 10),
+    open:      round(quote.open   as number | null),
+    high:      round(quote.high   as number | null),
+    low:       round(quote.low    as number | null),
+    close:     round(quote.close  as number | null),
+    adj_close: round((quote as Record<string, unknown>).adjclose as number | null),
+    volume:    (quote.volume as number | null) ?? null,
+  };
+}
+
+// ── 오늘 봉 patch (prices 마지막 항목 교체 or append) ────────────────────────
+
+function patchTodayPrice(file: string, todayRow: PriceRow): number {
+  const data   = JSON.parse(fs.readFileSync(file, "utf8")) as TickerData;
+  const prices = data.prices;
+
+  const lastDate = prices.length > 0 ? prices[prices.length - 1]!.date : "";
+
+  if (lastDate === todayRow.date) {
+    // 오늘 봉이 이미 있으면 덮어쓰기 (장중 재호출마다 최신화)
+    prices[prices.length - 1] = todayRow;
+  } else {
+    // 오늘 봉이 없으면 append (첫 장중 호출)
+    prices.push(todayRow);
+  }
+
+  data.updated_at = new Date().toISOString();
+
+  const tmp = file.replace(/\.json$/, ".tmp.json");
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
+  fs.renameSync(tmp, file);
+
+  return prices.length;
 }
 
 // ── 3년 평균 배당률 (일별 TTM 방식) ─────────────────────────────────────────
@@ -531,7 +588,19 @@ async function processTicker(ticker: string, force: boolean, outputDir: string, 
   const file = path.join(outputDir, `${tickerToFilename(ticker)}.json`);
 
   if (!force && fs.existsSync(file) && isUpdatedToday(file)) {
-    log(`[SKIP] ${ticker} — 오늘 이미 다운로드됨 (--force 로 재다운로드 가능)`);
+    // 오늘 이미 풀 다운로드됨 → 오늘 OHLC 1봉만 갱신
+    try {
+      const todayRow = await fetchTodayOhlc(ticker);
+      if (todayRow) {
+        const count = patchTodayPrice(file, todayRow);
+        return { status: "intraday", priceCount: count };
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      warn(`[INTRADAY FAIL] ${ticker} — ${msg}`);
+    }
+    // 장전/장후 또는 오류 → skipped
+    // (기존 log 제거하고 아래로 fall-through)
     return { status: "skipped" };
   }
 
@@ -629,7 +698,7 @@ export async function main(): Promise<void> {
   const { tickers: allTks, nameMap } = loadTickers(config);
   const tickers = single ? [single.toUpperCase()] : allTks;
   const batches    = chunk(tickers, CONCURRENCY);
-  const stats      = { ok: 0, skipped: 0, error: 0 };
+  const stats      = { ok: 0, intraday: 0, skipped: 0, error: 0 };
   let done = 0;
 
   for (const batch of batches) {
@@ -640,6 +709,8 @@ export async function main(): Promise<void> {
       stats[r.status] += 1;
       if (r.status === "ok") {
         log(`[${done}/${tickers.length}] ${batch[i] ?? ""} ✓  (주가 ${r.priceCount}일)`);
+      } else if (r.status === "intraday") {
+        log(`[${done}/${tickers.length}] ${batch[i] ?? ""} ↻  (장중 OHLC 갱신, ${r.priceCount}일)`);
       }
     });
 
@@ -647,7 +718,7 @@ export async function main(): Promise<void> {
   }
 
   log(`\n=== 완료 ===`);
-  log(`성공: ${stats.ok}  /  스킵: ${stats.skipped}  /  실패: ${stats.error}`);
+  log(`성공: ${stats.ok}  /  장중갱신: ${stats.intraday}  /  스킵: ${stats.skipped}  /  실패: ${stats.error}`);
 
   if (!single) {
     sortAllTickersByMarketCap(config);
