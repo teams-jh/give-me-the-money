@@ -88,10 +88,15 @@ jobs:
           SLACK_BOT_TOKEN:  ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
         run: |
-          # 직전 커밋에 추가된 KR PNG만 추출 (이번 실행 산출물)
-          PNGS=$(git diff-tree --no-commit-id --name-only -r HEAD -- "src/db/kr/trend_sim/*.png" | paste -sd, -)
+          # workflow_run(자동): 신규 파일만(--diff-filter=A) → 중복 알림 차단
+          # workflow_dispatch(수동): Added+Modified 모두 → 테스트 재실행 시에도 전송
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            PNGS=$(git diff-tree --no-commit-id --name-only --diff-filter=A -r HEAD -- "src/db/kr/trend_sim/*.png" | paste -sd, -)
+          else
+            PNGS=$(git diff-tree --no-commit-id --name-only -r HEAD -- "src/db/kr/trend_sim/*.png" | paste -sd, -)
+          fi
           if [ -z "$PNGS" ]; then
-            echo "전송할 신규 PNG 없음 — Slack 전송 건너뜀"
+            echo "전송할 PNG 없음 — Slack 전송 건너뜀"
           else
             echo "Slack 전송 대상: $PNGS"
             server_node/node_modules/.bin/tsx scripts/notify_slack.ts --files "$PNGS" --market kr
@@ -172,10 +177,15 @@ jobs:
           SLACK_BOT_TOKEN:  ${{ secrets.SLACK_BOT_TOKEN }}
           SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
         run: |
-          # 직전 커밋에 추가된 US PNG만 추출 (이번 실행 산출물)
-          PNGS=$(git diff-tree --no-commit-id --name-only -r HEAD -- "src/db/us/trend_sim/*.png" | paste -sd, -)
+          # workflow_run(자동): 신규 파일만(--diff-filter=A) → 중복 알림 차단
+          # workflow_dispatch(수동): Added+Modified 모두 → 테스트 재실행 시에도 전송
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            PNGS=$(git diff-tree --no-commit-id --name-only --diff-filter=A -r HEAD -- "src/db/us/trend_sim/*.png" | paste -sd, -)
+          else
+            PNGS=$(git diff-tree --no-commit-id --name-only -r HEAD -- "src/db/us/trend_sim/*.png" | paste -sd, -)
+          fi
           if [ -z "$PNGS" ]; then
-            echo "전송할 신규 PNG 없음 — Slack 전송 건너뜀"
+            echo "전송할 PNG 없음 — Slack 전송 건너뜀"
           else
             echo "Slack 전송 대상: $PNGS"
             server_node/node_modules/.bin/tsx scripts/notify_slack.ts --files "$PNGS" --market us

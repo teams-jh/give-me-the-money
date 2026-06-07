@@ -41,7 +41,7 @@ import {
   tickerToFilename,
   parseArgs,
   loadConfig,
-  datetimeTag,
+  dateTag,
   now,
 } from './simulate_trend.ts';
 import type { } from './simulate_trend.ts';
@@ -147,10 +147,9 @@ describe('loadConfig', () => {
 
 // ── datetimeTag / now ────────────────────────────────────────────────────────
 
-describe('datetimeTag', () => {
-  it('형식: YYYYMMDD_HHmmss', () => {
-    expect(datetimeTag()).toMatch(/^\d{8}_\d{6}$/);
-  });
+describe('dateTag', () => {
+  it('형식: YYYYMMDD', () => {
+    expect(dateTag()).toMatch(/^\d{8}$/);\n  });
 });
 
 describe('now', () => {
