@@ -139,8 +139,12 @@ const MARKET_CONFIGS: Record<string, MarketConfig> = {
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
 function parseArgs(): { market: string; dryRun: boolean } {
-  const args   = process.argv.slice(2);
-  const market = args.find((_, i) => args[i - 1] === "--market") ?? "all";
+  const args       = process.argv.slice(2);
+  const marketIdx  = args.indexOf("--market");
+  const market     =
+    marketIdx !== -1 && args[marketIdx + 1] && !args[marketIdx + 1].startsWith("-")
+      ? args[marketIdx + 1]
+      : "all";
   const dryRun = args.includes("--dry-run");
   return { market, dryRun };
 }
