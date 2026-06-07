@@ -1,10 +1,11 @@
 name: Simulate Trend
 
 # daily.yml 완료 직후 자동 실행 (workflow_run 체인)
+# intraday_kr.yml / intraday_us.yml 완료 직후에도 자동 실행
 # workflow_dispatch로 수동 실행도 가능
 on:
   workflow_run:
-    workflows: ["Daily Update"]
+    workflows: ["Daily Update", "Intraday KR", "Intraday US"]
     types:
       - completed
   workflow_dispatch:
@@ -24,7 +25,10 @@ jobs:
     name: "KR 추세 시뮬레이션"
     runs-on: ubuntu-latest
     if: |
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && (
+        github.event.workflow_run.name == 'Daily Update' ||
+        github.event.workflow_run.name == 'Intraday KR'
+      )) ||
       (github.event_name == 'workflow_dispatch' && (
         github.event.inputs.market == 'kr' ||
         github.event.inputs.market == 'all' ||
@@ -113,7 +117,10 @@ jobs:
     needs: simulate-kr   # KR 완료 후 실행 (git 충돌 방지)
     if: |
       always() && (
-        (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
+        (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && (
+          github.event.workflow_run.name == 'Daily Update' ||
+          github.event.workflow_run.name == 'Intraday US'
+        )) ||
         (github.event_name == 'workflow_dispatch' && (
           github.event.inputs.market == 'us' ||
           github.event.inputs.market == 'all' ||
