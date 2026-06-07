@@ -586,22 +586,23 @@ export function sortSimResults(results: SimResult[]): SimResult[] {
  *   1. breakoutCount > 0  (돌파가 존재해야 함)
  *   2. 돌파 이전 touch 횟수 >= minTouches  (저항선 검증 횟수 충족)
  *
- * 돌파 이전 기준: filterStartMs 이전의 touch (filteredTouchPoints 기준)
- * → filterStart가 돌파 탐지 구간 시작이므로 그 이전 = 돌파 이전
+ * 돌파 이전 기준: touchPoints 중 첫 번째 breakout의 x 이전의 touch
+ * → filterStart 이후라도 첫 돌파 이전이면 터치로 인정한다.
  *
- * @param results      - SimResult 배열
- * @param filterStartMs - 돌파 탐지 구간 시작 Unix ms
- * @param minTouches   - 최소 터치 횟수
+ * @param results     - SimResult 배열
+ * @param minTouches  - 최소 터치 횟수
  */
 export function applyPatternFilter(
-  results:       SimResult[],
-  filterStartMs: number,
-  minTouches:    number,
+  results:      SimResult[],
+  _filterStartMs: number,
+  minTouches:   number,
 ): SimResult[] {
   return results.filter(sim => {
     if ((sim.breakoutCount ?? 0) === 0) return false;
+    const firstBreakout = sim.touchPoints.find(tp => tp.type === 'breakout');
+    if (!firstBreakout) return false;
     const touchesBefore = sim.touchPoints.filter(
-      tp => tp.type === 'touch' && tp.x < (filterStartMs > 0 ? filterStartMs : Infinity)
+      tp => tp.type === 'touch' && tp.x < firstBreakout.x
     );
     return touchesBefore.length >= minTouches;
   });

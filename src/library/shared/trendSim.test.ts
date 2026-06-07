@@ -400,6 +400,12 @@ describe('sortSimResults', () => {
 // ── applyPatternFilter ────────────────────────────────────────────────────────
 
 describe('applyPatternFilter', () => {
+  /**
+   * 기본 픽스처:
+   *   touch @ 500, 800, 900
+   *   breakout @ 1500
+   * filterStart 값과 무관하게 "첫 돌파(1500) 이전의 touch" 기준으로 판정.
+   */
   function makeResult(overrides: Partial<SimResult> = {}): SimResult {
     return {
       ticker: 'X', name: 'X',
@@ -424,13 +430,14 @@ describe('applyPatternFilter', () => {
   });
 
   it('터치 충분 + 돌파 있음 → 포함', () => {
+    // 첫 돌파(1500) 이전 touch: 500, 800, 900 → 3개, minTouches=3 → 포함
     const results = [makeResult()];
     expect(applyPatternFilter(results, 1000, 3)).toHaveLength(1);
   });
 
   it('터치 부족 → 제외', () => {
+    // 첫 돌파(1500) 이전 touch: 500, 800, 900 → 3개, minTouches=4 → 제외
     const results = [makeResult()];
-    // filterStartMs=1000 이전 touch: 500, 800, 900 → 3개, minTouches=4 → 제외
     expect(applyPatternFilter(results, 1000, 4)).toHaveLength(0);
   });
 
@@ -438,10 +445,48 @@ describe('applyPatternFilter', () => {
     expect(applyPatternFilter([], 1000, 2)).toHaveLength(0);
   });
 
-  it('filterStartMs=0 → 전체 touch 카운트', () => {
+  it('filterStartMs=0 이어도 첫 돌파 이전 touch 카운트', () => {
+    // filterStart 값에 무관하게 첫 돌파(1500) 이전 touch 3개 → minTouches=3 충족
     const results = [makeResult()];
-    // filterStartMs=0 → Infinity 기준으로 모든 touch 포함 불가 (x < Infinity)
     expect(applyPatternFilter(results, 0, 3)).toHaveLength(1);
+  });
+
+  it('[핵심] filterStart(1000) 이후 ~ 첫 돌파(1500) 이전 터치도 카운트', () => {
+    /**
+     * 수정 전 버그: filterStart=1000 이후 touch(1200)는 카운트 안 됨 → 총 1개
+     * 수정 후 정상: 첫 돌파(1500) 이전 touch 전부 카운트 → 총 2개
+     *
+     * touchPoints: touch@500, touch@1200(filterStart 이후!), breakout@1500
+     */
+    const result: SimResult = {
+      ticker: 'Y', name: 'Y',
+      touchCount: 2, closeTouchCount: 1, highTouchCount: 1,
+      breakoutCount: 1, closeBreakoutCount: 1, highBreakoutCount: 0,
+      prices: [], resistanceData: [], latestResistance: null,
+      touchPoints: [
+        { x: 500,  y: 100, priceType: 'close', type: 'touch' },
+        { x: 1200, y: 105, priceType: 'high',  type: 'touch' }, // filterStart(1000) 이후!
+        { x: 1500, y: 110, priceType: 'close', type: 'breakout' },
+      ],
+      slopeType: 'positive',
+      totalCount: 3,
+    };
+    // minTouches=2: touch@500 + touch@1200 = 2개 → 포함되어야 함
+    expect(applyPatternFilter([result], 1000, 2)).toHaveLength(1);
+    // minTouches=3: touch 2개뿐 → 제외되어야 함
+    expect(applyPatternFilter([result], 1000, 3)).toHaveLength(0);
+  });
+
+  it('touchPoints에 breakout 항목이 없으면 제외 (breakoutCount>0이어도)', () => {
+    // breakoutCount 카운터는 있지만 실제 touchPoints에 breakout 항목이 없는 엣지 케이스
+    const result = makeResult({
+      breakoutCount: 1,
+      touchPoints: [
+        { x: 500, y: 100, priceType: 'close', type: 'touch' },
+        { x: 800, y: 102, priceType: 'high',  type: 'touch' },
+      ],
+    });
+    expect(applyPatternFilter([result], 1000, 1)).toHaveLength(0);
   });
 });
 
