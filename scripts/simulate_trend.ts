@@ -101,8 +101,8 @@ export function now(): string {
   return new Date().toISOString().slice(0, 16).replace("T", " ");
 }
 
-export function datetimeTag(): string {
-  return new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "").slice(0, 15).replace(/(\d{8})(\d{6})/, "$1_$2");
+export function dateTag(): string {
+  return new Date().toISOString().slice(0, 10).replace(/-/g, "");  // YYYYMMDD
 }
 
 function log(msg: string): void {
@@ -283,7 +283,7 @@ function runMarketSim(cfg: MarketSimConfig): void {
   log(`\n🎯 AND 교집합 결과: ${finalResults.length}개 종목`);
 
   // 6. JSON 저장
-  const tag      = datetimeTag();
+  const tag      = dateTag();
   const periodStr = cfg.periods.join("+");
   const filename  = `sim_${cfg.market}_${periodStr}_${tag}.json`;
   const outDir    = marketConfig.simDir;
