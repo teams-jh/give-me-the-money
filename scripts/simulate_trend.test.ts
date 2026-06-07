@@ -149,7 +149,8 @@ describe('loadConfig', () => {
 
 describe('dateTag', () => {
   it('형식: YYYYMMDD', () => {
-    expect(dateTag()).toMatch(/^\d{8}$/);\n  });
+    expect(dateTag()).toMatch(/^\d{8}$/);
+  });
 });
 
 describe('now', () => {
