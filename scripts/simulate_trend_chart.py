@@ -180,9 +180,9 @@ def render_card(ax, result: dict, periods: list, trendAlgo: str):
     # 마커
     draw_markers(ax, sim.get("touchPoints", []), sim.get("filteredTouchPoints"))
 
-    # y축 범위
-    highs  = [p["high"]  for p in prices if p.get("high") is not None]
-    lows   = [p["low"]   for p in prices if p.get("low")  is not None]
+    # y축 범위 — log 변환된 가격 기준으로 설정
+    highs  = [p["high"]  for p in log_prices if p.get("high") is not None]
+    lows   = [p["low"]   for p in log_prices if p.get("low")  is not None]
     if highs and lows:
         margin = (max(highs) - min(lows)) * 0.05
         ax.set_ylim(min(lows) - margin, max(highs) + margin)

@@ -451,10 +451,12 @@ export function runTickerSim(
 
   // 로그 가격으로 변환하여 추세선 계산에 사용한다.
   // log 공간에서 선형 회귀/추세선은 원래 가격 기준 지수 성장 추세를 의미한다.
-  const closePrices = prices.map(d => Math.log(d.close));
-  const openPrices  = prices.map(d => Math.log(d.open  || d.close));
-  const highPrices  = prices.map(d => Math.log(d.high  || d.close));
-  const lowPrices   = prices.map(d => Math.log(d.low   || d.close));
+  // 가격이 0 이하이면 Math.log()가 NaN/-Infinity를 반환하므로 방어 처리한다.
+  const safeLog = (val: number) => (val > 0 ? Math.log(val) : 0);
+  const closePrices = prices.map(d => safeLog(d.close));
+  const openPrices  = prices.map(d => safeLog(d.open  || d.close));
+  const highPrices  = prices.map(d => safeLog(d.high  || d.close));
+  const lowPrices   = prices.map(d => safeLog(d.low   || d.close));
   const dates       = prices.map(d => d.date);
   const timestamps  = prices.map(d => new Date(d.date).getTime());
 
