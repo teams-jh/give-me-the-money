@@ -449,10 +449,12 @@ export function runTickerSim(
   // (2봉 이상이어도 실제 작도 범위가 2점 미만이면 아래 simTrendIndices 가드에서 다시 걸러진다.)
   if (prices.length < 2) return null;
 
-  const closePrices = prices.map(d => d.close);
-  const openPrices  = prices.map(d => d.open  || d.close);
-  const highPrices  = prices.map(d => d.high  || d.close);
-  const lowPrices   = prices.map(d => d.low   || d.close);
+  // 로그 가격으로 변환하여 추세선 계산에 사용한다.
+  // log 공간에서 선형 회귀/추세선은 원래 가격 기준 지수 성장 추세를 의미한다.
+  const closePrices = prices.map(d => Math.log(d.close));
+  const openPrices  = prices.map(d => Math.log(d.open  || d.close));
+  const highPrices  = prices.map(d => Math.log(d.high  || d.close));
+  const lowPrices   = prices.map(d => Math.log(d.low   || d.close));
   const dates       = prices.map(d => d.date);
   const timestamps  = prices.map(d => new Date(d.date).getTime());
 

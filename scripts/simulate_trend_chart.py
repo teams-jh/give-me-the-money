@@ -158,8 +158,15 @@ def render_card(ax, result: dict, periods: list, trendAlgo: str):
                 ha="center", va="center", color=TEXT_COLOR)
         return
 
-    # 캔들스틱
-    draw_candlestick(ax, prices)
+    # 캔들스틱 — 추세선이 log 가격 기준으로 계산되므로 캔들도 log 변환하여 동일 스케일로 표시
+    log_prices = [
+        {**p, "open":  np.log(p["open"]),
+               "high":  np.log(p["high"]),
+               "low":   np.log(p["low"]),
+               "close": np.log(p["close"])}
+        for p in prices
+    ]
+    draw_candlestick(ax, log_prices)
 
     # 추세선
     if trendAlgo == "zigzag" and sim.get("zigzagData"):
