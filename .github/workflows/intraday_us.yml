@@ -64,7 +64,6 @@ jobs:
               echo "push 실패 (${i}회) — 재시도..."
               sleep 5
             done
-
-      - name: Notify on failure
+          fi
         if: failure()
         run: echo "::error::US 장중 업데이트 실패! Actions 로그를 확인하세요."
