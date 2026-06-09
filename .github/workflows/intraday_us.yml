@@ -5,7 +5,7 @@ name: Intraday US
 # daily.yml(22:00 UTC)과 겹치지 않음
 on:
   schedule:
-    - cron: "0 15,16,17,18,19,20,21 * * 1-5"   # 월~금 15:00~21:00 UTC (EST 10:00~16:00)
+    - cron: "0 15,16,17,18,19,20,21 * * 1-5"   
   workflow_dispatch:
     inputs:
       force:
