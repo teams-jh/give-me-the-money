@@ -7,7 +7,7 @@ name: Intraday KR
 #   daily.yml(07:00 UTC 전날 데이터)과 겹치지 않음
 on:
   schedule:
-    - cron: "0 0,1,2,3,4,5,6 * * 1-5"   # 월~금 00:00~06:00 UTC (KST 09:00~15:00)
+    - cron: "0 0,1,2,3,4,5,6 * * 1-5" 
   workflow_dispatch:
     inputs:
       force:
