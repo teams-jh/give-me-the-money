@@ -67,5 +67,7 @@ jobs:
               sleep 5
             done
           fi
+
+      - name: Notify on failure
         if: failure()
         run: echo "::error::KR 장중 업데이트 실패! Actions 로그를 확인하세요."
