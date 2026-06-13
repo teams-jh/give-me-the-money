@@ -116,7 +116,7 @@ export function runSignalAnalysis(
     const ticker = tickers[i]!;
 
     const raw = loadTicker(market, ticker);
-    if (!raw || raw.prices.length < 30) { skipped.push(ticker); continue; }
+    if (!raw || !raw.prices || raw.prices.length < 30) { skipped.push(ticker); continue; }
 
     const ohlcv      = toOHLCV(raw);
     const techSum    = analyzeSignals(ticker, ohlcv);
