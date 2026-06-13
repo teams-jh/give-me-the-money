@@ -22,6 +22,9 @@
  *   [io.saveJsonAtomic]
  *   TC15  tmp 경로에 writeFileSync 후 renameSync(tmp → 최종) 순서로 호출
  *   TC16  JSON.stringify(data, null, 2) + utf8 로 직렬화
+ *   TC17  writeFileSync 실패 → tmp cleanup 후 원본 에러 재throw
+ *   TC18  renameSync 실패 → tmp cleanup 후 원본 에러 재throw
+ *   TC19  cleanup(unlink) 자체 실패 → 원본 에러가 그대로 전파
  *
  * 모킹 전략: 기존 스크립트 테스트와 동일하게 fs 모듈 전체를 vi.mock 으로 교체.
  */
@@ -31,12 +34,16 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 const mockReadFileSync  = vi.fn();
 const mockWriteFileSync = vi.fn();
 const mockRenameSync    = vi.fn();
+const mockExistsSync    = vi.fn();
+const mockUnlinkSync    = vi.fn();
 
 vi.mock("fs", () => ({
   default: {
     readFileSync:  (...a: unknown[]) => mockReadFileSync(...a),
     writeFileSync: (...a: unknown[]) => mockWriteFileSync(...a),
     renameSync:    (...a: unknown[]) => mockRenameSync(...a),
+    existsSync:    (...a: unknown[]) => mockExistsSync(...a),
+    unlinkSync:    (...a: unknown[]) => mockUnlinkSync(...a),
   },
 }));
 
@@ -173,5 +180,45 @@ describe("io.saveJsonAtomic", () => {
     saveJsonAtomic("/fake/out.json", { nested: { b: 2 } });
     const written = mockWriteFileSync.mock.calls[0][1] as string;
     expect(written).toBe(JSON.stringify({ nested: { b: 2 } }, null, 2));
+  });
+});
+
+// ── io.saveJsonAtomic 실패 경로 (리뷰 반영: tmp cleanup) ─────────────────────
+
+describe("io.saveJsonAtomic - 실패 시 tmp cleanup", () => {
+  beforeEach(() => {
+    // clearAllMocks 는 mockImplementation 을 지우지 않으므로 명시적으로 리셋
+    mockWriteFileSync.mockReset();
+    mockRenameSync.mockReset();
+    mockUnlinkSync.mockReset();
+    mockExistsSync.mockReset();
+  });
+
+  it("TC17 - writeFileSync 실패 → tmp 삭제 시도 + 원본 에러 재throw", () => {
+    const boom = new Error("ENOSPC: disk full");
+    mockWriteFileSync.mockImplementation(() => { throw boom; });
+    mockExistsSync.mockReturnValue(true);
+
+    expect(() => saveJsonAtomic("/fake/out.json", { a: 1 })).toThrow(boom);
+    expect(mockUnlinkSync).toHaveBeenCalledWith("/fake/out.json.tmp");
+  });
+
+  it("TC18 - renameSync 실패 → tmp 삭제 + 원본 에러 재throw", () => {
+    const boom = new Error("EACCES: permission denied");
+    mockRenameSync.mockImplementation(() => { throw boom; });
+    mockExistsSync.mockReturnValue(true);
+
+    expect(() => saveJsonAtomic("/fake/out.json", { a: 1 })).toThrow(boom);
+    expect(mockWriteFileSync).toHaveBeenCalledTimes(1);  // 쓰기는 성공
+    expect(mockUnlinkSync).toHaveBeenCalledWith("/fake/out.json.tmp");
+  });
+
+  it("TC19 - cleanup 자체 실패 → 원본 에러가 그대로 전파 (삼켜지지 않음)", () => {
+    const original = new Error("original failure");
+    mockRenameSync.mockImplementation(() => { throw original; });
+    mockExistsSync.mockReturnValue(true);
+    mockUnlinkSync.mockImplementation(() => { throw new Error("cleanup failed"); });
+
+    expect(() => saveJsonAtomic("/fake/out.json", { a: 1 })).toThrow(original);
   });
 });

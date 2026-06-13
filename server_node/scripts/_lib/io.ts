@@ -7,11 +7,21 @@
 
 import fs from "fs";
 
-/** data 를 pretty JSON(2-space) 으로 tmp 파일에 쓴 뒤 rename 하여 원자적으로 저장 */
+/** data 를 pretty JSON(2-space) 으로 tmp 파일에 쓴 뒤 rename 하여 원자적으로 저장.
+ *  실패 시 잔존 tmp 파일을 삭제(cleanup)하고 원본 에러를 재throw 한다. */
 export function saveJsonAtomic(outputPath: string, data: unknown): void {
   const tmp = outputPath + ".tmp";
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
-  fs.renameSync(tmp, outputPath);
+  try {
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
+    fs.renameSync(tmp, outputPath);
+  } catch (error) {
+    try {
+      if (fs.existsSync(tmp)) fs.unlinkSync(tmp);
+    } catch {
+      // cleanup 실패는 무시 — 원본 에러를 우선 전파
+    }
+    throw error;
+  }
 }
 
 /** file 의 updated_at 이 오늘(UTC) 날짜면 true. 파일 없음/손상/필드 없음 → false */
