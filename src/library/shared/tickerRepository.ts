@@ -75,7 +75,8 @@ export function findSimilarTicker(market: string, bareTicker: string, dbDir: str
   }
 }
 
-/** JSON 을 원자적으로 저장 (shared/io.ts 의 saveJsonAtomic 재사용) */
+/** JSON 을 원자적으로 저장. 부모 디렉토리가 없으면 생성 (shared/io.ts 의 saveJsonAtomic 재사용) */
 export function saveJson(outputPath: string, data: unknown): void {
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   saveJsonAtomic(outputPath, data);
 }

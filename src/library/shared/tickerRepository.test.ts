@@ -172,4 +172,10 @@ describe("tickerRepository (fs)", () => {
     saveJson(out, { hello: "world" });
     expect(JSON.parse(fs.readFileSync(out, "utf8"))).toEqual({ hello: "world" });
   });
+
+  it("saveJson: 존재하지 않는 부모 디렉토리를 자동 생성", () => {
+    const out = path.join(tmp, "nested/deep/out.json");
+    saveJson(out, { ok: true });
+    expect(JSON.parse(fs.readFileSync(out, "utf8"))).toEqual({ ok: true });
+  });
 });
