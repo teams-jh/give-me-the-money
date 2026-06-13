@@ -41,7 +41,7 @@ vi.mock('fs', () => ({
 }));
 
 // ── classifyTrend 라이브러리 mock ─────────────────────────────────────────────
-vi.mock('../src/library/shared/classifyTrend.ts', () => ({
+vi.mock('../../../src/library/shared/classifyTrend.ts', () => ({
   classifyTrend: mockClassifyTrend,
 }));
 
@@ -58,7 +58,11 @@ import {
   loadTickers,
   loadPrices,
   now,
-} from './analyze_trends.ts';
+} from '../../../scripts/analyze_trends.ts';
+import {
+  runTrendAnalysis,
+  printTrendReport,
+} from '../../../scripts/analyze_trends.ts';
 
 beforeAll(() => {
   vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -464,7 +468,7 @@ describe('loadPrices', () => {
 import { fileURLToPath } from 'url';
 import { dirname, resolve as resolvePath } from 'path';
 const __testDir = dirname(fileURLToPath(import.meta.url));
-const SCRIPT_PATH_TRENDS = resolvePath(__testDir, 'analyze_trends.ts');
+const SCRIPT_PATH_TRENDS = resolvePath(__testDir, '../../../scripts/analyze_trends.ts');
 
 const TICKERS_JSON_TREND = JSON.stringify({ tickers: ['AAPL'] });
 
@@ -511,7 +515,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_trends.ts');
+    await import('../../../scripts/analyze_trends.ts');
 
     expect(mockWriteFileSync).toHaveBeenCalledOnce();
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
@@ -531,7 +535,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_trends.ts');
+    await import('../../../scripts/analyze_trends.ts');
 
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
       skipped_count: number;
@@ -547,7 +551,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_trends.ts');
+    await import('../../../scripts/analyze_trends.ts');
 
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
       skipped_count: number;
@@ -566,7 +570,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_trends.ts');
+    await import('../../../scripts/analyze_trends.ts');
 
     expect(mockWriteFileSync).toHaveBeenCalledOnce();
   });
@@ -576,9 +580,115 @@ describe('main() TC', () => {
 
     const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
     vi.resetModules();
-    await expect(import('./analyze_trends.ts')).rejects.toThrow('exit');
+    await expect(import('../../../scripts/analyze_trends.ts')).rejects.toThrow('exit');
     expect(mockExit).toHaveBeenCalledWith(1);
     mockExit.mockRestore();
+  });
+});
+
+// ── runTrendAnalysis() TC ─────────────────────────────────────────────────────
+
+describe('runTrendAnalysis', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockExistsSync.mockReturnValue(true);
+    mockMkdirSync.mockReturnValue(undefined);
+  });
+
+  it('TC_RTA1 - 정상 종목: stocks에 포함, skipped 비어 있음', () => {
+    mockReadFileSync.mockReturnValue(TICKER_JSON_TREND);
+    mockClassifyTrend.mockReturnValue(TREND_RESULT);
+
+    const result = runTrendAnalysis('us', ['AAPL'], undefined);
+
+    expect(result.stocks).toHaveLength(1);
+    expect(result.skipped).toHaveLength(0);
+    expect(result.stocks[0]!.ticker).toBe('AAPL');
+    expect(result.stocks[0]!.trend).toBe('bullish');
+  });
+
+  it('TC_RTA2 - loadPrices null → skipped에 추가', () => {
+    mockExistsSync.mockReturnValue(false);
+
+    const result = runTrendAnalysis('us', ['AAPL'], undefined);
+
+    expect(result.stocks).toHaveLength(0);
+    expect(result.skipped).toContain('AAPL');
+  });
+
+  it('TC_RTA3 - classifyTrend null → skipped에 추가', () => {
+    mockReadFileSync.mockReturnValue(TICKER_JSON_TREND);
+    mockClassifyTrend.mockReturnValue(null);
+
+    const result = runTrendAnalysis('us', ['AAPL'], undefined);
+
+    expect(result.stocks).toHaveLength(0);
+    expect(result.skipped).toContain('AAPL');
+  });
+
+  it('TC_RTA4 - summary 집계 정확성', () => {
+    mockReadFileSync
+      .mockReturnValueOnce(TICKER_JSON_TREND)
+      .mockReturnValueOnce(TICKER_JSON_TREND);
+    mockClassifyTrend
+      .mockReturnValueOnce({ ...TREND_RESULT, trend: 'bullish' as const })
+      .mockReturnValueOnce({ ...TREND_RESULT, trend: 'bearish' as const });
+
+    const result = runTrendAnalysis('us', ['AAPL', 'MSFT'], undefined);
+
+    expect(result.summary.bullish).toBe(1);
+    expect(result.summary.bearish).toBe(1);
+  });
+
+  it('TC_RTA5 - period 지정 시 periodLabel 반영', () => {
+    mockReadFileSync.mockReturnValue(TICKER_JSON_TREND);
+    mockClassifyTrend.mockReturnValue(TREND_RESULT);
+
+    const result = runTrendAnalysis('us', ['AAPL'], '1y');
+
+    expect(result.periodLabel).toBe('1y');
+  });
+
+  it('TC_RTA6 - period 미지정 시 periodLabel = 전기간', () => {
+    mockReadFileSync.mockReturnValue(TICKER_JSON_TREND);
+    mockClassifyTrend.mockReturnValue(TREND_RESULT);
+
+    const result = runTrendAnalysis('us', ['AAPL'], undefined);
+
+    expect(result.periodLabel).toBe('전기간');
+  });
+});
+
+// ── printTrendReport() TC ─────────────────────────────────────────────────────
+
+describe('printTrendReport', () => {
+  it('TC_PTR1 - console.log 호출: 결과 0개여도 헤더/푸터 출력', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const emptyResult = {
+      stocks: [], skipped: [], periodLabel: '전기간',
+      summary: { bullish: 0, bearish: 0, sideways: 0, recovering: 0 },
+    };
+
+    printTrendReport(emptyResult, { market: 'kr' });
+
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it('TC_PTR2 - result 객체를 mutate하지 않음', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const result = {
+      stocks: [{ ticker: 'AAPL', trend: 'bullish' as const, slopePct: 5, r2: 0.9, slopeEarlyPct: 3, slopeLatePct: 7, totalReturn: 10 }],
+      skipped: [],
+      periodLabel: '1y',
+      summary: { bullish: 1, bearish: 0, sideways: 0, recovering: 0 },
+    };
+    const before = JSON.stringify(result);
+
+    printTrendReport(result, { market: 'us', n: 100, period: '1y' });
+
+    expect(JSON.stringify(result)).toBe(before);
+    consoleSpy.mockRestore();
   });
 });
 
