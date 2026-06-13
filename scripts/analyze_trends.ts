@@ -246,6 +246,8 @@ export interface TrendAnalysisResult {
   skipped:     string[];
   summary:     Record<TrendType, number>;
   periodLabel: string;
+  interval:    "weekly" | "monthly";
+  minPts:      number;
 }
 
 /**
@@ -300,7 +302,7 @@ export function runTrendAnalysis(
   };
   for (const s of stocks) summary[s.trend]++;
 
-  return { stocks, skipped, summary, periodLabel };
+  return { stocks, skipped, summary, periodLabel, interval, minPts };
 }
 
 // ── 프레젠테이션 ──────────────────────────────────────────────────────────────
@@ -311,11 +313,9 @@ export function runTrendAnalysis(
  */
 export function printTrendReport(
   result: TrendAnalysisResult,
-  opts:   { market: string; n?: number; period?: PeriodOption },
+  opts:   { market: string; n?: number },
 ): void {
-  const { stocks, skipped, summary, periodLabel } = result;
-  const interval = opts.period ? PERIOD_INTERVAL[opts.period] : DEFAULT_INTERVAL;
-  const minPts   = opts.period ? PERIOD_MIN_PTS[opts.period]  : DEFAULT_MIN_PTS;
+  const { stocks, skipped, summary, periodLabel, interval, minPts } = result;
 
   console.log("=".repeat(60));
   console.log(`  전체 종목 주가 추세 분석 [${opts.market.toUpperCase()}]`);
@@ -353,7 +353,7 @@ function main(): void {
   const tickers  = loadTickers(args.market, args.n);
   const analysis = runTrendAnalysis(args.market, tickers, args.period);
 
-  printTrendReport(analysis, { market: args.market, n: args.n, period: args.period });
+  printTrendReport(analysis, { market: args.market, n: args.n });
 
   const outputFile = resolveOutputFile(args.market, args.n, args.period);
   const output: TrendJson = {

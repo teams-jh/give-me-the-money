@@ -640,22 +640,26 @@ describe('runTrendAnalysis', () => {
     expect(result.summary.bearish).toBe(1);
   });
 
-  it('TC_RTA5 - period 지정 시 periodLabel 반영', () => {
+  it('TC_RTA5 - period 지정 시 periodLabel, interval, minPts 반영', () => {
     mockReadFileSync.mockReturnValue(TICKER_JSON_TREND);
     mockClassifyTrend.mockReturnValue(TREND_RESULT);
 
     const result = runTrendAnalysis('us', ['AAPL'], '1y');
 
     expect(result.periodLabel).toBe('1y');
+    expect(result.interval).toBe('monthly');
+    expect(result.minPts).toBe(10);
   });
 
-  it('TC_RTA6 - period 미지정 시 periodLabel = 전기간', () => {
+  it('TC_RTA6 - period 미지정 시 periodLabel = 전기간, 기본값 사용', () => {
     mockReadFileSync.mockReturnValue(TICKER_JSON_TREND);
     mockClassifyTrend.mockReturnValue(TREND_RESULT);
 
     const result = runTrendAnalysis('us', ['AAPL'], undefined);
 
     expect(result.periodLabel).toBe('전기간');
+    expect(result.interval).toBe('weekly');
+    expect(result.minPts).toBe(8);
   });
 });
 
@@ -667,6 +671,7 @@ describe('printTrendReport', () => {
     const emptyResult = {
       stocks: [], skipped: [], periodLabel: '전기간',
       summary: { bullish: 0, bearish: 0, sideways: 0, recovering: 0 },
+      interval: 'weekly' as const, minPts: 8,
     };
 
     printTrendReport(emptyResult, { market: 'kr' });
@@ -682,10 +687,11 @@ describe('printTrendReport', () => {
       skipped: [],
       periodLabel: '1y',
       summary: { bullish: 1, bearish: 0, sideways: 0, recovering: 0 },
+      interval: 'monthly' as const, minPts: 10,
     };
     const before = JSON.stringify(result);
 
-    printTrendReport(result, { market: 'us', n: 100, period: '1y' });
+    printTrendReport(result, { market: 'us', n: 100 });
 
     expect(JSON.stringify(result)).toBe(before);
     consoleSpy.mockRestore();
