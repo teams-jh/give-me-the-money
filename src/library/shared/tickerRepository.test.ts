@@ -76,6 +76,12 @@ describe("toOHLCV", () => {
     expect(ohlcv).toHaveLength(2);
     expect(ohlcv[0]).toEqual({ date: "2024-01-01", open: 1, high: 2, low: 0.5, close: 1.5, volume: 10 });
   });
+  it("prices 누락 시 빈 배열 반환 (TypeError 방지)", () => {
+    const raw = makeRaw();
+    // @ts-expect-error 의도적 누락
+    raw.prices = undefined;
+    expect(toOHLCV(raw)).toEqual([]);
+  });
 });
 
 describe("toDailyPrices", () => {
@@ -84,6 +90,12 @@ describe("toDailyPrices", () => {
       { date: "2024-01-01", close: 1.5 },
       { date: "2024-01-02", close: 2.5 },
     ]);
+  });
+  it("prices 누락 시 빈 배열 반환 (TypeError 방지)", () => {
+    const raw = makeRaw();
+    // @ts-expect-error 의도적 누락
+    raw.prices = undefined;
+    expect(toDailyPrices(raw)).toEqual([]);
   });
 });
 

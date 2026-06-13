@@ -67,7 +67,7 @@ export function loadStocks(market: string): StockInput[] {
 
     stocks.push({
       ticker: raw.ticker,
-      sector: raw.info.sector ?? "Unknown",
+      sector: raw.info?.sector ?? "Unknown",
       prices: toDailyPrices(raw),
     });
   }

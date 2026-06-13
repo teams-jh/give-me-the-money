@@ -11,7 +11,7 @@ import type { DailyPrice, RawTicker } from "./tickerTypes.ts";
 
 /** prices → OHLCV 배열 (adj_close 는 분석에서 사용하지 않으므로 제외) */
 export function toOHLCV(raw: RawTicker): OHLCV[] {
-  return raw.prices.map((p) => ({
+  return (raw.prices ?? []).map((p) => ({
     date: p.date,
     open: p.open,
     high: p.high,
@@ -23,7 +23,7 @@ export function toOHLCV(raw: RawTicker): OHLCV[] {
 
 /** prices → date/close 만 가진 경량 일봉 배열 (트렌드 분석용) */
 export function toDailyPrices(raw: RawTicker): DailyPrice[] {
-  return raw.prices.map((p) => ({ date: p.date, close: p.close }));
+  return (raw.prices ?? []).map((p) => ({ date: p.date, close: p.close }));
 }
 
 /** 중첩된 valuation/profitability/dividend/ownership 을 평탄한 FundamentalData 로 변환 */

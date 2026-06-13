@@ -78,7 +78,7 @@ export function loadStocks(market: string): StockInput[] {
     if (!raw || !raw.prices || raw.prices.length < 10) continue;
     stocks.push({
       ticker: raw.ticker,
-      sector: raw.info.sector ?? "Unknown",
+      sector: raw.info?.sector ?? "Unknown",
       prices: toDailyPrices(raw),
     });
   }
