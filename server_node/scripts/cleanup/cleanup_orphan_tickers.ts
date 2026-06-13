@@ -145,7 +145,7 @@ export function parseArgs(): { market: string; dryRun: boolean } {
   return { market, dryRun };
 }
 
-function main(): void {
+export function main(): void {
   const { market, dryRun } = parseArgs();
 
   if (dryRun) {

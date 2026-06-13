@@ -14,6 +14,9 @@
  *   TC10  parseArgs     - --market 뒤에 값 없이 플래그가 오면 기본값 "all"
  *   TC11  parseArgs     - --dry-run 플래그 파싱
  *   TC12  parseArgs     - 인자 없으면 기본값 { market: "all", dryRun: false }
+ *   TC13  main()        - --market us → US 단일 마켓만 정리 (정상 경로)
+ *   TC14  main()        - --market all --dry-run + 고아 존재 → 삭제 없음, 재실행 안내 로그
+ *   TC15  main()        - 알 수 없는 --market 값 → console.error + process.exit(1)
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -45,6 +48,7 @@ import {
   log,
   warn,
   parseArgs,
+  main,
 } from "../cleanup/cleanup_orphan_tickers.js";
 
 // ── 헬퍼 ──────────────────────────────────────────────────────────────────
@@ -215,6 +219,67 @@ describe("cleanup_orphan_tickers.ts", () => {
     const { market, dryRun } = parseArgs();
     expect(market).toBe("all");
     expect(dryRun).toBe(false);
+    vi.unstubAllGlobals();
+  });
+});
+
+// ── main() 진입점 ────────────────────────────────────────────────────────────
+
+describe("main()", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  function stubArgv(...args: string[]): void {
+    vi.stubGlobal("process", { ...process, argv: ["node", "script.ts", ...args] });
+  }
+
+  it("TC13 - --market us → US 단일 마켓 정상 경로 (삭제 수행)", () => {
+    stubArgv("--market", "us");
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockReturnValue(makeMetaJson(["AAPL"]));
+    mockReaddirSync.mockReturnValue(["AAPL.json", "ORPHAN.json"]);
+
+    main();
+
+    // 단일 마켓만 처리 → 메타 1회 읽기, 고아 1건 삭제
+    expect(mockReadFileSync).toHaveBeenCalledTimes(1);
+    expect(mockRmSync).toHaveBeenCalledTimes(1);
+    expect(mockRmSync.mock.calls[0][0]).toContain("ORPHAN.json");
+    vi.unstubAllGlobals();
+  });
+
+  it("TC14 - --market all --dry-run + 고아 존재 → 삭제 없음, 재실행 안내 로그", () => {
+    stubArgv("--market", "all", "--dry-run");
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockReturnValue(makeMetaJson(["AAPL"]));
+    mockReaddirSync.mockReturnValue(["ORPHAN.json"]);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    main();
+
+    // all → 두 마켓 모두 순회, dry-run → 삭제 0건
+    expect(mockReadFileSync).toHaveBeenCalledTimes(2);
+    expect(mockRmSync).not.toHaveBeenCalled();
+    const out = logSpy.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(out).toContain("DRY-RUN 모드");
+    expect(out).toContain("--dry-run 제거 후 재실행");
+    logSpy.mockRestore();
+    vi.unstubAllGlobals();
+  });
+
+  it("TC15 - 알 수 없는 --market 값 → console.error + process.exit(1)", () => {
+    stubArgv("--market", "xx");
+    const errSpy  = vi.spyOn(console, "error").mockImplementation(() => {});
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      throw new Error(`process.exit(${code})`);
+    }) as never);
+
+    expect(() => main()).toThrow("process.exit(1)");
+    expect(errSpy).toHaveBeenCalledWith(expect.stringContaining("알 수 없는 --market 값"));
+
+    exitSpy.mockRestore();
+    errSpy.mockRestore();
     vi.unstubAllGlobals();
   });
 });
