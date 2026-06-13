@@ -23,24 +23,22 @@
  *   --targets    목표 R 배수 목록   (기본 1,2,3)
  */
 
-import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import { calcATR }          from "../src/library/shared/indicators.ts";
 import { calcPositionSize } from "../src/library/shared/position.ts";
 import type { OHLCV }       from "../src/library/shared/indicators.ts";
+import { loadTicker as repoLoadTicker, findSimilarTicker } from "../src/library/shared/tickerRepository.ts";
+import { toOHLCV } from "../src/library/shared/tickerMapper.ts";
+import type { RawTicker } from "../src/library/shared/tickerTypes.ts";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
-const DB_DIR     = path.resolve(__dirname, "../src/db");
 
-const TICKERS_DIR: Record<string, string> = {
-  us: path.join(DB_DIR, "us/tickers"),
-  kr: path.join(DB_DIR, "kr/tickers"),
-};
+const SUPPORTED_MARKETS = new Set(["us", "kr"]);
 
 // ── 타입 ─────────────────────────────────────────────────────────────────────
 
@@ -51,18 +49,6 @@ interface CliArgs {
   risk:        number;
   multiplier:  number;
   targets:     number[];
-}
-
-interface RawPrice {
-  date: string; open: number; high: number;
-  low: number; close: number; adj_close: number; volume: number;
-}
-
-interface RawTicker {
-  ticker: string;
-  info:   { name: string; kr_name?: string; sector: string; };
-  market: { price: number; };
-  prices: RawPrice[];
 }
 
 // ── CLI 파싱 ──────────────────────────────────────────────────────────────────
@@ -94,7 +80,7 @@ export function parseArgs(): CliArgs {
   if (!ticker)  missing.push("--ticker");
   if (!capital) missing.push("--capital");
 
-  if (missing.length > 0 || !TICKERS_DIR[market]) {
+  if (missing.length > 0 || !SUPPORTED_MARKETS.has(market)) {
     console.error(`
 ❌ 사용법:
    server_node/node_modules/.bin/tsx scripts/position_size.ts \\
@@ -106,7 +92,7 @@ export function parseArgs(): CliArgs {
    ... --market kr --ticker 005930 --capital 50000000 --risk 0.5
 `);
     if (missing.length) console.error(`  누락된 옵션: ${missing.join(", ")}`);
-    if (!TICKERS_DIR[market]) console.error(`  알 수 없는 마켓: '${market}'`);
+    if (!SUPPORTED_MARKETS.has(market)) console.error(`  알 수 없는 마켓: '${market}'`);
     process.exit(1);
   }
 
@@ -116,28 +102,19 @@ export function parseArgs(): CliArgs {
 // ── 데이터 로드 ───────────────────────────────────────────────────────────────
 
 export function loadTicker(market: string, ticker: string): RawTicker {
-  const dir  = TICKERS_DIR[market]!;
-
-  // KR 티커는 .KS/.KQ suffix가 없는 파일명으로 저장됨
+  // KR 티커는 .KS/.KQ suffix가 없는 파일명으로 저장됨. 대문자로 정규화하여 조회.
   const bare = ticker.split(".")[0]!.toUpperCase();
-  const file = path.join(dir, `${bare}.json`);
+  const raw  = repoLoadTicker(market, bare);
 
-  if (!fs.existsSync(file)) {
-    // signals_all.json에서 ticker 목록 힌트 제공
-    const signalsFile = path.join(DB_DIR, `${market}_signals`, "signals_all.json");
-    let hint = "";
-    if (fs.existsSync(signalsFile)) {
-      const signals = JSON.parse(fs.readFileSync(signalsFile, "utf-8")) as { stocks: { ticker: string }[] };
-      const found   = signals.stocks.find(s =>
-        s.ticker.toUpperCase().startsWith(bare.toUpperCase())
-      );
-      if (found) hint = `\n  혹시 이 티커를 찾으시나요? → ${found.ticker}`;
-    }
-    console.error(`❌ 파일 없음: ${file}${hint}`);
+  if (raw === null) {
+    // signals_all.json 에서 유사 티커 힌트 제공 (Repository 가 올바른 {market}/signals 경로 사용)
+    const found = findSimilarTicker(market, bare);
+    const hint  = found ? `\n  혹시 이 티커를 찾으시나요? → ${found}` : "";
+    console.error(`❌ 파일 없음: ${bare} (${market})${hint}`);
     process.exit(1);
   }
 
-  return JSON.parse(fs.readFileSync(file, "utf-8")) as RawTicker;
+  return raw;
 }
 
 // ── 출력 헬퍼 ─────────────────────────────────────────────────────────────────
@@ -162,14 +139,7 @@ function main(): void {
   const name = raw.info.kr_name ?? raw.info.name;
 
   // 2. ATR 계산 (전체 prices 사용, 최근 14일 기준)
-  const ohlcv: OHLCV[] = raw.prices.map(p => ({
-    date:   p.date,
-    open:   p.open,
-    high:   p.high,
-    low:    p.low,
-    close:  p.close,
-    volume: p.volume,
-  }));
+  const ohlcv: OHLCV[] = toOHLCV(raw);
 
   const atrArr = calcATR(ohlcv, 14);
   const atr    = atrArr[atrArr.length - 1];
