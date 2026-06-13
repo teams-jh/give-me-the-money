@@ -108,43 +108,65 @@ export function netBar(net: number, halfWidth = 15): string {
   return " ".repeat(halfWidth - filled) + "\x1b[31m█\x1b[0m".repeat(filled) + "│" + " ".repeat(halfWidth);
 }
 
-// ── main ──────────────────────────────────────────────────────────────────────
+// ── 유스케이스 ────────────────────────────────────────────────────────────────
 
-function main(): void {
-  const args   = parseArgs();
-  const config = MARKET_CONFIG[args.market]!;
-  const lookback = LOOKBACK[args.period]!;
+/** runBreadthAnalysis() 반환 타입 */
+export interface BreadthAnalysisResult {
+  result:      MarketBreadthResult;
+  stocks:      StockInput[];
+  allDates:    string[];
+  snapDates:   string[];
+  lookback:    number;
+}
 
-  console.log("=".repeat(70));
-  console.log(`  📊 시장 breadth 분석 [${args.market.toUpperCase()}]  기간: ${args.period}  스냅샷 간격: ${args.step}거래일`);
-  console.log("=".repeat(70));
+/**
+ * 핵심 분석 로직. console / 파일 I/O 에 의존하지 않아 단위 테스트 가능.
+ *
+ * @param market  - "kr" | "us"
+ * @param period  - "3m" | "6m" | "1y"
+ * @param step    - 스냅샷 간격 (거래일)
+ */
+export function runBreadthAnalysis(
+  market:  string,
+  period:  string,
+  step:    number,
+): BreadthAnalysisResult {
+  const lookback = LOOKBACK[period]!;
+  const stocks   = loadStocks(market);
 
-  // 1. 데이터 로드
-  console.log("\n데이터 로드 중...");
-  const stocks = loadStocks(args.market);
-  console.log(`  ✅ ${stocks.length}개 종목 로드`);
-
-  // 2. 전체 거래일 목록 추출 (가장 긴 종목 기준)
   const allDatesSet = new Set<string>();
   for (const s of stocks) s.prices.forEach(p => allDatesSet.add(p.date));
   const allDates = Array.from(allDatesSet).sort();
-  console.log(`  📅 거래일: ${allDates[0]} ~ ${allDates[allDates.length - 1]}  (${allDates.length}일)`);
 
-  // 3. 스냅샷 날짜 생성 (lookback 이후부터 step 간격)
-  const snapDates = buildSnapshotDates(allDates, args.step, lookback);
-  console.log(`  🎯 스냅샷: ${snapDates.length}개  (${snapDates[0]} ~ ${snapDates[snapDates.length - 1]})`);
+  const snapDates = buildSnapshotDates(allDates, step, lookback);
+  const result    = calcMarketBreadth(stocks, snapDates, lookback);
 
-  // 4. 시장 breadth 계산
-  console.log("\n계산 중...");
-  const t0     = Date.now();
-  const result = calcMarketBreadth(stocks, snapDates, lookback);
-  const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
-  console.log(`  ✅ 완료 (${elapsed}초)  스냅샷 ${result.snapshots.length}개\n`);
+  return { result, stocks, allDates, snapDates, lookback };
+}
 
+// ── 프레젠테이션 ──────────────────────────────────────────────────────────────
+
+/**
+ * 분석 결과를 콘솔에 출력한다.
+ * 도메인 로직을 건드리지 않고 포맷만 변경 가능.
+ */
+export function printBreadthReport(
+  analysis: BreadthAnalysisResult,
+  opts:     { market: string; period: string; step: number },
+): void {
+  const { result, stocks, allDates, snapDates } = analysis;
   const snaps = result.snapshots;
-  if (snaps.length === 0) { console.error("❌ 스냅샷 없음"); process.exit(1); }
 
-  // ── 5-A. 현재 (최신) 상태 ──────────────────────────────────────────────────
+  console.log("=".repeat(70));
+  console.log(`  📊 시장 breadth 분석 [${opts.market.toUpperCase()}]  기간: ${opts.period}  스냅샷 간격: ${opts.step}거래일`);
+  console.log("=".repeat(70));
+  console.log(`\n  ✅ ${stocks.length}개 종목 로드`);
+  console.log(`  📅 거래일: ${allDates[0]} ~ ${allDates[allDates.length - 1]}  (${allDates.length}일)`);
+  console.log(`  🎯 스냅샷: ${snapDates.length}개  (${snapDates[0]} ~ ${snapDates[snapDates.length - 1]})`);
+  console.log(`  스냅샷 ${snaps.length}개\n`);
+
+  if (snaps.length === 0) return;
+
   const latest = snaps[snaps.length - 1]!;
   const cond   = getMarketCondition(latest.netBreadth);
 
@@ -158,7 +180,6 @@ function main(): void {
   console.log(`\n  netBreadth:  ${colorNet(latest.netBreadth)}  →  ${cond}`);
   console.log(`  집계 종목:   ${latest.total}개\n`);
 
-  // ── 5-B. 최근 16주 추이 ───────────────────────────────────────────────────
   const recent = snaps.slice(-16);
   console.log("─".repeat(70));
   console.log("  최근 추이 (netBreadth 바 차트)");
@@ -173,11 +194,9 @@ function main(): void {
     );
   }
 
-  // ── 5-C. 극단값 및 전환점 ─────────────────────────────────────────────────
   const maxSnap = snaps.reduce((a, b) => b.netBreadth > a.netBreadth ? b : a);
   const minSnap = snaps.reduce((a, b) => b.netBreadth < a.netBreadth ? b : a);
 
-  // 전환점: netBreadth 부호가 바뀌는 지점
   const turningPoints: { date: string; from: number; to: number }[] = [];
   for (let i = 1; i < snaps.length; i++) {
     const prev = snaps[i - 1]!;
@@ -194,27 +213,41 @@ function main(): void {
 
   if (turningPoints.length > 0) {
     console.log(`\n  강세↔약세 전환점 (${turningPoints.length}회):`);
-    for (const tp of turningPoints.slice(-5)) {  // 최근 5개만
+    for (const tp of turningPoints.slice(-5)) {
       const dir = tp.to > 0 ? "\x1b[32m약세→강세\x1b[0m" : "\x1b[31m강세→약세\x1b[0m";
       console.log(`    ${tp.date}  ${dir}  (${colorNet(tp.from)} → ${colorNet(tp.to)})`);
     }
   }
+}
 
-  // ── 6. JSON 저장 ──────────────────────────────────────────────────────────
+// ── 엔트리 ────────────────────────────────────────────────────────────────────
+
+function main(): void {
+  const args   = parseArgs();
+  const config = MARKET_CONFIG[args.market]!;
+
+  const analysis = runBreadthAnalysis(args.market, args.period, args.step);
+
+  if (analysis.result.snapshots.length === 0) {
+    console.error("❌ 스냅샷 없음");
+    process.exit(1);
+  }
+
+  printBreadthReport(analysis, { market: args.market, period: args.period, step: args.step });
+
   const outFile = path.join(config.breadthDir, `breadth_${args.period}.json`);
-
-  const output = {
+  const output  = {
     generated_at: new Date().toISOString().slice(0, 16).replace("T", " "),
     market:       args.market,
     period:       args.period,
-    lookback,
+    lookback:     analysis.lookback,
     step:         args.step,
-    total_stocks: stocks.length,
-    snapshots:    result.snapshots,
+    total_stocks: analysis.stocks.length,
+    snapshots:    analysis.result.snapshots,
   };
 
   saveJson(outFile, output);
-  console.log(`\n📁 저장 완료: ${outFile}  (${result.snapshots.length}개 스냅샷)\n`);
+  console.log(`\n📁 저장 완료: ${outFile}  (${analysis.result.snapshots.length}개 스냅샷)\n`);
 }
 
 const _isEntryBreadth = process.argv[1] !== undefined && path.resolve(process.argv[1]) === __filename;

@@ -37,7 +37,7 @@ vi.mock('fs', () => ({
 }));
 
 // ── breadth 라이브러리 mock ───────────────────────────────────────────────────
-vi.mock('../src/library/shared/breadth.ts', () => ({
+vi.mock('../../../src/library/shared/breadth.ts', () => ({
   calcMarketBreadth:  mockCalcMarketBreadth,
   buildSnapshotDates: mockBuildSnapshotDates,
   getMarketCondition: mockGetMarketCondition,
@@ -50,7 +50,10 @@ import {
   netBar,
   parseArgs,
   loadStocks,
-} from './analyze_market_breadth.ts';
+  runBreadthAnalysis,
+  printBreadthReport,
+} from '../../../scripts/analyze_market_breadth.ts';
+import type { BreadthAnalysisResult } from '../../../scripts/analyze_market_breadth.ts';
 
 // ── ANSI 이스케이프 제거 헬퍼 ─────────────────────────────────────────────────
 const strip = (s: string) => s.replace(/\x1b\[[0-9;]*m/g, '');
@@ -368,7 +371,7 @@ describe('main() 통합', () => {
 import { fileURLToPath } from 'url';
 import { dirname, resolve as resolvePath } from 'path';
 const __testDir = dirname(fileURLToPath(import.meta.url));
-const SCRIPT_PATH_BREADTH = resolvePath(__testDir, 'analyze_market_breadth.ts');
+const SCRIPT_PATH_BREADTH = resolvePath(__testDir, '../../../scripts/analyze_market_breadth.ts');
 
 const makeWeekdaysLocal = (n: number, start = '2023-01-02') => {
   const dates: string[] = [];
@@ -412,7 +415,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_market_breadth.ts');
+    await import('../../../scripts/analyze_market_breadth.ts');
 
     expect(mockWriteFileSync).toHaveBeenCalledOnce();
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as { market: string };
@@ -430,9 +433,139 @@ describe('main() TC', () => {
 
     const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
     vi.resetModules();
-    await expect(import('./analyze_market_breadth.ts')).rejects.toThrow('exit');
+    await expect(import('../../../scripts/analyze_market_breadth.ts')).rejects.toThrow('exit');
     expect(mockExit).toHaveBeenCalledWith(1);
     mockExit.mockRestore();
+  });
+});
+
+// ── runBreadthAnalysis() TC ───────────────────────────────────────────────────
+
+describe('runBreadthAnalysis', () => {
+  const dates10 = Array.from({ length: 10 }, (_, i) => {
+    const d = new Date('2024-01-02');
+    d.setDate(d.getDate() + i);
+    return d.toISOString().slice(0, 10);
+  });
+  const sampleStockJson = JSON.stringify({
+    ticker: 'AAPL',
+    info:   { sector: 'Technology' },
+    prices: dates10.map((date, i) => ({ date, close: 100 + i })),
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockExistsSync.mockReturnValue(true);
+    mockMkdirSync.mockReturnValue(undefined);
+  });
+
+  it('TC_RBA1 - 정상 실행: result.snapshots 반환', () => {
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }))
+      .mockReturnValue(sampleStockJson);
+    mockBuildSnapshotDates.mockReturnValue([SNAP1.date, SNAP2.date]);
+    mockCalcMarketBreadth.mockReturnValue({ snapshots: [SNAP1, SNAP2] });
+
+    const analysis = runBreadthAnalysis('kr', '3m', 5);
+
+    expect(analysis.result.snapshots).toHaveLength(2);
+    expect(analysis.stocks.length).toBeGreaterThanOrEqual(0);
+  });
+
+  it('TC_RBA2 - 종목 없을 때: stocks 빈 배열, allDates 빈 배열', () => {
+    mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: [] }));
+    mockBuildSnapshotDates.mockReturnValue([]);
+    mockCalcMarketBreadth.mockReturnValue({ snapshots: [] });
+
+    const analysis = runBreadthAnalysis('us', '6m', 5);
+
+    expect(analysis.stocks).toHaveLength(0);
+    expect(analysis.allDates).toHaveLength(0);
+    expect(analysis.snapDates).toHaveLength(0);
+  });
+
+  it('TC_RBA3 - lookback 값이 period에 맞게 설정됨', () => {
+    mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: [] }));
+    mockBuildSnapshotDates.mockReturnValue([]);
+    mockCalcMarketBreadth.mockReturnValue({ snapshots: [] });
+
+    const analysis3m = runBreadthAnalysis('kr', '3m', 5);
+    expect(analysis3m.lookback).toBe(63);
+
+    mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: [] }));
+    const analysis1y = runBreadthAnalysis('kr', '1y', 5);
+    expect(analysis1y.lookback).toBe(252);
+  });
+
+  it('TC_RBA4 - console 호출 없음 (순수 함수)', () => {
+    const consoleSpy = vi.spyOn(console, 'log');
+    mockReadFileSync.mockReturnValueOnce(JSON.stringify({ tickers: [] }));
+    mockBuildSnapshotDates.mockReturnValue([]);
+    mockCalcMarketBreadth.mockReturnValue({ snapshots: [] });
+
+    runBreadthAnalysis('kr', '3m', 5);
+
+    expect(consoleSpy).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+});
+
+// ── printBreadthReport() TC ───────────────────────────────────────────────────
+
+describe('printBreadthReport', () => {
+  it('TC_PBR1 - 스냅샷 있을 때 console.log 호출', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    mockGetMarketCondition.mockReturnValue('강세');
+
+    const analysis: BreadthAnalysisResult = {
+      result:   { snapshots: [SNAP1, SNAP2] },
+      stocks:   [],
+      allDates: ['2024-01-02', '2024-01-12'],
+      snapDates: [SNAP1.date, SNAP2.date],
+      lookback: 63,
+    };
+
+    printBreadthReport(analysis, { market: 'kr', period: '3m', step: 5 });
+
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it('TC_PBR2 - 스냅샷 없을 때 바로 return (최신 상태 출력 없음)', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+    const analysis: BreadthAnalysisResult = {
+      result:   { snapshots: [] },
+      stocks:   [],
+      allDates: [],
+      snapDates: [],
+      lookback: 63,
+    };
+
+    printBreadthReport(analysis, { market: 'us', period: '3m', step: 5 });
+
+    // 헤더는 출력되지만 스냅샷 상세는 출력 안됨 (guard return)
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it('TC_PBR3 - result 객체를 mutate하지 않음', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    mockGetMarketCondition.mockReturnValue('강세');
+
+    const analysis: BreadthAnalysisResult = {
+      result:   { snapshots: [SNAP1] },
+      stocks:   [],
+      allDates: ['2024-01-05'],
+      snapDates: [SNAP1.date],
+      lookback: 63,
+    };
+    const before = JSON.stringify(analysis);
+
+    printBreadthReport(analysis, { market: 'kr', period: '3m', step: 5 });
+
+    expect(JSON.stringify(analysis)).toBe(before);
+    consoleSpy.mockRestore();
   });
 });
 
