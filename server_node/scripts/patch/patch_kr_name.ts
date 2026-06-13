@@ -12,16 +12,15 @@ import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { log } from "../_lib/logger.ts";
+import { saveJsonAtomic } from "../_lib/io.ts";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
 const DB_DIR      = path.resolve(__dirname, "../../../src/db");
 const TICKERS_DIR = path.join(DB_DIR, "kr/tickers");
 const META_FILE   = path.join(DB_DIR, "metadata", "all_kr_tickers.json");
-
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
 
 function main(): void {
   // 1. name_map 로드
@@ -76,10 +75,7 @@ function main(): void {
 
     data.info = newInfo;
 
-    // atomic write
-    const tmp = filePath + ".tmp";
-    fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
-    fs.renameSync(tmp, filePath);
+    saveJsonAtomic(filePath, data);  // atomic write
     updated++;
   }
 

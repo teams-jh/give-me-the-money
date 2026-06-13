@@ -29,6 +29,8 @@ import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { log } from "../_lib/logger.ts";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
@@ -70,10 +72,6 @@ interface ManualTickersJson {
 }
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
-
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
 
 function readJson(filePath: string): ManualTickersJson {
   const raw = fs.readFileSync(filePath, "utf8");

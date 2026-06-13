@@ -21,6 +21,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import { log, err as errorLog } from '../_lib/logger.ts';
+import { saveJsonAtomic, isUpdatedToday } from '../_lib/io.ts';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -30,28 +33,6 @@ const OUTPUT_DIR = path.resolve(__dirname, "../../../src/db/market_sentiment");
 const OUTPUT = path.join(OUTPUT_DIR, "krx_put_option.json");
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
-
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
-
-function errorLog(msg: string): void {
-  console.error(`${new Date().toISOString()} [ERROR] ${msg}`);
-}
-
-/** krx_put_option.json 의 updated_at 이 오늘 날짜면 true */
-function isUpdatedToday(): boolean {
-  try {
-    if (!fs.existsSync(OUTPUT)) return false;
-    const data = JSON.parse(fs.readFileSync(OUTPUT, "utf8")) as { updated_at?: string };
-    if (!data.updated_at) return false;
-    const updatedDate = new Date(data.updated_at).toISOString().slice(0, 10);
-    const today = new Date().toISOString().slice(0, 10);
-    return updatedDate === today;
-  } catch {
-    return false;
-  }
-}
 
 /** CI(GitHub Actions) 및 로컬 실행 환경 대응 크롬 실행 경로 */
 function getExecutablePath(): string | undefined {
@@ -593,9 +574,7 @@ function parseAndSave(csvBuffer: Buffer): void {
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-  const tmpFile = OUTPUT + ".tmp";
-  fs.writeFileSync(tmpFile, JSON.stringify(dbData, null, 2), 'utf-8');
-  fs.renameSync(tmpFile, OUTPUT);
+  saveJsonAtomic(OUTPUT, dbData);
 
   log(`저장 완료: ${OUTPUT}`);
   log(`최근 풋옵션 매매동향 날짜: ${dbData.latest?.date}`);
@@ -613,7 +592,7 @@ export async function main(): Promise<void> {
 
   log("=== KRX 풋옵션 데이터 업데이트 시작 ===");
 
-  if (!force && isUpdatedToday()) {
+  if (!force && isUpdatedToday(OUTPUT)) {
     log("오늘 이미 데이터가 수집 완료되었습니다. 업데이트를 건너뜁니다 (강제 실행: --force 플래그)");
     log("=== 실행 종료 (스킵) ===");
     return;

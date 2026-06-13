@@ -16,6 +16,8 @@
 import fs from "fs";
 import path from "path";
 
+import { log } from "../_lib/logger.ts";
+
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
 export interface MergeSource {
@@ -36,9 +38,7 @@ interface SourceTickerJson {
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
 
-export function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
+export { log };
 
 // ── 핵심 함수 ─────────────────────────────────────────────────────────────────
 

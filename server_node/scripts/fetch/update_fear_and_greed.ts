@@ -24,6 +24,10 @@ import path      from "path";
 import puppeteer from "puppeteer";
 import { fileURLToPath } from "url";
 
+import { log } from "../_lib/logger.ts";
+import { round } from "../_lib/num.ts";
+import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
@@ -113,15 +117,6 @@ interface FearAndGreedJson {
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
 
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
-
-function round(v: number | null | undefined): number | null {
-  if (v == null || isNaN(v)) return null;
-  return Math.round(v * 100) / 100;
-}
-
 /** CnnApiComponent → ComponentScore 변환 (필드 누락 시 score: null, rating: "unknown") */
 function extractComponent(c: CnnApiComponent | undefined): ComponentScore {
   if (!c) return { score: null, rating: "unknown" };
@@ -129,19 +124,6 @@ function extractComponent(c: CnnApiComponent | undefined): ComponentScore {
     score:  round(c.score) ?? null,
     rating: c.rating,
   };
-}
-
-/** fear_and_greed.json 의 updated_at 이 오늘 날짜면 true */
-function isUpdatedToday(): boolean {
-  try {
-    const data       = JSON.parse(fs.readFileSync(OUTPUT, "utf8")) as { updated_at?: string };
-    if (!data.updated_at) return false;
-    const updatedDate = new Date(data.updated_at).toISOString().slice(0, 10);
-    const today       = new Date().toISOString().slice(0, 10);
-    return updatedDate === today;
-  } catch {
-    return false;   // 파일 없음 → 스킵하지 않음
-  }
 }
 
 // ── 1단계: Puppeteer - 페이지 방문 후 브라우저 내부 fetch ────────────────────
@@ -280,10 +262,7 @@ function buildJson(raw: CnnApiResponse): FearAndGreedJson {
 function saveJson(data: FearAndGreedJson): void {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-  // tmp → rename: 파일 쓰기 중 crash 방지 (atomic write)
-  const tmp = OUTPUT + ".tmp";
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
-  fs.renameSync(tmp, OUTPUT);
+  saveJsonAtomic(OUTPUT, data);  // tmp → rename: 파일 쓰기 중 crash 방지 (atomic write)
 
   log(`저장 완료: ${OUTPUT}`);
   log(`현재 지수:  ${data.score} (${data.rating})`);
@@ -303,7 +282,7 @@ export async function main(): Promise<void> {
 
   log("=== Fear & Greed Index 업데이트 시작 ===");
 
-  if (!force && isUpdatedToday()) {
+  if (!force && isUpdatedToday(OUTPUT)) {
     log("오늘 이미 업데이트됨 — 건너뜀 (재다운로드: --force 플래그 사용)");
     log("=== 스킵 ===");
     return;

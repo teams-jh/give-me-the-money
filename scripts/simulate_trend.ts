@@ -36,6 +36,7 @@ import {
 import type { SimResult, PeriodConfig, PeriodKey } from "../src/library/shared/trendSim.ts";
 import { intersectSimResults } from "../src/library/shared/signals.ts";
 import type { TrendSimFinalResult } from "../src/library/shared/signals.ts";
+import { log } from "../server_node/scripts/_lib/logger.ts";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 
@@ -104,10 +105,6 @@ export function now(): string {
 
 export function dateTag(): string {
   return new Date().toISOString().slice(0, 10).replace(/-/g, "");  // YYYYMMDD
-}
-
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} ${msg}`);
 }
 
 export function tickerToFilename(ticker: string): string {

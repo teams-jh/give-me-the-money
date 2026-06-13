@@ -21,6 +21,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { classifyTrend } from "../src/library/shared/classifyTrend.ts";
 import type { PriceSeries, TrendResult, TrendType } from "../src/library/shared/classifyTrend.ts";
+import { log } from "../server_node/scripts/_lib/logger.ts";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
@@ -266,10 +267,6 @@ export function toPriceSeries(prices: DailyPrice[]): PriceSeries {
 
 export function now(): string {
   return new Date().toISOString().slice(0, 16).replace("T", " ");
-}
-
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} ${msg}`);
 }
 
 // ── main ──────────────────────────────────────────────────────────────────────
