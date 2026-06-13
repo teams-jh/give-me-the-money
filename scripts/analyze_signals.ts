@@ -2,7 +2,7 @@
  * analyze_signals.ts
  *
  * 전체 종목의 기술적 + 펀더멘털 이상징후를 통합 분석하여
- * src/db/{market}_signals/ 에 저장한다.
+ * src/db/{market}/signals/ 에 저장한다.
  *
  * 흐름:
  *   1. src/db/metadata/all_{market}_tickers.json  →  티커 목록
@@ -10,7 +10,7 @@
  *   3. analyzeSignals(OHLCV)                      →  기술적 신호
  *   4. analyzeFundamentals(FundamentalData)        →  펀더멘털 신호
  *   5. 두 결과 통합 → totalScore / techScore / fundScore
- *   6. src/db/{market}_signals/signals_{n}.json   →  저장
+ *   6. src/db/{market}/signals/signals_{n}.json   →  저장
  *
  * 실행 예 (루트 디렉토리에서):
  *   server_node/node_modules/.bin/tsx scripts/analyze_signals.ts --market kr
@@ -53,19 +53,36 @@ export interface CombinedSignalResult {
   alerts: SignalSummary["alerts"];
 }
 
+/** runSignalAnalysis() 반환 타입: 집계 포함 순수 데이터 */
+export interface SignalAnalysisResult {
+  results:      CombinedSignalResult[];
+  skipped:      string[];
+  sorted:       CombinedSignalResult[];
+  summary: {
+    bullishCount: number;
+    bearishCount: number;
+    neutralCount: number;
+    alertedCount: number;
+    avgTech:      number;
+    avgFund:      number;
+  };
+}
+
 interface SignalsJson {
   generated_at: string; market: string; analyzed_count: number; skipped_count: number; alerted_count: number;
   summary: { bullish_count: number; bearish_count: number; neutral_count: number; avg_tech_score: number; avg_fund_score: number; };
   stocks: CombinedSignalResult[];
 }
 
+// ── 유틸 ──────────────────────────────────────────────────────────────────────
+
 export function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
   let market = "kr"; let n: number | undefined; let minScore = 0;
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg === "--market")     { market   = args[++i] ?? "kr"; }
-    else if (arg === "-n")      { const v = parseInt(args[++i] ?? "", 10); if (!isNaN(v)) n = v; }
+    if (arg === "--market")         { market   = args[++i] ?? "kr"; }
+    else if (arg === "-n")          { const v = parseInt(args[++i] ?? "", 10); if (!isNaN(v)) n = v; }
     else if (arg === "--min-score") { const v = parseFloat(args[++i] ?? "0"); if (!isNaN(v)) minScore = v; }
   }
   return { market, n, minScore };
@@ -78,45 +95,37 @@ export function resolveOutputFile(market: string, n?: number): string {
 export function nowStr(): string { return new Date().toISOString().slice(0, 16).replace("T", " "); }
 export function round1(v: number): number { return Math.round(v * 10) / 10; }
 
-function main(): void {
-  const args   = parseArgs();
-  if (!SIGNALS_DIR[args.market]) { console.error(`❌ 알 수 없는 마켓: ${args.market}`); process.exit(1); }
+// ── 유스케이스 ────────────────────────────────────────────────────────────────
 
-  console.log("=".repeat(65));
-  console.log(`  기술적 + 펀더멘털 이상징후 통합 분석 [${args.market.toUpperCase()}]`);
-  if (args.n)        console.log(`  대상: 상위 ${args.n}개`);
-  if (args.minScore) console.log(`  최소 |score| 필터: ${args.minScore}`);
-  console.log("=".repeat(65));
-
-  const tickers = loadTickerList(args.market, undefined, args.n);
-  console.log(`\n📋 분석 대상: ${tickers.length}개 티커\n`);
-
+/**
+ * 핵심 분석 로직. console / 파일 I/O 에 의존하지 않아 단위 테스트 가능.
+ *
+ * @param market   - "kr" | "us"
+ * @param tickers  - 분석할 티커 목록
+ * @param minScore - 이 값 미만의 |totalScore| 이고 알림 없는 종목은 결과에서 제외
+ */
+export function runSignalAnalysis(
+  market: string,
+  tickers: string[],
+  minScore: number,
+): SignalAnalysisResult {
   const results: CombinedSignalResult[] = [];
   const skipped: string[]               = [];
 
   for (let i = 0; i < tickers.length; i++) {
     const ticker = tickers[i]!;
-    const prefix = `[${String(i + 1).padStart(4)}/${tickers.length}] ${ticker.padEnd(12)}`;
 
-    const raw = loadTicker(args.market, ticker);
-    if (!raw || raw.prices.length < 30) { console.log(`${prefix} → SKIP`); skipped.push(ticker); continue; }
+    const raw = loadTicker(market, ticker);
+    if (!raw || raw.prices.length < 30) { skipped.push(ticker); continue; }
 
-    const ohlcv    = toOHLCV(raw);
-    const techSum  = analyzeSignals(ticker, ohlcv);
-    const fundData = toFundamentalData(raw);
-    const fundSum  = analyzeFundamentals(ticker, fundData);
+    const ohlcv      = toOHLCV(raw);
+    const techSum    = analyzeSignals(ticker, ohlcv);
+    const fundData   = toFundamentalData(raw);
+    const fundSum    = analyzeFundamentals(ticker, fundData);
     const totalScore = round1(techSum.score + fundSum.score);
+    const allAlerts  = [...techSum.alerts, ...fundSum.alerts];
 
-    const allAlerts = [...techSum.alerts, ...fundSum.alerts];
-    if (Math.abs(totalScore) < args.minScore && allAlerts.length === 0) continue;
-
-    if (allAlerts.length > 0) {
-      const scoreStr = totalScore > 0 ? `+${totalScore}` : String(totalScore);
-      const techStr  = techSum.score > 0 ? `+${techSum.score}` : String(techSum.score);
-      const fundStr  = fundSum.score > 0 ? `+${fundSum.score}` : String(fundSum.score);
-      const labels   = allAlerts.filter(a => a.scoreAffecting).map(a => `[${a.direction[0]?.toUpperCase()}] ${a.label}`).join(" | ");
-      console.log(`${prefix} total:${scoreStr.padStart(5)} (T:${techStr} F:${fundStr})  RSI:${String(techSum.rsi?.toFixed(1) ?? "N/A").padStart(5)}  ${labels || "(정보성만)"}`);
-    }
+    if (Math.abs(totalScore) < minScore && allAlerts.length === 0) continue;
 
     results.push({
       ticker, name: raw.info.kr_name ?? raw.info.name, sector: raw.info.sector,
@@ -140,15 +149,48 @@ function main(): void {
   const alertedCount = results.filter(r => r.alerts.length > 0).length;
   const avgTech = results.length ? round1(results.reduce((s, r) => s + r.techScore, 0) / results.length) : 0;
   const avgFund = results.length ? round1(results.reduce((s, r) => s + r.fundScore, 0) / results.length) : 0;
+  const sorted  = [...results].sort((a, b) => b.totalScore - a.totalScore);
 
-  const sorted     = [...results].sort((a, b) => b.totalScore - a.totalScore);
-  const topBullish = sorted.filter(r => r.totalScore > 0).slice(0, 5);
-  const topBearish = sorted.filter(r => r.totalScore < 0).reverse().slice(0, 5);
+  return { results, skipped, sorted, summary: { bullishCount, bearishCount, neutralCount, alertedCount, avgTech, avgFund } };
+}
+
+// ── 프레젠테이션 ──────────────────────────────────────────────────────────────
+
+/**
+ * 분석 결과를 콘솔에 출력한다.
+ * 도메인 로직을 건드리지 않고 포맷(이모지·패딩·색상 등)만 변경 가능.
+ */
+export function printSignalReport(
+  result: SignalAnalysisResult,
+  opts: { market: string; n?: number; minScore: number },
+): void {
+  const { results, skipped, sorted, summary } = result;
+  const { bullishCount, bearishCount, neutralCount, alertedCount, avgTech, avgFund } = summary;
+
+  console.log("=".repeat(65));
+  console.log(`  기술적 + 펀더멘털 이상징후 통합 분석 [${opts.market.toUpperCase()}]`);
+  if (opts.n)        console.log(`  대상: 상위 ${opts.n}개`);
+  if (opts.minScore) console.log(`  최소 |score| 필터: ${opts.minScore}`);
+  console.log("=".repeat(65));
+  console.log(`\n📋 분석 결과: ${results.length}개  ❌ 스킵: ${skipped.length}개\n`);
+
+  // 알림 있는 종목 한 줄 요약 (ticker 순)
+  for (const r of results) {
+    if (r.alerts.length === 0) continue;
+    const scoreStr = r.totalScore > 0 ? `+${r.totalScore}` : String(r.totalScore);
+    const techStr  = r.techScore  > 0 ? `+${r.techScore}`  : String(r.techScore);
+    const fundStr  = r.fundScore  > 0 ? `+${r.fundScore}`  : String(r.fundScore);
+    const labels   = r.alerts.filter(a => a.scoreAffecting).map(a => `[${a.direction[0]?.toUpperCase()}] ${a.label}`).join(" | ");
+    console.log(`  ${r.ticker.padEnd(12)} total:${scoreStr.padStart(5)} (T:${techStr} F:${fundStr})  RSI:${String(r.rsi?.toFixed(1) ?? "N/A").padStart(5)}  ${labels || "(정보성만)"}`);
+  }
 
   console.log("\n" + "=".repeat(65));
   console.log(`✅ 완료: ${results.length}개  ❌ 스킵: ${skipped.length}개`);
   console.log(`  🟢 매수: ${bullishCount}개  🔴 매도: ${bearishCount}개  ⚪ 중립: ${neutralCount}개  📣 신호: ${alertedCount}개`);
   console.log(`  기술 avg score: ${avgTech}  /  펀더 avg score: ${avgFund}`);
+
+  const topBullish = sorted.filter(r => r.totalScore > 0).slice(0, 5);
+  const topBearish = sorted.filter(r => r.totalScore < 0).reverse().slice(0, 5);
 
   if (topBullish.length) {
     console.log("\n  🟢 매수 신호 상위 5개:");
@@ -158,12 +200,28 @@ function main(): void {
     console.log("\n  🔴 매도 신호 상위 5개:");
     topBearish.forEach(r => console.log(`    ${r.ticker.padEnd(12)} total:${r.totalScore} (T:${r.techScore} F:${r.fundScore})  RSI:${r.rsi?.toFixed(1) ?? "N/A"}  earn:${r.earningsTrend}`));
   }
+}
 
+// ── 엔트리 ────────────────────────────────────────────────────────────────────
+
+function main(): void {
+  const args = parseArgs();
+  if (!SIGNALS_DIR[args.market]) { console.error(`❌ 알 수 없는 마켓: ${args.market}`); process.exit(1); }
+
+  const tickers      = loadTickerList(args.market, undefined, args.n);
+  const analysis     = runSignalAnalysis(args.market, tickers, args.minScore);
+
+  printSignalReport(analysis, { market: args.market, n: args.n, minScore: args.minScore });
+
+  const { sorted, skipped, summary } = analysis;
   const outputFile = resolveOutputFile(args.market, args.n);
   const output: SignalsJson = {
     generated_at: nowStr(), market: args.market,
-    analyzed_count: results.length, skipped_count: skipped.length, alerted_count: alertedCount,
-    summary: { bullish_count: bullishCount, bearish_count: bearishCount, neutral_count: neutralCount, avg_tech_score: avgTech, avg_fund_score: avgFund },
+    analyzed_count: analysis.results.length, skipped_count: skipped.length, alerted_count: summary.alertedCount,
+    summary: {
+      bullish_count: summary.bullishCount, bearish_count: summary.bearishCount,
+      neutral_count: summary.neutralCount, avg_tech_score: summary.avgTech, avg_fund_score: summary.avgFund,
+    },
     stocks: sorted,
   };
 
