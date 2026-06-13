@@ -9,13 +9,14 @@
  *   server_node/node_modules/.bin/tsx scripts/analyze_market_breadth.ts --market kr --step 10
  */
 
-import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import { calcMarketBreadth, buildSnapshotDates, getMarketCondition } from "../src/library/shared/breadth.ts";
 import type { MarketBreadthResult } from "../src/library/shared/breadth.ts";
 import type { StockInput } from "../src/library/shared/sector.ts";
+import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
+import { toDailyPrices } from "../src/library/shared/tickerMapper.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -24,14 +25,13 @@ const DB_DIR     = path.resolve(__dirname, "../src/db");
 // ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
 interface MarketConfig {
-  tickersJson: string;
-  tickersDir:  string;
-  breadthDir:  string;
+  breadthDir: string;
 }
 
+/** 출력(breadth) 디렉토리만 스크립트가 관리. 티커 로드 경로는 Repository 가 일원화 (#64) */
 const MARKET_CONFIG: Record<string, MarketConfig> = {
-  kr: { tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"), tickersDir: path.join(DB_DIR, "kr/tickers"), breadthDir: path.join(DB_DIR, "kr/breadth") },
-  us: { tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"), tickersDir: path.join(DB_DIR, "us/tickers"), breadthDir: path.join(DB_DIR, "us/breadth") },
+  kr: { breadthDir: path.join(DB_DIR, "kr/breadth") },
+  us: { breadthDir: path.join(DB_DIR, "us/breadth") },
 };
 
 // lookback 거래일 수
@@ -69,25 +69,17 @@ export function parseArgs(): CliArgs {
 
 // ── 데이터 로드 ───────────────────────────────────────────────────────────────
 
-export function loadStocks(tickersJson: string, tickersDir: string): StockInput[] {
-  const meta    = JSON.parse(fs.readFileSync(tickersJson, "utf-8")) as { tickers: string[] };
+export function loadStocks(market: string): StockInput[] {
+  const tickers = loadTickerList(market);
   const stocks: StockInput[] = [];
 
-  for (const ticker of meta.tickers) {
-    const filename = (ticker.split(".")[0] ?? ticker) + ".json";
-    const file     = path.join(tickersDir, filename);
-    if (!fs.existsSync(file)) continue;
-
-    const raw = JSON.parse(fs.readFileSync(file, "utf-8")) as {
-      ticker: string;
-      info:   { sector: string };
-      prices: { date: string; close: number }[];
-    };
-    if (!raw.prices || raw.prices.length < 10) continue;
+  for (const ticker of tickers) {
+    const raw = loadTicker(market, ticker);
+    if (!raw || !raw.prices || raw.prices.length < 10) continue;
     stocks.push({
       ticker: raw.ticker,
       sector: raw.info.sector ?? "Unknown",
-      prices: raw.prices.map(p => ({ date: p.date, close: p.close })),
+      prices: toDailyPrices(raw),
     });
   }
   return stocks;
@@ -129,7 +121,7 @@ function main(): void {
 
   // 1. 데이터 로드
   console.log("\n데이터 로드 중...");
-  const stocks = loadStocks(config.tickersJson, config.tickersDir);
+  const stocks = loadStocks(args.market);
   console.log(`  ✅ ${stocks.length}개 종목 로드`);
 
   // 2. 전체 거래일 목록 추출 (가장 긴 종목 기준)
@@ -209,7 +201,6 @@ function main(): void {
   }
 
   // ── 6. JSON 저장 ──────────────────────────────────────────────────────────
-  fs.mkdirSync(config.breadthDir, { recursive: true });
   const outFile = path.join(config.breadthDir, `breadth_${args.period}.json`);
 
   const output = {
@@ -222,7 +213,7 @@ function main(): void {
     snapshots:    result.snapshots,
   };
 
-  fs.writeFileSync(outFile, JSON.stringify(output, null, 2), "utf-8");
+  saveJson(outFile, output);
   console.log(`\n📁 저장 완료: ${outFile}  (${result.snapshots.length}개 스냅샷)\n`);
 }
 
