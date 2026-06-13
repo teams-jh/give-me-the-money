@@ -51,18 +51,3 @@ export type {
   SlopeInfo,
   FilterTouchPointsResult,
 } from "./trendSim";
-
-// ── 데이터 접근 계층 / 매퍼 (Issue #64) ──────────────────────────────────────
-export { saveJsonAtomic, isUpdatedToday } from "./io";
-export { toOHLCV, toDailyPrices, toFundamentalData } from "./tickerMapper";
-export {
-  tickerToFilename,
-  resolveMarketPaths,
-  loadTickerList,
-  loadTicker,
-  findSimilarTicker,
-  saveJson,
-  DEFAULT_DB_DIR,
-} from "./tickerRepository";
-export type { MarketPaths } from "./tickerRepository";
-export type { RawTicker, RawPrice, DailyPrice } from "./tickerTypes";
