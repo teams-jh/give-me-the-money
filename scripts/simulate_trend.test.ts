@@ -13,15 +13,21 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // ── fs mock ───────────────────────────────────────────────────────────────────
-const mockReadFileSync = vi.hoisted(() => vi.fn());
-const mockExistsSync   = vi.hoisted(() => vi.fn());
+const mockReadFileSync  = vi.hoisted(() => vi.fn());
+const mockExistsSync    = vi.hoisted(() => vi.fn());
+const mockWriteFileSync = vi.hoisted(() => vi.fn());
+const mockMkdirSync     = vi.hoisted(() => vi.fn());
+const mockRenameSync    = vi.hoisted(() => vi.fn());
+const mockUnlinkSync    = vi.hoisted(() => vi.fn());
 
 vi.mock('fs', () => ({
   default: {
     readFileSync:  mockReadFileSync,
     existsSync:    mockExistsSync,
-    writeFileSync: vi.fn(),
-    mkdirSync:     vi.fn(),
+    writeFileSync: mockWriteFileSync,
+    mkdirSync:     mockMkdirSync,
+    renameSync:    mockRenameSync,
+    unlinkSync:    mockUnlinkSync,
   },
 }));
 
@@ -38,27 +44,12 @@ vi.mock('../src/library/shared/signals.ts', () => ({
 }));
 
 import {
-  tickerToFilename,
   parseArgs,
   loadConfig,
   dateTag,
   now,
 } from './simulate_trend.ts';
 import type { } from './simulate_trend.ts';
-
-// ── tickerToFilename ──────────────────────────────────────────────────────────
-
-describe('tickerToFilename', () => {
-  it('접미사 없는 티커 → 그대로', () => {
-    expect(tickerToFilename('AAPL')).toBe('AAPL');
-  });
-  it('KS 접미사 제거', () => {
-    expect(tickerToFilename('005930.KS')).toBe('005930');
-  });
-  it('여러 점 → 첫 번째 앞만', () => {
-    expect(tickerToFilename('A.B.C')).toBe('A');
-  });
-});
 
 // ── parseArgs ─────────────────────────────────────────────────────────────────
 
