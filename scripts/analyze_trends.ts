@@ -16,12 +16,13 @@
  *   npx tsx scripts/analyze_trends.ts --market kr -n 50 --period 3m
  */
 
-import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { classifyTrend } from "../src/library/shared/classifyTrend.ts";
 import type { PriceSeries, TrendResult, TrendType } from "../src/library/shared/classifyTrend.ts";
 import { log } from "../server_node/scripts/_lib/logger.ts";
+import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
+import { toDailyPrices } from "../src/library/shared/tickerMapper.ts";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url);
@@ -32,22 +33,13 @@ const DB_DIR = path.resolve(__dirname, "../src/db");
 // ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
 interface MarketConfig {
-  tickersJson: string;
-  tickersDir:  string;
-  trendDir:    string;
+  trendDir: string;
 }
 
+/** 출력(trend) 디렉토리만 스크립트가 관리. 티커 로드 경로는 Repository 가 일원화 (#64) */
 const MARKET_CONFIG: Record<string, MarketConfig> = {
-  us: {
-    tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "us/tickers"),
-    trendDir:    path.join(DB_DIR, "us/trend"),
-  },
-  kr: {
-    tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "kr/tickers"),
-    trendDir:    path.join(DB_DIR, "kr/trend"),
-  },
+  us: { trendDir: path.join(DB_DIR, "us/trend") },
+  kr: { trendDir: path.join(DB_DIR, "kr/trend") },
 };
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
@@ -58,16 +50,6 @@ interface CliArgs {
   market:  string;
   n:       number | undefined;   // 상위 N개 (없으면 전체)
   period:  PeriodOption | undefined;
-}
-
-interface RawPrice {
-  date:      string;
-  open:      number;
-  high:      number;
-  low:       number;
-  close:     number;
-  adj_close: number;
-  volume:    number;
 }
 
 interface DailyPrice {
@@ -131,10 +113,10 @@ const DEFAULT_MIN_PTS  = 8;
  *      -n 500              →  trend_500_all.json
  *      (옵션 없음)          →  trend_all_all.json
  */
-export function resolveOutputFile(config: MarketConfig, n: number | undefined, period: PeriodOption | undefined): string {
+export function resolveOutputFile(market: string, n: number | undefined, period: PeriodOption | undefined): string {
   const nPart      = n      !== undefined ? String(n) : "all";
   const periodPart = period !== undefined ? period    : "all";
-  return path.join(config.trendDir, `trend_${nPart}_${periodPart}.json`);
+  return path.join(MARKET_CONFIG[market]!.trendDir, `trend_${nPart}_${periodPart}.json`);
 }
 
 // ── Step 0: CLI 파싱 ──────────────────────────────────────────────────────────
@@ -170,30 +152,17 @@ export function parseArgs(): CliArgs {
   return { market, n, period };
 }
 
-// ── Step 1: 티커 목록 읽기 ────────────────────────────────────────────────────
+// ── Step 1: 티커 목록 읽기 (Repository 위임) ──────────────────────────────────
 
-export function loadTickers(config: MarketConfig, n: number | undefined): string[] {
-  const raw  = fs.readFileSync(config.tickersJson, "utf-8");
-  const data = JSON.parse(raw) as { tickers: string[] };
-  const all  = data.tickers;
-  return n !== undefined ? all.slice(0, n) : all;
+export function loadTickers(market: string, n: number | undefined): string[] {
+  return loadTickerList(market, undefined, n);
 }
 
-// ── Step 2: 일봉 prices 읽기 ──────────────────────────────────────────────────
+// ── Step 2: 일봉 prices 읽기 (Repository 위임) ────────────────────────────────
 
-/** Yahoo Finance 티커에서 파일명용 코드 추출 (005930.KS → 005930, AAPL → AAPL) */
-export function tickerToFilename(ticker: string): string {
-  return ticker.split(".")[0] ?? ticker;
-}
-
-export function loadPrices(ticker: string, config: MarketConfig): DailyPrice[] | null {
-  const file = path.join(config.tickersDir, `${tickerToFilename(ticker)}.json`);
-  if (!fs.existsSync(file)) return null;
-
-  const raw  = fs.readFileSync(file, "utf-8");
-  const data = JSON.parse(raw) as { prices: RawPrice[] };
-
-  return data.prices.map((p) => ({ date: p.date, close: p.close }));
+export function loadPrices(market: string, ticker: string): DailyPrice[] | null {
+  const raw = loadTicker(market, ticker);
+  return raw ? toDailyPrices(raw) : null;
 }
 
 // ── Step 3-A: 기간 커팅 ───────────────────────────────────────────────────────
@@ -291,7 +260,7 @@ function main(): void {
   console.log("=".repeat(60));
 
   // 1. 티커 목록
-  const tickers = loadTickers(config, args.n);
+  const tickers = loadTickers(args.market, args.n);
   log(`📋 분석 대상: ${tickers.length}개 티커`);
 
   // 2~5. 종목별 분석
@@ -303,7 +272,7 @@ function main(): void {
     const prefix = `[${String(i + 1).padStart(4)}/${tickers.length}] ${ticker.padEnd(10)}`;
 
     // 2. 일봉 읽기
-    const rawPrices = loadPrices(ticker, config);
+    const rawPrices = loadPrices(args.market, ticker);
     if (rawPrices === null || rawPrices.length === 0) {
       console.log(`${prefix} → SKIP (파일 없음)`);
       skipped.push(ticker);
@@ -361,7 +330,7 @@ function main(): void {
   console.log(`  반등(recovering): ${summary.recovering}개`);
 
   // 7. trend_{n}_{period}.json 저장
-  const outputFile = resolveOutputFile(config, args.n, args.period);
+  const outputFile = resolveOutputFile(args.market, args.n, args.period);
   const output: TrendJson = {
     generated_at:   now(),
     period:         periodLabel,
@@ -371,8 +340,7 @@ function main(): void {
     stocks,
   };
 
-  fs.mkdirSync(config.trendDir, { recursive: true });
-  fs.writeFileSync(outputFile, JSON.stringify(output, null, 2), "utf-8");
+  saveJson(outputFile, output);
   log(`📁 저장 완료: ${outputFile}`);
 }
 
