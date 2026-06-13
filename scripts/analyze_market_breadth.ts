@@ -131,7 +131,10 @@ export function runBreadthAnalysis(
   period:  string,
   step:    number,
 ): BreadthAnalysisResult {
-  const lookback = LOOKBACK[period]!;
+  const lookback = LOOKBACK[period];
+  if (lookback === undefined) {
+    throw new Error(`알 수 없는 period: ${period}. 사용 가능: ${Object.keys(LOOKBACK).join(", ")}`);
+  }
   const stocks   = loadStocks(market);
 
   const allDatesSet = new Set<string>();
@@ -161,8 +164,16 @@ export function printBreadthReport(
   console.log(`  📊 시장 breadth 분석 [${opts.market.toUpperCase()}]  기간: ${opts.period}  스냅샷 간격: ${opts.step}거래일`);
   console.log("=".repeat(70));
   console.log(`\n  ✅ ${stocks.length}개 종목 로드`);
-  console.log(`  📅 거래일: ${allDates[0]} ~ ${allDates[allDates.length - 1]}  (${allDates.length}일)`);
-  console.log(`  🎯 스냅샷: ${snapDates.length}개  (${snapDates[0]} ~ ${snapDates[snapDates.length - 1]})`);
+  if (allDates.length > 0) {
+    console.log(`  📅 거래일: ${allDates[0]} ~ ${allDates[allDates.length - 1]}  (${allDates.length}일)`);
+  } else {
+    console.log(`  📅 거래일: N/A (종목 없음)`);
+  }
+  if (snapDates.length > 0) {
+    console.log(`  🎯 스냅샷: ${snapDates.length}개  (${snapDates[0]} ~ ${snapDates[snapDates.length - 1]})`);
+  } else {
+    console.log(`  🎯 스냅샷: 0개`);
+  }
   console.log(`  스냅샷 ${snaps.length}개\n`);
 
   if (snaps.length === 0) return;
