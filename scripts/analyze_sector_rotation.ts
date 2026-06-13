@@ -95,49 +95,64 @@ export function rankChangeMark(change: number | null): string {
   return "─ ";
 }
 
-// ── main ──────────────────────────────────────────────────────────────────────
+// ── 유스케이스 ────────────────────────────────────────────────────────────────
 
-function main(): void {
-  const args   = parseArgs();
-  const config = MARKET_CONFIG[args.market];
-  if (!config) {
-    console.error(`❌ 알 수 없는 마켓: ${args.market}`);
-    process.exit(1);
-  }
+/** runSectorRotationAnalysis() 반환 타입 */
+export interface SectorRotationAnalysisResult {
+  result:           SectorRotationResult;
+  strengthResult:   SectorStrengthResult;
+  quarters:         string[];
+  rankings:         SectorRotationResult["rankings"];
+  strengthRankings: SectorStrengthResult["rankings"];
+}
 
-  console.log("=".repeat(70));
-  console.log(`  📊 섹터 로테이션 분석 [${args.market.toUpperCase()}]`);
-  console.log("=".repeat(70));
-
-  // 1. 데이터 로드
-  console.log("\n데이터 로드 중...");
-  const stocks = loadStocks(args.market);
-  console.log(`  ✅ ${stocks.length}개 종목 로드 완료`);
-
-  // 2. 수익률 기반 섹터 로테이션 계산
-  const result = calcSectorRotation(stocks, 3, true);
-
-  // 3. 추세 강도 기반 섹터 랭킹 계산 (classifyTrend 재활용)
-  console.log("추세 강도 계산 중 (classifyTrend 분기별 재계산)...");
+/**
+ * 핵심 분석 로직. console / 파일 I/O 에 의존하지 않아 단위 테스트 가능.
+ */
+export function runSectorRotationAnalysis(
+  _market:   string,
+  stocks:    StockInput[],
+  quartersN: number | null,
+): SectorRotationAnalysisResult {
+  const result         = calcSectorRotation(stocks, 3, true);
   const strengthResult = calcSectorStrengthRotation(stocks, 3, true);
-  console.log("  ✅ 강도 분석 완료\n");
 
-  // 최근 N분기 필터
-  let { quarters, rankings } = result;
+  let quarters         = result.quarters;
+  let rankings         = result.rankings;
   let strengthRankings = strengthResult.rankings;
-  if (args.quarters !== null) {
-    quarters = quarters.slice(-args.quarters);
-    rankings = rankings.filter(r => quarters.includes(r.quarter));
+
+  if (quartersN !== null) {
+    quarters         = quarters.slice(-quartersN);
+    rankings         = rankings.filter(r => quarters.includes(r.quarter));
     strengthRankings = strengthRankings.filter(r => quarters.includes(r.quarter));
   }
 
+  return { result, strengthResult, quarters, rankings, strengthRankings };
+}
+
+// ── 프레젠테이션 ──────────────────────────────────────────────────────────────
+
+/**
+ * 분석 결과를 콘솔에 출력한다.
+ */
+export function printSectorRotationReport(
+  analysis: SectorRotationAnalysisResult,
+  opts:     { market: string; stocks: StockInput[] },
+): void {
+  const { result, strengthResult, quarters, rankings, strengthRankings } = analysis;
   const { sectors, sectorSeries } = result;
 
-  // ── 3-A. 분기별 랭킹 테이블 ──────────────────────────────────────────────
+  console.log("=".repeat(70));
+  console.log(`  📊 섹터 로테이션 분석 [${opts.market.toUpperCase()}]`);
+  console.log("=".repeat(70));
+  console.log(`\n  ✅ ${opts.stocks.length}개 종목 로드 완료\n`);
+
+  const headerCols = quarters.map(q => q.padStart(8)).join(" ");
+
+  // 3-A. 분기별 랭킹 테이블
   console.log(`\n${"─".repeat(70)}`);
   console.log("  📋 분기별 섹터 랭킹 (수익률 기준 정렬)");
   console.log(`${"─".repeat(70)}\n`);
-
   for (const qRank of rankings) {
     const label = qRank.complete ? qRank.quarter : `${qRank.quarter}*`;
     console.log(`  【${label}】`);
@@ -153,70 +168,53 @@ function main(): void {
     console.log();
   }
 
-  // ── 3-B. 섹터별 랭킹 추이 히트맵 ────────────────────────────────────────
+  // 3-B. 섹터별 랭킹 추이
   console.log(`${"─".repeat(70)}`);
   console.log("  🔄 섹터별 분기 랭킹 추이 (순위 숫자)");
   console.log(`${"─".repeat(70)}\n`);
-
-  // 헤더
-  const headerCols = quarters.map(q => q.padStart(8)).join(" ");
   console.log(`  ${"섹터".padEnd(28)} ${headerCols}`);
   console.log(`  ${"─".repeat(28)} ${"─".repeat(quarters.length * 9)}`);
-
   for (const sector of sectors) {
     const series = sectorSeries[sector];
     if (!series) continue;
-
-    // 이 섹터의 ranks 중에서 quarters에 해당하는 것만 추출
-    const rankCols = quarters.map((q, i) => {
+    const rankCols = quarters.map((q) => {
       const qIdx = result.quarters.indexOf(q);
       const rank = series.ranks[qIdx] ?? null;
       if (rank === null) return "    -   ";
-      // 랭킹 색상 (1-2위: 초록, 꼴찌권: 빨강)
       const totalSectors = rankings.find(r => r.quarter === q)?.rows.length ?? 0;
       let colored: string;
-      if (rank <= 2)                          colored = `\x1b[32m${rank}위\x1b[0m`;
-      else if (rank >= totalSectors - 1)      colored = `\x1b[31m${rank}위\x1b[0m`;
-      else                                    colored = `${rank}위`;
+      if (rank <= 2)                     colored = `\x1b[32m${rank}위\x1b[0m`;
+      else if (rank >= totalSectors - 1) colored = `\x1b[31m${rank}위\x1b[0m`;
+      else                               colored = `${rank}위`;
       return colored.padStart(8);
     }).join(" ");
-
-    const secLabel = sector.padEnd(28);
-    console.log(`  ${secLabel} ${rankCols}`);
+    console.log(`  ${sector.padEnd(28)} ${rankCols}`);
   }
 
-  // ── 3-C. 섹터별 수익률 시계열 ────────────────────────────────────────────
+  // 3-C. 섹터별 수익률 시계열
   console.log(`\n${"─".repeat(70)}`);
   console.log("  📈 섹터별 분기 수익률 (%)");
   console.log(`${"─".repeat(70)}\n`);
-
   console.log(`  ${"섹터".padEnd(28)} ${headerCols}`);
   console.log(`  ${"─".repeat(28)} ${"─".repeat(quarters.length * 9)}`);
-
   for (const sector of sectors) {
     const series = sectorSeries[sector];
     if (!series) continue;
-
     const retCols = quarters.map((q) => {
       const qIdx = result.quarters.indexOf(q);
       const ret  = series.returns[qIdx] ?? null;
       return colorReturn(ret).padStart(8);
     }).join(" ");
-
-    const secLabel = sector.padEnd(28);
-    console.log(`  ${secLabel} ${retCols}`);
+    console.log(`  ${sector.padEnd(28)} ${retCols}`);
   }
 
-  // ── 3-D. 요약 인사이트 ────────────────────────────────────────────────────
+  // 3-D. 요약 인사이트
   if (quarters.length >= 2) {
-    const lastQ     = quarters[quarters.length - 1]!;
-    const prevQ     = quarters[quarters.length - 2]!;
-    const lastRank  = rankings.find(r => r.quarter === lastQ)?.rows ?? [];
-    const prevRank  = rankings.find(r => r.quarter === prevQ)?.rows ?? [];
-
+    const lastQ    = quarters[quarters.length - 1]!;
+    const prevQ    = quarters[quarters.length - 2]!;
+    const lastRank = rankings.find(r => r.quarter === lastQ)?.rows ?? [];
     const bigRisers  = lastRank.filter(r => (r.rankChange ?? 0) >= 3);
     const bigFallers = lastRank.filter(r => (r.rankChange ?? 0) <= -3);
-
     if (bigRisers.length > 0 || bigFallers.length > 0) {
       console.log(`\n${"─".repeat(70)}`);
       console.log(`  💡 최근 로테이션 신호 (${prevQ} → ${lastQ})`);
@@ -230,31 +228,25 @@ function main(): void {
     }
   }
 
-  // ── 3-E. 추세 강도 랭킹 (slope × R²) ───────────────────────────────────────
+  // 3-E. 추세 강도 랭킹
   console.log(`${"─".repeat(70)}`);
   console.log("  📐 분기별 섹터 추세 강도 랭킹 (slope × R²)");
-  console.log("     ※ 수익률 기준이 아닌 추세의 방향성 × 일관성 기준");
   console.log(`${"─".repeat(70)}\n`);
-
-  // 강도 순위 추이표
-  const sHeaders = strengthResult.quarters
-    .filter(q => quarters.includes(q))
-    .map(q => q.padStart(8)).join(" ");
+  const sHeaders = strengthResult.quarters.filter(q => quarters.includes(q)).map(q => q.padStart(8)).join(" ");
   console.log(`  ${"섹터".padEnd(28)} ${sHeaders}`);
   console.log(`  ${"─".repeat(28)} ${"─".repeat(quarters.length * 9)}`);
-
   for (const sector of strengthResult.sectors) {
     const series = strengthResult.strengthSeries[sector];
     if (!series) continue;
     const rankCols = quarters.map(q => {
-      const qIdx = strengthResult.quarters.indexOf(q);
-      const rank = series.ranks[qIdx] ?? null;
+      const qIdx  = strengthResult.quarters.indexOf(q);
+      const rank  = series.ranks[qIdx]  ?? null;
       const score = series.scores[qIdx] ?? null;
       if (rank === null) return "    -   ";
       const totalSectors = strengthRankings.find(r => r.quarter === q)?.rows.length ?? 0;
       let colored: string;
-      if (rank <= 2)                     colored = `[32m${rank}위[0m`;
-      else if (rank >= totalSectors - 1) colored = `[31m${rank}위[0m`;
+      if (rank <= 2)                     colored = `[32m${rank}위[0m`;
+      else if (rank >= totalSectors - 1) colored = `[31m${rank}위[0m`;
       else                               colored = `${rank}위`;
       const scoreStr = score !== null ? (score >= 0 ? `+${score.toFixed(2)}` : score.toFixed(2)) : "";
       return `${colored}(${scoreStr})`.padStart(14);
@@ -262,44 +254,54 @@ function main(): void {
     console.log(`  ${sector.padEnd(28)} ${rankCols}`);
   }
 
-  // 수익률 vs 강도 비교 (최근 2분기)
   if (quarters.length >= 2) {
-    const lastQ = quarters[quarters.length - 1]!;
-    const retTop3    = rankings.find(r => r.quarter === lastQ)?.rows.slice(0, 3).map(r => r.sector) ?? [];
+    const lastQ        = quarters[quarters.length - 1]!;
+    const retTop3      = rankings.find(r => r.quarter === lastQ)?.rows.slice(0, 3).map(r => r.sector) ?? [];
     const strengthTop3 = strengthRankings.find(r => r.quarter === lastQ)?.rows.slice(0, 3).map(r => r.sector) ?? [];
-    const onlyInRet  = retTop3.filter(s => !strengthTop3.includes(s));
-    const onlyInStr  = strengthTop3.filter(s => !retTop3.includes(s));
-
+    const onlyInRet    = retTop3.filter(s => !strengthTop3.includes(s));
+    const onlyInStr    = strengthTop3.filter(s => !retTop3.includes(s));
     if (onlyInRet.length > 0 || onlyInStr.length > 0) {
       console.log(`\n${"─".repeat(70)}`);
       console.log(`  🔍 ${lastQ} 수익률 vs 추세강도 상위 3개 비교`);
       console.log(`${"─".repeat(70)}`);
       console.log(`  수익률 Top3:  ${retTop3.join("  >  ")}`);
       console.log(`  강도   Top3:  ${strengthTop3.join("  >  ")}`);
-      if (onlyInRet.length)  console.log(`  \x1b[33m⚠ 수익률↑ but 추세약함:\x1b[0m  ${onlyInRet.join(", ")} (단기 급등 주의)`);
-      if (onlyInStr.length)  console.log(`  \x1b[32m✓ 추세강함 but 수익률낮음:\x1b[0m ${onlyInStr.join(", ")} (지속 가능성 높음)`);
+      if (onlyInRet.length) console.log(`  \x1b[33m⚠ 수익률↑ but 추세약함:\x1b[0m  ${onlyInRet.join(", ")} (단기 급등 주의)`);
+      if (onlyInStr.length) console.log(`  \x1b[32m✓ 추세강함 but 수익률낮음:\x1b[0m ${onlyInStr.join(", ")} (지속 가능성 높음)`);
     }
   }
+}
 
-  // ── 4. JSON 저장 ──────────────────────────────────────────────────────────
+// ── 엔트리 ────────────────────────────────────────────────────────────────────
+
+function main(): void {
+  const args   = parseArgs();
+  const config = MARKET_CONFIG[args.market];
+  if (!config) {
+    console.error(`❌ 알 수 없는 마켓: ${args.market}`);
+    process.exit(1);
+  }
+
+  const stocks   = loadStocks(args.market);
+  const analysis = runSectorRotationAnalysis(args.market, stocks, args.quarters);
+
+  printSectorRotationReport(analysis, { market: args.market, stocks });
+
   const outputFile = path.join(config.sectorDir, "rotation.json");
-
   const output = {
-    generated_at:    new Date().toISOString().slice(0, 16).replace("T", " "),
-    market:          args.market,
-    quarters:        result.quarters,
-    sectors:         result.sectors,
-    // 수익률 기반
-    returnRankings:  result.rankings,
-    returnSeries:    result.sectorSeries,
-    // 추세 강도 기반 (slope × R²)
-    strengthRankings: strengthResult.rankings,
-    strengthSeries:   strengthResult.strengthSeries,
+    generated_at:     new Date().toISOString().slice(0, 16).replace("T", " "),
+    market:           args.market,
+    quarters:         analysis.result.quarters,
+    sectors:          analysis.result.sectors,
+    returnRankings:   analysis.result.rankings,
+    returnSeries:     analysis.result.sectorSeries,
+    strengthRankings: analysis.strengthResult.rankings,
+    strengthSeries:   analysis.strengthResult.strengthSeries,
   };
 
   saveJson(outputFile, output);
   console.log(`\n📁 저장 완료: ${outputFile}`);
-  console.log(`   분기 수: ${result.quarters.length}개  /  섹터 수: ${result.sectors.length}개\n`);
+  console.log(`   분기 수: ${analysis.result.quarters.length}개  /  섹터 수: ${analysis.result.sectors.length}개\n`);
 }
 
 const _isEntrySector = process.argv[1] !== undefined && path.resolve(process.argv[1]) === __filename;
