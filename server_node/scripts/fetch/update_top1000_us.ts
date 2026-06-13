@@ -18,6 +18,8 @@ import axios    from "axios";
 import AdmZip   from "adm-zip";
 import iconv    from "iconv-lite";
 
+import { log } from "../_lib/logger.ts";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
@@ -48,10 +50,6 @@ interface OutputJson {
 }
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
-
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
 
 function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));

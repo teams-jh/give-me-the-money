@@ -15,6 +15,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import axios from "axios";
 
+import { log } from "../_lib/logger.ts";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
@@ -39,10 +41,6 @@ interface Russell1000Json {
 }
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
-
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
 
 // ── 1단계: CSV 다운로드 ───────────────────────────────────────────────────────
 

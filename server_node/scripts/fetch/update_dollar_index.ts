@@ -23,6 +23,10 @@ import path from "path";
 import { fileURLToPath } from "url";
 import YahooFinance from "yahoo-finance2";
 
+import { log } from "../_lib/logger.ts";
+import { round } from "../_lib/num.ts";
+import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
+
 const __filename   = fileURLToPath(import.meta.url);
 const __dirname    = path.dirname(__filename);
 const yahooFinance = new YahooFinance();
@@ -107,27 +111,7 @@ interface DxyJson {
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
 
-function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
-
-export function round(v: number | null | undefined): number | null {
-  if (v == null || isNaN(v)) return null;
-  return Math.round(v * 100) / 100;
-}
-
-/** USD.json 의 updated_at 이 오늘 날짜면 true */
-function isUpdatedToday(): boolean {
-  try {
-    const data        = JSON.parse(fs.readFileSync(OUTPUT, "utf8")) as { updated_at?: string };
-    if (!data.updated_at) return false;
-    const updatedDate = new Date(data.updated_at).toISOString().slice(0, 10);
-    const today       = new Date().toISOString().slice(0, 10);
-    return updatedDate === today;
-  } catch {
-    return false;  // 파일 없음 → 스킵하지 않음
-  }
-}
+export { round };
 
 // ── 1단계: 일봉 가격 데이터 다운로드 ─────────────────────────────────────────
 
@@ -273,9 +257,7 @@ export function buildJson(prices: PriceRow[]): DxyJson {
 function saveJson(data: DxyJson): void {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-  const tmp = OUTPUT + ".tmp";
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
-  fs.renameSync(tmp, OUTPUT);
+  saveJsonAtomic(OUTPUT, data);
 
   log(`저장 완료: ${OUTPUT}`);
   log(`달러인덱스 현재값: ${data.market.price}`);
@@ -291,7 +273,7 @@ export async function main(): Promise<void> {
   log("=== US Dollar Index 데이터 업데이트 시작 ===");
 
   // 오늘 이미 업데이트된 파일이 있으면 스킵 (--force 로 우회 가능)
-  if (!force && isUpdatedToday()) {
+  if (!force && isUpdatedToday(OUTPUT)) {
     log("오늘 이미 업데이트됨 — 건너뜀 (재다운로드: --force 플래그 사용)");
     log("=== 스킵 ===");
     return;

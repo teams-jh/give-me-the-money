@@ -18,6 +18,8 @@ import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { log, warn } from "../_lib/logger.ts";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
@@ -37,13 +39,7 @@ interface MarketConfig {
 
 // ── 유틸 ──────────────────────────────────────────────────────────────────────
 
-export function log(msg: string): void {
-  console.log(`${new Date().toISOString()} [INFO] ${msg}`);
-}
-
-export function warn(msg: string): void {
-  console.warn(`${new Date().toISOString()} [WARN] ${msg}`);
-}
+export { log, warn };
 
 /**
  * 티커 문자열 → 파일명 (확장자 제외)
@@ -149,7 +145,7 @@ export function parseArgs(): { market: string; dryRun: boolean } {
   return { market, dryRun };
 }
 
-function main(): void {
+export function main(): void {
   const { market, dryRun } = parseArgs();
 
   if (dryRun) {

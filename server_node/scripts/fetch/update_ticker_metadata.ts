@@ -25,6 +25,10 @@ import { fileURLToPath } from "url";
 import YahooFinance from "yahoo-finance2";
 import type { ChartResultArray, ChartResultArrayQuote } from "yahoo-finance2/modules/chart";
 
+import { log, warn, err } from "../_lib/logger.ts";
+import { round } from "../_lib/num.ts";
+import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
+
 const __filename    = fileURLToPath(import.meta.url);
 const __dirname     = path.dirname(__filename);
 const yahooFinance  = new YahooFinance();
@@ -251,20 +255,13 @@ type ProcessStatus =
 const sleep = (ms: number): Promise<void> =>
   new Promise((r) => setTimeout(r, ms));
 
-function log(msg: string):  void { console.log(`${new Date().toISOString()} [INFO]  ${msg}`); }
-function warn(msg: string): void { console.warn(`${new Date().toISOString()} [WARN]  ${msg}`); }
-function err(msg: string):  void { console.error(`${new Date().toISOString()} [ERROR] ${msg}`); }
-
 export function chunk<T>(arr: T[], n: number): T[][] {
   const result: T[][] = [];
   for (let i = 0; i < arr.length; i += n) result.push(arr.slice(i, i + n));
   return result;
 }
 
-export function round(v: number | null | undefined): number | null {
-  if (v == null || isNaN(v)) return null;
-  return Math.round(v * 100) / 100;
-}
+export { round };
 
 export function formatQuarter(date: Date | null | undefined): string | null {
   if (!date) return null;
@@ -394,9 +391,7 @@ function patchTodayPrice(file: string, todayRow: PriceRow): number {
 
   data.updated_at = new Date().toISOString();
 
-  const tmp = file.replace(/\.json$/, ".tmp.json");
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
-  fs.renameSync(tmp, file);
+  saveJsonAtomic(file, data);
 
   return prices.length;
 }
@@ -565,24 +560,12 @@ function saveTickerJson(ticker: string, data: TickerData, outputDir: string): vo
   fs.mkdirSync(outputDir, { recursive: true });
   const name = tickerToFilename(ticker);
   const file = path.join(outputDir, `${name}.json`);
-  const tmp  = path.join(outputDir, `${name}.tmp.json`);
-  fs.writeFileSync(tmp, JSON.stringify(data, null, 2), "utf8");
-  fs.renameSync(tmp, file);   // atomic: 읽기 충돌 없음
+  saveJsonAtomic(file, data);   // atomic: 읽기 충돌 없음
 }
 
 // ── 5단계: 단일 티커 처리 ────────────────────────────────────────────────────
 
-export function isUpdatedToday(file: string): boolean {
-  try {
-    const data        = JSON.parse(fs.readFileSync(file, "utf8")) as { updated_at?: string };
-    if (!data.updated_at) return false;
-    const updatedDate = new Date(data.updated_at).toISOString().slice(0, 10);
-    const today       = new Date().toISOString().slice(0, 10);
-    return updatedDate === today;
-  } catch {
-    return false;
-  }
-}
+export { isUpdatedToday };
 
 async function processTicker(ticker: string, force: boolean, outputDir: string, krName: string | null = null): Promise<ProcessStatus> {
   const file = path.join(outputDir, `${tickerToFilename(ticker)}.json`);
