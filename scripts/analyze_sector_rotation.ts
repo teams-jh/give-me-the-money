@@ -182,11 +182,10 @@ export function printSectorRotationReport(
       const rank = series.ranks[qIdx] ?? null;
       if (rank === null) return "    -   ";
       const totalSectors = rankings.find(r => r.quarter === q)?.rows.length ?? 0;
-      let colored: string;
-      if (rank <= 2)                     colored = `\x1b[32m${rank}위\x1b[0m`;
-      else if (rank >= totalSectors - 1) colored = `\x1b[31m${rank}위\x1b[0m`;
-      else                               colored = `${rank}위`;
-      return colored.padStart(8);
+      const rankStr = `${rank}위`.padStart(4);
+      if (rank <= 2)                     return `\x1b[32m${rankStr}\x1b[0m    `;
+      else if (rank >= totalSectors - 1) return `\x1b[31m${rankStr}\x1b[0m    `;
+      else                               return rankStr.padStart(8);
     }).join(" ");
     console.log(`  ${sector.padEnd(28)} ${rankCols}`);
   }
@@ -232,9 +231,9 @@ export function printSectorRotationReport(
   console.log(`${"─".repeat(70)}`);
   console.log("  📐 분기별 섹터 추세 강도 랭킹 (slope × R²)");
   console.log(`${"─".repeat(70)}\n`);
-  const sHeaders = strengthResult.quarters.filter(q => quarters.includes(q)).map(q => q.padStart(8)).join(" ");
+  const sHeaders = quarters.map(q => q.padStart(14)).join(" ");
   console.log(`  ${"섹터".padEnd(28)} ${sHeaders}`);
-  console.log(`  ${"─".repeat(28)} ${"─".repeat(quarters.length * 9)}`);
+  console.log(`  ${"─".repeat(28)} ${"─".repeat(quarters.length * 15)}`);
   for (const sector of strengthResult.sectors) {
     const series = strengthResult.strengthSeries[sector];
     if (!series) continue;
@@ -242,14 +241,14 @@ export function printSectorRotationReport(
       const qIdx  = strengthResult.quarters.indexOf(q);
       const rank  = series.ranks[qIdx]  ?? null;
       const score = series.scores[qIdx] ?? null;
-      if (rank === null) return "    -   ";
+      if (rank === null) return "      -       ";
       const totalSectors = strengthRankings.find(r => r.quarter === q)?.rows.length ?? 0;
-      let colored: string;
-      if (rank <= 2)                     colored = `[32m${rank}위[0m`;
-      else if (rank >= totalSectors - 1) colored = `[31m${rank}위[0m`;
-      else                               colored = `${rank}위`;
+      const rankStr  = `${rank}위`;
       const scoreStr = score !== null ? (score >= 0 ? `+${score.toFixed(2)}` : score.toFixed(2)) : "";
-      return `${colored}(${scoreStr})`.padStart(14);
+      const plain    = `${rankStr}(${scoreStr})`.padStart(14);
+      if (rank <= 2)                     return `\x1b[32m${rankStr}\x1b[0m(${scoreStr})`.padStart(14 + 9); // ANSI 보정
+      else if (rank >= totalSectors - 1) return `\x1b[31m${rankStr}\x1b[0m(${scoreStr})`.padStart(14 + 9);
+      else                               return plain;
     }).join(" ");
     console.log(`  ${sector.padEnd(28)} ${rankCols}`);
   }
