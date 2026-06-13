@@ -9,11 +9,12 @@
  *   server_node/node_modules/.bin/tsx scripts/analyze_sector_rotation.ts --market kr --quarters 6
  */
 
-import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { calcSectorRotation, calcSectorStrengthRotation } from "../src/library/shared/sector.ts";
 import type { StockInput, SectorRotationResult, SectorStrengthResult } from "../src/library/shared/sector.ts";
+import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
+import { toDailyPrices } from "../src/library/shared/tickerMapper.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -22,22 +23,13 @@ const DB_DIR     = path.resolve(__dirname, "../src/db");
 // ── 마켓 설정 ─────────────────────────────────────────────────────────────────
 
 interface MarketConfig {
-  tickersJson: string;
-  tickersDir:  string;
-  sectorDir:   string;
+  sectorDir: string;
 }
 
+/** 출력(sector) 디렉토리만 스크립트가 관리. 티커 로드 경로는 Repository 가 일원화 (#64) */
 const MARKET_CONFIG: Record<string, MarketConfig> = {
-  kr: {
-    tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "kr/tickers"),
-    sectorDir:   path.join(DB_DIR, "kr/sector"),
-  },
-  us: {
-    tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "us/tickers"),
-    sectorDir:   path.join(DB_DIR, "us/sector"),
-  },
+  kr: { sectorDir: path.join(DB_DIR, "kr/sector") },
+  us: { sectorDir: path.join(DB_DIR, "us/sector") },
 };
 
 // ── CLI 파싱 ──────────────────────────────────────────────────────────────────
@@ -65,29 +57,18 @@ export function parseArgs(): CliArgs {
 
 // ── 데이터 로드 ───────────────────────────────────────────────────────────────
 
-export function loadStocks(tickersJson: string, tickersDir: string): StockInput[] {
-  const meta  = JSON.parse(fs.readFileSync(tickersJson, "utf-8")) as { tickers: string[] };
+export function loadStocks(market: string): StockInput[] {
+  const tickers = loadTickerList(market);
   const stocks: StockInput[] = [];
 
-  for (const ticker of meta.tickers) {
-    const filename = ticker.replace(/[^a-zA-Z0-9]/g, "_") + ".json";
-    const file     = path.join(tickersDir, filename);
-    if (!fs.existsSync(file)) continue;
-
-    const raw = JSON.parse(
-      fs.readFileSync(file, "utf-8")
-    ) as {
-      ticker: string;
-      info:   { sector: string };
-      prices: { date: string; close: number }[];
-    };
-
-    if (!raw.prices || raw.prices.length < 10) continue;
+  for (const ticker of tickers) {
+    const raw = loadTicker(market, ticker);
+    if (!raw || !raw.prices || raw.prices.length < 10) continue;
 
     stocks.push({
       ticker: raw.ticker,
-      sector: raw.info.sector ?? "Unknown",
-      prices: raw.prices.map(p => ({ date: p.date, close: p.close })),
+      sector: raw.info?.sector ?? "Unknown",
+      prices: toDailyPrices(raw),
     });
   }
 
@@ -130,7 +111,7 @@ function main(): void {
 
   // 1. 데이터 로드
   console.log("\n데이터 로드 중...");
-  const stocks = loadStocks(config.tickersJson, config.tickersDir);
+  const stocks = loadStocks(args.market);
   console.log(`  ✅ ${stocks.length}개 종목 로드 완료`);
 
   // 2. 수익률 기반 섹터 로테이션 계산
@@ -301,7 +282,6 @@ function main(): void {
   }
 
   // ── 4. JSON 저장 ──────────────────────────────────────────────────────────
-  fs.mkdirSync(config.sectorDir, { recursive: true });
   const outputFile = path.join(config.sectorDir, "rotation.json");
 
   const output = {
@@ -317,7 +297,7 @@ function main(): void {
     strengthSeries:   strengthResult.strengthSeries,
   };
 
-  fs.writeFileSync(outputFile, JSON.stringify(output, null, 2), "utf-8");
+  saveJson(outputFile, output);
   console.log(`\n📁 저장 완료: ${outputFile}`);
   console.log(`   분기 수: ${result.quarters.length}개  /  섹터 수: ${result.sectors.length}개\n`);
 }

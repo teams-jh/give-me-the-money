@@ -37,6 +37,7 @@ import type { SimResult, PeriodConfig, PeriodKey } from "../src/library/shared/t
 import { intersectSimResults } from "../src/library/shared/signals.ts";
 import type { TrendSimFinalResult } from "../src/library/shared/signals.ts";
 import { log } from "../server_node/scripts/_lib/logger.ts";
+import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 
@@ -48,22 +49,13 @@ const DB_DIR     = path.join(ROOT_DIR, "src/db");
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
 interface MarketConfig {
-  tickersJson: string;
-  tickersDir:  string;
-  simDir:      string;
+  simDir: string;
 }
 
+/** 출력(trend_sim) 디렉토리만 스크립트가 관리. 티커 로드 경로는 Repository 가 일원화 (#64) */
 const MARKET_CONFIG: Record<string, MarketConfig> = {
-  us: {
-    tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "us/tickers"),
-    simDir:      path.join(DB_DIR, "us/trend_sim"),
-  },
-  kr: {
-    tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "kr/tickers"),
-    simDir:      path.join(DB_DIR, "kr/trend_sim"),
-  },
+  us: { simDir: path.join(DB_DIR, "us/trend_sim") },
+  kr: { simDir: path.join(DB_DIR, "kr/trend_sim") },
 };
 
 interface PatternFilterConfig {
@@ -77,16 +69,6 @@ interface MarketSimConfig {
   periods:       PeriodKey[];
   periodConfigs: Partial<Record<PeriodKey, PeriodConfig>>;
   patternFilter: PatternFilterConfig;
-}
-
-interface RawPrice {
-  date:      string;
-  open:      number;
-  high:      number;
-  low:       number;
-  close:     number;
-  adj_close: number;
-  volume:    number;
 }
 
 interface SimOutput {
@@ -105,10 +87,6 @@ export function now(): string {
 
 export function dateTag(): string {
   return new Date().toISOString().slice(0, 10).replace(/-/g, "");  // YYYYMMDD
-}
-
-export function tickerToFilename(ticker: string): string {
-  return ticker.split(".")[0] ?? ticker;
 }
 
 // ── CLI 파싱 ──────────────────────────────────────────────────────────────────
@@ -158,10 +136,7 @@ function runMarketSim(cfg: MarketSimConfig): void {
   console.log("=".repeat(60));
 
   // 1. 티커 목록
-  const allTickers: string[] = JSON.parse(
-    fs.readFileSync(marketConfig.tickersJson, "utf-8")
-  ).tickers;
-  const tickers = cfg.n != null ? allTickers.slice(0, cfg.n) : allTickers;
+  const tickers = loadTickerList(cfg.market, undefined, cfg.n ?? undefined);
   log(`📋 분석 대상: ${tickers.length}개 티커`);
 
   // 2. 기간 루프
@@ -185,22 +160,21 @@ function runMarketSim(cfg: MarketSimConfig): void {
     // 3. 티커 루프
     for (let i = 0; i < tickers.length; i++) {
       const ticker  = tickers[i]!;
-      const file    = path.join(marketConfig.tickersDir, `${tickerToFilename(ticker)}.json`);
       const prefix  = `[${String(i + 1).padStart(4)}/${tickers.length}] ${ticker.padEnd(12)}`;
 
-      if (!fs.existsSync(file)) {
+      const raw = loadTicker(cfg.market, ticker);
+      if (raw === null) {
         console.log(`${prefix} → SKIP (파일 없음)`);
         skipped++;
         continue;
       }
 
-      const raw      = JSON.parse(fs.readFileSync(file, "utf-8"));
       const info     = raw.info || {};
       const name     = cfg.market === "kr"
         ? info.kr_name || info.name || ""
         : info.name || "";
 
-      const rawPrices: RawPrice[] = raw.prices ?? [];
+      const rawPrices = raw.prices ?? [];
       if (rawPrices.length === 0) {
         console.log(`${prefix} → SKIP (prices 없음)`);
         skipped++;
@@ -298,8 +272,6 @@ function runMarketSim(cfg: MarketSimConfig): void {
   const outDir    = marketConfig.simDir;
   const outPath   = path.join(outDir, filename);
 
-  fs.mkdirSync(outDir, { recursive: true });
-
   const output: SimOutput = {
     generated_at: now(),
     market:       cfg.market,
@@ -307,7 +279,7 @@ function runMarketSim(cfg: MarketSimConfig): void {
     result_count: finalResults.length,
     results:      finalResults,
   };
-  fs.writeFileSync(outPath, JSON.stringify(output, null, 2), "utf-8");
+  saveJson(outPath, output);
   log(`📁 JSON 저장: ${outPath}`);
 
   // 7. PNG 렌더링

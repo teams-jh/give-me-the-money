@@ -23,6 +23,8 @@ const mockReadFileSync  = vi.hoisted(() => vi.fn());
 const mockWriteFileSync = vi.hoisted(() => vi.fn());
 const mockMkdirSync     = vi.hoisted(() => vi.fn());
 const mockExistsSync    = vi.hoisted(() => vi.fn());
+const mockRenameSync    = vi.hoisted(() => vi.fn());
+const mockUnlinkSync    = vi.hoisted(() => vi.fn());
 
 const mockClassifyTrend = vi.hoisted(() => vi.fn());
 
@@ -33,6 +35,8 @@ vi.mock('fs', () => ({
     writeFileSync: mockWriteFileSync,
     mkdirSync:     mockMkdirSync,
     existsSync:    mockExistsSync,
+    renameSync:    mockRenameSync,
+    unlinkSync:    mockUnlinkSync,
   },
 }));
 
@@ -50,7 +54,6 @@ import {
   downsample,
   toPriceSeries,
   resolveOutputFile,
-  tickerToFilename,
   parseArgs,
   loadTickers,
   loadPrices,
@@ -67,26 +70,6 @@ beforeAll(() => {
 function makePrices(dates: string[], start = 100): { date: string; close: number }[] {
   return dates.map((date, i) => ({ date, close: start + i }));
 }
-
-// ── tickerToFilename ──────────────────────────────────────────────────────────
-
-describe('tickerToFilename', () => {
-  it('접미사 없는 티커 → 그대로', () => {
-    expect(tickerToFilename('AAPL')).toBe('AAPL');
-  });
-
-  it('.KS 접미사 제거', () => {
-    expect(tickerToFilename('005930.KS')).toBe('005930');
-  });
-
-  it('.KQ 접미사 제거', () => {
-    expect(tickerToFilename('035720.KQ')).toBe('035720');
-  });
-
-  it('점 없는 숫자 티커', () => {
-    expect(tickerToFilename('000660')).toBe('000660');
-  });
-});
 
 // ── filterByPeriod ────────────────────────────────────────────────────────────
 
@@ -297,35 +280,25 @@ describe('toPriceSeries', () => {
 // ── resolveOutputFile ─────────────────────────────────────────────────────────
 
 describe('resolveOutputFile', () => {
-  const config = {
-    tickersJson: '/db/all_us.json',
-    tickersDir:  '/db/us/tickers',
-    trendDir:    '/db/us/trend',
-  };
-
   it('n=undefined, period=undefined → trend_all_all.json', () => {
-    const result = resolveOutputFile(config, undefined, undefined);
-    expect(result).toContain('trend_all_all.json');
+    expect(resolveOutputFile('us', undefined, undefined)).toContain('trend_all_all.json');
   });
 
   it('n=100, period=undefined → trend_100_all.json', () => {
-    const result = resolveOutputFile(config, 100, undefined);
-    expect(result).toContain('trend_100_all.json');
+    expect(resolveOutputFile('us', 100, undefined)).toContain('trend_100_all.json');
   });
 
   it('n=undefined, period="1y" → trend_all_1y.json', () => {
-    const result = resolveOutputFile(config, undefined, '1y');
-    expect(result).toContain('trend_all_1y.json');
+    expect(resolveOutputFile('us', undefined, '1y')).toContain('trend_all_1y.json');
   });
 
   it('n=50, period="3m" → trend_50_3m.json', () => {
-    const result = resolveOutputFile(config, 50, '3m');
-    expect(result).toContain('trend_50_3m.json');
+    expect(resolveOutputFile('us', 50, '3m')).toContain('trend_50_3m.json');
   });
 
-  it('trendDir 경로 포함', () => {
-    const result = resolveOutputFile(config, undefined, undefined);
-    expect(result).toContain('/db/us/trend');
+  it('마켓별 trend 경로 포함', () => {
+    expect(resolveOutputFile('us', undefined, undefined)).toContain('us/trend');
+    expect(resolveOutputFile('kr', undefined, undefined)).toContain('kr/trend');
   });
 });
 
@@ -419,12 +392,6 @@ describe('now', () => {
 // ── loadTickers ───────────────────────────────────────────────────────────────
 
 describe('loadTickers', () => {
-  const config = {
-    tickersJson: '/db/all_us.json',
-    tickersDir:  '/db/us/tickers',
-    trendDir:    '/db/us/trend',
-  };
-
   beforeEach(() => {
     vi.mocked(fs.readFileSync).mockReset();
   });
@@ -433,12 +400,12 @@ describe('loadTickers', () => {
 
   it('n=undefined → 전체 반환', () => {
     vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(tickerList));
-    expect(loadTickers(config, undefined)).toHaveLength(3);
+    expect(loadTickers('us', undefined)).toHaveLength(3);
   });
 
   it('n=2 → 상위 2개만', () => {
     vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(tickerList));
-    const result = loadTickers(config, 2);
+    const result = loadTickers('us', 2);
     expect(result).toEqual(['AAPL', 'MSFT']);
   });
 });
@@ -446,12 +413,6 @@ describe('loadTickers', () => {
 // ── loadPrices ────────────────────────────────────────────────────────────────
 
 describe('loadPrices', () => {
-  const config = {
-    tickersJson: '/db/all_us.json',
-    tickersDir:  '/db/us/tickers',
-    trendDir:    '/db/us/trend',
-  };
-
   beforeEach(() => {
     vi.mocked(fs.existsSync).mockReset();
     vi.mocked(fs.readFileSync).mockReset();
@@ -468,7 +429,7 @@ describe('loadPrices', () => {
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(rawData));
 
-    const result = loadPrices('AAPL', config);
+    const result = loadPrices('us', 'AAPL');
     expect(result).not.toBeNull();
     expect(result).toHaveLength(2);
     expect(result![0]).toEqual({ date: '2024-01-01', close: 102 });
@@ -476,14 +437,14 @@ describe('loadPrices', () => {
 
   it('파일 없으면 null 반환', () => {
     vi.mocked(fs.existsSync).mockReturnValue(false);
-    expect(loadPrices('UNKNOWN', config)).toBeNull();
+    expect(loadPrices('us', 'UNKNOWN')).toBeNull();
   });
 
   it('.KS 티커도 올바른 파일명으로 탐색', () => {
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(rawData));
 
-    const result = loadPrices('005930.KS', config);
+    const result = loadPrices('kr', '005930.KS');
     expect(result).not.toBeNull();
     // existsSync 가 005930.json 경로로 호출됐는지 확인
     expect(vi.mocked(fs.existsSync).mock.calls[0]![0]).toContain('005930.json');
@@ -493,7 +454,7 @@ describe('loadPrices', () => {
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(rawData));
 
-    const result = loadPrices('AAPL', config);
+    const result = loadPrices('us', 'AAPL');
     expect(Object.keys(result![0]!).sort()).toEqual(['close', 'date']);
   });
 });

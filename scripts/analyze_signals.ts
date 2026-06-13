@@ -18,54 +18,26 @@
  *   server_node/node_modules/.bin/tsx scripts/analyze_signals.ts --market kr --min-score 2
  */
 
-import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import { analyzeSignals }        from "../src/library/shared/signals.ts";
 import { analyzeFundamentals }   from "../src/library/shared/fundamentals.ts";
 import type { SignalSummary }     from "../src/library/shared/signals.ts";
-import type { FundamentalData, FundamentalSummary, QuarterlyEarning } from "../src/library/shared/fundamentals.ts";
-import type { OHLCV }             from "../src/library/shared/indicators.ts";
+import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
+import { toOHLCV, toFundamentalData }           from "../src/library/shared/tickerMapper.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 const DB_DIR     = path.resolve(__dirname, "../src/db");
 
-interface MarketConfig {
-  tickersJson: string;
-  tickersDir:  string;
-  signalsDir:  string;
-}
-
-const MARKET_CONFIG: Record<string, MarketConfig> = {
-  us: {
-    tickersJson: path.join(DB_DIR, "metadata", "all_us_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "us/tickers"),
-    signalsDir:  path.join(DB_DIR, "us/signals"),
-  },
-  kr: {
-    tickersJson: path.join(DB_DIR, "metadata", "all_kr_tickers.json"),
-    tickersDir:  path.join(DB_DIR, "kr/tickers"),
-    signalsDir:  path.join(DB_DIR, "kr/signals"),
-  },
+/** 출력(signals) 디렉토리만 스크립트가 관리. 티커 로드 경로는 Repository 가 일원화 (#64) */
+const SIGNALS_DIR: Record<string, string> = {
+  us: path.join(DB_DIR, "us/signals"),
+  kr: path.join(DB_DIR, "kr/signals"),
 };
 
 interface CliArgs { market: string; n?: number; minScore: number; }
-
-interface RawPrice { date: string; open: number; high: number; low: number; close: number; adj_close: number; volume: number; }
-
-interface RawTicker {
-  ticker: string;
-  info:   { name: string; kr_name?: string; sector: string; };
-  market: { price: number; fifty_two_week_high: number; fifty_two_week_low: number; beta: number | null; };
-  liquidity: { avg_daily_volume_3m: number; avg_daily_volume_10d: number; };
-  valuation:    { trailing_pe: number | null; price_to_book: number | null; peg_ratio: number | null; };
-  profitability: { roe: number | null; roa: number | null; operating_margins: number | null; profit_margins: number | null; revenue_growth: number | null; quarterly_earnings: { quarter: string; net_income: number }[]; };
-  dividend:     { yield: number | null; payout_ratio: number | null; };
-  ownership:    { held_pct_insiders: number | null; held_pct_institutions: number | null; short_ratio: number | null; };
-  prices: RawPrice[];
-}
 
 export interface CombinedSignalResult {
   ticker: string; name: string; sector: string;
@@ -99,43 +71,8 @@ export function parseArgs(): CliArgs {
   return { market, n, minScore };
 }
 
-export function loadTickers(config: MarketConfig, n?: number): string[] {
-  const raw  = fs.readFileSync(config.tickersJson, "utf-8");
-  const data = JSON.parse(raw) as { tickers: string[] };
-  return n !== undefined ? data.tickers.slice(0, n) : data.tickers;
-}
-
-export function tickerToFilename(ticker: string): string { return ticker.split(".")[0] ?? ticker; }
-
-export function loadTicker(ticker: string, config: MarketConfig): RawTicker | null {
-  const file = path.join(config.tickersDir, `${tickerToFilename(ticker)}.json`);
-  if (!fs.existsSync(file)) return null;
-  return JSON.parse(fs.readFileSync(file, "utf-8")) as RawTicker;
-}
-
-export function toOHLCV(raw: RawTicker): OHLCV[] {
-  return raw.prices.map(p => ({ date: p.date, open: p.open, high: p.high, low: p.low, close: p.close, volume: p.volume }));
-}
-
-export function toFundamentalData(raw: RawTicker): FundamentalData {
-  return {
-    pe: raw.valuation.trailing_pe, pb: raw.valuation.price_to_book,
-    pegRatio: raw.valuation.peg_ratio,
-    roe: raw.profitability.roe, roa: raw.profitability.roa,
-    operatingMargin: raw.profitability.operating_margins,
-    profitMargins: raw.profitability.profit_margins,
-    revenueGrowth: raw.profitability.revenue_growth,
-    quarterlyEarnings: (raw.profitability.quarterly_earnings ?? []) as QuarterlyEarning[],
-    dividendYield: raw.dividend?.yield ?? null,
-    payoutRatio: raw.dividend?.payout_ratio ?? null,
-    insiderPct: raw.ownership.held_pct_insiders,
-    institutionPct: raw.ownership.held_pct_institutions,
-    shortRatio: raw.ownership.short_ratio,
-  };
-}
-
-export function resolveOutputFile(config: MarketConfig, n?: number): string {
-  return path.join(config.signalsDir, `signals_${n !== undefined ? String(n) : "all"}.json`);
+export function resolveOutputFile(market: string, n?: number): string {
+  return path.join(SIGNALS_DIR[market]!, `signals_${n !== undefined ? String(n) : "all"}.json`);
 }
 
 export function nowStr(): string { return new Date().toISOString().slice(0, 16).replace("T", " "); }
@@ -143,8 +80,7 @@ export function round1(v: number): number { return Math.round(v * 10) / 10; }
 
 function main(): void {
   const args   = parseArgs();
-  const config = MARKET_CONFIG[args.market];
-  if (!config) { console.error(`❌ 알 수 없는 마켓: ${args.market}`); process.exit(1); }
+  if (!SIGNALS_DIR[args.market]) { console.error(`❌ 알 수 없는 마켓: ${args.market}`); process.exit(1); }
 
   console.log("=".repeat(65));
   console.log(`  기술적 + 펀더멘털 이상징후 통합 분석 [${args.market.toUpperCase()}]`);
@@ -152,7 +88,7 @@ function main(): void {
   if (args.minScore) console.log(`  최소 |score| 필터: ${args.minScore}`);
   console.log("=".repeat(65));
 
-  const tickers = loadTickers(config, args.n);
+  const tickers = loadTickerList(args.market, undefined, args.n);
   console.log(`\n📋 분석 대상: ${tickers.length}개 티커\n`);
 
   const results: CombinedSignalResult[] = [];
@@ -162,7 +98,7 @@ function main(): void {
     const ticker = tickers[i]!;
     const prefix = `[${String(i + 1).padStart(4)}/${tickers.length}] ${ticker.padEnd(12)}`;
 
-    const raw = loadTicker(ticker, config);
+    const raw = loadTicker(args.market, ticker);
     if (!raw || raw.prices.length < 30) { console.log(`${prefix} → SKIP`); skipped.push(ticker); continue; }
 
     const ohlcv    = toOHLCV(raw);
@@ -223,7 +159,7 @@ function main(): void {
     topBearish.forEach(r => console.log(`    ${r.ticker.padEnd(12)} total:${r.totalScore} (T:${r.techScore} F:${r.fundScore})  RSI:${r.rsi?.toFixed(1) ?? "N/A"}  earn:${r.earningsTrend}`));
   }
 
-  const outputFile = resolveOutputFile(config, args.n);
+  const outputFile = resolveOutputFile(args.market, args.n);
   const output: SignalsJson = {
     generated_at: nowStr(), market: args.market,
     analyzed_count: results.length, skipped_count: skipped.length, alerted_count: alertedCount,
@@ -231,8 +167,7 @@ function main(): void {
     stocks: sorted,
   };
 
-  fs.mkdirSync(config.signalsDir, { recursive: true });
-  fs.writeFileSync(outputFile, JSON.stringify(output, null, 2), "utf-8");
+  saveJson(outputFile, output);
   console.log(`\n📁 저장 완료: ${outputFile}`);
 }
 

@@ -16,6 +16,8 @@ const mockReadFileSync  = vi.hoisted(() => vi.fn());
 const mockWriteFileSync = vi.hoisted(() => vi.fn());
 const mockMkdirSync     = vi.hoisted(() => vi.fn());
 const mockExistsSync    = vi.hoisted(() => vi.fn());
+const mockRenameSync    = vi.hoisted(() => vi.fn());
+const mockUnlinkSync    = vi.hoisted(() => vi.fn());
 
 const mockCalcMarketBreadth  = vi.hoisted(() => vi.fn());
 const mockBuildSnapshotDates = vi.hoisted(() => vi.fn());
@@ -29,6 +31,8 @@ vi.mock('fs', () => ({
     writeFileSync: mockWriteFileSync,
     mkdirSync:     mockMkdirSync,
     existsSync:    mockExistsSync,
+    renameSync:    mockRenameSync,
+    unlinkSync:    mockUnlinkSync,
   },
 }));
 
@@ -270,7 +274,7 @@ describe('loadStocks', () => {
       .mockReturnValueOnce(JSON.stringify(validStock));
     vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/meta.json', '/fake/dir');
+    const result = loadStocks('kr');
     expect(result).toHaveLength(1);
     expect(result[0]!.ticker).toBe('AAPL');
     expect(result[0]!.sector).toBe('Technology');
@@ -284,7 +288,7 @@ describe('loadStocks', () => {
       .mockReturnValueOnce(JSON.stringify(shortStock));
     vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/meta.json', '/fake/dir');
+    const result = loadStocks('kr');
     expect(result).toHaveLength(0);
   });
 
@@ -292,7 +296,7 @@ describe('loadStocks', () => {
     vi.mocked(fs.readFileSync).mockReturnValueOnce(JSON.stringify({ tickers: ['AAPL'] }));
     vi.mocked(fs.existsSync).mockReturnValue(false);
 
-    loadStocks('/fake/meta.json', '/fake/dir');
+    loadStocks('kr');
     expect(vi.mocked(fs.readFileSync)).toHaveBeenCalledTimes(1);
   });
 
@@ -303,13 +307,13 @@ describe('loadStocks', () => {
       .mockReturnValueOnce(JSON.stringify(noSector));
     vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/meta.json', '/fake/dir');
+    const result = loadStocks('kr');
     expect(result[0]!.sector).toBe('Unknown');
   });
 
   it('빈 tickers 목록 → 빈 배열', () => {
     vi.mocked(fs.readFileSync).mockReturnValueOnce(JSON.stringify({ tickers: [] }));
-    const result = loadStocks('/fake/meta.json', '/fake/dir');
+    const result = loadStocks('kr');
     expect(result).toHaveLength(0);
   });
 
@@ -319,7 +323,7 @@ describe('loadStocks', () => {
       .mockReturnValue(JSON.stringify(validStock));
     vi.mocked(fs.existsSync).mockReturnValue(true);
 
-    const result = loadStocks('/fake/meta.json', '/fake/dir');
+    const result = loadStocks('kr');
     expect(result).toHaveLength(2);
   });
 });
@@ -354,7 +358,7 @@ describe('main() 통합', () => {
 
   it('정상 실행 → writeFileSync 호출됨', async () => {
     // main 을 동적으로 재실행하기 위해 직접 loadStocks → calcMarketBreadth 흐름 검증
-    const stocks = loadStocks('/fake/meta.json', '/fake');
+    const stocks = loadStocks('kr');
     expect(stocks).toHaveLength(2);
   });
 });
