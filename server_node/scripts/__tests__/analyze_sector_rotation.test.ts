@@ -35,7 +35,7 @@ vi.mock('fs', () => ({
 }));
 
 // ── sector 라이브러리 mock ────────────────────────────────────────────────────
-vi.mock('../src/library/shared/sector.ts', () => ({
+vi.mock('../../../src/library/shared/sector.ts', () => ({
   calcSectorRotation:         mockCalcSectorRotation,
   calcSectorStrengthRotation: mockCalcSectorStrengthRotation,
 }));
@@ -46,7 +46,10 @@ import {
   rankChangeMark,
   parseArgs,
   loadStocks,
-} from './analyze_sector_rotation.ts';
+  runSectorRotationAnalysis,
+  printSectorRotationReport,
+} from '../../../scripts/analyze_sector_rotation.ts';
+import type { SectorRotationAnalysisResult } from '../../../scripts/analyze_sector_rotation.ts';
 
 // ANSI 이스케이프 제거
 const strip = (s: string) => s.replace(/\x1b\[[0-9;]*m/g, '');
@@ -265,7 +268,7 @@ describe('loadStocks', () => {
 import { fileURLToPath } from 'url';
 import { dirname, resolve as resolvePath } from 'path';
 const __testDir = dirname(fileURLToPath(import.meta.url));
-const SCRIPT_PATH_SECTOR = resolvePath(__testDir, 'analyze_sector_rotation.ts');
+const SCRIPT_PATH_SECTOR = resolvePath(__testDir, '../../../scripts/analyze_sector_rotation.ts');
 
 // 픽스처: 2분기 × 2섹터 (bigRiser/bigFaller, 수익률 vs 강도 비교 모두 커버)
 const ROTATION_RESULT = {
@@ -350,7 +353,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_sector_rotation.ts');
+    await import('../../../scripts/analyze_sector_rotation.ts');
 
     expect(mockWriteFileSync).toHaveBeenCalledOnce();
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as { market: string };
@@ -369,7 +372,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_sector_rotation.ts');
+    await import('../../../scripts/analyze_sector_rotation.ts');
 
     expect(mockWriteFileSync).toHaveBeenCalledOnce();
   });
@@ -382,9 +385,113 @@ describe('main() TC', () => {
 
     const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
     vi.resetModules();
-    await expect(import('./analyze_sector_rotation.ts')).rejects.toThrow('exit');
+    await expect(import('../../../scripts/analyze_sector_rotation.ts')).rejects.toThrow('exit');
     expect(mockExit).toHaveBeenCalledWith(1);
     mockExit.mockRestore();
+  });
+});
+
+// ── runSectorRotationAnalysis() TC ───────────────────────────────────────────
+
+describe('runSectorRotationAnalysis', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockExistsSync.mockReturnValue(true);
+    mockMkdirSync.mockReturnValue(undefined);
+  });
+
+  it('TC_RSR1 - 정상 실행: result / strengthResult 반환', () => {
+    mockCalcSectorRotation.mockReturnValue(ROTATION_RESULT);
+    mockCalcSectorStrengthRotation.mockReturnValue(STRENGTH_RESULT);
+
+    const analysis = runSectorRotationAnalysis('kr', [], null);
+
+    expect(analysis.result).toBeDefined();
+    expect(analysis.strengthResult).toBeDefined();
+    expect(analysis.quarters).toEqual(ROTATION_RESULT.quarters);
+  });
+
+  it('TC_RSR2 - quartersN 필터: 최근 N분기만 남음', () => {
+    const rotationWith4Q = {
+      ...ROTATION_RESULT,
+      quarters: ['2023Q1', '2023Q2', '2023Q3', '2023Q4'],
+      rankings: [
+        { quarter: '2023Q1', rows: [], complete: true },
+        { quarter: '2023Q2', rows: [], complete: true },
+        { quarter: '2023Q3', rows: [], complete: true },
+        { quarter: '2023Q4', rows: [], complete: false },
+      ],
+    };
+    mockCalcSectorRotation.mockReturnValue(rotationWith4Q);
+    mockCalcSectorStrengthRotation.mockReturnValue({
+      ...STRENGTH_RESULT,
+      quarters: rotationWith4Q.quarters,
+      rankings: rotationWith4Q.rankings,
+    });
+
+    const analysis = runSectorRotationAnalysis('us', [], 2);
+
+    expect(analysis.quarters).toHaveLength(2);
+    expect(analysis.quarters[0]).toBe('2023Q3');
+    expect(analysis.quarters[1]).toBe('2023Q4');
+  });
+
+  it('TC_RSR3 - quartersN = null: 전체 분기 유지', () => {
+    mockCalcSectorRotation.mockReturnValue(ROTATION_RESULT);
+    mockCalcSectorStrengthRotation.mockReturnValue(STRENGTH_RESULT);
+
+    const analysis = runSectorRotationAnalysis('kr', [], null);
+
+    expect(analysis.quarters).toEqual(ROTATION_RESULT.quarters);
+    expect(analysis.rankings).toHaveLength(ROTATION_RESULT.rankings.length);
+  });
+
+  it('TC_RSR4 - console 호출 없음 (순수 함수)', () => {
+    const consoleSpy = vi.spyOn(console, 'log');
+    mockCalcSectorRotation.mockReturnValue(ROTATION_RESULT);
+    mockCalcSectorStrengthRotation.mockReturnValue(STRENGTH_RESULT);
+
+    runSectorRotationAnalysis('kr', [], null);
+
+    expect(consoleSpy).not.toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+});
+
+// ── printSectorRotationReport() TC ───────────────────────────────────────────
+
+describe('printSectorRotationReport', () => {
+  it('TC_PSR1 - console.log 호출됨', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const analysis: SectorRotationAnalysisResult = {
+      result:           ROTATION_RESULT,
+      strengthResult:   STRENGTH_RESULT,
+      quarters:         ROTATION_RESULT.quarters,
+      rankings:         ROTATION_RESULT.rankings,
+      strengthRankings: STRENGTH_RESULT.rankings,
+    };
+
+    printSectorRotationReport(analysis, { market: 'kr', stocks: [] });
+
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it('TC_PSR2 - result 객체를 mutate하지 않음', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const analysis: SectorRotationAnalysisResult = {
+      result:           ROTATION_RESULT,
+      strengthResult:   STRENGTH_RESULT,
+      quarters:         [...ROTATION_RESULT.quarters],
+      rankings:         [...ROTATION_RESULT.rankings],
+      strengthRankings: [...STRENGTH_RESULT.rankings],
+    };
+    const before = JSON.stringify(analysis);
+
+    printSectorRotationReport(analysis, { market: 'us', stocks: [] });
+
+    expect(JSON.stringify(analysis)).toBe(before);
+    consoleSpy.mockRestore();
   });
 });
 
