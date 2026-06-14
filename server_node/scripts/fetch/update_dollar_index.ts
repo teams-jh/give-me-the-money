@@ -26,6 +26,7 @@ import YahooFinance from "yahoo-finance2";
 import { log } from "../_lib/logger.ts";
 import { round } from "../_lib/num.ts";
 import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
+import { parseForce } from "../_lib/cli.ts";
 
 const __filename   = fileURLToPath(import.meta.url);
 const __dirname    = path.dirname(__filename);
@@ -268,7 +269,7 @@ function saveJson(data: DxyJson): void {
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
 export async function main(): Promise<void> {
-  const force = process.argv.includes("--force");
+  const force = parseForce(process.argv.slice(2));
 
   log("=== US Dollar Index 데이터 업데이트 시작 ===");
 

@@ -19,6 +19,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { log, warn } from "../_lib/logger.ts";
+import { parseMarket, parseDryRun } from "../_lib/cli.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -135,13 +136,9 @@ const MARKET_CONFIGS: Record<string, MarketConfig> = {
 // ── 진입점 ────────────────────────────────────────────────────────────────────
 
 export function parseArgs(): { market: string; dryRun: boolean } {
-  const args       = process.argv.slice(2);
-  const marketIdx  = args.indexOf("--market");
-  const market     =
-    marketIdx !== -1 && args[marketIdx + 1] && !args[marketIdx + 1].startsWith("-")
-      ? args[marketIdx + 1]
-      : "all";
-  const dryRun = args.includes("--dry-run");
+  const args   = process.argv.slice(2);
+  const market = parseMarket(args, { allowAll: true, default: "all" });
+  const dryRun = parseDryRun(args);
   return { market, dryRun };
 }
 
@@ -155,12 +152,7 @@ export function main(): void {
   const targets =
     market === "all"
       ? Object.values(MARKET_CONFIGS)
-      : [MARKET_CONFIGS[market]];
-
-  if (!targets || targets.some((t) => t === undefined)) {
-    console.error(`알 수 없는 --market 값: ${market} (us / kr / all 중 하나)`);
-    process.exit(1);
-  }
+      : [MARKET_CONFIGS[market] as MarketConfig];
 
   const results: CleanupResult[] = [];
   for (const config of targets) {

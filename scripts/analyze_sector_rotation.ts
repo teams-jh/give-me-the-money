@@ -15,6 +15,7 @@ import { calcSectorRotation, calcSectorStrengthRotation } from "../src/library/s
 import type { StockInput, SectorRotationResult, SectorStrengthResult } from "../src/library/shared/sector.ts";
 import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
 import { toDailyPrices } from "../src/library/shared/tickerMapper.ts";
+import { parseMarket } from "./_lib/cli.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -40,18 +41,16 @@ interface CliArgs {
 }
 
 export function parseArgs(): CliArgs {
-  const args = process.argv.slice(2);
-  let market   = "kr";
+  const args    = process.argv.slice(2);
+  const market  = parseMarket(args, "kr");
   let quarters: number | null = null;
 
-  for (let i = 0; i < args.length; i++) {
-    const a = args[i];
-    if      (a === "--market")   { market   = args[++i] ?? "kr"; }
-    else if (a === "--quarters") {
-      const v = parseInt(args[++i] ?? "", 10);
-      if (!isNaN(v) && v > 0) quarters = v;
-    }
+  const qIdx = args.indexOf("--quarters");
+  if (qIdx !== -1) {
+    const v = parseInt(args[qIdx + 1] ?? "", 10);
+    if (!isNaN(v) && v > 0) quarters = v;
   }
+
   return { market, quarters };
 }
 

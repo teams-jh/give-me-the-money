@@ -21,6 +21,7 @@ import { fileURLToPath } from "url";
 import { classifyTrend } from "../src/library/shared/classifyTrend.ts";
 import type { PriceSeries, TrendType } from "../src/library/shared/classifyTrend.ts";
 import { log } from "../server_node/scripts/_lib/logger.ts";
+import { parseMarket, parseN } from "./_lib/cli.ts";
 import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
 import { toDailyPrices } from "../src/library/shared/tickerMapper.ts";
 
@@ -122,31 +123,19 @@ export function resolveOutputFile(market: string, n: number | undefined, period:
 // ── Step 0: CLI 파싱 ──────────────────────────────────────────────────────────
 
 export function parseArgs(): CliArgs {
-  const args = process.argv.slice(2);
-  let market: string            = "us";
-  let n:      number | undefined      = undefined;
-  let period: PeriodOption | undefined = undefined;
+  const args   = process.argv.slice(2);
+  const market = parseMarket(args, "us");
+  const n      = parseN(args);
 
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === "--market") {
-      market = args[++i] ?? "us";
-    } else if (arg === "-n") {
-      const val = args[++i];
-      const parsed = val !== undefined ? parseInt(val, 10) : NaN;
-      if (isNaN(parsed) || parsed <= 0) {
-        console.error("❌ -n 옵션은 양의 정수여야 합니다.");
-        process.exit(1);
-      }
-      n = parsed;
-    } else if (arg === "--period") {
-      const val = args[++i];
-      if (val !== "3m" && val !== "1y" && val !== "2y" && val !== "3y") {
-        console.error("❌ --period 옵션은 3m | 1y | 2y | 3y 중 하나여야 합니다.");
-        process.exit(1);
-      }
-      period = val;
+  let period: PeriodOption | undefined = undefined;
+  const pIdx = args.indexOf("--period");
+  if (pIdx !== -1) {
+    const val = args[pIdx + 1];
+    if (val !== "3m" && val !== "1y" && val !== "2y" && val !== "3y") {
+      console.error("❌ --period 옵션은 3m | 1y | 2y | 3y 중 하나여야 합니다.");
+      process.exit(1);
     }
+    period = val;
   }
 
   return { market, n, period };
@@ -344,16 +333,12 @@ export function printTrendReport(
 
 function main(): void {
   const args   = parseArgs();
-  const config = MARKET_CONFIG[args.market];
-  if (!config) {
-    console.error(`❌ 알 수 없는 마켓: ${args.market}. 사용 가능: ${Object.keys(MARKET_CONFIG).join(", ")}`);
-    process.exit(1);
-  }
+  const config = MARKET_CONFIG[args.market]!;
 
   const tickers  = loadTickers(args.market, args.n);
   const analysis = runTrendAnalysis(args.market, tickers, args.period);
 
-  printTrendReport(analysis, { market: args.market, n: args.n });
+  printTrendReport(analysis, { market: args.market, ...(args.n !== undefined && { n: args.n }) });
 
   const outputFile = resolveOutputFile(args.market, args.n, args.period);
   const output: TrendJson = {

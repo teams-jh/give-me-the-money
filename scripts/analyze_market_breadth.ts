@@ -17,6 +17,7 @@ import type { MarketBreadthResult } from "../src/library/shared/breadth.ts";
 import type { StockInput } from "../src/library/shared/sector.ts";
 import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
 import { toDailyPrices } from "../src/library/shared/tickerMapper.ts";
+import { parseMarket } from "./_lib/cli.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -50,17 +51,17 @@ interface CliArgs {
 }
 
 export function parseArgs(): CliArgs {
-  const args = process.argv.slice(2);
-  let market = "kr", period = "3m", step = 5;
+  const args   = process.argv.slice(2);
+  const market = parseMarket(args, "kr");
+  let period = "3m", step = 5;
 
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
-    if      (a === "--market") { market = args[++i] ?? "kr"; }
-    else if (a === "--period") { period = args[++i] ?? "3m"; }
+    if      (a === "--period") { period = args[++i] ?? "3m"; }
     else if (a === "--step")   { const v = parseInt(args[++i] ?? "5", 10); if (!isNaN(v) && v > 0) step = v; }
   }
 
-  if (!MARKET_CONFIG[market] || !LOOKBACK[period]) {
+  if (!LOOKBACK[period]) {
     console.error(`\n❌ 사용법:\n  --market kr|us  --period 3m|6m|1y  [--step N]\n`);
     process.exit(1);
   }

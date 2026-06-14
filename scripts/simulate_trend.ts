@@ -38,6 +38,7 @@ import { intersectSimResults } from "../src/library/shared/signals.ts";
 import type { TrendSimFinalResult } from "../src/library/shared/signals.ts";
 import { log } from "../server_node/scripts/_lib/logger.ts";
 import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
+import { parseN, VALID_MARKETS } from "./_lib/cli.ts";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 
@@ -93,12 +94,16 @@ export function dateTag(): string {
 
 export function parseArgs(): { market: string | null; n: number | null } {
   const args = process.argv.slice(2);
-  let market: string | null = null;
-  let n: number | null = null;
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--market") market = args[++i] ?? null;
-    if (args[i] === "--n") { const v = parseInt(args[++i] ?? "", 10); n = isNaN(v) ? null : v; }
+  const n    = parseN(args) ?? null;
+
+  const mIdx  = args.indexOf("--market");
+  let market: string | null = mIdx !== -1 ? (args[mIdx + 1] ?? null) : null;
+
+  if (market !== null && !(VALID_MARKETS as readonly string[]).includes(market)) {
+    console.error(`❌ 알 수 없는 마켓: ${market}. 사용 가능: ${VALID_MARKETS.join(", ")}`);
+    process.exit(1);
   }
+
   return { market, n };
 }
 

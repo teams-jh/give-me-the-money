@@ -30,6 +30,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { log } from "../_lib/logger.ts";
+import { parseMarket } from "../_lib/cli.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -105,17 +106,13 @@ interface ParsedArgs {
 function parseArgs(): ParsedArgs {
   const args = process.argv.slice(2);
 
-  // --market 파싱
+  // --market 파싱 + 유효성 검증 (필수 옵션 — 미지정 시 에러)
   const marketIdx = args.indexOf("--market");
   if (marketIdx === -1 || !args[marketIdx + 1]) {
     console.error("오류: --market kr 또는 --market us 가 필요합니다.");
     process.exit(1);
   }
-  const market = args[marketIdx + 1]!;
-  if (!MARKET_CONFIG[market]) {
-    console.error(`오류: 지원하지 않는 마켓입니다: "${market}" (kr / us 중 선택)`);
-    process.exit(1);
-  }
+  const market = parseMarket(args);
 
   // command 파싱 (--market 이후 첫 번째 non-flag 토큰)
   const remaining = args.filter((_, i) => i !== marketIdx && i !== marketIdx + 1);
@@ -142,7 +139,12 @@ function parseArgs(): ParsedArgs {
     process.exit(1);
   }
 
-  return { market, command, ticker, name };
+  return {
+    market,
+    command,
+    ...(ticker !== undefined && { ticker }),
+    ...(name   !== undefined && { name }),
+  };
 }
 
 // ── 명령 처리 ─────────────────────────────────────────────────────────────────
