@@ -94,7 +94,10 @@ export function dateTag(): string {
 
 export function parseArgs(): { market: string | null; n: number | null } {
   const args = process.argv.slice(2);
-  const n    = parseN(args) ?? null;
+
+  const nIdx = args.indexOf("--n");
+  const nRaw = nIdx !== -1 ? parseInt(args[nIdx + 1] ?? "", 10) : NaN;
+  const n: number | null = isNaN(nRaw) ? null : nRaw;
 
   const mIdx  = args.indexOf("--market");
   let market: string | null = mIdx !== -1 ? (args[mIdx + 1] ?? null) : null;

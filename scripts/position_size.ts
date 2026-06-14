@@ -71,10 +71,11 @@ export function parseArgs(): CliArgs {
     }
   }
 
-  // 필수 옵션 검사 (--market 유효성은 parseMarket이 담당)
+  // 필수 옵션 검사
   const missing: string[] = [];
-  if (!ticker)  missing.push("--ticker");
-  if (!capital) missing.push("--capital");
+  if (!args.includes("--market")) missing.push("--market");
+  if (!ticker)                    missing.push("--ticker");
+  if (!capital)                   missing.push("--capital");
 
   if (missing.length > 0) {
     console.error(`
@@ -87,10 +88,11 @@ export function parseArgs(): CliArgs {
    ... --market us --ticker AAPL --capital 10000000 --risk 1
    ... --market kr --ticker 005930 --capital 50000000 --risk 0.5
 `);
-    if (missing.length) console.error(`  누락된 옵션: ${missing.join(", ")}`);
+    console.error(`  누락된 옵션: ${missing.join(", ")}`);
     process.exit(1);
   }
 
+  // --market 유효성 검증은 parseMarket이 담당
   const market = parseMarket(args, "us");
   return { market, ticker, capital, risk, multiplier, targets };
 }
