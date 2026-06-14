@@ -238,7 +238,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_signals.ts');
+    await import('../analyze_signals.ts');
 
     expect(mockWriteFileSync).toHaveBeenCalledOnce();
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
@@ -257,7 +257,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_signals.ts');
+    await import('../analyze_signals.ts');
 
     expect(mockAnalyzeSignals).not.toHaveBeenCalled();
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
