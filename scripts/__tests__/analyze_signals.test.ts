@@ -2,15 +2,13 @@
  * analyze_signals.test.ts
  *
  * 커버 대상 함수:
- *   tickerToFilename   — 티커 → 파일명 변환
- *   round1             — 소수점 1자리 반올림
- *   nowStr             — 현재 시간 ISO 문자열
- *   toOHLCV            — RawTicker → OHLCV 변환
- *   toFundamentalData  — RawTicker → FundamentalData 변환
- *   resolveOutputFile  — 출력 파일 경로 결정
- *   parseArgs          — CLI 파싱
- *   loadTickers        — 티커 목록 로드
- *   loadTicker         — 개별 티커 데이터 로드
+ *   round1              — 소수점 1자리 반올림
+ *   nowStr              — 현재 시간 ISO 문자열
+ *   resolveOutputFile   — 출력 파일 경로 결정
+ *   parseArgs           — CLI 파싱
+ *   runSignalAnalysis   — 유스케이스: 분석 루프 + 집계 (console/파일 의존 없음)
+ *   printSignalReport   — 프레젠테이션: 콘솔 출력 전담
+ *   main()              — 엔트리: 파싱 → 유스케이스 → 리포터 → 저장
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
@@ -40,10 +38,10 @@ vi.mock('fs', () => ({
 }));
 
 // ── signals / fundamentals 라이브러리 mock ────────────────────────────────────
-vi.mock('../src/library/shared/signals.ts', () => ({
+vi.mock('../../src/library/shared/signals.ts', () => ({
   analyzeSignals: mockAnalyzeSignals,
 }));
-vi.mock('../src/library/shared/fundamentals.ts', () => ({
+vi.mock('../../src/library/shared/fundamentals.ts', () => ({
   analyzeFundamentals: mockAnalyzeFundamentals,
 }));
 
@@ -53,7 +51,10 @@ import {
   nowStr,
   resolveOutputFile,
   parseArgs,
-} from './analyze_signals.ts';
+  runSignalAnalysis,
+  printSignalReport,
+} from '../analyze_signals.ts';
+import type { SignalAnalysisResult } from '../analyze_signals.ts';
 
 beforeAll(() => {
   vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -167,7 +168,7 @@ describe('parseArgs', () => {
 import { fileURLToPath } from 'url';
 import { dirname, resolve as resolvePath } from 'path';
 const __testDir = dirname(fileURLToPath(import.meta.url));
-const SCRIPT_PATH_SIGNALS = resolvePath(__testDir, 'analyze_signals.ts');
+const SCRIPT_PATH_SIGNALS = resolvePath(__testDir, '../analyze_signals.ts');
 
 /** 30개 이상 가격 데이터를 포함한 유효 티커 픽스처 */
 function makeSignalTicker(priceCount = 35): object {
@@ -237,7 +238,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_signals.ts');
+    await import('../analyze_signals.ts');
 
     expect(mockWriteFileSync).toHaveBeenCalledOnce();
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
@@ -256,7 +257,7 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_signals.ts');
+    await import('../analyze_signals.ts');
 
     expect(mockAnalyzeSignals).not.toHaveBeenCalled();
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
@@ -270,7 +271,7 @@ describe('main() TC', () => {
 
     const mockExit = vi.spyOn(process, 'exit').mockImplementation((() => { throw new Error('exit'); }) as never);
     vi.resetModules();
-    await expect(import('./analyze_signals.ts')).rejects.toThrow('exit');
+    await expect(import('../analyze_signals.ts')).rejects.toThrow('exit');
     expect(mockExit).toHaveBeenCalledWith(1);
     mockExit.mockRestore();
   });
@@ -287,12 +288,132 @@ describe('main() TC', () => {
     mockWriteFileSync.mockReturnValue(undefined);
 
     vi.resetModules();
-    await import('./analyze_signals.ts');
+    await import('../analyze_signals.ts');
 
     const written = JSON.parse(mockWriteFileSync.mock.calls[0]![1] as string) as {
       summary: { bearish_count: number };
     };
     expect(written.summary.bearish_count).toBe(1);
+  });
+});
+
+// ── runSignalAnalysis() TC ────────────────────────────────────────────────────
+
+describe('runSignalAnalysis', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockExistsSync.mockReturnValue(true);
+    mockMkdirSync.mockReturnValue(undefined);
+  });
+
+  it('TC_RSA1 - 정상 종목: results에 포함, skipped 비어 있음', () => {
+    mockReadFileSync.mockReturnValue(JSON.stringify(makeSignalTicker(35)));
+    mockAnalyzeSignals.mockReturnValue(SIGNAL_SUMMARY);
+    mockAnalyzeFundamentals.mockReturnValue(FUND_SUMMARY);
+
+    const result = runSignalAnalysis('us', ['AAPL'], 0);
+
+    expect(result.results).toHaveLength(1);
+    expect(result.skipped).toHaveLength(0);
+    expect(result.results[0]!.ticker).toBe('AAPL');
+  });
+
+  it('TC_RSA2 - 가격 30봉 미만 → skipped에 추가, results 비어 있음', () => {
+    mockReadFileSync.mockReturnValue(JSON.stringify(makeSignalTicker(5)));
+
+    const result = runSignalAnalysis('us', ['AAPL'], 0);
+
+    expect(result.results).toHaveLength(0);
+    expect(result.skipped).toContain('AAPL');
+    expect(mockAnalyzeSignals).not.toHaveBeenCalled();
+  });
+
+  it('TC_RSA3 - minScore 필터: |totalScore| < minScore && 알림 없음 → 제외', () => {
+    // score 합산 = 0.5, alerts 없음
+    mockReadFileSync.mockReturnValue(JSON.stringify(makeSignalTicker(35)));
+    mockAnalyzeSignals.mockReturnValue({ ...SIGNAL_SUMMARY, score: 0.5, alerts: [] });
+    mockAnalyzeFundamentals.mockReturnValue({ ...FUND_SUMMARY, score: 0, alerts: [] });
+
+    const result = runSignalAnalysis('us', ['AAPL'], 2); // minScore=2
+
+    expect(result.results).toHaveLength(0);
+  });
+
+  it('TC_RSA4 - summary 집계: bullish/bearish/neutral/avgTech/avgFund 정확성', () => {
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify(makeSignalTicker(35))) // AAPL
+      .mockReturnValueOnce(JSON.stringify(makeSignalTicker(35))); // MSFT
+    // AAPL: totalScore = 2+1 = 3 (bullish)
+    mockAnalyzeSignals
+      .mockReturnValueOnce({ ...SIGNAL_SUMMARY, score: 2 })
+      .mockReturnValueOnce({ ...SIGNAL_SUMMARY, score: -3 });
+    mockAnalyzeFundamentals
+      .mockReturnValueOnce({ ...FUND_SUMMARY, score: 1 })
+      .mockReturnValueOnce({ ...FUND_SUMMARY, score: -1, alerts: [] });
+
+    const result = runSignalAnalysis('us', ['AAPL', 'MSFT'], 0);
+
+    expect(result.summary.bullishCount).toBe(1);
+    expect(result.summary.bearishCount).toBe(1);
+    expect(result.summary.avgTech).toBe(round1((2 + -3) / 2));
+  });
+
+  it('TC_RSA5 - sorted: totalScore 내림차순 정렬', () => {
+    mockReadFileSync
+      .mockReturnValueOnce(JSON.stringify(makeSignalTicker(35)))
+      .mockReturnValueOnce(JSON.stringify(makeSignalTicker(35)));
+    mockAnalyzeSignals
+      .mockReturnValueOnce({ ...SIGNAL_SUMMARY, score: -1 })
+      .mockReturnValueOnce({ ...SIGNAL_SUMMARY, score: 3 });
+    mockAnalyzeFundamentals
+      .mockReturnValueOnce({ ...FUND_SUMMARY, score: 0, alerts: [] })
+      .mockReturnValueOnce({ ...FUND_SUMMARY, score: 0 });
+
+    const result = runSignalAnalysis('us', ['LOW', 'HIGH'], 0);
+
+    expect(result.sorted[0]!.totalScore).toBeGreaterThanOrEqual(result.sorted[1]!.totalScore);
+  });
+});
+
+// ── printSignalReport() TC ────────────────────────────────────────────────────
+
+describe('printSignalReport', () => {
+  it('TC_PSR1 - console.log 호출: 결과 0개여도 헤더/푸터 출력', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const emptyResult: SignalAnalysisResult = {
+      results: [], skipped: [], sorted: [],
+      summary: { bullishCount: 0, bearishCount: 0, neutralCount: 0, alertedCount: 0, avgTech: 0, avgFund: 0 },
+    };
+
+    printSignalReport(emptyResult, { market: 'kr', minScore: 0 });
+
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+
+  it('TC_PSR2 - 도메인 데이터 변경 없음: printSignalReport는 result 객체를 mutate하지 않음', () => {
+    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const result: SignalAnalysisResult = {
+      results: [{
+        ticker: 'AAPL', name: '애플', sector: 'Technology',
+        totalScore: 3, techScore: 2, fundScore: 1,
+        rsi: 65, macd: 0.5, bandWidth: 5, volRatio: 1.5, atr: 3, stopLoss: 165,
+        mdd: -10, high52w: 200, low52w: 140, stochK: 70, roc20: 5, mfi: 60,
+        adx: 25, supertrendDir: 'bullish',
+        pe: 28.5, pb: 45, roe: 0.15, roa: 0.08, dividendYield: 0.005,
+        insiderPct: 0.02, shortRatio: 1.2, earningsTrend: 'improving',
+        alerts: [{ type: 'rsi', direction: 'bullish', strength: 'normal', label: 'RSI 강세', value: 65, scoreAffecting: true }],
+      }],
+      skipped: [],
+      sorted: [],
+      summary: { bullishCount: 1, bearishCount: 0, neutralCount: 0, alertedCount: 1, avgTech: 2, avgFund: 1 },
+    };
+    const before = JSON.stringify(result);
+
+    printSignalReport(result, { market: 'us', n: 100, minScore: 0 });
+
+    expect(JSON.stringify(result)).toBe(before);
+    consoleSpy.mockRestore();
   });
 });
 
