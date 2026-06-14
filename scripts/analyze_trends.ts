@@ -19,7 +19,7 @@
 import path from "path";
 import { fileURLToPath } from "url";
 import { classifyTrend } from "../src/library/shared/classifyTrend.ts";
-import type { PriceSeries, TrendResult, TrendType } from "../src/library/shared/classifyTrend.ts";
+import type { PriceSeries, TrendType } from "../src/library/shared/classifyTrend.ts";
 import { log } from "../server_node/scripts/_lib/logger.ts";
 import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
 import { toDailyPrices } from "../src/library/shared/tickerMapper.ts";
@@ -238,69 +238,53 @@ export function now(): string {
   return new Date().toISOString().slice(0, 16).replace("T", " ");
 }
 
-// ── main ──────────────────────────────────────────────────────────────────────
+// ── 유스케이스 ────────────────────────────────────────────────────────────────
 
-function main(): void {
-  const args = parseArgs();
+/** runTrendAnalysis() 반환 타입: 집계 포함 순수 데이터 */
+export interface TrendAnalysisResult {
+  stocks:      StockTrend[];
+  skipped:     string[];
+  summary:     Record<TrendType, number>;
+  periodLabel: string;
+  interval:    "weekly" | "monthly";
+  minPts:      number;
+}
 
-  const config = MARKET_CONFIG[args.market];
-  if (!config) {
-    console.error(`❌ 알 수 없는 마켓: ${args.market}. 사용 가능: ${Object.keys(MARKET_CONFIG).join(", ")}`);
-    process.exit(1);
-  }
+/**
+ * 핵심 분석 로직. console / 파일 I/O 에 의존하지 않아 단위 테스트 가능.
+ *
+ * @param market  - "kr" | "us"
+ * @param tickers - 분석할 티커 목록
+ * @param period  - 기간 옵션 (없으면 전기간)
+ */
+export function runTrendAnalysis(
+  market:  string,
+  tickers: string[],
+  period:  PeriodOption | undefined,
+): TrendAnalysisResult {
+  const periodLabel = period ?? "전기간";
+  const interval    = period ? PERIOD_INTERVAL[period] : DEFAULT_INTERVAL;
+  const minPts      = period ? PERIOD_MIN_PTS[period]  : DEFAULT_MIN_PTS;
 
-  const periodLabel = args.period ?? "전기간";
-  const interval    = args.period ? PERIOD_INTERVAL[args.period] : DEFAULT_INTERVAL;
-  const minPts      = args.period ? PERIOD_MIN_PTS[args.period]  : DEFAULT_MIN_PTS;
+  const stocks:  StockTrend[] = [];
+  const skipped: string[]     = [];
 
-  console.log("=".repeat(60));
-  console.log(`  전체 종목 주가 추세 분석 [${args.market.toUpperCase()}]`);
-  console.log(`  기간: ${periodLabel}  |  봉: ${interval}  |  minPts: ${minPts}`);
-  if (args.n !== undefined) console.log(`  대상: 상위 ${args.n}개`);
-  console.log("=".repeat(60));
-
-  // 1. 티커 목록
-  const tickers = loadTickers(args.market, args.n);
-  log(`📋 분석 대상: ${tickers.length}개 티커`);
-
-  // 2~5. 종목별 분석
-  const stocks:   StockTrend[] = [];
-  const skipped:  string[]     = [];
-
-  for (let i = 0; i < tickers.length; i++) {
-    const ticker = tickers[i]!;
-    const prefix = `[${String(i + 1).padStart(4)}/${tickers.length}] ${ticker.padEnd(10)}`;
-
-    // 2. 일봉 읽기
-    const rawPrices = loadPrices(args.market, ticker);
+  for (const ticker of tickers) {
+    const rawPrices = loadPrices(market, ticker);
     if (rawPrices === null || rawPrices.length === 0) {
-      console.log(`${prefix} → SKIP (파일 없음)`);
       skipped.push(ticker);
       continue;
     }
 
-    // 3-A. 기간 커팅
-    const cut = args.period ? filterByPeriod(rawPrices, args.period) : rawPrices;
-
-    // 3-B. 다운샘플
+    const cut     = period ? filterByPeriod(rawPrices, period) : rawPrices;
     const sampled = downsample(cut, interval);
-
-    // 3-C. PriceSeries 변환 + 추세 분류
-    const series: PriceSeries     = toPriceSeries(sampled);
-    const result: TrendResult | null = classifyTrend(series, minPts);
+    const series  = toPriceSeries(sampled);
+    const result  = classifyTrend(series, minPts);
 
     if (result === null) {
-      console.log(`${prefix} → SKIP (데이터 부족: ${sampled.length}봉 < ${minPts})`);
       skipped.push(ticker);
       continue;
     }
-
-    console.log(
-      `${prefix} → ${result.trend.padEnd(10)}` +
-      `  slope:${String(result.slopePct).padStart(7)}%` +
-      `  r2:${result.r2}` +
-      `  ret:${result.totalReturn}%`,
-    );
 
     stocks.push({
       ticker,
@@ -313,14 +297,40 @@ function main(): void {
     });
   }
 
-  // 6. 요약
   const summary: Record<TrendType, number> = {
-    bullish:    0,
-    bearish:    0,
-    sideways:   0,
-    recovering: 0,
+    bullish: 0, bearish: 0, sideways: 0, recovering: 0,
   };
   for (const s of stocks) summary[s.trend]++;
+
+  return { stocks, skipped, summary, periodLabel, interval, minPts };
+}
+
+// ── 프레젠테이션 ──────────────────────────────────────────────────────────────
+
+/**
+ * 분석 결과를 콘솔에 출력한다.
+ * 도메인 로직을 건드리지 않고 포맷만 변경 가능.
+ */
+export function printTrendReport(
+  result: TrendAnalysisResult,
+  opts:   { market: string; n?: number },
+): void {
+  const { stocks, skipped, summary, periodLabel, interval, minPts } = result;
+
+  console.log("=".repeat(60));
+  console.log(`  전체 종목 주가 추세 분석 [${opts.market.toUpperCase()}]`);
+  console.log(`  기간: ${periodLabel}  |  봉: ${interval}  |  minPts: ${minPts}`);
+  if (opts.n !== undefined) console.log(`  대상: 상위 ${opts.n}개`);
+  console.log("=".repeat(60));
+
+  for (const s of stocks) {
+    console.log(
+      `  ${s.ticker.padEnd(10)} → ${s.trend.padEnd(10)}` +
+      `  slope:${String(s.slopePct).padStart(7)}%` +
+      `  r2:${s.r2}` +
+      `  ret:${s.totalReturn}%`,
+    );
+  }
 
   console.log("\n" + "=".repeat(60));
   console.log(`✅ 완료: ${stocks.length}개  ❌ 스킵: ${skipped.length}개`);
@@ -328,16 +338,31 @@ function main(): void {
   console.log(`  하락(bearish):    ${summary.bearish}개`);
   console.log(`  횡보(sideways):   ${summary.sideways}개`);
   console.log(`  반등(recovering): ${summary.recovering}개`);
+}
 
-  // 7. trend_{n}_{period}.json 저장
+// ── 엔트리 ────────────────────────────────────────────────────────────────────
+
+function main(): void {
+  const args   = parseArgs();
+  const config = MARKET_CONFIG[args.market];
+  if (!config) {
+    console.error(`❌ 알 수 없는 마켓: ${args.market}. 사용 가능: ${Object.keys(MARKET_CONFIG).join(", ")}`);
+    process.exit(1);
+  }
+
+  const tickers  = loadTickers(args.market, args.n);
+  const analysis = runTrendAnalysis(args.market, tickers, args.period);
+
+  printTrendReport(analysis, { market: args.market, n: args.n });
+
   const outputFile = resolveOutputFile(args.market, args.n, args.period);
   const output: TrendJson = {
     generated_at:   now(),
-    period:         periodLabel,
-    analyzed_count: stocks.length,
-    skipped_count:  skipped.length,
-    summary,
-    stocks,
+    period:         analysis.periodLabel,
+    analyzed_count: analysis.stocks.length,
+    skipped_count:  analysis.skipped.length,
+    summary:        analysis.summary,
+    stocks:         analysis.stocks,
   };
 
   saveJson(outputFile, output);
