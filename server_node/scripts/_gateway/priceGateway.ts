@@ -112,8 +112,8 @@ export function calcMarketInfo(prices: PriceRow[]): MarketInfo {
   const latest = sorted[sorted.length - 1]!;
   const prev   = sorted[sorted.length - 2] ?? null;
 
-  const oneYearAgo = new Date(latest.date);
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const oneYearAgo = new Date(latest.date + "T00:00:00Z");
+  oneYearAgo.setUTCFullYear(oneYearAgo.getUTCFullYear() - 1);
   const yearStr = oneYearAgo.toISOString().slice(0, 10);
 
   const yearPrices = sorted.filter((p) => p.date >= yearStr);

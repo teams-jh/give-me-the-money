@@ -49,31 +49,15 @@ vi.mock("fs", () => ({
 }));
 
 // ── priceGateway 모킹 ─────────────────────────────────────────────────────────
+// fetchDailyPrices 만 모킹, calcMarketInfo 는 실제 구현 사용 (importOriginal)
 
-vi.mock("../_gateway/priceGateway.ts", () => ({
-  fetchDailyPrices: (...a: unknown[]) => mockFetchDailyPrices(...a),
-  // calcMarketInfo 는 실제 구현 그대로 사용 (테스트 TC05~07 에서 직접 검증)
-  calcMarketInfo: vi.fn((prices: PriceRow[]) => {
-    if (prices.length === 0) {
-      return { price: null, previous_close: null, fifty_two_week_high: null, fifty_two_week_low: null };
-    }
-    const sorted = [...prices].sort((a, b) => a.date.localeCompare(b.date));
-    const latest = sorted[sorted.length - 1]!;
-    const prev   = sorted[sorted.length - 2] ?? null;
-    const oneYearAgo = new Date(latest.date + "T00:00:00Z");
-    oneYearAgo.setUTCFullYear(oneYearAgo.getUTCFullYear() - 1);
-    const yearStr    = oneYearAgo.toISOString().slice(0, 10);
-    const yearPrices = sorted.filter((p) => p.date >= yearStr);
-    const highs = yearPrices.map((p) => p.high).filter((v): v is number => v !== null);
-    const lows  = yearPrices.map((p) => p.low).filter((v): v is number => v !== null);
-    return {
-      price:               latest.close,
-      previous_close:      prev?.close ?? null,
-      fifty_two_week_high: highs.length > 0 ? Math.max(...highs) : null,
-      fifty_two_week_low:  lows.length  > 0 ? Math.min(...lows)  : null,
-    };
-  }),
-}));
+vi.mock("../_gateway/priceGateway.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../_gateway/priceGateway.ts")>();
+  return {
+    ...actual,
+    fetchDailyPrices: (...a: unknown[]) => mockFetchDailyPrices(...a),
+  };
+});
 
 // ── 헬퍼 ─────────────────────────────────────────────────────────────────────
 
