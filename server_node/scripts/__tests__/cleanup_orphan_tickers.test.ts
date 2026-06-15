@@ -276,7 +276,7 @@ describe("main()", () => {
     }) as never);
 
     expect(() => main()).toThrow("process.exit(1)");
-    expect(errSpy).toHaveBeenCalledWith(expect.stringContaining("알 수 없는 --market 값"));
+    expect(errSpy).toHaveBeenCalledWith(expect.stringContaining("알 수 없는 마켓: xx"));
 
     exitSpy.mockRestore();
     errSpy.mockRestore();

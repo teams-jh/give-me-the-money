@@ -28,6 +28,7 @@ import type { ChartResultArray, ChartResultArrayQuote } from "yahoo-finance2/mod
 import { log, warn, err } from "../_lib/logger.ts";
 import { round } from "../_lib/num.ts";
 import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
+import { parseMarket, parseForce } from "../_lib/cli.ts";
 
 const __filename    = fileURLToPath(import.meta.url);
 const __dirname     = path.dirname(__filename);
@@ -664,17 +665,12 @@ function sortAllTickersByMarketCap(config: MarketConfig): void {
 
 export async function main(): Promise<void> {
   const args   = process.argv.slice(2);
-  const force  = args.includes("--force");
+  const force  = parseForce(args);
+  const market = parseMarket(args, { default: "us" });
   const tIdx   = args.indexOf("--ticker");
   const single = tIdx !== -1 ? (args[tIdx + 1] ?? null) : null;
-  const mIdx   = args.indexOf("--market");
-  const market = mIdx !== -1 ? (args[mIdx + 1] ?? "us") : "us";
 
-  const config = MARKET_CONFIG[market];
-  if (!config) {
-    err(`알 수 없는 마켓: ${market}. 사용 가능: ${Object.keys(MARKET_CONFIG).join(", ")}`);
-    process.exit(1);
-  }
+  const config = MARKET_CONFIG[market]!;
 
   log(`=== [${config.label}] 티커 메타데이터 업데이트 시작 ===`);
 

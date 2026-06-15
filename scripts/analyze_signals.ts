@@ -26,6 +26,7 @@ import { analyzeFundamentals }   from "../src/library/shared/fundamentals.ts";
 import type { SignalSummary }     from "../src/library/shared/signals.ts";
 import { loadTickerList, loadTicker, saveJson } from "../src/library/shared/tickerRepository.ts";
 import { toOHLCV, toFundamentalData }           from "../src/library/shared/tickerMapper.ts";
+import { parseMarket, parseN, parseMinScore }   from "./_lib/cli.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
@@ -77,14 +78,10 @@ interface SignalsJson {
 // ── 유틸 ──────────────────────────────────────────────────────────────────────
 
 export function parseArgs(): CliArgs {
-  const args = process.argv.slice(2);
-  let market = "kr"; let n: number | undefined; let minScore = 0;
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === "--market")         { market   = args[++i] ?? "kr"; }
-    else if (arg === "-n")          { const v = parseInt(args[++i] ?? "", 10); if (!isNaN(v)) n = v; }
-    else if (arg === "--min-score") { const v = parseFloat(args[++i] ?? "0"); if (!isNaN(v)) minScore = v; }
-  }
+  const args     = process.argv.slice(2);
+  const market   = parseMarket(args, "kr");
+  const n        = parseN(args);
+  const minScore = parseMinScore(args);
   return { market, n, minScore };
 }
 

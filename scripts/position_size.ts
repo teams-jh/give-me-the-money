@@ -32,13 +32,12 @@ import type { OHLCV }       from "../src/library/shared/indicators.ts";
 import { loadTicker as repoLoadTicker, findSimilarTicker } from "../src/library/shared/tickerRepository.ts";
 import { toOHLCV } from "../src/library/shared/tickerMapper.ts";
 import type { RawTicker } from "../src/library/shared/tickerTypes.ts";
+import { parseMarket, VALID_MARKETS } from "./_lib/cli.ts";
 
 // ── 경로 설정 ─────────────────────────────────────────────────────────────────
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
-
-const SUPPORTED_MARKETS = new Set(["us", "kr"]);
 
 // ── 타입 ─────────────────────────────────────────────────────────────────────
 
@@ -55,7 +54,6 @@ interface CliArgs {
 
 export function parseArgs(): CliArgs {
   const args = process.argv.slice(2);
-  let market     = "";
   let ticker     = "";
   let capital    = 0;
   let risk       = 1;
@@ -64,8 +62,7 @@ export function parseArgs(): CliArgs {
 
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
-    if      (a === "--market")     { market     = args[++i] ?? ""; }
-    else if (a === "--ticker")     { ticker     = (args[++i] ?? "").toUpperCase(); }
+    if      (a === "--ticker")     { ticker     = (args[++i] ?? "").toUpperCase(); }
     else if (a === "--capital")    { capital    = parseFloat(args[++i] ?? "0"); }
     else if (a === "--risk")       { risk       = parseFloat(args[++i] ?? "1"); }
     else if (a === "--multiplier") { multiplier = parseFloat(args[++i] ?? "1.5"); }
@@ -76,11 +73,11 @@ export function parseArgs(): CliArgs {
 
   // 필수 옵션 검사
   const missing: string[] = [];
-  if (!market)  missing.push("--market");
-  if (!ticker)  missing.push("--ticker");
-  if (!capital) missing.push("--capital");
+  if (!args.includes("--market")) missing.push("--market");
+  if (!ticker)                    missing.push("--ticker");
+  if (!capital)                   missing.push("--capital");
 
-  if (missing.length > 0 || !SUPPORTED_MARKETS.has(market)) {
+  if (missing.length > 0) {
     console.error(`
 ❌ 사용법:
    server_node/node_modules/.bin/tsx scripts/position_size.ts \\
@@ -91,11 +88,12 @@ export function parseArgs(): CliArgs {
    ... --market us --ticker AAPL --capital 10000000 --risk 1
    ... --market kr --ticker 005930 --capital 50000000 --risk 0.5
 `);
-    if (missing.length) console.error(`  누락된 옵션: ${missing.join(", ")}`);
-    if (!SUPPORTED_MARKETS.has(market)) console.error(`  알 수 없는 마켓: '${market}'`);
+    console.error(`  누락된 옵션: ${missing.join(", ")}`);
     process.exit(1);
   }
 
+  // --market 유효성 검증은 parseMarket이 담당
+  const market = parseMarket(args, "us");
   return { market, ticker, capital, risk, multiplier, targets };
 }
 
