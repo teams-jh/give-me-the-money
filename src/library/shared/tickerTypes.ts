@@ -6,6 +6,27 @@
  * shared 계층의 단일 소스로 통합한다.
  */
 
+/**
+ * 수집 스크립트(update_ticker_metadata, update_fx_rate 등)에서
+ * Yahoo Finance 원본 데이터를 담는 일봉 행. null 허용.
+ * DB에 저장 완료된 정제 데이터는 RawPrice(non-null) 를 사용한다.
+ */
+export interface PriceRow {
+  date:      string;
+  open:      number | null;
+  high:      number | null;
+  low:       number | null;
+  close:     number | null;
+  adj_close: number | null;
+  volume:    number | null;
+}
+
+/** 분기 순이익 한 건 (수집 스크립트 공용) */
+export interface QuarterlyEarning {
+  quarter:    string | null;
+  net_income: number | null;
+}
+
 export interface RawPrice {
   date: string;
   open: number;
