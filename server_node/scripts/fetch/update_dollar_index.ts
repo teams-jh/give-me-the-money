@@ -21,17 +21,15 @@
 import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import YahooFinance from "yahoo-finance2";
 
 import { log } from "../_lib/logger.ts";
-import { round } from "../_lib/num.ts";
 import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
 import { parseForce } from "../_lib/cli.ts";
+import { fetchDailyPrices, calcMarketInfo } from "../_gateway/priceGateway.ts";
 import type { PriceRow } from "../../../src/library/shared/tickerTypes.ts";
 
-const __filename   = fileURLToPath(import.meta.url);
-const __dirname    = path.dirname(__filename);
-const yahooFinance = new YahooFinance();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
@@ -105,75 +103,16 @@ interface DxyJson {
 
 // ── 유틸 ─────────────────────────────────────────────────────────────────────
 
-export { round };
+// calcMarketInfo 는 게이트웨이로 이동 — 하위 호환을 위해 re-export
+export { calcMarketInfo } from "../_gateway/priceGateway.ts";
 
 // ── 1단계: 일봉 가격 데이터 다운로드 ─────────────────────────────────────────
 
 async function fetchPrices(): Promise<PriceRow[]> {
-  const period2 = new Date();
-  const period1 = new Date();
-  period1.setFullYear(period1.getFullYear() - PRICE_YEARS);
-
-  log(`달러인덱스 데이터 다운로드 중... (${period1.toISOString().slice(0, 10)} ~ ${period2.toISOString().slice(0, 10)})`);
-
-  const result = await yahooFinance.chart(
-    DXY_TICKER,
-    {
-      period1:  period1.toISOString().slice(0, 10),
-      period2:  period2.toISOString().slice(0, 10),
-      interval: "1d",
-    },
-    { validateResult: false }
-  );
-
-  const allRows = result.quotes ?? [];
-  log(`다운로드 완료: ${allRows.length}개 거래일 (null close 제거 전)`);
-
-  // close가 null인 행 제거 (당일 미확정 데이터 등)
-  const rows = allRows.filter((row) => row.close != null);
-  log(`유효 데이터: ${rows.length}개 거래일`);
-
-  return rows.map((row) => ({
-    date:      new Date(row.date).toISOString().slice(0, 10),
-    open:      round(row.open),
-    high:      round(row.high),
-    low:       round(row.low),
-    close:     round(row.close),
-    adj_close: round(row.adjclose ?? row.close),  // 지수는 수정종가 = 종가
-    volume:    row.volume ?? null,
-  }));
+  return fetchDailyPrices(DXY_TICKER, PRICE_YEARS);
 }
 
-// ── 2단계: 현재가 정보 계산 ───────────────────────────────────────────────────
-
-export function calcMarketInfo(prices: PriceRow[]) {
-  if (prices.length === 0) {
-    return { price: null, previous_close: null, fifty_two_week_high: null, fifty_two_week_low: null };
-  }
-
-  const sorted = [...prices].sort((a, b) => a.date.localeCompare(b.date));
-  const latest = sorted[sorted.length - 1]!;
-  const prev   = sorted[sorted.length - 2] ?? null;
-
-  // 52주(약 252 거래일) 범위
-  const oneYearAgo = new Date(latest.date);  // 실행 시점이 아닌 데이터 최신일 기준
-  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-  const yearStr = oneYearAgo.toISOString().slice(0, 10);
-
-  const yearPrices = sorted.filter((p) => p.date >= yearStr);
-
-  const highs = yearPrices.map((p) => p.high).filter((v): v is number => v !== null);
-  const lows  = yearPrices.map((p) => p.low).filter((v): v is number => v !== null);
-
-  return {
-    price:               latest.close,
-    previous_close:      prev?.close ?? null,
-    fifty_two_week_high: highs.length > 0 ? Math.max(...highs) : null,
-    fifty_two_week_low:  lows.length  > 0 ? Math.min(...lows)  : null,
-  };
-}
-
-// ── 3단계: JSON 빌드 ──────────────────────────────────────────────────────────
+// ── 2단계: JSON 빌드 ──────────────────────────────────────────────────────────
 
 export function buildJson(prices: PriceRow[]): DxyJson {
   const market = calcMarketInfo(prices);
@@ -246,7 +185,7 @@ export function buildJson(prices: PriceRow[]): DxyJson {
   };
 }
 
-// ── 4단계: 파일 저장 ──────────────────────────────────────────────────────────
+// ── 3단계: 파일 저장 ──────────────────────────────────────────────────────────
 
 function saveJson(data: DxyJson): void {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
