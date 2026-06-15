@@ -27,6 +27,7 @@ import { log } from "../_lib/logger.ts";
 import { round } from "../_lib/num.ts";
 import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
 import { parseForce } from "../_lib/cli.ts";
+import type { PriceRow } from "../../../src/library/shared/tickerTypes.ts";
 
 const __filename   = fileURLToPath(import.meta.url);
 const __dirname    = path.dirname(__filename);
@@ -41,15 +42,7 @@ const PRICE_YEARS = 3;
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
 
-interface PriceRow {
-  date:      string;
-  open:      number | null;
-  high:      number | null;
-  low:       number | null;
-  close:     number | null;
-  adj_close: number | null;
-  volume:    number | null;
-}
+// PriceRow → src/library/shared/tickerTypes.ts 에서 import
 
 interface DxyJson {
   ticker:     string;

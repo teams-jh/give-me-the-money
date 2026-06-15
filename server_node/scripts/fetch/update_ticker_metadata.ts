@@ -29,6 +29,7 @@ import { log, warn, err } from "../_lib/logger.ts";
 import { round } from "../_lib/num.ts";
 import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
 import { parseMarket, parseForce } from "../_lib/cli.ts";
+import type { PriceRow, QuarterlyEarning } from "../../../src/library/shared/tickerTypes.ts";
 
 const __filename    = fileURLToPath(import.meta.url);
 const __dirname     = path.dirname(__filename);
@@ -169,20 +170,7 @@ interface ChartData {
   dividends: DividendEvent[];   // FETCH_YEARS치 배당 이벤트
 }
 
-interface PriceRow {
-  date:      string;
-  open:      number | null;
-  high:      number | null;
-  low:       number | null;
-  close:     number | null;
-  adj_close: number | null;
-  volume:    number | null;
-}
-
-interface QuarterlyEarning {
-  quarter:    string | null;
-  net_income: number | null;
-}
+// PriceRow, QuarterlyEarning → src/library/shared/tickerTypes.ts 에서 import
 
 interface TickerData {
   ticker:     string;
