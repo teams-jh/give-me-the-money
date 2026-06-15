@@ -22,16 +22,16 @@
 import fs   from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import YahooFinance from "yahoo-finance2";
 
 import { log } from "../_lib/logger.ts";
 import { round } from "../_lib/num.ts";
 import { saveJsonAtomic, isUpdatedToday } from "../_lib/io.ts";
 import { parseForce } from "../_lib/cli.ts";
+import { fetchDailyPrices } from "../_gateway/priceGateway.ts";
+import type { PriceRow } from "../../../src/library/shared/tickerTypes.ts";
 
-const __filename   = fileURLToPath(import.meta.url);
-const __dirname    = path.dirname(__filename);
-const yahooFinance = new YahooFinance();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
 
 // ── 설정 ─────────────────────────────────────────────────────────────────────
 
@@ -41,20 +41,6 @@ const OUTPUT      = path.join(OUTPUT_DIR, "vix.json");
 const PRICE_YEARS = 3;
 
 // ── 타입 정의 ─────────────────────────────────────────────────────────────────
-
-interface QuoteRow {
-  date:     Date;
-  open:     number | null;
-  high:     number | null;
-  low:      number | null;
-  close:    number | null;
-  adjclose: number | null;
-  volume:   number | null;
-}
-
-interface ChartResponse {
-  quotes: QuoteRow[];
-}
 
 interface HistoricalRow {
   date:   string;
@@ -84,68 +70,50 @@ export function getVixRating(score: number): string {
   return "extreme";
 }
 
-// ── 1단계: Yahoo Finance 데이터 수집 ─────────────────────────────────────────
+// ── 1단계: JSON 빌드 ──────────────────────────────────────────────────────────
+//
+// 입력: fetchDailyPrices() 가 반환한 PriceRow[] (null close 제거 완료)
+// VIX는 close 만 사용하므로 PriceRow.close 를 직접 참조한다.
 
-async function fetchVix(): Promise<ChartResponse> {
-  log(`Yahoo Finance에서 ${VIX_TICKER} 데이터 수집 중...`);
-
-  const period1 = new Date();
-  period1.setFullYear(period1.getFullYear() - PRICE_YEARS);
-
-  const result = await yahooFinance.chart(VIX_TICKER, {
-    period1: period1.toISOString().slice(0, 10),
-    interval: "1d",
-  });
-
-  log(`데이터 수신 완료: ${result.quotes.length}개 쿼트`);
-  return result as ChartResponse;
-}
-
-// ── 2단계: JSON 빌드 ──────────────────────────────────────────────────────────
-
-export function buildJson(raw: ChartResponse): VixJson {
-  const sorted = [...raw.quotes]
-    .filter((q) => q.close != null)
-    .map((q) => ({
-      date:  q.date.toISOString().slice(0, 10),
-      close: q.close as number,
-    }))
+export function buildJson(prices: PriceRow[]): VixJson {
+  const sorted = [...prices]
+    .filter((p) => p.close != null)
     .sort((a, b) => a.date.localeCompare(b.date));
 
   if (sorted.length === 0) {
     throw new Error("유효한 close 데이터가 없습니다.");
   }
 
-  const latest       = sorted[sorted.length - 1];
-  const prevClose    = sorted[sorted.length - 2]  ?? null;
+  const latest     = sorted[sorted.length - 1]!;
+  const prevClose  = sorted[sorted.length - 2]  ?? null;
 
   // 1주일(5 영업일), 1개월(21 영업일), 1년(252 영업일) 전 기준점
-  const prev1Week    = sorted[sorted.length - 6]  ?? null;
-  const prev1Month   = sorted[sorted.length - 22] ?? null;
-  const prev1Year    = sorted[sorted.length - 253] ?? null;
+  const prev1Week  = sorted[sorted.length - 6]   ?? null;
+  const prev1Month = sorted[sorted.length - 22]  ?? null;
+  const prev1Year  = sorted[sorted.length - 253] ?? null;
 
   const historical: HistoricalRow[] = sorted.map((row) => ({
     date:   row.date,
-    score:  round(row.close),
-    rating: getVixRating(row.close),
+    score:  round(row.close) as number,
+    rating: getVixRating(row.close as number),
   }));
 
-  const currentScore = round(latest?.close ?? null);
-  const currentRating = latest ? getVixRating(latest.close) : "moderate";
+  const currentScore  = round(latest.close);
+  const currentRating = getVixRating(latest.close as number);
 
   return {
     updated_at:       new Date().toISOString(),
     score:            currentScore,
     rating:           currentRating,
-    previous_close:   round(prevClose?.close ?? null),
-    previous_1_week:  round(prev1Week?.close ?? null),
+    previous_close:   round(prevClose?.close  ?? null),
+    previous_1_week:  round(prev1Week?.close  ?? null),
     previous_1_month: round(prev1Month?.close ?? null),
-    previous_1_year:  round(prev1Year?.close ?? null),
+    previous_1_year:  round(prev1Year?.close  ?? null),
     historical,
   };
 }
 
-// ── 3단계: 파일 저장 ──────────────────────────────────────────────────────────
+// ── 2단계: 파일 저장 ──────────────────────────────────────────────────────────
 
 function saveJson(data: VixJson): void {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -175,13 +143,13 @@ export async function main(): Promise<void> {
   }
 
   try {
-    const raw  = await fetchVix();
+    const prices = await fetchDailyPrices(VIX_TICKER, PRICE_YEARS);
 
-    if (!raw.quotes || raw.quotes.length === 0) {
+    if (prices.length === 0) {
       throw new Error("가격 데이터가 없습니다.");
     }
 
-    const data = buildJson(raw);
+    const data = buildJson(prices);
     saveJson(data);
 
     log("=== 업데이트 완료 ===");
