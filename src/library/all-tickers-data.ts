@@ -5,502 +5,503 @@
 
 import type { TickerData } from './tickers';
 
-import data_kr_000080 from '../db/kr/tickers/000080.json';
-import data_kr_000100 from '../db/kr/tickers/000100.json';
-import data_kr_000120 from '../db/kr/tickers/000120.json';
-import data_kr_000150 from '../db/kr/tickers/000150.json';
-import data_kr_000155 from '../db/kr/tickers/000155.json';
-import data_kr_0001A0 from '../db/kr/tickers/0001A0.json';
-import data_kr_000210 from '../db/kr/tickers/000210.json';
-import data_kr_000240 from '../db/kr/tickers/000240.json';
-import data_kr_000250 from '../db/kr/tickers/000250.json';
-import data_kr_000270 from '../db/kr/tickers/000270.json';
-import data_kr_000370 from '../db/kr/tickers/000370.json';
-import data_kr_000440 from '../db/kr/tickers/000440.json';
-import data_kr_0004V0 from '../db/kr/tickers/0004V0.json';
-import data_kr_000500 from '../db/kr/tickers/000500.json';
-import data_kr_000660 from '../db/kr/tickers/000660.json';
-import data_kr_000670 from '../db/kr/tickers/000670.json';
-import data_kr_000720 from '../db/kr/tickers/000720.json';
-import data_kr_0007C0 from '../db/kr/tickers/0007C0.json';
-import data_kr_0007J0 from '../db/kr/tickers/0007J0.json';
-import data_kr_000810 from '../db/kr/tickers/000810.json';
-import data_kr_000815 from '../db/kr/tickers/000815.json';
-import data_kr_000880 from '../db/kr/tickers/000880.json';
-import data_kr_00088K from '../db/kr/tickers/00088K.json';
-import data_kr_0008Z0 from '../db/kr/tickers/0008Z0.json';
-import data_kr_000990 from '../db/kr/tickers/000990.json';
-import data_kr_0009K0 from '../db/kr/tickers/0009K0.json';
-import data_kr_001000 from '../db/kr/tickers/001000.json';
-import data_kr_001040 from '../db/kr/tickers/001040.json';
-import data_kr_00104K from '../db/kr/tickers/00104K.json';
-import data_kr_001060 from '../db/kr/tickers/001060.json';
-import data_kr_0010F0 from '../db/kr/tickers/0010F0.json';
-import data_kr_0010V0 from '../db/kr/tickers/0010V0.json';
-import data_kr_001120 from '../db/kr/tickers/001120.json';
-import data_kr_0011A0 from '../db/kr/tickers/0011A0.json';
-import data_kr_0011T0 from '../db/kr/tickers/0011T0.json';
-import data_kr_001270 from '../db/kr/tickers/001270.json';
-import data_kr_0013V0 from '../db/kr/tickers/0013V0.json';
-import data_kr_001430 from '../db/kr/tickers/001430.json';
-import data_kr_001440 from '../db/kr/tickers/001440.json';
-import data_kr_001450 from '../db/kr/tickers/001450.json';
-import data_kr_001510 from '../db/kr/tickers/001510.json';
-import data_kr_001540 from '../db/kr/tickers/001540.json';
-import data_kr_001570 from '../db/kr/tickers/001570.json';
-import data_kr_0015G0 from '../db/kr/tickers/0015G0.json';
-import data_kr_0015N0 from '../db/kr/tickers/0015N0.json';
-import data_kr_0015S0 from '../db/kr/tickers/0015S0.json';
-import data_kr_001680 from '../db/kr/tickers/001680.json';
-import data_kr_001720 from '../db/kr/tickers/001720.json';
-import data_kr_001740 from '../db/kr/tickers/001740.json';
-import data_kr_001800 from '../db/kr/tickers/001800.json';
-import data_kr_001810 from '../db/kr/tickers/001810.json';
-import data_kr_001820 from '../db/kr/tickers/001820.json';
-import data_kr_001840 from '../db/kr/tickers/001840.json';
-import data_kr_002020 from '../db/kr/tickers/002020.json';
-import data_kr_002230 from '../db/kr/tickers/002230.json';
-import data_kr_002290 from '../db/kr/tickers/002290.json';
-import data_kr_002350 from '../db/kr/tickers/002350.json';
-import data_kr_002380 from '../db/kr/tickers/002380.json';
-import data_kr_002680 from '../db/kr/tickers/002680.json';
-import data_kr_002790 from '../db/kr/tickers/002790.json';
-import data_kr_002800 from '../db/kr/tickers/002800.json';
-import data_kr_002960 from '../db/kr/tickers/002960.json';
-import data_kr_003090 from '../db/kr/tickers/003090.json';
-import data_kr_003100 from '../db/kr/tickers/003100.json';
-import data_kr_003160 from '../db/kr/tickers/003160.json';
-import data_kr_003230 from '../db/kr/tickers/003230.json';
-import data_kr_003240 from '../db/kr/tickers/003240.json';
-import data_kr_003310 from '../db/kr/tickers/003310.json';
-import data_kr_003380 from '../db/kr/tickers/003380.json';
-import data_kr_003470 from '../db/kr/tickers/003470.json';
-import data_kr_003490 from '../db/kr/tickers/003490.json';
-import data_kr_003530 from '../db/kr/tickers/003530.json';
-import data_kr_003540 from '../db/kr/tickers/003540.json';
-import data_kr_003550 from '../db/kr/tickers/003550.json';
-import data_kr_003570 from '../db/kr/tickers/003570.json';
-import data_kr_003620 from '../db/kr/tickers/003620.json';
-import data_kr_003670 from '../db/kr/tickers/003670.json';
-import data_kr_003690 from '../db/kr/tickers/003690.json';
-import data_kr_003800 from '../db/kr/tickers/003800.json';
-import data_kr_003850 from '../db/kr/tickers/003850.json';
-import data_kr_004000 from '../db/kr/tickers/004000.json';
-import data_kr_004020 from '../db/kr/tickers/004020.json';
-import data_kr_004170 from '../db/kr/tickers/004170.json';
-import data_kr_004370 from '../db/kr/tickers/004370.json';
-import data_kr_004490 from '../db/kr/tickers/004490.json';
-import data_kr_004590 from '../db/kr/tickers/004590.json';
-import data_kr_004650 from '../db/kr/tickers/004650.json';
-import data_kr_004780 from '../db/kr/tickers/004780.json';
-import data_kr_004800 from '../db/kr/tickers/004800.json';
-import data_kr_004990 from '../db/kr/tickers/004990.json';
-import data_kr_005070 from '../db/kr/tickers/005070.json';
-import data_kr_005090 from '../db/kr/tickers/005090.json';
-import data_kr_005160 from '../db/kr/tickers/005160.json';
-import data_kr_005180 from '../db/kr/tickers/005180.json';
-import data_kr_005290 from '../db/kr/tickers/005290.json';
-import data_kr_005300 from '../db/kr/tickers/005300.json';
-import data_kr_005380 from '../db/kr/tickers/005380.json';
-import data_kr_005385 from '../db/kr/tickers/005385.json';
-import data_kr_005387 from '../db/kr/tickers/005387.json';
-import data_kr_005440 from '../db/kr/tickers/005440.json';
-import data_kr_005490 from '../db/kr/tickers/005490.json';
-import data_kr_005670 from '../db/kr/tickers/005670.json';
-import data_kr_005690 from '../db/kr/tickers/005690.json';
-import data_kr_005710 from '../db/kr/tickers/005710.json';
-import data_kr_005830 from '../db/kr/tickers/005830.json';
-import data_kr_005850 from '../db/kr/tickers/005850.json';
-import data_kr_005860 from '../db/kr/tickers/005860.json';
-import data_kr_005880 from '../db/kr/tickers/005880.json';
 import data_kr_005930 from '../db/kr/tickers/005930.json';
+import data_kr_000660 from '../db/kr/tickers/000660.json';
 import data_kr_005935 from '../db/kr/tickers/005935.json';
-import data_kr_005940 from '../db/kr/tickers/005940.json';
-import data_kr_005990 from '../db/kr/tickers/005990.json';
-import data_kr_006040 from '../db/kr/tickers/006040.json';
-import data_kr_006050 from '../db/kr/tickers/006050.json';
-import data_kr_006110 from '../db/kr/tickers/006110.json';
-import data_kr_006120 from '../db/kr/tickers/006120.json';
-import data_kr_006140 from '../db/kr/tickers/006140.json';
-import data_kr_006260 from '../db/kr/tickers/006260.json';
-import data_kr_006280 from '../db/kr/tickers/006280.json';
-import data_kr_006340 from '../db/kr/tickers/006340.json';
-import data_kr_006360 from '../db/kr/tickers/006360.json';
-import data_kr_006400 from '../db/kr/tickers/006400.json';
-import data_kr_006620 from '../db/kr/tickers/006620.json';
-import data_kr_006650 from '../db/kr/tickers/006650.json';
-import data_kr_006730 from '../db/kr/tickers/006730.json';
-import data_kr_006800 from '../db/kr/tickers/006800.json';
-import data_kr_00680K from '../db/kr/tickers/00680K.json';
-import data_kr_006910 from '../db/kr/tickers/006910.json';
-import data_kr_006920 from '../db/kr/tickers/006920.json';
-import data_kr_007070 from '../db/kr/tickers/007070.json';
-import data_kr_007310 from '../db/kr/tickers/007310.json';
-import data_kr_007330 from '../db/kr/tickers/007330.json';
-import data_kr_007340 from '../db/kr/tickers/007340.json';
-import data_kr_007370 from '../db/kr/tickers/007370.json';
-import data_kr_007390 from '../db/kr/tickers/007390.json';
-import data_kr_007530 from '../db/kr/tickers/007530.json';
-import data_kr_007660 from '../db/kr/tickers/007660.json';
-import data_kr_007680 from '../db/kr/tickers/007680.json';
-import data_kr_007700 from '../db/kr/tickers/007700.json';
-import data_kr_007720 from '../db/kr/tickers/007720.json';
-import data_kr_007770 from '../db/kr/tickers/007770.json';
-import data_kr_007810 from '../db/kr/tickers/007810.json';
-import data_kr_007820 from '../db/kr/tickers/007820.json';
-import data_kr_008060 from '../db/kr/tickers/008060.json';
-import data_kr_008290 from '../db/kr/tickers/008290.json';
-import data_kr_0082N0 from '../db/kr/tickers/0082N0.json';
-import data_kr_008370 from '../db/kr/tickers/008370.json';
-import data_kr_008470 from '../db/kr/tickers/008470.json';
-import data_kr_008770 from '../db/kr/tickers/008770.json';
-import data_kr_008830 from '../db/kr/tickers/008830.json';
-import data_kr_0088M0 from '../db/kr/tickers/0088M0.json';
-import data_kr_008930 from '../db/kr/tickers/008930.json';
+import data_kr_402340 from '../db/kr/tickers/402340.json';
+import data_kr_005380 from '../db/kr/tickers/005380.json';
 import data_kr_009150 from '../db/kr/tickers/009150.json';
-import data_kr_009155 from '../db/kr/tickers/009155.json';
-import data_kr_009240 from '../db/kr/tickers/009240.json';
-import data_kr_009300 from '../db/kr/tickers/009300.json';
-import data_kr_009420 from '../db/kr/tickers/009420.json';
-import data_kr_009450 from '../db/kr/tickers/009450.json';
-import data_kr_009520 from '../db/kr/tickers/009520.json';
-import data_kr_009540 from '../db/kr/tickers/009540.json';
-import data_kr_009620 from '../db/kr/tickers/009620.json';
-import data_kr_009730 from '../db/kr/tickers/009730.json';
-import data_kr_009780 from '../db/kr/tickers/009780.json';
-import data_kr_009830 from '../db/kr/tickers/009830.json';
-import data_kr_009970 from '../db/kr/tickers/009970.json';
-import data_kr_010060 from '../db/kr/tickers/010060.json';
-import data_kr_010120 from '../db/kr/tickers/010120.json';
-import data_kr_010130 from '../db/kr/tickers/010130.json';
-import data_kr_010140 from '../db/kr/tickers/010140.json';
-import data_kr_010170 from '../db/kr/tickers/010170.json';
-import data_kr_010240 from '../db/kr/tickers/010240.json';
-import data_kr_010280 from '../db/kr/tickers/010280.json';
-import data_kr_010470 from '../db/kr/tickers/010470.json';
-import data_kr_010780 from '../db/kr/tickers/010780.json';
-import data_kr_010950 from '../db/kr/tickers/010950.json';
-import data_kr_011040 from '../db/kr/tickers/011040.json';
-import data_kr_011070 from '../db/kr/tickers/011070.json';
-import data_kr_011080 from '../db/kr/tickers/011080.json';
-import data_kr_011170 from '../db/kr/tickers/011170.json';
-import data_kr_011200 from '../db/kr/tickers/011200.json';
-import data_kr_011210 from '../db/kr/tickers/011210.json';
-import data_kr_011320 from '../db/kr/tickers/011320.json';
-import data_kr_011370 from '../db/kr/tickers/011370.json';
-import data_kr_011560 from '../db/kr/tickers/011560.json';
-import data_kr_011780 from '../db/kr/tickers/011780.json';
-import data_kr_011790 from '../db/kr/tickers/011790.json';
-import data_kr_012210 from '../db/kr/tickers/012210.json';
+import data_kr_373220 from '../db/kr/tickers/373220.json';
+import data_kr_028260 from '../db/kr/tickers/028260.json';
+import data_kr_032830 from '../db/kr/tickers/032830.json';
+import data_kr_329180 from '../db/kr/tickers/329180.json';
+import data_kr_005387 from '../db/kr/tickers/005387.json';
+import data_kr_005385 from '../db/kr/tickers/005385.json';
+import data_kr_000270 from '../db/kr/tickers/000270.json';
+import data_kr_034020 from '../db/kr/tickers/034020.json';
+import data_kr_105560 from '../db/kr/tickers/105560.json';
+import data_kr_207940 from '../db/kr/tickers/207940.json';
 import data_kr_012330 from '../db/kr/tickers/012330.json';
-import data_kr_012340 from '../db/kr/tickers/012340.json';
 import data_kr_012450 from '../db/kr/tickers/012450.json';
-import data_kr_012510 from '../db/kr/tickers/012510.json';
-import data_kr_012620 from '../db/kr/tickers/012620.json';
-import data_kr_012630 from '../db/kr/tickers/012630.json';
+import data_kr_055550 from '../db/kr/tickers/055550.json';
+import data_kr_009155 from '../db/kr/tickers/009155.json';
+import data_kr_006400 from '../db/kr/tickers/006400.json';
+import data_kr_066570 from '../db/kr/tickers/066570.json';
+import data_kr_267260 from '../db/kr/tickers/267260.json';
+import data_kr_068270 from '../db/kr/tickers/068270.json';
+import data_kr_042660 from '../db/kr/tickers/042660.json';
+import data_kr_010120 from '../db/kr/tickers/010120.json';
+import data_kr_035420 from '../db/kr/tickers/035420.json';
+import data_kr_034730 from '../db/kr/tickers/034730.json';
+import data_kr_298040 from '../db/kr/tickers/298040.json';
+import data_kr_086790 from '../db/kr/tickers/086790.json';
+import data_kr_042700 from '../db/kr/tickers/042700.json';
+import data_kr_009540 from '../db/kr/tickers/009540.json';
+import data_kr_000150 from '../db/kr/tickers/000150.json';
+import data_kr_006800 from '../db/kr/tickers/006800.json';
+import data_kr_011070 from '../db/kr/tickers/011070.json';
+import data_kr_005490 from '../db/kr/tickers/005490.json';
+import data_kr_000810 from '../db/kr/tickers/000810.json';
+import data_kr_051910 from '../db/kr/tickers/051910.json';
+import data_kr_010130 from '../db/kr/tickers/010130.json';
+import data_kr_015760 from '../db/kr/tickers/015760.json';
+import data_kr_064350 from '../db/kr/tickers/064350.json';
+import data_kr_010140 from '../db/kr/tickers/010140.json';
+import data_kr_316140 from '../db/kr/tickers/316140.json';
+import data_kr_079550 from '../db/kr/tickers/079550.json';
+import data_kr_017670 from '../db/kr/tickers/017670.json';
+import data_kr_011200 from '../db/kr/tickers/011200.json';
+import data_kr_307950 from '../db/kr/tickers/307950.json';
+import data_kr_272210 from '../db/kr/tickers/272210.json';
+import data_kr_267250 from '../db/kr/tickers/267250.json';
+import data_kr_033780 from '../db/kr/tickers/033780.json';
+import data_kr_138040 from '../db/kr/tickers/138040.json';
+import data_kr_096770 from '../db/kr/tickers/096770.json';
+import data_kr_018260 from '../db/kr/tickers/018260.json';
+import data_kr_003670 from '../db/kr/tickers/003670.json';
+import data_kr_024110 from '../db/kr/tickers/024110.json';
+import data_kr_000815 from '../db/kr/tickers/000815.json';
+import data_kr_035720 from '../db/kr/tickers/035720.json';
+import data_kr_003550 from '../db/kr/tickers/003550.json';
+import data_kr_000720 from '../db/kr/tickers/000720.json';
+import data_kr_086280 from '../db/kr/tickers/086280.json';
+import data_kr_278470 from '../db/kr/tickers/278470.json';
+import data_kr_047810 from '../db/kr/tickers/047810.json';
+import data_kr_071050 from '../db/kr/tickers/071050.json';
+import data_kr_066575 from '../db/kr/tickers/066575.json';
+import data_kr_030200 from '../db/kr/tickers/030200.json';
+import data_kr_010950 from '../db/kr/tickers/010950.json';
+import data_kr_051915 from '../db/kr/tickers/051915.json';
+import data_kr_005940 from '../db/kr/tickers/005940.json';
+import data_kr_006260 from '../db/kr/tickers/006260.json';
+import data_kr_323410 from '../db/kr/tickers/323410.json';
+import data_kr_047040 from '../db/kr/tickers/047040.json';
+import data_kr_443060 from '../db/kr/tickers/443060.json';
+import data_kr_000880 from '../db/kr/tickers/000880.json';
+import data_kr_016360 from '../db/kr/tickers/016360.json';
 import data_kr_0126Z0 from '../db/kr/tickers/0126Z0.json';
-import data_kr_012700 from '../db/kr/tickers/012700.json';
+import data_kr_028050 from '../db/kr/tickers/028050.json';
+import data_kr_047050 from '../db/kr/tickers/047050.json';
+import data_kr_003490 from '../db/kr/tickers/003490.json';
+import data_kr_259960 from '../db/kr/tickers/259960.json';
+import data_kr_000155 from '../db/kr/tickers/000155.json';
+import data_kr_039490 from '../db/kr/tickers/039490.json';
+import data_kr_071055 from '../db/kr/tickers/071055.json';
+import data_kr_352820 from '../db/kr/tickers/352820.json';
+import data_kr_005830 from '../db/kr/tickers/005830.json';
+import data_kr_064400 from '../db/kr/tickers/064400.json';
+import data_kr_007660 from '../db/kr/tickers/007660.json';
+import data_kr_161390 from '../db/kr/tickers/161390.json';
+import data_kr_353200 from '../db/kr/tickers/353200.json';
+import data_kr_003230 from '../db/kr/tickers/003230.json';
+import data_kr_180640 from '../db/kr/tickers/180640.json';
+import data_kr_00680K from '../db/kr/tickers/00680K.json';
+import data_kr_240810 from '../db/kr/tickers/240810.json';
+import data_kr_062040 from '../db/kr/tickers/062040.json';
+import data_kr_090430 from '../db/kr/tickers/090430.json';
+import data_kr_001440 from '../db/kr/tickers/001440.json';
+import data_kr_078930 from '../db/kr/tickers/078930.json';
+import data_kr_267270 from '../db/kr/tickers/267270.json';
+import data_kr_009830 from '../db/kr/tickers/009830.json';
+import data_kr_326030 from '../db/kr/tickers/326030.json';
+import data_kr_454910 from '../db/kr/tickers/454910.json';
+import data_kr_034220 from '../db/kr/tickers/034220.json';
+import data_kr_011790 from '../db/kr/tickers/011790.json';
+import data_kr_032640 from '../db/kr/tickers/032640.json';
+import data_kr_000990 from '../db/kr/tickers/000990.json';
+import data_kr_004170 from '../db/kr/tickers/004170.json';
+import data_kr_241560 from '../db/kr/tickers/241560.json';
+import data_kr_021240 from '../db/kr/tickers/021240.json';
+import data_kr_377300 from '../db/kr/tickers/377300.json';
+import data_kr_000250 from '../db/kr/tickers/000250.json';
+import data_kr_336260 from '../db/kr/tickers/336260.json';
+import data_kr_001040 from '../db/kr/tickers/001040.json';
+import data_kr_000100 from '../db/kr/tickers/000100.json';
+import data_kr_138930 from '../db/kr/tickers/138930.json';
+import data_kr_029780 from '../db/kr/tickers/029780.json';
+import data_kr_010060 from '../db/kr/tickers/010060.json';
+import data_kr_00104K from '../db/kr/tickers/00104K.json';
+import data_kr_018880 from '../db/kr/tickers/018880.json';
+import data_kr_023530 from '../db/kr/tickers/023530.json';
+import data_kr_128940 from '../db/kr/tickers/128940.json';
+import data_kr_175330 from '../db/kr/tickers/175330.json';
+import data_kr_271560 from '../db/kr/tickers/271560.json';
+import data_kr_052690 from '../db/kr/tickers/052690.json';
+import data_kr_036570 from '../db/kr/tickers/036570.json';
+import data_kr_082740 from '../db/kr/tickers/082740.json';
+import data_kr_004020 from '../db/kr/tickers/004020.json';
+import data_kr_085620 from '../db/kr/tickers/085620.json';
+import data_kr_000500 from '../db/kr/tickers/000500.json';
+import data_kr_022100 from '../db/kr/tickers/022100.json';
+import data_kr_103590 from '../db/kr/tickers/103590.json';
+import data_kr_095340 from '../db/kr/tickers/095340.json';
+import data_kr_069960 from '../db/kr/tickers/069960.json';
+import data_kr_002380 from '../db/kr/tickers/002380.json';
+import data_kr_051900 from '../db/kr/tickers/051900.json';
+import data_kr_450080 from '../db/kr/tickers/450080.json';
+import data_kr_088350 from '../db/kr/tickers/088350.json';
+import data_kr_00088K from '../db/kr/tickers/00088K.json';
+import data_kr_375500 from '../db/kr/tickers/375500.json';
+import data_kr_007810 from '../db/kr/tickers/007810.json';
+import data_kr_489790 from '../db/kr/tickers/489790.json';
+import data_kr_005850 from '../db/kr/tickers/005850.json';
+import data_kr_111770 from '../db/kr/tickers/111770.json';
+import data_kr_204320 from '../db/kr/tickers/204320.json';
+import data_kr_011780 from '../db/kr/tickers/011780.json';
+import data_kr_014680 from '../db/kr/tickers/014680.json';
+import data_kr_251270 from '../db/kr/tickers/251270.json';
+import data_kr_011170 from '../db/kr/tickers/011170.json';
+import data_kr_012510 from '../db/kr/tickers/012510.json';
+import data_kr_004800 from '../db/kr/tickers/004800.json';
+import data_kr_001450 from '../db/kr/tickers/001450.json';
+import data_kr_035250 from '../db/kr/tickers/035250.json';
+import data_kr_097950 from '../db/kr/tickers/097950.json';
+import data_kr_031210 from '../db/kr/tickers/031210.json';
+import data_kr_036460 from '../db/kr/tickers/036460.json';
+import data_kr_302440 from '../db/kr/tickers/302440.json';
+import data_kr_005290 from '../db/kr/tickers/005290.json';
+import data_kr_383220 from '../db/kr/tickers/383220.json';
+import data_kr_131970 from '../db/kr/tickers/131970.json';
+import data_kr_010170 from '../db/kr/tickers/010170.json';
+import data_kr_017800 from '../db/kr/tickers/017800.json';
+import data_kr_028670 from '../db/kr/tickers/028670.json';
+import data_kr_139130 from '../db/kr/tickers/139130.json';
+import data_kr_020150 from '../db/kr/tickers/020150.json';
 import data_kr_012750 from '../db/kr/tickers/012750.json';
-import data_kr_012790 from '../db/kr/tickers/012790.json';
-import data_kr_012860 from '../db/kr/tickers/012860.json';
+import data_kr_006360 from '../db/kr/tickers/006360.json';
+import data_kr_000240 from '../db/kr/tickers/000240.json';
+import data_kr_009420 from '../db/kr/tickers/009420.json';
+import data_kr_457190 from '../db/kr/tickers/457190.json';
+import data_kr_001740 from '../db/kr/tickers/001740.json';
+import data_kr_026960 from '../db/kr/tickers/026960.json';
+import data_kr_003690 from '../db/kr/tickers/003690.json';
+import data_kr_120110 from '../db/kr/tickers/120110.json';
+import data_kr_139480 from '../db/kr/tickers/139480.json';
+import data_kr_071970 from '../db/kr/tickers/071970.json';
+import data_kr_439260 from '../db/kr/tickers/439260.json';
+import data_kr_051600 from '../db/kr/tickers/051600.json';
+import data_kr_081660 from '../db/kr/tickers/081660.json';
+import data_kr_007340 from '../db/kr/tickers/007340.json';
+import data_kr_011210 from '../db/kr/tickers/011210.json';
+import data_kr_008770 from '../db/kr/tickers/008770.json';
+import data_kr_002790 from '../db/kr/tickers/002790.json';
+import data_kr_009970 from '../db/kr/tickers/009970.json';
+import data_kr_282330 from '../db/kr/tickers/282330.json';
+import data_kr_004370 from '../db/kr/tickers/004370.json';
+import data_kr_103140 from '../db/kr/tickers/103140.json';
+import data_kr_007070 from '../db/kr/tickers/007070.json';
+import data_kr_030000 from '../db/kr/tickers/030000.json';
+import data_kr_093370 from '../db/kr/tickers/093370.json';
+import data_kr_003540 from '../db/kr/tickers/003540.json';
+import data_kr_005440 from '../db/kr/tickers/005440.json';
+import data_kr_030530 from '../db/kr/tickers/030530.json';
+import data_kr_018670 from '../db/kr/tickers/018670.json';
+import data_kr_097230 from '../db/kr/tickers/097230.json';
+import data_kr_004990 from '../db/kr/tickers/004990.json';
+import data_kr_008930 from '../db/kr/tickers/008930.json';
+import data_kr_229640 from '../db/kr/tickers/229640.json';
+import data_kr_161890 from '../db/kr/tickers/161890.json';
+import data_kr_007390 from '../db/kr/tickers/007390.json';
+import data_kr_192820 from '../db/kr/tickers/192820.json';
+import data_kr_281820 from '../db/kr/tickers/281820.json';
+import data_kr_475150 from '../db/kr/tickers/475150.json';
+import data_kr_462870 from '../db/kr/tickers/462870.json';
+import data_kr_112610 from '../db/kr/tickers/112610.json';
+import data_kr_0009K0 from '../db/kr/tickers/0009K0.json';
+import data_kr_023590 from '../db/kr/tickers/023590.json';
+import data_kr_001430 from '../db/kr/tickers/001430.json';
+import data_kr_017960 from '../db/kr/tickers/017960.json';
+import data_kr_322000 from '../db/kr/tickers/322000.json';
+import data_kr_000120 from '../db/kr/tickers/000120.json';
+import data_kr_001800 from '../db/kr/tickers/001800.json';
+import data_kr_020560 from '../db/kr/tickers/020560.json';
+import data_kr_361610 from '../db/kr/tickers/361610.json';
+import data_kr_005070 from '../db/kr/tickers/005070.json';
+import data_kr_298020 from '../db/kr/tickers/298020.json';
+import data_kr_001820 from '../db/kr/tickers/001820.json';
+import data_kr_001720 from '../db/kr/tickers/001720.json';
+import data_kr_006040 from '../db/kr/tickers/006040.json';
+import data_kr_001120 from '../db/kr/tickers/001120.json';
+import data_kr_006280 from '../db/kr/tickers/006280.json';
+import data_kr_073240 from '../db/kr/tickers/073240.json';
+import data_kr_032350 from '../db/kr/tickers/032350.json';
+import data_kr_195870 from '../db/kr/tickers/195870.json';
+import data_kr_077970 from '../db/kr/tickers/077970.json';
+import data_kr_069620 from '../db/kr/tickers/069620.json';
+import data_kr_034230 from '../db/kr/tickers/034230.json';
+import data_kr_192080 from '../db/kr/tickers/192080.json';
+import data_kr_294870 from '../db/kr/tickers/294870.json';
+import data_kr_003530 from '../db/kr/tickers/003530.json';
+import data_kr_090710 from '../db/kr/tickers/090710.json';
+import data_kr_030610 from '../db/kr/tickers/030610.json';
+import data_kr_004000 from '../db/kr/tickers/004000.json';
+import data_kr_082640 from '../db/kr/tickers/082640.json';
+import data_kr_000210 from '../db/kr/tickers/000210.json';
+import data_kr_181710 from '../db/kr/tickers/181710.json';
+import data_kr_007310 from '../db/kr/tickers/007310.json';
+import data_kr_003380 from '../db/kr/tickers/003380.json';
+import data_kr_089860 from '../db/kr/tickers/089860.json';
+import data_kr_003570 from '../db/kr/tickers/003570.json';
+import data_kr_300720 from '../db/kr/tickers/300720.json';
+import data_kr_000080 from '../db/kr/tickers/000080.json';
+import data_kr_012630 from '../db/kr/tickers/012630.json';
+import data_kr_003470 from '../db/kr/tickers/003470.json';
+import data_kr_005300 from '../db/kr/tickers/005300.json';
+import data_kr_074600 from '../db/kr/tickers/074600.json';
+import data_kr_009450 from '../db/kr/tickers/009450.json';
+import data_kr_336370 from '../db/kr/tickers/336370.json';
+import data_kr_090360 from '../db/kr/tickers/090360.json';
+import data_kr_100090 from '../db/kr/tickers/100090.json';
+import data_kr_185750 from '../db/kr/tickers/185750.json';
+import data_kr_499790 from '../db/kr/tickers/499790.json';
+import data_kr_280360 from '../db/kr/tickers/280360.json';
+import data_kr_090460 from '../db/kr/tickers/090460.json';
+import data_kr_057050 from '../db/kr/tickers/057050.json';
+import data_kr_298050 from '../db/kr/tickers/298050.json';
+import data_kr_075580 from '../db/kr/tickers/075580.json';
+import data_kr_027360 from '../db/kr/tickers/027360.json';
+import data_kr_000670 from '../db/kr/tickers/000670.json';
+import data_kr_248070 from '../db/kr/tickers/248070.json';
+import data_kr_456040 from '../db/kr/tickers/456040.json';
+import data_kr_006120 from '../db/kr/tickers/006120.json';
+import data_kr_285130 from '../db/kr/tickers/285130.json';
+import data_kr_014620 from '../db/kr/tickers/014620.json';
+import data_kr_006650 from '../db/kr/tickers/006650.json';
+import data_kr_006340 from '../db/kr/tickers/006340.json';
+import data_kr_030190 from '../db/kr/tickers/030190.json';
+import data_kr_005690 from '../db/kr/tickers/005690.json';
+import data_kr_079900 from '../db/kr/tickers/079900.json';
+import data_kr_071320 from '../db/kr/tickers/071320.json';
+import data_kr_137310 from '../db/kr/tickers/137310.json';
+import data_kr_214320 from '../db/kr/tickers/214320.json';
+import data_kr_192400 from '../db/kr/tickers/192400.json';
+import data_kr_006110 from '../db/kr/tickers/006110.json';
+import data_kr_004490 from '../db/kr/tickers/004490.json';
+import data_kr_484870 from '../db/kr/tickers/484870.json';
+import data_kr_000370 from '../db/kr/tickers/000370.json';
+import data_kr_108320 from '../db/kr/tickers/108320.json';
+import data_kr_003160 from '../db/kr/tickers/003160.json';
+import data_kr_003850 from '../db/kr/tickers/003850.json';
+import data_kr_023160 from '../db/kr/tickers/023160.json';
+import data_kr_079160 from '../db/kr/tickers/079160.json';
+import data_kr_003240 from '../db/kr/tickers/003240.json';
+import data_kr_035760 from '../db/kr/tickers/035760.json';
+import data_kr_025540 from '../db/kr/tickers/025540.json';
+import data_kr_003090 from '../db/kr/tickers/003090.json';
+import data_kr_002350 from '../db/kr/tickers/002350.json';
+import data_kr_005090 from '../db/kr/tickers/005090.json';
+import data_kr_002020 from '../db/kr/tickers/002020.json';
+import data_kr_036530 from '../db/kr/tickers/036530.json';
+import data_kr_033240 from '../db/kr/tickers/033240.json';
+import data_kr_010780 from '../db/kr/tickers/010780.json';
+import data_kr_253450 from '../db/kr/tickers/253450.json';
+import data_kr_064960 from '../db/kr/tickers/064960.json';
+import data_kr_114090 from '../db/kr/tickers/114090.json';
+import data_kr_006730 from '../db/kr/tickers/006730.json';
+import data_kr_100840 from '../db/kr/tickers/100840.json';
+import data_kr_008060 from '../db/kr/tickers/008060.json';
+import data_kr_178920 from '../db/kr/tickers/178920.json';
+import data_kr_005880 from '../db/kr/tickers/005880.json';
+import data_kr_001510 from '../db/kr/tickers/001510.json';
+import data_kr_001680 from '../db/kr/tickers/001680.json';
+import data_kr_002960 from '../db/kr/tickers/002960.json';
+import data_kr_007700 from '../db/kr/tickers/007700.json';
+import data_kr_003620 from '../db/kr/tickers/003620.json';
+import data_kr_019210 from '../db/kr/tickers/019210.json';
+import data_kr_069260 from '../db/kr/tickers/069260.json';
+import data_kr_001060 from '../db/kr/tickers/001060.json';
+import data_kr_014820 from '../db/kr/tickers/014820.json';
+import data_kr_317450 from '../db/kr/tickers/317450.json';
+import data_kr_009520 from '../db/kr/tickers/009520.json';
+import data_kr_001570 from '../db/kr/tickers/001570.json';
+import data_kr_383800 from '../db/kr/tickers/383800.json';
+import data_kr_093050 from '../db/kr/tickers/093050.json';
+import data_kr_005180 from '../db/kr/tickers/005180.json';
+import data_kr_249420 from '../db/kr/tickers/249420.json';
+import data_kr_104830 from '../db/kr/tickers/104830.json';
+import data_kr_009240 from '../db/kr/tickers/009240.json';
+import data_kr_015750 from '../db/kr/tickers/015750.json';
+import data_kr_001270 from '../db/kr/tickers/001270.json';
+import data_kr_058650 from '../db/kr/tickers/058650.json';
+import data_kr_017940 from '../db/kr/tickers/017940.json';
+import data_kr_025980 from '../db/kr/tickers/025980.json';
+import data_kr_006910 from '../db/kr/tickers/006910.json';
+import data_kr_018290 from '../db/kr/tickers/018290.json';
+import data_kr_0011T0 from '../db/kr/tickers/0011T0.json';
+import data_kr_024850 from '../db/kr/tickers/024850.json';
+import data_kr_025320 from '../db/kr/tickers/025320.json';
+import data_kr_114810 from '../db/kr/tickers/114810.json';
 import data_kr_013030 from '../db/kr/tickers/013030.json';
+import data_kr_482630 from '../db/kr/tickers/482630.json';
+import data_kr_025900 from '../db/kr/tickers/025900.json';
+import data_kr_003800 from '../db/kr/tickers/003800.json';
+import data_kr_051500 from '../db/kr/tickers/051500.json';
+import data_kr_025770 from '../db/kr/tickers/025770.json';
+import data_kr_0001A0 from '../db/kr/tickers/0001A0.json';
+import data_kr_073490 from '../db/kr/tickers/073490.json';
+import data_kr_0008Z0 from '../db/kr/tickers/0008Z0.json';
+import data_kr_014940 from '../db/kr/tickers/014940.json';
+import data_kr_094480 from '../db/kr/tickers/094480.json';
+import data_kr_023410 from '../db/kr/tickers/023410.json';
+import data_kr_011560 from '../db/kr/tickers/011560.json';
+import data_kr_017890 from '../db/kr/tickers/017890.json';
+import data_kr_0082N0 from '../db/kr/tickers/0082N0.json';
+import data_kr_023760 from '../db/kr/tickers/023760.json';
+import data_kr_012860 from '../db/kr/tickers/012860.json';
+import data_kr_0015G0 from '../db/kr/tickers/0015G0.json';
+import data_kr_051370 from '../db/kr/tickers/051370.json';
+import data_kr_012210 from '../db/kr/tickers/012210.json';
+import data_kr_018000 from '../db/kr/tickers/018000.json';
+import data_kr_036030 from '../db/kr/tickers/036030.json';
+import data_kr_005710 from '../db/kr/tickers/005710.json';
+import data_kr_018310 from '../db/kr/tickers/018310.json';
+import data_kr_019010 from '../db/kr/tickers/019010.json';
 import data_kr_013120 from '../db/kr/tickers/013120.json';
+import data_kr_036560 from '../db/kr/tickers/036560.json';
+import data_kr_0088M0 from '../db/kr/tickers/0088M0.json';
+import data_kr_0007C0 from '../db/kr/tickers/0007C0.json';
+import data_kr_024060 from '../db/kr/tickers/024060.json';
+import data_kr_024840 from '../db/kr/tickers/024840.json';
+import data_kr_023910 from '../db/kr/tickers/023910.json';
+import data_kr_024800 from '../db/kr/tickers/024800.json';
+import data_kr_011040 from '../db/kr/tickers/011040.json';
+import data_kr_041440 from '../db/kr/tickers/041440.json';
+import data_kr_067280 from '../db/kr/tickers/067280.json';
+import data_kr_008830 from '../db/kr/tickers/008830.json';
+import data_kr_023600 from '../db/kr/tickers/023600.json';
+import data_kr_032940 from '../db/kr/tickers/032940.json';
+import data_kr_017510 from '../db/kr/tickers/017510.json';
+import data_kr_0011A0 from '../db/kr/tickers/0011A0.json';
+import data_kr_021080 from '../db/kr/tickers/021080.json';
+import data_kr_005990 from '../db/kr/tickers/005990.json';
+import data_kr_005160 from '../db/kr/tickers/005160.json';
+import data_kr_007330 from '../db/kr/tickers/007330.json';
+import data_kr_001540 from '../db/kr/tickers/001540.json';
 import data_kr_013310 from '../db/kr/tickers/013310.json';
+import data_kr_025950 from '../db/kr/tickers/025950.json';
+import data_kr_003100 from '../db/kr/tickers/003100.json';
+import data_kr_090850 from '../db/kr/tickers/090850.json';
+import data_kr_0004V0 from '../db/kr/tickers/0004V0.json';
+import data_kr_054050 from '../db/kr/tickers/054050.json';
+import data_kr_089600 from '../db/kr/tickers/089600.json';
+import data_kr_018120 from '../db/kr/tickers/018120.json';
+import data_kr_040300 from '../db/kr/tickers/040300.json';
+import data_kr_006620 from '../db/kr/tickers/006620.json';
+import data_kr_009780 from '../db/kr/tickers/009780.json';
+import data_kr_052260 from '../db/kr/tickers/052260.json';
+import data_kr_021320 from '../db/kr/tickers/021320.json';
+import data_kr_013990 from '../db/kr/tickers/013990.json';
+import data_kr_217820 from '../db/kr/tickers/217820.json';
+import data_kr_005860 from '../db/kr/tickers/005860.json';
+import data_kr_023900 from '../db/kr/tickers/023900.json';
+import data_kr_002230 from '../db/kr/tickers/002230.json';
+import data_kr_0015S0 from '../db/kr/tickers/0015S0.json';
+import data_kr_417970 from '../db/kr/tickers/417970.json';
+import data_kr_024880 from '../db/kr/tickers/024880.json';
+import data_kr_011370 from '../db/kr/tickers/011370.json';
+import data_kr_043610 from '../db/kr/tickers/043610.json';
+import data_kr_0007J0 from '../db/kr/tickers/0007J0.json';
+import data_kr_024830 from '../db/kr/tickers/024830.json';
+import data_kr_004590 from '../db/kr/tickers/004590.json';
+import data_kr_019540 from '../db/kr/tickers/019540.json';
+import data_kr_009300 from '../db/kr/tickers/009300.json';
+import data_kr_026150 from '../db/kr/tickers/026150.json';
+import data_kr_024740 from '../db/kr/tickers/024740.json';
+import data_kr_019550 from '../db/kr/tickers/019550.json';
+import data_kr_011320 from '../db/kr/tickers/011320.json';
+import data_kr_017480 from '../db/kr/tickers/017480.json';
+import data_kr_014970 from '../db/kr/tickers/014970.json';
+import data_kr_017650 from '../db/kr/tickers/017650.json';
+import data_kr_006140 from '../db/kr/tickers/006140.json';
+import data_kr_012700 from '../db/kr/tickers/012700.json';
+import data_kr_0015N0 from '../db/kr/tickers/0015N0.json';
+import data_kr_020710 from '../db/kr/tickers/020710.json';
+import data_kr_010280 from '../db/kr/tickers/010280.json';
+import data_kr_004650 from '../db/kr/tickers/004650.json';
+import data_kr_007820 from '../db/kr/tickers/007820.json';
+import data_kr_002800 from '../db/kr/tickers/002800.json';
+import data_kr_216050 from '../db/kr/tickers/216050.json';
+import data_kr_000440 from '../db/kr/tickers/000440.json';
+import data_kr_003310 from '../db/kr/tickers/003310.json';
+import data_kr_014470 from '../db/kr/tickers/014470.json';
+import data_kr_311690 from '../db/kr/tickers/311690.json';
+import data_kr_025550 from '../db/kr/tickers/025550.json';
+import data_kr_004780 from '../db/kr/tickers/004780.json';
+import data_kr_016250 from '../db/kr/tickers/016250.json';
+import data_kr_012790 from '../db/kr/tickers/012790.json';
+import data_kr_010240 from '../db/kr/tickers/010240.json';
+import data_kr_019990 from '../db/kr/tickers/019990.json';
+import data_kr_014950 from '../db/kr/tickers/014950.json';
+import data_kr_005670 from '../db/kr/tickers/005670.json';
+import data_kr_024910 from '../db/kr/tickers/024910.json';
+import data_kr_010470 from '../db/kr/tickers/010470.json';
+import data_kr_007370 from '../db/kr/tickers/007370.json';
+import data_kr_036670 from '../db/kr/tickers/036670.json';
+import data_kr_0013V0 from '../db/kr/tickers/0013V0.json';
+import data_kr_008370 from '../db/kr/tickers/008370.json';
+import data_kr_015710 from '../db/kr/tickers/015710.json';
+import data_kr_007680 from '../db/kr/tickers/007680.json';
+import data_kr_014190 from '../db/kr/tickers/014190.json';
+import data_kr_016600 from '../db/kr/tickers/016600.json';
+import data_kr_033170 from '../db/kr/tickers/033170.json';
+import data_kr_027050 from '../db/kr/tickers/027050.json';
+import data_kr_023440 from '../db/kr/tickers/023440.json';
+import data_kr_021045 from '../db/kr/tickers/021045.json';
+import data_kr_001840 from '../db/kr/tickers/001840.json';
+import data_kr_056700 from '../db/kr/tickers/056700.json';
+import data_kr_002290 from '../db/kr/tickers/002290.json';
+import data_kr_007530 from '../db/kr/tickers/007530.json';
+import data_kr_0010V0 from '../db/kr/tickers/0010V0.json';
+import data_kr_024950 from '../db/kr/tickers/024950.json';
+import data_kr_020180 from '../db/kr/tickers/020180.json';
+import data_kr_025880 from '../db/kr/tickers/025880.json';
+import data_kr_019770 from '../db/kr/tickers/019770.json';
+import data_kr_006920 from '../db/kr/tickers/006920.json';
+import data_kr_022220 from '../db/kr/tickers/022220.json';
+import data_kr_263700 from '../db/kr/tickers/263700.json';
+import data_kr_024120 from '../db/kr/tickers/024120.json';
+import data_kr_014570 from '../db/kr/tickers/014570.json';
+import data_kr_026040 from '../db/kr/tickers/026040.json';
+import data_kr_025440 from '../db/kr/tickers/025440.json';
+import data_kr_026910 from '../db/kr/tickers/026910.json';
+import data_kr_021650 from '../db/kr/tickers/021650.json';
+import data_kr_0010F0 from '../db/kr/tickers/0010F0.json';
+import data_kr_001000 from '../db/kr/tickers/001000.json';
+import data_kr_012620 from '../db/kr/tickers/012620.json';
+import data_kr_007720 from '../db/kr/tickers/007720.json';
+import data_kr_027040 from '../db/kr/tickers/027040.json';
 import data_kr_013720 from '../db/kr/tickers/013720.json';
 import data_kr_013810 from '../db/kr/tickers/013810.json';
-import data_kr_013990 from '../db/kr/tickers/013990.json';
-import data_kr_014100 from '../db/kr/tickers/014100.json';
-import data_kr_014190 from '../db/kr/tickers/014190.json';
-import data_kr_014470 from '../db/kr/tickers/014470.json';
-import data_kr_014570 from '../db/kr/tickers/014570.json';
-import data_kr_014620 from '../db/kr/tickers/014620.json';
-import data_kr_014680 from '../db/kr/tickers/014680.json';
-import data_kr_014820 from '../db/kr/tickers/014820.json';
-import data_kr_014940 from '../db/kr/tickers/014940.json';
-import data_kr_014950 from '../db/kr/tickers/014950.json';
-import data_kr_014970 from '../db/kr/tickers/014970.json';
-import data_kr_015710 from '../db/kr/tickers/015710.json';
-import data_kr_015750 from '../db/kr/tickers/015750.json';
-import data_kr_015760 from '../db/kr/tickers/015760.json';
-import data_kr_016100 from '../db/kr/tickers/016100.json';
-import data_kr_016250 from '../db/kr/tickers/016250.json';
-import data_kr_016360 from '../db/kr/tickers/016360.json';
-import data_kr_016600 from '../db/kr/tickers/016600.json';
-import data_kr_016670 from '../db/kr/tickers/016670.json';
-import data_kr_016790 from '../db/kr/tickers/016790.json';
-import data_kr_016920 from '../db/kr/tickers/016920.json';
 import data_kr_017000 from '../db/kr/tickers/017000.json';
-import data_kr_017250 from '../db/kr/tickers/017250.json';
-import data_kr_017480 from '../db/kr/tickers/017480.json';
-import data_kr_017510 from '../db/kr/tickers/017510.json';
-import data_kr_017650 from '../db/kr/tickers/017650.json';
-import data_kr_017670 from '../db/kr/tickers/017670.json';
-import data_kr_017800 from '../db/kr/tickers/017800.json';
-import data_kr_017890 from '../db/kr/tickers/017890.json';
-import data_kr_017940 from '../db/kr/tickers/017940.json';
-import data_kr_017960 from '../db/kr/tickers/017960.json';
-import data_kr_018000 from '../db/kr/tickers/018000.json';
-import data_kr_018120 from '../db/kr/tickers/018120.json';
-import data_kr_018260 from '../db/kr/tickers/018260.json';
-import data_kr_018290 from '../db/kr/tickers/018290.json';
-import data_kr_018310 from '../db/kr/tickers/018310.json';
-import data_kr_018620 from '../db/kr/tickers/018620.json';
-import data_kr_018670 from '../db/kr/tickers/018670.json';
+import data_kr_016670 from '../db/kr/tickers/016670.json';
 import data_kr_018680 from '../db/kr/tickers/018680.json';
-import data_kr_018700 from '../db/kr/tickers/018700.json';
-import data_kr_018880 from '../db/kr/tickers/018880.json';
-import data_kr_019010 from '../db/kr/tickers/019010.json';
-import data_kr_019210 from '../db/kr/tickers/019210.json';
-import data_kr_019540 from '../db/kr/tickers/019540.json';
-import data_kr_019550 from '../db/kr/tickers/019550.json';
 import data_kr_019570 from '../db/kr/tickers/019570.json';
+import data_kr_008470 from '../db/kr/tickers/008470.json';
 import data_kr_019660 from '../db/kr/tickers/019660.json';
-import data_kr_019770 from '../db/kr/tickers/019770.json';
-import data_kr_019990 from '../db/kr/tickers/019990.json';
-import data_kr_020150 from '../db/kr/tickers/020150.json';
-import data_kr_020180 from '../db/kr/tickers/020180.json';
-import data_kr_020400 from '../db/kr/tickers/020400.json';
-import data_kr_020560 from '../db/kr/tickers/020560.json';
-import data_kr_020710 from '../db/kr/tickers/020710.json';
-import data_kr_021040 from '../db/kr/tickers/021040.json';
-import data_kr_021045 from '../db/kr/tickers/021045.json';
-import data_kr_021080 from '../db/kr/tickers/021080.json';
-import data_kr_021240 from '../db/kr/tickers/021240.json';
-import data_kr_021320 from '../db/kr/tickers/021320.json';
-import data_kr_021650 from '../db/kr/tickers/021650.json';
-import data_kr_021880 from '../db/kr/tickers/021880.json';
-import data_kr_022100 from '../db/kr/tickers/022100.json';
-import data_kr_022220 from '../db/kr/tickers/022220.json';
-import data_kr_023160 from '../db/kr/tickers/023160.json';
-import data_kr_023410 from '../db/kr/tickers/023410.json';
-import data_kr_023440 from '../db/kr/tickers/023440.json';
-import data_kr_023530 from '../db/kr/tickers/023530.json';
-import data_kr_023590 from '../db/kr/tickers/023590.json';
-import data_kr_023600 from '../db/kr/tickers/023600.json';
-import data_kr_023760 from '../db/kr/tickers/023760.json';
+import data_kr_001810 from '../db/kr/tickers/001810.json';
+import data_kr_007770 from '../db/kr/tickers/007770.json';
+import data_kr_016100 from '../db/kr/tickers/016100.json';
+import data_kr_016920 from '../db/kr/tickers/016920.json';
 import data_kr_023770 from '../db/kr/tickers/023770.json';
-import data_kr_023790 from '../db/kr/tickers/023790.json';
-import data_kr_023900 from '../db/kr/tickers/023900.json';
-import data_kr_023910 from '../db/kr/tickers/023910.json';
-import data_kr_024060 from '../db/kr/tickers/024060.json';
-import data_kr_024110 from '../db/kr/tickers/024110.json';
-import data_kr_024120 from '../db/kr/tickers/024120.json';
-import data_kr_024740 from '../db/kr/tickers/024740.json';
-import data_kr_024800 from '../db/kr/tickers/024800.json';
-import data_kr_024830 from '../db/kr/tickers/024830.json';
-import data_kr_024840 from '../db/kr/tickers/024840.json';
-import data_kr_024850 from '../db/kr/tickers/024850.json';
-import data_kr_024880 from '../db/kr/tickers/024880.json';
-import data_kr_024910 from '../db/kr/tickers/024910.json';
 import data_kr_024940 from '../db/kr/tickers/024940.json';
-import data_kr_024950 from '../db/kr/tickers/024950.json';
-import data_kr_025320 from '../db/kr/tickers/025320.json';
-import data_kr_025440 from '../db/kr/tickers/025440.json';
-import data_kr_025540 from '../db/kr/tickers/025540.json';
-import data_kr_025550 from '../db/kr/tickers/025550.json';
-import data_kr_025770 from '../db/kr/tickers/025770.json';
+import data_kr_020400 from '../db/kr/tickers/020400.json';
+import data_kr_017250 from '../db/kr/tickers/017250.json';
+import data_kr_021040 from '../db/kr/tickers/021040.json';
+import data_kr_006050 from '../db/kr/tickers/006050.json';
+import data_kr_014100 from '../db/kr/tickers/014100.json';
+import data_kr_018620 from '../db/kr/tickers/018620.json';
+import data_kr_023790 from '../db/kr/tickers/023790.json';
+import data_kr_009730 from '../db/kr/tickers/009730.json';
+import data_kr_018700 from '../db/kr/tickers/018700.json';
+import data_kr_012340 from '../db/kr/tickers/012340.json';
+import data_kr_002680 from '../db/kr/tickers/002680.json';
+import data_kr_011080 from '../db/kr/tickers/011080.json';
 import data_kr_025870 from '../db/kr/tickers/025870.json';
-import data_kr_025880 from '../db/kr/tickers/025880.json';
-import data_kr_025900 from '../db/kr/tickers/025900.json';
-import data_kr_025950 from '../db/kr/tickers/025950.json';
-import data_kr_025980 from '../db/kr/tickers/025980.json';
-import data_kr_026040 from '../db/kr/tickers/026040.json';
-import data_kr_026150 from '../db/kr/tickers/026150.json';
-import data_kr_026910 from '../db/kr/tickers/026910.json';
-import data_kr_026960 from '../db/kr/tickers/026960.json';
-import data_kr_027040 from '../db/kr/tickers/027040.json';
-import data_kr_027050 from '../db/kr/tickers/027050.json';
-import data_kr_027360 from '../db/kr/tickers/027360.json';
-import data_kr_028050 from '../db/kr/tickers/028050.json';
-import data_kr_028260 from '../db/kr/tickers/028260.json';
-import data_kr_028670 from '../db/kr/tickers/028670.json';
-import data_kr_029780 from '../db/kr/tickers/029780.json';
-import data_kr_030000 from '../db/kr/tickers/030000.json';
-import data_kr_030190 from '../db/kr/tickers/030190.json';
-import data_kr_030200 from '../db/kr/tickers/030200.json';
-import data_kr_030530 from '../db/kr/tickers/030530.json';
-import data_kr_030610 from '../db/kr/tickers/030610.json';
-import data_kr_031210 from '../db/kr/tickers/031210.json';
-import data_kr_032350 from '../db/kr/tickers/032350.json';
-import data_kr_032640 from '../db/kr/tickers/032640.json';
-import data_kr_032830 from '../db/kr/tickers/032830.json';
-import data_kr_032940 from '../db/kr/tickers/032940.json';
-import data_kr_033170 from '../db/kr/tickers/033170.json';
-import data_kr_033240 from '../db/kr/tickers/033240.json';
-import data_kr_033780 from '../db/kr/tickers/033780.json';
-import data_kr_034020 from '../db/kr/tickers/034020.json';
-import data_kr_034220 from '../db/kr/tickers/034220.json';
-import data_kr_034230 from '../db/kr/tickers/034230.json';
-import data_kr_034730 from '../db/kr/tickers/034730.json';
-import data_kr_035250 from '../db/kr/tickers/035250.json';
-import data_kr_035420 from '../db/kr/tickers/035420.json';
-import data_kr_035720 from '../db/kr/tickers/035720.json';
-import data_kr_035760 from '../db/kr/tickers/035760.json';
-import data_kr_036030 from '../db/kr/tickers/036030.json';
-import data_kr_036460 from '../db/kr/tickers/036460.json';
-import data_kr_036530 from '../db/kr/tickers/036530.json';
-import data_kr_036560 from '../db/kr/tickers/036560.json';
-import data_kr_036570 from '../db/kr/tickers/036570.json';
-import data_kr_036670 from '../db/kr/tickers/036670.json';
-import data_kr_039490 from '../db/kr/tickers/039490.json';
-import data_kr_040300 from '../db/kr/tickers/040300.json';
-import data_kr_041440 from '../db/kr/tickers/041440.json';
-import data_kr_042660 from '../db/kr/tickers/042660.json';
-import data_kr_042700 from '../db/kr/tickers/042700.json';
-import data_kr_043610 from '../db/kr/tickers/043610.json';
-import data_kr_047040 from '../db/kr/tickers/047040.json';
-import data_kr_047050 from '../db/kr/tickers/047050.json';
-import data_kr_047810 from '../db/kr/tickers/047810.json';
-import data_kr_051370 from '../db/kr/tickers/051370.json';
-import data_kr_051500 from '../db/kr/tickers/051500.json';
-import data_kr_051600 from '../db/kr/tickers/051600.json';
-import data_kr_051900 from '../db/kr/tickers/051900.json';
-import data_kr_051910 from '../db/kr/tickers/051910.json';
-import data_kr_051915 from '../db/kr/tickers/051915.json';
-import data_kr_052260 from '../db/kr/tickers/052260.json';
-import data_kr_052690 from '../db/kr/tickers/052690.json';
-import data_kr_054050 from '../db/kr/tickers/054050.json';
-import data_kr_055550 from '../db/kr/tickers/055550.json';
-import data_kr_056700 from '../db/kr/tickers/056700.json';
-import data_kr_057050 from '../db/kr/tickers/057050.json';
-import data_kr_058650 from '../db/kr/tickers/058650.json';
-import data_kr_062040 from '../db/kr/tickers/062040.json';
-import data_kr_064350 from '../db/kr/tickers/064350.json';
-import data_kr_064400 from '../db/kr/tickers/064400.json';
-import data_kr_064960 from '../db/kr/tickers/064960.json';
-import data_kr_066570 from '../db/kr/tickers/066570.json';
-import data_kr_066575 from '../db/kr/tickers/066575.json';
-import data_kr_067280 from '../db/kr/tickers/067280.json';
-import data_kr_068270 from '../db/kr/tickers/068270.json';
-import data_kr_069260 from '../db/kr/tickers/069260.json';
-import data_kr_069620 from '../db/kr/tickers/069620.json';
-import data_kr_069960 from '../db/kr/tickers/069960.json';
-import data_kr_071050 from '../db/kr/tickers/071050.json';
-import data_kr_071055 from '../db/kr/tickers/071055.json';
-import data_kr_071320 from '../db/kr/tickers/071320.json';
-import data_kr_071970 from '../db/kr/tickers/071970.json';
-import data_kr_073240 from '../db/kr/tickers/073240.json';
-import data_kr_073490 from '../db/kr/tickers/073490.json';
-import data_kr_074600 from '../db/kr/tickers/074600.json';
-import data_kr_075580 from '../db/kr/tickers/075580.json';
-import data_kr_077970 from '../db/kr/tickers/077970.json';
-import data_kr_078930 from '../db/kr/tickers/078930.json';
-import data_kr_079160 from '../db/kr/tickers/079160.json';
-import data_kr_079550 from '../db/kr/tickers/079550.json';
-import data_kr_079900 from '../db/kr/tickers/079900.json';
-import data_kr_081660 from '../db/kr/tickers/081660.json';
-import data_kr_082640 from '../db/kr/tickers/082640.json';
-import data_kr_082740 from '../db/kr/tickers/082740.json';
-import data_kr_085620 from '../db/kr/tickers/085620.json';
-import data_kr_086280 from '../db/kr/tickers/086280.json';
-import data_kr_086790 from '../db/kr/tickers/086790.json';
-import data_kr_088350 from '../db/kr/tickers/088350.json';
-import data_kr_089600 from '../db/kr/tickers/089600.json';
-import data_kr_089860 from '../db/kr/tickers/089860.json';
-import data_kr_090360 from '../db/kr/tickers/090360.json';
-import data_kr_090430 from '../db/kr/tickers/090430.json';
-import data_kr_090460 from '../db/kr/tickers/090460.json';
-import data_kr_090710 from '../db/kr/tickers/090710.json';
-import data_kr_090850 from '../db/kr/tickers/090850.json';
-import data_kr_093050 from '../db/kr/tickers/093050.json';
-import data_kr_093370 from '../db/kr/tickers/093370.json';
-import data_kr_094480 from '../db/kr/tickers/094480.json';
-import data_kr_095340 from '../db/kr/tickers/095340.json';
-import data_kr_096770 from '../db/kr/tickers/096770.json';
-import data_kr_097230 from '../db/kr/tickers/097230.json';
-import data_kr_097950 from '../db/kr/tickers/097950.json';
-import data_kr_100090 from '../db/kr/tickers/100090.json';
-import data_kr_100840 from '../db/kr/tickers/100840.json';
-import data_kr_103140 from '../db/kr/tickers/103140.json';
-import data_kr_103590 from '../db/kr/tickers/103590.json';
-import data_kr_104830 from '../db/kr/tickers/104830.json';
-import data_kr_105560 from '../db/kr/tickers/105560.json';
-import data_kr_108320 from '../db/kr/tickers/108320.json';
-import data_kr_111770 from '../db/kr/tickers/111770.json';
-import data_kr_112610 from '../db/kr/tickers/112610.json';
-import data_kr_114090 from '../db/kr/tickers/114090.json';
-import data_kr_114810 from '../db/kr/tickers/114810.json';
-import data_kr_120110 from '../db/kr/tickers/120110.json';
-import data_kr_128940 from '../db/kr/tickers/128940.json';
-import data_kr_131970 from '../db/kr/tickers/131970.json';
-import data_kr_137310 from '../db/kr/tickers/137310.json';
-import data_kr_138040 from '../db/kr/tickers/138040.json';
-import data_kr_138930 from '../db/kr/tickers/138930.json';
-import data_kr_139130 from '../db/kr/tickers/139130.json';
-import data_kr_139480 from '../db/kr/tickers/139480.json';
-import data_kr_161390 from '../db/kr/tickers/161390.json';
-import data_kr_161890 from '../db/kr/tickers/161890.json';
-import data_kr_175330 from '../db/kr/tickers/175330.json';
-import data_kr_178920 from '../db/kr/tickers/178920.json';
-import data_kr_180640 from '../db/kr/tickers/180640.json';
-import data_kr_181710 from '../db/kr/tickers/181710.json';
-import data_kr_185750 from '../db/kr/tickers/185750.json';
-import data_kr_192080 from '../db/kr/tickers/192080.json';
-import data_kr_192400 from '../db/kr/tickers/192400.json';
-import data_kr_192820 from '../db/kr/tickers/192820.json';
-import data_kr_195870 from '../db/kr/tickers/195870.json';
-import data_kr_204320 from '../db/kr/tickers/204320.json';
-import data_kr_207940 from '../db/kr/tickers/207940.json';
-import data_kr_214320 from '../db/kr/tickers/214320.json';
-import data_kr_216050 from '../db/kr/tickers/216050.json';
-import data_kr_217820 from '../db/kr/tickers/217820.json';
-import data_kr_229640 from '../db/kr/tickers/229640.json';
-import data_kr_240810 from '../db/kr/tickers/240810.json';
-import data_kr_241560 from '../db/kr/tickers/241560.json';
-import data_kr_248070 from '../db/kr/tickers/248070.json';
-import data_kr_249420 from '../db/kr/tickers/249420.json';
-import data_kr_251270 from '../db/kr/tickers/251270.json';
-import data_kr_253450 from '../db/kr/tickers/253450.json';
-import data_kr_259960 from '../db/kr/tickers/259960.json';
-import data_kr_263700 from '../db/kr/tickers/263700.json';
-import data_kr_267250 from '../db/kr/tickers/267250.json';
-import data_kr_267260 from '../db/kr/tickers/267260.json';
-import data_kr_267270 from '../db/kr/tickers/267270.json';
-import data_kr_271560 from '../db/kr/tickers/271560.json';
-import data_kr_272210 from '../db/kr/tickers/272210.json';
-import data_kr_278470 from '../db/kr/tickers/278470.json';
-import data_kr_280360 from '../db/kr/tickers/280360.json';
-import data_kr_281820 from '../db/kr/tickers/281820.json';
-import data_kr_282330 from '../db/kr/tickers/282330.json';
-import data_kr_285130 from '../db/kr/tickers/285130.json';
-import data_kr_294870 from '../db/kr/tickers/294870.json';
-import data_kr_298020 from '../db/kr/tickers/298020.json';
-import data_kr_298040 from '../db/kr/tickers/298040.json';
-import data_kr_298050 from '../db/kr/tickers/298050.json';
-import data_kr_300720 from '../db/kr/tickers/300720.json';
-import data_kr_302440 from '../db/kr/tickers/302440.json';
-import data_kr_307950 from '../db/kr/tickers/307950.json';
-import data_kr_311690 from '../db/kr/tickers/311690.json';
-import data_kr_316140 from '../db/kr/tickers/316140.json';
-import data_kr_317450 from '../db/kr/tickers/317450.json';
-import data_kr_322000 from '../db/kr/tickers/322000.json';
-import data_kr_323410 from '../db/kr/tickers/323410.json';
-import data_kr_326030 from '../db/kr/tickers/326030.json';
-import data_kr_329180 from '../db/kr/tickers/329180.json';
-import data_kr_336260 from '../db/kr/tickers/336260.json';
-import data_kr_336370 from '../db/kr/tickers/336370.json';
-import data_kr_352820 from '../db/kr/tickers/352820.json';
-import data_kr_353200 from '../db/kr/tickers/353200.json';
-import data_kr_361610 from '../db/kr/tickers/361610.json';
-import data_kr_373220 from '../db/kr/tickers/373220.json';
-import data_kr_375500 from '../db/kr/tickers/375500.json';
-import data_kr_377300 from '../db/kr/tickers/377300.json';
-import data_kr_383220 from '../db/kr/tickers/383220.json';
-import data_kr_383800 from '../db/kr/tickers/383800.json';
-import data_kr_402340 from '../db/kr/tickers/402340.json';
-import data_kr_417970 from '../db/kr/tickers/417970.json';
-import data_kr_439260 from '../db/kr/tickers/439260.json';
-import data_kr_443060 from '../db/kr/tickers/443060.json';
-import data_kr_450080 from '../db/kr/tickers/450080.json';
-import data_kr_454910 from '../db/kr/tickers/454910.json';
-import data_kr_456040 from '../db/kr/tickers/456040.json';
-import data_kr_457190 from '../db/kr/tickers/457190.json';
-import data_kr_462870 from '../db/kr/tickers/462870.json';
-import data_kr_475150 from '../db/kr/tickers/475150.json';
-import data_kr_482630 from '../db/kr/tickers/482630.json';
-import data_kr_484870 from '../db/kr/tickers/484870.json';
-import data_kr_489790 from '../db/kr/tickers/489790.json';
-import data_kr_499790 from '../db/kr/tickers/499790.json';
+import data_kr_008290 from '../db/kr/tickers/008290.json';
+import data_kr_009620 from '../db/kr/tickers/009620.json';
+import data_kr_021880 from '../db/kr/tickers/021880.json';
+import data_kr_006380 from '../db/kr/tickers/006380.json';
+import data_kr_016790 from '../db/kr/tickers/016790.json';
 import data_us_A from '../db/us/tickers/A.json';
 import data_us_AA from '../db/us/tickers/AA.json';
 import data_us_AAOI from '../db/us/tickers/AAOI.json';
@@ -510,6 +511,7 @@ import data_us_ABBV from '../db/us/tickers/ABBV.json';
 import data_us_ABEV from '../db/us/tickers/ABEV.json';
 import data_us_ABNB from '../db/us/tickers/ABNB.json';
 import data_us_ABT from '../db/us/tickers/ABT.json';
+import data_us_ABVX from '../db/us/tickers/ABVX.json';
 import data_us_ACGL from '../db/us/tickers/ACGL.json';
 import data_us_ACN from '../db/us/tickers/ACN.json';
 import data_us_ADBE from '../db/us/tickers/ADBE.json';
@@ -637,6 +639,7 @@ import data_us_BN from '../db/us/tickers/BN.json';
 import data_us_BNS from '../db/us/tickers/BNS.json';
 import data_us_BNT from '../db/us/tickers/BNT.json';
 import data_us_BNTX from '../db/us/tickers/BNTX.json';
+import data_us_BNY from '../db/us/tickers/BNY.json';
 import data_us_BP from '../db/us/tickers/BP.json';
 import data_us_BR from '../db/us/tickers/BR.json';
 import data_us_BRK_A from '../db/us/tickers/BRK-A.json';
@@ -1189,6 +1192,7 @@ import data_us_PUK from '../db/us/tickers/PUK.json';
 import data_us_PWR from '../db/us/tickers/PWR.json';
 import data_us_PYPL from '../db/us/tickers/PYPL.json';
 import data_us_Q from '../db/us/tickers/Q.json';
+import data_us_QBTS from '../db/us/tickers/QBTS.json';
 import data_us_QCOM from '../db/us/tickers/QCOM.json';
 import data_us_QSR from '../db/us/tickers/QSR.json';
 import data_us_QXO from '../db/us/tickers/QXO.json';
@@ -1209,6 +1213,7 @@ import data_us_RGA from '../db/us/tickers/RGA.json';
 import data_us_RGC from '../db/us/tickers/RGC.json';
 import data_us_RGLD from '../db/us/tickers/RGLD.json';
 import data_us_RIO from '../db/us/tickers/RIO.json';
+import data_us_RIOT from '../db/us/tickers/RIOT.json';
 import data_us_RIVN from '../db/us/tickers/RIVN.json';
 import data_us_RJF from '../db/us/tickers/RJF.json';
 import data_us_RKLB from '../db/us/tickers/RKLB.json';
@@ -1455,502 +1460,503 @@ import data_us_ZTO from '../db/us/tickers/ZTO.json';
 import data_us_ZTS from '../db/us/tickers/ZTS.json';
 
 export const allTickersData: Record<string, TickerData> = {
-  '000080.KS': data_kr_000080 as unknown as TickerData,
-  '000100.KS': data_kr_000100 as unknown as TickerData,
-  '000120.KS': data_kr_000120 as unknown as TickerData,
-  '000150.KS': data_kr_000150 as unknown as TickerData,
-  '000155.KS': data_kr_000155 as unknown as TickerData,
-  '0001A0.KQ': data_kr_0001A0 as unknown as TickerData,
-  '000210.KS': data_kr_000210 as unknown as TickerData,
-  '000240.KS': data_kr_000240 as unknown as TickerData,
-  '000250.KQ': data_kr_000250 as unknown as TickerData,
-  '000270.KS': data_kr_000270 as unknown as TickerData,
-  '000370.KS': data_kr_000370 as unknown as TickerData,
-  '000440.KQ': data_kr_000440 as unknown as TickerData,
-  '0004V0.KQ': data_kr_0004V0 as unknown as TickerData,
-  '000500.KS': data_kr_000500 as unknown as TickerData,
-  '000660.KS': data_kr_000660 as unknown as TickerData,
-  '000670.KS': data_kr_000670 as unknown as TickerData,
-  '000720.KS': data_kr_000720 as unknown as TickerData,
-  '0007C0.KQ': data_kr_0007C0 as unknown as TickerData,
-  '0007J0.KQ': data_kr_0007J0 as unknown as TickerData,
-  '000810.KS': data_kr_000810 as unknown as TickerData,
-  '000815.KS': data_kr_000815 as unknown as TickerData,
-  '000880.KS': data_kr_000880 as unknown as TickerData,
-  '00088K.KS': data_kr_00088K as unknown as TickerData,
-  '0008Z0.KQ': data_kr_0008Z0 as unknown as TickerData,
-  '000990.KS': data_kr_000990 as unknown as TickerData,
-  '0009K0.KQ': data_kr_0009K0 as unknown as TickerData,
-  '001000.KQ': data_kr_001000 as unknown as TickerData,
-  '001040.KS': data_kr_001040 as unknown as TickerData,
-  '00104K.KS': data_kr_00104K as unknown as TickerData,
-  '001060.KS': data_kr_001060 as unknown as TickerData,
-  '0010F0.KQ': data_kr_0010F0 as unknown as TickerData,
-  '0010V0.KQ': data_kr_0010V0 as unknown as TickerData,
-  '001120.KS': data_kr_001120 as unknown as TickerData,
-  '0011A0.KQ': data_kr_0011A0 as unknown as TickerData,
-  '0011T0.KQ': data_kr_0011T0 as unknown as TickerData,
-  '001270.KS': data_kr_001270 as unknown as TickerData,
-  '0013V0.KQ': data_kr_0013V0 as unknown as TickerData,
-  '001430.KS': data_kr_001430 as unknown as TickerData,
-  '001440.KS': data_kr_001440 as unknown as TickerData,
-  '001450.KS': data_kr_001450 as unknown as TickerData,
-  '001510.KS': data_kr_001510 as unknown as TickerData,
-  '001540.KQ': data_kr_001540 as unknown as TickerData,
-  '001570.KS': data_kr_001570 as unknown as TickerData,
-  '0015G0.KQ': data_kr_0015G0 as unknown as TickerData,
-  '0015N0.KQ': data_kr_0015N0 as unknown as TickerData,
-  '0015S0.KQ': data_kr_0015S0 as unknown as TickerData,
-  '001680.KS': data_kr_001680 as unknown as TickerData,
-  '001720.KS': data_kr_001720 as unknown as TickerData,
-  '001740.KS': data_kr_001740 as unknown as TickerData,
-  '001800.KS': data_kr_001800 as unknown as TickerData,
-  '001810.KQ': data_kr_001810 as unknown as TickerData,
-  '001820.KS': data_kr_001820 as unknown as TickerData,
-  '001840.KQ': data_kr_001840 as unknown as TickerData,
-  '002020.KS': data_kr_002020 as unknown as TickerData,
-  '002230.KQ': data_kr_002230 as unknown as TickerData,
-  '002290.KQ': data_kr_002290 as unknown as TickerData,
-  '002350.KS': data_kr_002350 as unknown as TickerData,
-  '002380.KS': data_kr_002380 as unknown as TickerData,
-  '002680.KQ': data_kr_002680 as unknown as TickerData,
-  '002790.KS': data_kr_002790 as unknown as TickerData,
-  '002800.KQ': data_kr_002800 as unknown as TickerData,
-  '002960.KS': data_kr_002960 as unknown as TickerData,
-  '003090.KS': data_kr_003090 as unknown as TickerData,
-  '003100.KQ': data_kr_003100 as unknown as TickerData,
-  '003160.KS': data_kr_003160 as unknown as TickerData,
-  '003230.KS': data_kr_003230 as unknown as TickerData,
-  '003240.KS': data_kr_003240 as unknown as TickerData,
-  '003310.KQ': data_kr_003310 as unknown as TickerData,
-  '003380.KQ': data_kr_003380 as unknown as TickerData,
-  '003470.KS': data_kr_003470 as unknown as TickerData,
-  '003490.KS': data_kr_003490 as unknown as TickerData,
-  '003530.KS': data_kr_003530 as unknown as TickerData,
-  '003540.KS': data_kr_003540 as unknown as TickerData,
-  '003550.KS': data_kr_003550 as unknown as TickerData,
-  '003570.KS': data_kr_003570 as unknown as TickerData,
-  '003620.KS': data_kr_003620 as unknown as TickerData,
-  '003670.KS': data_kr_003670 as unknown as TickerData,
-  '003690.KS': data_kr_003690 as unknown as TickerData,
-  '003800.KQ': data_kr_003800 as unknown as TickerData,
-  '003850.KS': data_kr_003850 as unknown as TickerData,
-  '004000.KS': data_kr_004000 as unknown as TickerData,
-  '004020.KS': data_kr_004020 as unknown as TickerData,
-  '004170.KS': data_kr_004170 as unknown as TickerData,
-  '004370.KS': data_kr_004370 as unknown as TickerData,
-  '004490.KS': data_kr_004490 as unknown as TickerData,
-  '004590.KQ': data_kr_004590 as unknown as TickerData,
-  '004650.KQ': data_kr_004650 as unknown as TickerData,
-  '004780.KQ': data_kr_004780 as unknown as TickerData,
-  '004800.KS': data_kr_004800 as unknown as TickerData,
-  '004990.KS': data_kr_004990 as unknown as TickerData,
-  '005070.KS': data_kr_005070 as unknown as TickerData,
-  '005090.KS': data_kr_005090 as unknown as TickerData,
-  '005160.KQ': data_kr_005160 as unknown as TickerData,
-  '005180.KS': data_kr_005180 as unknown as TickerData,
-  '005290.KQ': data_kr_005290 as unknown as TickerData,
-  '005300.KS': data_kr_005300 as unknown as TickerData,
-  '005380.KS': data_kr_005380 as unknown as TickerData,
-  '005385.KS': data_kr_005385 as unknown as TickerData,
-  '005387.KS': data_kr_005387 as unknown as TickerData,
-  '005440.KS': data_kr_005440 as unknown as TickerData,
-  '005490.KS': data_kr_005490 as unknown as TickerData,
-  '005670.KQ': data_kr_005670 as unknown as TickerData,
-  '005690.KS': data_kr_005690 as unknown as TickerData,
-  '005710.KQ': data_kr_005710 as unknown as TickerData,
-  '005830.KS': data_kr_005830 as unknown as TickerData,
-  '005850.KS': data_kr_005850 as unknown as TickerData,
-  '005860.KQ': data_kr_005860 as unknown as TickerData,
-  '005880.KS': data_kr_005880 as unknown as TickerData,
   '005930.KS': data_kr_005930 as unknown as TickerData,
+  '000660.KS': data_kr_000660 as unknown as TickerData,
   '005935.KS': data_kr_005935 as unknown as TickerData,
-  '005940.KS': data_kr_005940 as unknown as TickerData,
-  '005990.KQ': data_kr_005990 as unknown as TickerData,
-  '006040.KS': data_kr_006040 as unknown as TickerData,
-  '006050.KQ': data_kr_006050 as unknown as TickerData,
-  '006110.KS': data_kr_006110 as unknown as TickerData,
-  '006120.KS': data_kr_006120 as unknown as TickerData,
-  '006140.KQ': data_kr_006140 as unknown as TickerData,
-  '006260.KS': data_kr_006260 as unknown as TickerData,
-  '006280.KS': data_kr_006280 as unknown as TickerData,
-  '006340.KS': data_kr_006340 as unknown as TickerData,
-  '006360.KS': data_kr_006360 as unknown as TickerData,
-  '006400.KS': data_kr_006400 as unknown as TickerData,
-  '006620.KQ': data_kr_006620 as unknown as TickerData,
-  '006650.KS': data_kr_006650 as unknown as TickerData,
-  '006730.KQ': data_kr_006730 as unknown as TickerData,
-  '006800.KS': data_kr_006800 as unknown as TickerData,
-  '00680K.KS': data_kr_00680K as unknown as TickerData,
-  '006910.KQ': data_kr_006910 as unknown as TickerData,
-  '006920.KQ': data_kr_006920 as unknown as TickerData,
-  '007070.KS': data_kr_007070 as unknown as TickerData,
-  '007310.KS': data_kr_007310 as unknown as TickerData,
-  '007330.KQ': data_kr_007330 as unknown as TickerData,
-  '007340.KS': data_kr_007340 as unknown as TickerData,
-  '007370.KQ': data_kr_007370 as unknown as TickerData,
-  '007390.KQ': data_kr_007390 as unknown as TickerData,
-  '007530.KQ': data_kr_007530 as unknown as TickerData,
-  '007660.KS': data_kr_007660 as unknown as TickerData,
-  '007680.KQ': data_kr_007680 as unknown as TickerData,
-  '007700.KS': data_kr_007700 as unknown as TickerData,
-  '007720.KQ': data_kr_007720 as unknown as TickerData,
-  '007770.KQ': data_kr_007770 as unknown as TickerData,
-  '007810.KS': data_kr_007810 as unknown as TickerData,
-  '007820.KQ': data_kr_007820 as unknown as TickerData,
-  '008060.KS': data_kr_008060 as unknown as TickerData,
-  '008290.KQ': data_kr_008290 as unknown as TickerData,
-  '0082N0.KQ': data_kr_0082N0 as unknown as TickerData,
-  '008370.KQ': data_kr_008370 as unknown as TickerData,
-  '008470.KQ': data_kr_008470 as unknown as TickerData,
-  '008770.KS': data_kr_008770 as unknown as TickerData,
-  '008830.KQ': data_kr_008830 as unknown as TickerData,
-  '0088M0.KQ': data_kr_0088M0 as unknown as TickerData,
-  '008930.KS': data_kr_008930 as unknown as TickerData,
+  '402340.KS': data_kr_402340 as unknown as TickerData,
+  '005380.KS': data_kr_005380 as unknown as TickerData,
   '009150.KS': data_kr_009150 as unknown as TickerData,
-  '009155.KS': data_kr_009155 as unknown as TickerData,
-  '009240.KS': data_kr_009240 as unknown as TickerData,
-  '009300.KQ': data_kr_009300 as unknown as TickerData,
-  '009420.KS': data_kr_009420 as unknown as TickerData,
-  '009450.KS': data_kr_009450 as unknown as TickerData,
-  '009520.KQ': data_kr_009520 as unknown as TickerData,
-  '009540.KS': data_kr_009540 as unknown as TickerData,
-  '009620.KQ': data_kr_009620 as unknown as TickerData,
-  '009730.KQ': data_kr_009730 as unknown as TickerData,
-  '009780.KQ': data_kr_009780 as unknown as TickerData,
-  '009830.KS': data_kr_009830 as unknown as TickerData,
-  '009970.KS': data_kr_009970 as unknown as TickerData,
-  '010060.KS': data_kr_010060 as unknown as TickerData,
-  '010120.KS': data_kr_010120 as unknown as TickerData,
-  '010130.KS': data_kr_010130 as unknown as TickerData,
-  '010140.KS': data_kr_010140 as unknown as TickerData,
-  '010170.KQ': data_kr_010170 as unknown as TickerData,
-  '010240.KQ': data_kr_010240 as unknown as TickerData,
-  '010280.KQ': data_kr_010280 as unknown as TickerData,
-  '010470.KQ': data_kr_010470 as unknown as TickerData,
-  '010780.KS': data_kr_010780 as unknown as TickerData,
-  '010950.KS': data_kr_010950 as unknown as TickerData,
-  '011040.KQ': data_kr_011040 as unknown as TickerData,
-  '011070.KS': data_kr_011070 as unknown as TickerData,
-  '011080.KQ': data_kr_011080 as unknown as TickerData,
-  '011170.KS': data_kr_011170 as unknown as TickerData,
-  '011200.KS': data_kr_011200 as unknown as TickerData,
-  '011210.KS': data_kr_011210 as unknown as TickerData,
-  '011320.KQ': data_kr_011320 as unknown as TickerData,
-  '011370.KQ': data_kr_011370 as unknown as TickerData,
-  '011560.KQ': data_kr_011560 as unknown as TickerData,
-  '011780.KS': data_kr_011780 as unknown as TickerData,
-  '011790.KS': data_kr_011790 as unknown as TickerData,
-  '012210.KQ': data_kr_012210 as unknown as TickerData,
+  '373220.KS': data_kr_373220 as unknown as TickerData,
+  '028260.KS': data_kr_028260 as unknown as TickerData,
+  '032830.KS': data_kr_032830 as unknown as TickerData,
+  '329180.KS': data_kr_329180 as unknown as TickerData,
+  '005387.KS': data_kr_005387 as unknown as TickerData,
+  '005385.KS': data_kr_005385 as unknown as TickerData,
+  '000270.KS': data_kr_000270 as unknown as TickerData,
+  '034020.KS': data_kr_034020 as unknown as TickerData,
+  '105560.KS': data_kr_105560 as unknown as TickerData,
+  '207940.KS': data_kr_207940 as unknown as TickerData,
   '012330.KS': data_kr_012330 as unknown as TickerData,
-  '012340.KQ': data_kr_012340 as unknown as TickerData,
   '012450.KS': data_kr_012450 as unknown as TickerData,
-  '012510.KS': data_kr_012510 as unknown as TickerData,
-  '012620.KQ': data_kr_012620 as unknown as TickerData,
-  '012630.KS': data_kr_012630 as unknown as TickerData,
+  '055550.KS': data_kr_055550 as unknown as TickerData,
+  '009155.KS': data_kr_009155 as unknown as TickerData,
+  '006400.KS': data_kr_006400 as unknown as TickerData,
+  '066570.KS': data_kr_066570 as unknown as TickerData,
+  '267260.KS': data_kr_267260 as unknown as TickerData,
+  '068270.KS': data_kr_068270 as unknown as TickerData,
+  '042660.KS': data_kr_042660 as unknown as TickerData,
+  '010120.KS': data_kr_010120 as unknown as TickerData,
+  '035420.KS': data_kr_035420 as unknown as TickerData,
+  '034730.KS': data_kr_034730 as unknown as TickerData,
+  '298040.KS': data_kr_298040 as unknown as TickerData,
+  '086790.KS': data_kr_086790 as unknown as TickerData,
+  '042700.KS': data_kr_042700 as unknown as TickerData,
+  '009540.KS': data_kr_009540 as unknown as TickerData,
+  '000150.KS': data_kr_000150 as unknown as TickerData,
+  '006800.KS': data_kr_006800 as unknown as TickerData,
+  '011070.KS': data_kr_011070 as unknown as TickerData,
+  '005490.KS': data_kr_005490 as unknown as TickerData,
+  '000810.KS': data_kr_000810 as unknown as TickerData,
+  '051910.KS': data_kr_051910 as unknown as TickerData,
+  '010130.KS': data_kr_010130 as unknown as TickerData,
+  '015760.KS': data_kr_015760 as unknown as TickerData,
+  '064350.KS': data_kr_064350 as unknown as TickerData,
+  '010140.KS': data_kr_010140 as unknown as TickerData,
+  '316140.KS': data_kr_316140 as unknown as TickerData,
+  '079550.KS': data_kr_079550 as unknown as TickerData,
+  '017670.KS': data_kr_017670 as unknown as TickerData,
+  '011200.KS': data_kr_011200 as unknown as TickerData,
+  '307950.KS': data_kr_307950 as unknown as TickerData,
+  '272210.KS': data_kr_272210 as unknown as TickerData,
+  '267250.KS': data_kr_267250 as unknown as TickerData,
+  '033780.KS': data_kr_033780 as unknown as TickerData,
+  '138040.KS': data_kr_138040 as unknown as TickerData,
+  '096770.KS': data_kr_096770 as unknown as TickerData,
+  '018260.KS': data_kr_018260 as unknown as TickerData,
+  '003670.KS': data_kr_003670 as unknown as TickerData,
+  '024110.KS': data_kr_024110 as unknown as TickerData,
+  '000815.KS': data_kr_000815 as unknown as TickerData,
+  '035720.KS': data_kr_035720 as unknown as TickerData,
+  '003550.KS': data_kr_003550 as unknown as TickerData,
+  '000720.KS': data_kr_000720 as unknown as TickerData,
+  '086280.KS': data_kr_086280 as unknown as TickerData,
+  '278470.KS': data_kr_278470 as unknown as TickerData,
+  '047810.KS': data_kr_047810 as unknown as TickerData,
+  '071050.KS': data_kr_071050 as unknown as TickerData,
+  '066575.KS': data_kr_066575 as unknown as TickerData,
+  '030200.KS': data_kr_030200 as unknown as TickerData,
+  '010950.KS': data_kr_010950 as unknown as TickerData,
+  '051915.KS': data_kr_051915 as unknown as TickerData,
+  '005940.KS': data_kr_005940 as unknown as TickerData,
+  '006260.KS': data_kr_006260 as unknown as TickerData,
+  '323410.KS': data_kr_323410 as unknown as TickerData,
+  '047040.KS': data_kr_047040 as unknown as TickerData,
+  '443060.KS': data_kr_443060 as unknown as TickerData,
+  '000880.KS': data_kr_000880 as unknown as TickerData,
+  '016360.KS': data_kr_016360 as unknown as TickerData,
   '0126Z0.KS': data_kr_0126Z0 as unknown as TickerData,
-  '012700.KQ': data_kr_012700 as unknown as TickerData,
+  '028050.KS': data_kr_028050 as unknown as TickerData,
+  '047050.KS': data_kr_047050 as unknown as TickerData,
+  '003490.KS': data_kr_003490 as unknown as TickerData,
+  '259960.KS': data_kr_259960 as unknown as TickerData,
+  '000155.KS': data_kr_000155 as unknown as TickerData,
+  '039490.KS': data_kr_039490 as unknown as TickerData,
+  '071055.KS': data_kr_071055 as unknown as TickerData,
+  '352820.KS': data_kr_352820 as unknown as TickerData,
+  '005830.KS': data_kr_005830 as unknown as TickerData,
+  '064400.KS': data_kr_064400 as unknown as TickerData,
+  '007660.KS': data_kr_007660 as unknown as TickerData,
+  '161390.KS': data_kr_161390 as unknown as TickerData,
+  '353200.KS': data_kr_353200 as unknown as TickerData,
+  '003230.KS': data_kr_003230 as unknown as TickerData,
+  '180640.KS': data_kr_180640 as unknown as TickerData,
+  '00680K.KS': data_kr_00680K as unknown as TickerData,
+  '240810.KQ': data_kr_240810 as unknown as TickerData,
+  '062040.KS': data_kr_062040 as unknown as TickerData,
+  '090430.KS': data_kr_090430 as unknown as TickerData,
+  '001440.KS': data_kr_001440 as unknown as TickerData,
+  '078930.KS': data_kr_078930 as unknown as TickerData,
+  '267270.KS': data_kr_267270 as unknown as TickerData,
+  '009830.KS': data_kr_009830 as unknown as TickerData,
+  '326030.KS': data_kr_326030 as unknown as TickerData,
+  '454910.KS': data_kr_454910 as unknown as TickerData,
+  '034220.KS': data_kr_034220 as unknown as TickerData,
+  '011790.KS': data_kr_011790 as unknown as TickerData,
+  '032640.KS': data_kr_032640 as unknown as TickerData,
+  '000990.KS': data_kr_000990 as unknown as TickerData,
+  '004170.KS': data_kr_004170 as unknown as TickerData,
+  '241560.KS': data_kr_241560 as unknown as TickerData,
+  '021240.KS': data_kr_021240 as unknown as TickerData,
+  '377300.KS': data_kr_377300 as unknown as TickerData,
+  '000250.KQ': data_kr_000250 as unknown as TickerData,
+  '336260.KS': data_kr_336260 as unknown as TickerData,
+  '001040.KS': data_kr_001040 as unknown as TickerData,
+  '000100.KS': data_kr_000100 as unknown as TickerData,
+  '138930.KS': data_kr_138930 as unknown as TickerData,
+  '029780.KS': data_kr_029780 as unknown as TickerData,
+  '010060.KS': data_kr_010060 as unknown as TickerData,
+  '00104K.KS': data_kr_00104K as unknown as TickerData,
+  '018880.KS': data_kr_018880 as unknown as TickerData,
+  '023530.KS': data_kr_023530 as unknown as TickerData,
+  '128940.KS': data_kr_128940 as unknown as TickerData,
+  '175330.KS': data_kr_175330 as unknown as TickerData,
+  '271560.KS': data_kr_271560 as unknown as TickerData,
+  '052690.KS': data_kr_052690 as unknown as TickerData,
+  '036570.KS': data_kr_036570 as unknown as TickerData,
+  '082740.KS': data_kr_082740 as unknown as TickerData,
+  '004020.KS': data_kr_004020 as unknown as TickerData,
+  '085620.KS': data_kr_085620 as unknown as TickerData,
+  '000500.KS': data_kr_000500 as unknown as TickerData,
+  '022100.KS': data_kr_022100 as unknown as TickerData,
+  '103590.KS': data_kr_103590 as unknown as TickerData,
+  '095340.KQ': data_kr_095340 as unknown as TickerData,
+  '069960.KS': data_kr_069960 as unknown as TickerData,
+  '002380.KS': data_kr_002380 as unknown as TickerData,
+  '051900.KS': data_kr_051900 as unknown as TickerData,
+  '450080.KS': data_kr_450080 as unknown as TickerData,
+  '088350.KS': data_kr_088350 as unknown as TickerData,
+  '00088K.KS': data_kr_00088K as unknown as TickerData,
+  '375500.KS': data_kr_375500 as unknown as TickerData,
+  '007810.KS': data_kr_007810 as unknown as TickerData,
+  '489790.KS': data_kr_489790 as unknown as TickerData,
+  '005850.KS': data_kr_005850 as unknown as TickerData,
+  '111770.KS': data_kr_111770 as unknown as TickerData,
+  '204320.KS': data_kr_204320 as unknown as TickerData,
+  '011780.KS': data_kr_011780 as unknown as TickerData,
+  '014680.KS': data_kr_014680 as unknown as TickerData,
+  '251270.KS': data_kr_251270 as unknown as TickerData,
+  '011170.KS': data_kr_011170 as unknown as TickerData,
+  '012510.KS': data_kr_012510 as unknown as TickerData,
+  '004800.KS': data_kr_004800 as unknown as TickerData,
+  '001450.KS': data_kr_001450 as unknown as TickerData,
+  '035250.KS': data_kr_035250 as unknown as TickerData,
+  '097950.KS': data_kr_097950 as unknown as TickerData,
+  '031210.KS': data_kr_031210 as unknown as TickerData,
+  '036460.KS': data_kr_036460 as unknown as TickerData,
+  '302440.KS': data_kr_302440 as unknown as TickerData,
+  '005290.KQ': data_kr_005290 as unknown as TickerData,
+  '383220.KS': data_kr_383220 as unknown as TickerData,
+  '131970.KQ': data_kr_131970 as unknown as TickerData,
+  '010170.KQ': data_kr_010170 as unknown as TickerData,
+  '017800.KS': data_kr_017800 as unknown as TickerData,
+  '028670.KS': data_kr_028670 as unknown as TickerData,
+  '139130.KS': data_kr_139130 as unknown as TickerData,
+  '020150.KS': data_kr_020150 as unknown as TickerData,
   '012750.KS': data_kr_012750 as unknown as TickerData,
-  '012790.KQ': data_kr_012790 as unknown as TickerData,
-  '012860.KQ': data_kr_012860 as unknown as TickerData,
+  '006360.KS': data_kr_006360 as unknown as TickerData,
+  '000240.KS': data_kr_000240 as unknown as TickerData,
+  '009420.KS': data_kr_009420 as unknown as TickerData,
+  '457190.KS': data_kr_457190 as unknown as TickerData,
+  '001740.KS': data_kr_001740 as unknown as TickerData,
+  '026960.KS': data_kr_026960 as unknown as TickerData,
+  '003690.KS': data_kr_003690 as unknown as TickerData,
+  '120110.KS': data_kr_120110 as unknown as TickerData,
+  '139480.KS': data_kr_139480 as unknown as TickerData,
+  '071970.KS': data_kr_071970 as unknown as TickerData,
+  '439260.KS': data_kr_439260 as unknown as TickerData,
+  '051600.KS': data_kr_051600 as unknown as TickerData,
+  '081660.KS': data_kr_081660 as unknown as TickerData,
+  '007340.KS': data_kr_007340 as unknown as TickerData,
+  '011210.KS': data_kr_011210 as unknown as TickerData,
+  '008770.KS': data_kr_008770 as unknown as TickerData,
+  '002790.KS': data_kr_002790 as unknown as TickerData,
+  '009970.KS': data_kr_009970 as unknown as TickerData,
+  '282330.KS': data_kr_282330 as unknown as TickerData,
+  '004370.KS': data_kr_004370 as unknown as TickerData,
+  '103140.KS': data_kr_103140 as unknown as TickerData,
+  '007070.KS': data_kr_007070 as unknown as TickerData,
+  '030000.KS': data_kr_030000 as unknown as TickerData,
+  '093370.KS': data_kr_093370 as unknown as TickerData,
+  '003540.KS': data_kr_003540 as unknown as TickerData,
+  '005440.KS': data_kr_005440 as unknown as TickerData,
+  '030530.KQ': data_kr_030530 as unknown as TickerData,
+  '018670.KS': data_kr_018670 as unknown as TickerData,
+  '097230.KS': data_kr_097230 as unknown as TickerData,
+  '004990.KS': data_kr_004990 as unknown as TickerData,
+  '008930.KS': data_kr_008930 as unknown as TickerData,
+  '229640.KS': data_kr_229640 as unknown as TickerData,
+  '161890.KS': data_kr_161890 as unknown as TickerData,
+  '007390.KQ': data_kr_007390 as unknown as TickerData,
+  '192820.KS': data_kr_192820 as unknown as TickerData,
+  '281820.KS': data_kr_281820 as unknown as TickerData,
+  '475150.KS': data_kr_475150 as unknown as TickerData,
+  '462870.KS': data_kr_462870 as unknown as TickerData,
+  '112610.KS': data_kr_112610 as unknown as TickerData,
+  '0009K0.KQ': data_kr_0009K0 as unknown as TickerData,
+  '023590.KS': data_kr_023590 as unknown as TickerData,
+  '001430.KS': data_kr_001430 as unknown as TickerData,
+  '017960.KS': data_kr_017960 as unknown as TickerData,
+  '322000.KS': data_kr_322000 as unknown as TickerData,
+  '000120.KS': data_kr_000120 as unknown as TickerData,
+  '001800.KS': data_kr_001800 as unknown as TickerData,
+  '020560.KS': data_kr_020560 as unknown as TickerData,
+  '361610.KS': data_kr_361610 as unknown as TickerData,
+  '005070.KS': data_kr_005070 as unknown as TickerData,
+  '298020.KS': data_kr_298020 as unknown as TickerData,
+  '001820.KS': data_kr_001820 as unknown as TickerData,
+  '001720.KS': data_kr_001720 as unknown as TickerData,
+  '006040.KS': data_kr_006040 as unknown as TickerData,
+  '001120.KS': data_kr_001120 as unknown as TickerData,
+  '006280.KS': data_kr_006280 as unknown as TickerData,
+  '073240.KS': data_kr_073240 as unknown as TickerData,
+  '032350.KS': data_kr_032350 as unknown as TickerData,
+  '195870.KS': data_kr_195870 as unknown as TickerData,
+  '077970.KS': data_kr_077970 as unknown as TickerData,
+  '069620.KS': data_kr_069620 as unknown as TickerData,
+  '034230.KS': data_kr_034230 as unknown as TickerData,
+  '192080.KS': data_kr_192080 as unknown as TickerData,
+  '294870.KS': data_kr_294870 as unknown as TickerData,
+  '003530.KS': data_kr_003530 as unknown as TickerData,
+  '090710.KQ': data_kr_090710 as unknown as TickerData,
+  '030610.KS': data_kr_030610 as unknown as TickerData,
+  '004000.KS': data_kr_004000 as unknown as TickerData,
+  '082640.KS': data_kr_082640 as unknown as TickerData,
+  '000210.KS': data_kr_000210 as unknown as TickerData,
+  '181710.KS': data_kr_181710 as unknown as TickerData,
+  '007310.KS': data_kr_007310 as unknown as TickerData,
+  '003380.KQ': data_kr_003380 as unknown as TickerData,
+  '089860.KS': data_kr_089860 as unknown as TickerData,
+  '003570.KS': data_kr_003570 as unknown as TickerData,
+  '300720.KS': data_kr_300720 as unknown as TickerData,
+  '000080.KS': data_kr_000080 as unknown as TickerData,
+  '012630.KS': data_kr_012630 as unknown as TickerData,
+  '003470.KS': data_kr_003470 as unknown as TickerData,
+  '005300.KS': data_kr_005300 as unknown as TickerData,
+  '074600.KQ': data_kr_074600 as unknown as TickerData,
+  '009450.KS': data_kr_009450 as unknown as TickerData,
+  '336370.KS': data_kr_336370 as unknown as TickerData,
+  '090360.KQ': data_kr_090360 as unknown as TickerData,
+  '100090.KS': data_kr_100090 as unknown as TickerData,
+  '185750.KS': data_kr_185750 as unknown as TickerData,
+  '499790.KS': data_kr_499790 as unknown as TickerData,
+  '280360.KS': data_kr_280360 as unknown as TickerData,
+  '090460.KS': data_kr_090460 as unknown as TickerData,
+  '057050.KS': data_kr_057050 as unknown as TickerData,
+  '298050.KS': data_kr_298050 as unknown as TickerData,
+  '075580.KS': data_kr_075580 as unknown as TickerData,
+  '027360.KQ': data_kr_027360 as unknown as TickerData,
+  '000670.KS': data_kr_000670 as unknown as TickerData,
+  '248070.KS': data_kr_248070 as unknown as TickerData,
+  '456040.KS': data_kr_456040 as unknown as TickerData,
+  '006120.KS': data_kr_006120 as unknown as TickerData,
+  '285130.KS': data_kr_285130 as unknown as TickerData,
+  '014620.KQ': data_kr_014620 as unknown as TickerData,
+  '006650.KS': data_kr_006650 as unknown as TickerData,
+  '006340.KS': data_kr_006340 as unknown as TickerData,
+  '030190.KS': data_kr_030190 as unknown as TickerData,
+  '005690.KS': data_kr_005690 as unknown as TickerData,
+  '079900.KS': data_kr_079900 as unknown as TickerData,
+  '071320.KS': data_kr_071320 as unknown as TickerData,
+  '137310.KS': data_kr_137310 as unknown as TickerData,
+  '214320.KS': data_kr_214320 as unknown as TickerData,
+  '192400.KS': data_kr_192400 as unknown as TickerData,
+  '006110.KS': data_kr_006110 as unknown as TickerData,
+  '004490.KS': data_kr_004490 as unknown as TickerData,
+  '484870.KS': data_kr_484870 as unknown as TickerData,
+  '000370.KS': data_kr_000370 as unknown as TickerData,
+  '108320.KS': data_kr_108320 as unknown as TickerData,
+  '003160.KS': data_kr_003160 as unknown as TickerData,
+  '003850.KS': data_kr_003850 as unknown as TickerData,
+  '023160.KQ': data_kr_023160 as unknown as TickerData,
+  '079160.KS': data_kr_079160 as unknown as TickerData,
+  '003240.KS': data_kr_003240 as unknown as TickerData,
+  '035760.KQ': data_kr_035760 as unknown as TickerData,
+  '025540.KS': data_kr_025540 as unknown as TickerData,
+  '003090.KS': data_kr_003090 as unknown as TickerData,
+  '002350.KS': data_kr_002350 as unknown as TickerData,
+  '005090.KS': data_kr_005090 as unknown as TickerData,
+  '002020.KS': data_kr_002020 as unknown as TickerData,
+  '036530.KS': data_kr_036530 as unknown as TickerData,
+  '033240.KS': data_kr_033240 as unknown as TickerData,
+  '010780.KS': data_kr_010780 as unknown as TickerData,
+  '253450.KQ': data_kr_253450 as unknown as TickerData,
+  '064960.KS': data_kr_064960 as unknown as TickerData,
+  '114090.KS': data_kr_114090 as unknown as TickerData,
+  '006730.KQ': data_kr_006730 as unknown as TickerData,
+  '100840.KS': data_kr_100840 as unknown as TickerData,
+  '008060.KS': data_kr_008060 as unknown as TickerData,
+  '178920.KS': data_kr_178920 as unknown as TickerData,
+  '005880.KS': data_kr_005880 as unknown as TickerData,
+  '001510.KS': data_kr_001510 as unknown as TickerData,
+  '001680.KS': data_kr_001680 as unknown as TickerData,
+  '002960.KS': data_kr_002960 as unknown as TickerData,
+  '007700.KS': data_kr_007700 as unknown as TickerData,
+  '003620.KS': data_kr_003620 as unknown as TickerData,
+  '019210.KQ': data_kr_019210 as unknown as TickerData,
+  '069260.KS': data_kr_069260 as unknown as TickerData,
+  '001060.KS': data_kr_001060 as unknown as TickerData,
+  '014820.KS': data_kr_014820 as unknown as TickerData,
+  '317450.KS': data_kr_317450 as unknown as TickerData,
+  '009520.KQ': data_kr_009520 as unknown as TickerData,
+  '001570.KS': data_kr_001570 as unknown as TickerData,
+  '383800.KS': data_kr_383800 as unknown as TickerData,
+  '093050.KS': data_kr_093050 as unknown as TickerData,
+  '005180.KS': data_kr_005180 as unknown as TickerData,
+  '249420.KS': data_kr_249420 as unknown as TickerData,
+  '104830.KQ': data_kr_104830 as unknown as TickerData,
+  '009240.KS': data_kr_009240 as unknown as TickerData,
+  '015750.KQ': data_kr_015750 as unknown as TickerData,
+  '001270.KS': data_kr_001270 as unknown as TickerData,
+  '058650.KS': data_kr_058650 as unknown as TickerData,
+  '017940.KS': data_kr_017940 as unknown as TickerData,
+  '025980.KQ': data_kr_025980 as unknown as TickerData,
+  '006910.KQ': data_kr_006910 as unknown as TickerData,
+  '018290.KQ': data_kr_018290 as unknown as TickerData,
+  '0011T0.KQ': data_kr_0011T0 as unknown as TickerData,
+  '024850.KQ': data_kr_024850 as unknown as TickerData,
+  '025320.KQ': data_kr_025320 as unknown as TickerData,
+  '114810.KQ': data_kr_114810 as unknown as TickerData,
   '013030.KQ': data_kr_013030 as unknown as TickerData,
+  '482630.KQ': data_kr_482630 as unknown as TickerData,
+  '025900.KQ': data_kr_025900 as unknown as TickerData,
+  '003800.KQ': data_kr_003800 as unknown as TickerData,
+  '051500.KQ': data_kr_051500 as unknown as TickerData,
+  '025770.KQ': data_kr_025770 as unknown as TickerData,
+  '0001A0.KQ': data_kr_0001A0 as unknown as TickerData,
+  '073490.KQ': data_kr_073490 as unknown as TickerData,
+  '0008Z0.KQ': data_kr_0008Z0 as unknown as TickerData,
+  '014940.KQ': data_kr_014940 as unknown as TickerData,
+  '094480.KQ': data_kr_094480 as unknown as TickerData,
+  '023410.KQ': data_kr_023410 as unknown as TickerData,
+  '011560.KQ': data_kr_011560 as unknown as TickerData,
+  '017890.KQ': data_kr_017890 as unknown as TickerData,
+  '0082N0.KQ': data_kr_0082N0 as unknown as TickerData,
+  '023760.KQ': data_kr_023760 as unknown as TickerData,
+  '012860.KQ': data_kr_012860 as unknown as TickerData,
+  '0015G0.KQ': data_kr_0015G0 as unknown as TickerData,
+  '051370.KQ': data_kr_051370 as unknown as TickerData,
+  '012210.KQ': data_kr_012210 as unknown as TickerData,
+  '018000.KQ': data_kr_018000 as unknown as TickerData,
+  '036030.KQ': data_kr_036030 as unknown as TickerData,
+  '005710.KQ': data_kr_005710 as unknown as TickerData,
+  '018310.KQ': data_kr_018310 as unknown as TickerData,
+  '019010.KQ': data_kr_019010 as unknown as TickerData,
   '013120.KQ': data_kr_013120 as unknown as TickerData,
+  '036560.KQ': data_kr_036560 as unknown as TickerData,
+  '0088M0.KQ': data_kr_0088M0 as unknown as TickerData,
+  '0007C0.KQ': data_kr_0007C0 as unknown as TickerData,
+  '024060.KQ': data_kr_024060 as unknown as TickerData,
+  '024840.KQ': data_kr_024840 as unknown as TickerData,
+  '023910.KQ': data_kr_023910 as unknown as TickerData,
+  '024800.KQ': data_kr_024800 as unknown as TickerData,
+  '011040.KQ': data_kr_011040 as unknown as TickerData,
+  '041440.KQ': data_kr_041440 as unknown as TickerData,
+  '067280.KQ': data_kr_067280 as unknown as TickerData,
+  '008830.KQ': data_kr_008830 as unknown as TickerData,
+  '023600.KQ': data_kr_023600 as unknown as TickerData,
+  '032940.KQ': data_kr_032940 as unknown as TickerData,
+  '017510.KQ': data_kr_017510 as unknown as TickerData,
+  '0011A0.KQ': data_kr_0011A0 as unknown as TickerData,
+  '021080.KQ': data_kr_021080 as unknown as TickerData,
+  '005990.KQ': data_kr_005990 as unknown as TickerData,
+  '005160.KQ': data_kr_005160 as unknown as TickerData,
+  '007330.KQ': data_kr_007330 as unknown as TickerData,
+  '001540.KQ': data_kr_001540 as unknown as TickerData,
   '013310.KQ': data_kr_013310 as unknown as TickerData,
+  '025950.KQ': data_kr_025950 as unknown as TickerData,
+  '003100.KQ': data_kr_003100 as unknown as TickerData,
+  '090850.KQ': data_kr_090850 as unknown as TickerData,
+  '0004V0.KQ': data_kr_0004V0 as unknown as TickerData,
+  '054050.KQ': data_kr_054050 as unknown as TickerData,
+  '089600.KQ': data_kr_089600 as unknown as TickerData,
+  '018120.KQ': data_kr_018120 as unknown as TickerData,
+  '040300.KQ': data_kr_040300 as unknown as TickerData,
+  '006620.KQ': data_kr_006620 as unknown as TickerData,
+  '009780.KQ': data_kr_009780 as unknown as TickerData,
+  '052260.KQ': data_kr_052260 as unknown as TickerData,
+  '021320.KQ': data_kr_021320 as unknown as TickerData,
+  '013990.KQ': data_kr_013990 as unknown as TickerData,
+  '217820.KQ': data_kr_217820 as unknown as TickerData,
+  '005860.KQ': data_kr_005860 as unknown as TickerData,
+  '023900.KQ': data_kr_023900 as unknown as TickerData,
+  '002230.KQ': data_kr_002230 as unknown as TickerData,
+  '0015S0.KQ': data_kr_0015S0 as unknown as TickerData,
+  '417970.KQ': data_kr_417970 as unknown as TickerData,
+  '024880.KQ': data_kr_024880 as unknown as TickerData,
+  '011370.KQ': data_kr_011370 as unknown as TickerData,
+  '043610.KQ': data_kr_043610 as unknown as TickerData,
+  '0007J0.KQ': data_kr_0007J0 as unknown as TickerData,
+  '024830.KQ': data_kr_024830 as unknown as TickerData,
+  '004590.KQ': data_kr_004590 as unknown as TickerData,
+  '019540.KQ': data_kr_019540 as unknown as TickerData,
+  '009300.KQ': data_kr_009300 as unknown as TickerData,
+  '026150.KQ': data_kr_026150 as unknown as TickerData,
+  '024740.KQ': data_kr_024740 as unknown as TickerData,
+  '019550.KQ': data_kr_019550 as unknown as TickerData,
+  '011320.KQ': data_kr_011320 as unknown as TickerData,
+  '017480.KQ': data_kr_017480 as unknown as TickerData,
+  '014970.KQ': data_kr_014970 as unknown as TickerData,
+  '017650.KQ': data_kr_017650 as unknown as TickerData,
+  '006140.KQ': data_kr_006140 as unknown as TickerData,
+  '012700.KQ': data_kr_012700 as unknown as TickerData,
+  '0015N0.KQ': data_kr_0015N0 as unknown as TickerData,
+  '020710.KQ': data_kr_020710 as unknown as TickerData,
+  '010280.KQ': data_kr_010280 as unknown as TickerData,
+  '004650.KQ': data_kr_004650 as unknown as TickerData,
+  '007820.KQ': data_kr_007820 as unknown as TickerData,
+  '002800.KQ': data_kr_002800 as unknown as TickerData,
+  '216050.KQ': data_kr_216050 as unknown as TickerData,
+  '000440.KQ': data_kr_000440 as unknown as TickerData,
+  '003310.KQ': data_kr_003310 as unknown as TickerData,
+  '014470.KQ': data_kr_014470 as unknown as TickerData,
+  '311690.KQ': data_kr_311690 as unknown as TickerData,
+  '025550.KQ': data_kr_025550 as unknown as TickerData,
+  '004780.KQ': data_kr_004780 as unknown as TickerData,
+  '016250.KQ': data_kr_016250 as unknown as TickerData,
+  '012790.KQ': data_kr_012790 as unknown as TickerData,
+  '010240.KQ': data_kr_010240 as unknown as TickerData,
+  '019990.KQ': data_kr_019990 as unknown as TickerData,
+  '014950.KQ': data_kr_014950 as unknown as TickerData,
+  '005670.KQ': data_kr_005670 as unknown as TickerData,
+  '024910.KQ': data_kr_024910 as unknown as TickerData,
+  '010470.KQ': data_kr_010470 as unknown as TickerData,
+  '007370.KQ': data_kr_007370 as unknown as TickerData,
+  '036670.KQ': data_kr_036670 as unknown as TickerData,
+  '0013V0.KQ': data_kr_0013V0 as unknown as TickerData,
+  '008370.KQ': data_kr_008370 as unknown as TickerData,
+  '015710.KQ': data_kr_015710 as unknown as TickerData,
+  '007680.KQ': data_kr_007680 as unknown as TickerData,
+  '014190.KQ': data_kr_014190 as unknown as TickerData,
+  '016600.KQ': data_kr_016600 as unknown as TickerData,
+  '033170.KQ': data_kr_033170 as unknown as TickerData,
+  '027050.KQ': data_kr_027050 as unknown as TickerData,
+  '023440.KQ': data_kr_023440 as unknown as TickerData,
+  '021045.KQ': data_kr_021045 as unknown as TickerData,
+  '001840.KQ': data_kr_001840 as unknown as TickerData,
+  '056700.KQ': data_kr_056700 as unknown as TickerData,
+  '002290.KQ': data_kr_002290 as unknown as TickerData,
+  '007530.KQ': data_kr_007530 as unknown as TickerData,
+  '0010V0.KQ': data_kr_0010V0 as unknown as TickerData,
+  '024950.KQ': data_kr_024950 as unknown as TickerData,
+  '020180.KQ': data_kr_020180 as unknown as TickerData,
+  '025880.KQ': data_kr_025880 as unknown as TickerData,
+  '019770.KQ': data_kr_019770 as unknown as TickerData,
+  '006920.KQ': data_kr_006920 as unknown as TickerData,
+  '022220.KQ': data_kr_022220 as unknown as TickerData,
+  '263700.KQ': data_kr_263700 as unknown as TickerData,
+  '024120.KQ': data_kr_024120 as unknown as TickerData,
+  '014570.KQ': data_kr_014570 as unknown as TickerData,
+  '026040.KQ': data_kr_026040 as unknown as TickerData,
+  '025440.KQ': data_kr_025440 as unknown as TickerData,
+  '026910.KQ': data_kr_026910 as unknown as TickerData,
+  '021650.KQ': data_kr_021650 as unknown as TickerData,
+  '0010F0.KQ': data_kr_0010F0 as unknown as TickerData,
+  '001000.KQ': data_kr_001000 as unknown as TickerData,
+  '012620.KQ': data_kr_012620 as unknown as TickerData,
+  '007720.KQ': data_kr_007720 as unknown as TickerData,
+  '027040.KQ': data_kr_027040 as unknown as TickerData,
   '013720.KQ': data_kr_013720 as unknown as TickerData,
   '013810.KQ': data_kr_013810 as unknown as TickerData,
-  '013990.KQ': data_kr_013990 as unknown as TickerData,
-  '014100.KQ': data_kr_014100 as unknown as TickerData,
-  '014190.KQ': data_kr_014190 as unknown as TickerData,
-  '014470.KQ': data_kr_014470 as unknown as TickerData,
-  '014570.KQ': data_kr_014570 as unknown as TickerData,
-  '014620.KQ': data_kr_014620 as unknown as TickerData,
-  '014680.KS': data_kr_014680 as unknown as TickerData,
-  '014820.KS': data_kr_014820 as unknown as TickerData,
-  '014940.KQ': data_kr_014940 as unknown as TickerData,
-  '014950.KQ': data_kr_014950 as unknown as TickerData,
-  '014970.KQ': data_kr_014970 as unknown as TickerData,
-  '015710.KQ': data_kr_015710 as unknown as TickerData,
-  '015750.KQ': data_kr_015750 as unknown as TickerData,
-  '015760.KS': data_kr_015760 as unknown as TickerData,
-  '016100.KQ': data_kr_016100 as unknown as TickerData,
-  '016250.KQ': data_kr_016250 as unknown as TickerData,
-  '016360.KS': data_kr_016360 as unknown as TickerData,
-  '016600.KQ': data_kr_016600 as unknown as TickerData,
-  '016670.KQ': data_kr_016670 as unknown as TickerData,
-  '016790.KQ': data_kr_016790 as unknown as TickerData,
-  '016920.KQ': data_kr_016920 as unknown as TickerData,
   '017000.KQ': data_kr_017000 as unknown as TickerData,
-  '017250.KQ': data_kr_017250 as unknown as TickerData,
-  '017480.KQ': data_kr_017480 as unknown as TickerData,
-  '017510.KQ': data_kr_017510 as unknown as TickerData,
-  '017650.KQ': data_kr_017650 as unknown as TickerData,
-  '017670.KS': data_kr_017670 as unknown as TickerData,
-  '017800.KS': data_kr_017800 as unknown as TickerData,
-  '017890.KQ': data_kr_017890 as unknown as TickerData,
-  '017940.KS': data_kr_017940 as unknown as TickerData,
-  '017960.KS': data_kr_017960 as unknown as TickerData,
-  '018000.KQ': data_kr_018000 as unknown as TickerData,
-  '018120.KQ': data_kr_018120 as unknown as TickerData,
-  '018260.KS': data_kr_018260 as unknown as TickerData,
-  '018290.KQ': data_kr_018290 as unknown as TickerData,
-  '018310.KQ': data_kr_018310 as unknown as TickerData,
-  '018620.KQ': data_kr_018620 as unknown as TickerData,
-  '018670.KS': data_kr_018670 as unknown as TickerData,
+  '016670.KQ': data_kr_016670 as unknown as TickerData,
   '018680.KQ': data_kr_018680 as unknown as TickerData,
-  '018700.KQ': data_kr_018700 as unknown as TickerData,
-  '018880.KS': data_kr_018880 as unknown as TickerData,
-  '019010.KQ': data_kr_019010 as unknown as TickerData,
-  '019210.KQ': data_kr_019210 as unknown as TickerData,
-  '019540.KQ': data_kr_019540 as unknown as TickerData,
-  '019550.KQ': data_kr_019550 as unknown as TickerData,
   '019570.KQ': data_kr_019570 as unknown as TickerData,
+  '008470.KQ': data_kr_008470 as unknown as TickerData,
   '019660.KQ': data_kr_019660 as unknown as TickerData,
-  '019770.KQ': data_kr_019770 as unknown as TickerData,
-  '019990.KQ': data_kr_019990 as unknown as TickerData,
-  '020150.KS': data_kr_020150 as unknown as TickerData,
-  '020180.KQ': data_kr_020180 as unknown as TickerData,
-  '020400.KQ': data_kr_020400 as unknown as TickerData,
-  '020560.KS': data_kr_020560 as unknown as TickerData,
-  '020710.KQ': data_kr_020710 as unknown as TickerData,
-  '021040.KQ': data_kr_021040 as unknown as TickerData,
-  '021045.KQ': data_kr_021045 as unknown as TickerData,
-  '021080.KQ': data_kr_021080 as unknown as TickerData,
-  '021240.KS': data_kr_021240 as unknown as TickerData,
-  '021320.KQ': data_kr_021320 as unknown as TickerData,
-  '021650.KQ': data_kr_021650 as unknown as TickerData,
-  '021880.KQ': data_kr_021880 as unknown as TickerData,
-  '022100.KS': data_kr_022100 as unknown as TickerData,
-  '022220.KQ': data_kr_022220 as unknown as TickerData,
-  '023160.KQ': data_kr_023160 as unknown as TickerData,
-  '023410.KQ': data_kr_023410 as unknown as TickerData,
-  '023440.KQ': data_kr_023440 as unknown as TickerData,
-  '023530.KS': data_kr_023530 as unknown as TickerData,
-  '023590.KS': data_kr_023590 as unknown as TickerData,
-  '023600.KQ': data_kr_023600 as unknown as TickerData,
-  '023760.KQ': data_kr_023760 as unknown as TickerData,
+  '001810.KQ': data_kr_001810 as unknown as TickerData,
+  '007770.KQ': data_kr_007770 as unknown as TickerData,
+  '016100.KQ': data_kr_016100 as unknown as TickerData,
+  '016920.KQ': data_kr_016920 as unknown as TickerData,
   '023770.KQ': data_kr_023770 as unknown as TickerData,
-  '023790.KQ': data_kr_023790 as unknown as TickerData,
-  '023900.KQ': data_kr_023900 as unknown as TickerData,
-  '023910.KQ': data_kr_023910 as unknown as TickerData,
-  '024060.KQ': data_kr_024060 as unknown as TickerData,
-  '024110.KS': data_kr_024110 as unknown as TickerData,
-  '024120.KQ': data_kr_024120 as unknown as TickerData,
-  '024740.KQ': data_kr_024740 as unknown as TickerData,
-  '024800.KQ': data_kr_024800 as unknown as TickerData,
-  '024830.KQ': data_kr_024830 as unknown as TickerData,
-  '024840.KQ': data_kr_024840 as unknown as TickerData,
-  '024850.KQ': data_kr_024850 as unknown as TickerData,
-  '024880.KQ': data_kr_024880 as unknown as TickerData,
-  '024910.KQ': data_kr_024910 as unknown as TickerData,
   '024940.KQ': data_kr_024940 as unknown as TickerData,
-  '024950.KQ': data_kr_024950 as unknown as TickerData,
-  '025320.KQ': data_kr_025320 as unknown as TickerData,
-  '025440.KQ': data_kr_025440 as unknown as TickerData,
-  '025540.KS': data_kr_025540 as unknown as TickerData,
-  '025550.KQ': data_kr_025550 as unknown as TickerData,
-  '025770.KQ': data_kr_025770 as unknown as TickerData,
+  '020400.KQ': data_kr_020400 as unknown as TickerData,
+  '017250.KQ': data_kr_017250 as unknown as TickerData,
+  '021040.KQ': data_kr_021040 as unknown as TickerData,
+  '006050.KQ': data_kr_006050 as unknown as TickerData,
+  '014100.KQ': data_kr_014100 as unknown as TickerData,
+  '018620.KQ': data_kr_018620 as unknown as TickerData,
+  '023790.KQ': data_kr_023790 as unknown as TickerData,
+  '009730.KQ': data_kr_009730 as unknown as TickerData,
+  '018700.KQ': data_kr_018700 as unknown as TickerData,
+  '012340.KQ': data_kr_012340 as unknown as TickerData,
+  '002680.KQ': data_kr_002680 as unknown as TickerData,
+  '011080.KQ': data_kr_011080 as unknown as TickerData,
   '025870.KQ': data_kr_025870 as unknown as TickerData,
-  '025880.KQ': data_kr_025880 as unknown as TickerData,
-  '025900.KQ': data_kr_025900 as unknown as TickerData,
-  '025950.KQ': data_kr_025950 as unknown as TickerData,
-  '025980.KQ': data_kr_025980 as unknown as TickerData,
-  '026040.KQ': data_kr_026040 as unknown as TickerData,
-  '026150.KQ': data_kr_026150 as unknown as TickerData,
-  '026910.KQ': data_kr_026910 as unknown as TickerData,
-  '026960.KS': data_kr_026960 as unknown as TickerData,
-  '027040.KQ': data_kr_027040 as unknown as TickerData,
-  '027050.KQ': data_kr_027050 as unknown as TickerData,
-  '027360.KQ': data_kr_027360 as unknown as TickerData,
-  '028050.KS': data_kr_028050 as unknown as TickerData,
-  '028260.KS': data_kr_028260 as unknown as TickerData,
-  '028670.KS': data_kr_028670 as unknown as TickerData,
-  '029780.KS': data_kr_029780 as unknown as TickerData,
-  '030000.KS': data_kr_030000 as unknown as TickerData,
-  '030190.KS': data_kr_030190 as unknown as TickerData,
-  '030200.KS': data_kr_030200 as unknown as TickerData,
-  '030530.KQ': data_kr_030530 as unknown as TickerData,
-  '030610.KS': data_kr_030610 as unknown as TickerData,
-  '031210.KS': data_kr_031210 as unknown as TickerData,
-  '032350.KS': data_kr_032350 as unknown as TickerData,
-  '032640.KS': data_kr_032640 as unknown as TickerData,
-  '032830.KS': data_kr_032830 as unknown as TickerData,
-  '032940.KQ': data_kr_032940 as unknown as TickerData,
-  '033170.KQ': data_kr_033170 as unknown as TickerData,
-  '033240.KS': data_kr_033240 as unknown as TickerData,
-  '033780.KS': data_kr_033780 as unknown as TickerData,
-  '034020.KS': data_kr_034020 as unknown as TickerData,
-  '034220.KS': data_kr_034220 as unknown as TickerData,
-  '034230.KS': data_kr_034230 as unknown as TickerData,
-  '034730.KS': data_kr_034730 as unknown as TickerData,
-  '035250.KS': data_kr_035250 as unknown as TickerData,
-  '035420.KS': data_kr_035420 as unknown as TickerData,
-  '035720.KS': data_kr_035720 as unknown as TickerData,
-  '035760.KQ': data_kr_035760 as unknown as TickerData,
-  '036030.KQ': data_kr_036030 as unknown as TickerData,
-  '036460.KS': data_kr_036460 as unknown as TickerData,
-  '036530.KS': data_kr_036530 as unknown as TickerData,
-  '036560.KQ': data_kr_036560 as unknown as TickerData,
-  '036570.KS': data_kr_036570 as unknown as TickerData,
-  '036670.KQ': data_kr_036670 as unknown as TickerData,
-  '039490.KS': data_kr_039490 as unknown as TickerData,
-  '040300.KQ': data_kr_040300 as unknown as TickerData,
-  '041440.KQ': data_kr_041440 as unknown as TickerData,
-  '042660.KS': data_kr_042660 as unknown as TickerData,
-  '042700.KS': data_kr_042700 as unknown as TickerData,
-  '043610.KQ': data_kr_043610 as unknown as TickerData,
-  '047040.KS': data_kr_047040 as unknown as TickerData,
-  '047050.KS': data_kr_047050 as unknown as TickerData,
-  '047810.KS': data_kr_047810 as unknown as TickerData,
-  '051370.KQ': data_kr_051370 as unknown as TickerData,
-  '051500.KQ': data_kr_051500 as unknown as TickerData,
-  '051600.KS': data_kr_051600 as unknown as TickerData,
-  '051900.KS': data_kr_051900 as unknown as TickerData,
-  '051910.KS': data_kr_051910 as unknown as TickerData,
-  '051915.KS': data_kr_051915 as unknown as TickerData,
-  '052260.KQ': data_kr_052260 as unknown as TickerData,
-  '052690.KS': data_kr_052690 as unknown as TickerData,
-  '054050.KQ': data_kr_054050 as unknown as TickerData,
-  '055550.KS': data_kr_055550 as unknown as TickerData,
-  '056700.KQ': data_kr_056700 as unknown as TickerData,
-  '057050.KS': data_kr_057050 as unknown as TickerData,
-  '058650.KS': data_kr_058650 as unknown as TickerData,
-  '062040.KS': data_kr_062040 as unknown as TickerData,
-  '064350.KS': data_kr_064350 as unknown as TickerData,
-  '064400.KS': data_kr_064400 as unknown as TickerData,
-  '064960.KS': data_kr_064960 as unknown as TickerData,
-  '066570.KS': data_kr_066570 as unknown as TickerData,
-  '066575.KS': data_kr_066575 as unknown as TickerData,
-  '067280.KQ': data_kr_067280 as unknown as TickerData,
-  '068270.KS': data_kr_068270 as unknown as TickerData,
-  '069260.KS': data_kr_069260 as unknown as TickerData,
-  '069620.KS': data_kr_069620 as unknown as TickerData,
-  '069960.KS': data_kr_069960 as unknown as TickerData,
-  '071050.KS': data_kr_071050 as unknown as TickerData,
-  '071055.KS': data_kr_071055 as unknown as TickerData,
-  '071320.KS': data_kr_071320 as unknown as TickerData,
-  '071970.KS': data_kr_071970 as unknown as TickerData,
-  '073240.KS': data_kr_073240 as unknown as TickerData,
-  '073490.KQ': data_kr_073490 as unknown as TickerData,
-  '074600.KQ': data_kr_074600 as unknown as TickerData,
-  '075580.KS': data_kr_075580 as unknown as TickerData,
-  '077970.KS': data_kr_077970 as unknown as TickerData,
-  '078930.KS': data_kr_078930 as unknown as TickerData,
-  '079160.KS': data_kr_079160 as unknown as TickerData,
-  '079550.KS': data_kr_079550 as unknown as TickerData,
-  '079900.KS': data_kr_079900 as unknown as TickerData,
-  '081660.KS': data_kr_081660 as unknown as TickerData,
-  '082640.KS': data_kr_082640 as unknown as TickerData,
-  '082740.KS': data_kr_082740 as unknown as TickerData,
-  '085620.KS': data_kr_085620 as unknown as TickerData,
-  '086280.KS': data_kr_086280 as unknown as TickerData,
-  '086790.KS': data_kr_086790 as unknown as TickerData,
-  '088350.KS': data_kr_088350 as unknown as TickerData,
-  '089600.KQ': data_kr_089600 as unknown as TickerData,
-  '089860.KS': data_kr_089860 as unknown as TickerData,
-  '090360.KQ': data_kr_090360 as unknown as TickerData,
-  '090430.KS': data_kr_090430 as unknown as TickerData,
-  '090460.KS': data_kr_090460 as unknown as TickerData,
-  '090710.KQ': data_kr_090710 as unknown as TickerData,
-  '090850.KQ': data_kr_090850 as unknown as TickerData,
-  '093050.KS': data_kr_093050 as unknown as TickerData,
-  '093370.KS': data_kr_093370 as unknown as TickerData,
-  '094480.KQ': data_kr_094480 as unknown as TickerData,
-  '095340.KQ': data_kr_095340 as unknown as TickerData,
-  '096770.KS': data_kr_096770 as unknown as TickerData,
-  '097230.KS': data_kr_097230 as unknown as TickerData,
-  '097950.KS': data_kr_097950 as unknown as TickerData,
-  '100090.KS': data_kr_100090 as unknown as TickerData,
-  '100840.KS': data_kr_100840 as unknown as TickerData,
-  '103140.KS': data_kr_103140 as unknown as TickerData,
-  '103590.KS': data_kr_103590 as unknown as TickerData,
-  '104830.KQ': data_kr_104830 as unknown as TickerData,
-  '105560.KS': data_kr_105560 as unknown as TickerData,
-  '108320.KS': data_kr_108320 as unknown as TickerData,
-  '111770.KS': data_kr_111770 as unknown as TickerData,
-  '112610.KS': data_kr_112610 as unknown as TickerData,
-  '114090.KS': data_kr_114090 as unknown as TickerData,
-  '114810.KQ': data_kr_114810 as unknown as TickerData,
-  '120110.KS': data_kr_120110 as unknown as TickerData,
-  '128940.KS': data_kr_128940 as unknown as TickerData,
-  '131970.KQ': data_kr_131970 as unknown as TickerData,
-  '137310.KS': data_kr_137310 as unknown as TickerData,
-  '138040.KS': data_kr_138040 as unknown as TickerData,
-  '138930.KS': data_kr_138930 as unknown as TickerData,
-  '139130.KS': data_kr_139130 as unknown as TickerData,
-  '139480.KS': data_kr_139480 as unknown as TickerData,
-  '161390.KS': data_kr_161390 as unknown as TickerData,
-  '161890.KS': data_kr_161890 as unknown as TickerData,
-  '175330.KS': data_kr_175330 as unknown as TickerData,
-  '178920.KS': data_kr_178920 as unknown as TickerData,
-  '180640.KS': data_kr_180640 as unknown as TickerData,
-  '181710.KS': data_kr_181710 as unknown as TickerData,
-  '185750.KS': data_kr_185750 as unknown as TickerData,
-  '192080.KS': data_kr_192080 as unknown as TickerData,
-  '192400.KS': data_kr_192400 as unknown as TickerData,
-  '192820.KS': data_kr_192820 as unknown as TickerData,
-  '195870.KS': data_kr_195870 as unknown as TickerData,
-  '204320.KS': data_kr_204320 as unknown as TickerData,
-  '207940.KS': data_kr_207940 as unknown as TickerData,
-  '214320.KS': data_kr_214320 as unknown as TickerData,
-  '216050.KQ': data_kr_216050 as unknown as TickerData,
-  '217820.KQ': data_kr_217820 as unknown as TickerData,
-  '229640.KS': data_kr_229640 as unknown as TickerData,
-  '240810.KQ': data_kr_240810 as unknown as TickerData,
-  '241560.KS': data_kr_241560 as unknown as TickerData,
-  '248070.KS': data_kr_248070 as unknown as TickerData,
-  '249420.KS': data_kr_249420 as unknown as TickerData,
-  '251270.KS': data_kr_251270 as unknown as TickerData,
-  '253450.KQ': data_kr_253450 as unknown as TickerData,
-  '259960.KS': data_kr_259960 as unknown as TickerData,
-  '263700.KQ': data_kr_263700 as unknown as TickerData,
-  '267250.KS': data_kr_267250 as unknown as TickerData,
-  '267260.KS': data_kr_267260 as unknown as TickerData,
-  '267270.KS': data_kr_267270 as unknown as TickerData,
-  '271560.KS': data_kr_271560 as unknown as TickerData,
-  '272210.KS': data_kr_272210 as unknown as TickerData,
-  '278470.KS': data_kr_278470 as unknown as TickerData,
-  '280360.KS': data_kr_280360 as unknown as TickerData,
-  '281820.KS': data_kr_281820 as unknown as TickerData,
-  '282330.KS': data_kr_282330 as unknown as TickerData,
-  '285130.KS': data_kr_285130 as unknown as TickerData,
-  '294870.KS': data_kr_294870 as unknown as TickerData,
-  '298020.KS': data_kr_298020 as unknown as TickerData,
-  '298040.KS': data_kr_298040 as unknown as TickerData,
-  '298050.KS': data_kr_298050 as unknown as TickerData,
-  '300720.KS': data_kr_300720 as unknown as TickerData,
-  '302440.KS': data_kr_302440 as unknown as TickerData,
-  '307950.KS': data_kr_307950 as unknown as TickerData,
-  '311690.KQ': data_kr_311690 as unknown as TickerData,
-  '316140.KS': data_kr_316140 as unknown as TickerData,
-  '317450.KS': data_kr_317450 as unknown as TickerData,
-  '322000.KS': data_kr_322000 as unknown as TickerData,
-  '323410.KS': data_kr_323410 as unknown as TickerData,
-  '326030.KS': data_kr_326030 as unknown as TickerData,
-  '329180.KS': data_kr_329180 as unknown as TickerData,
-  '336260.KS': data_kr_336260 as unknown as TickerData,
-  '336370.KS': data_kr_336370 as unknown as TickerData,
-  '352820.KS': data_kr_352820 as unknown as TickerData,
-  '353200.KS': data_kr_353200 as unknown as TickerData,
-  '361610.KS': data_kr_361610 as unknown as TickerData,
-  '373220.KS': data_kr_373220 as unknown as TickerData,
-  '375500.KS': data_kr_375500 as unknown as TickerData,
-  '377300.KS': data_kr_377300 as unknown as TickerData,
-  '383220.KS': data_kr_383220 as unknown as TickerData,
-  '383800.KS': data_kr_383800 as unknown as TickerData,
-  '402340.KS': data_kr_402340 as unknown as TickerData,
-  '417970.KQ': data_kr_417970 as unknown as TickerData,
-  '439260.KS': data_kr_439260 as unknown as TickerData,
-  '443060.KS': data_kr_443060 as unknown as TickerData,
-  '450080.KS': data_kr_450080 as unknown as TickerData,
-  '454910.KS': data_kr_454910 as unknown as TickerData,
-  '456040.KS': data_kr_456040 as unknown as TickerData,
-  '457190.KS': data_kr_457190 as unknown as TickerData,
-  '462870.KS': data_kr_462870 as unknown as TickerData,
-  '475150.KS': data_kr_475150 as unknown as TickerData,
-  '482630.KQ': data_kr_482630 as unknown as TickerData,
-  '484870.KS': data_kr_484870 as unknown as TickerData,
-  '489790.KS': data_kr_489790 as unknown as TickerData,
-  '499790.KS': data_kr_499790 as unknown as TickerData,
+  '008290.KQ': data_kr_008290 as unknown as TickerData,
+  '009620.KQ': data_kr_009620 as unknown as TickerData,
+  '021880.KQ': data_kr_021880 as unknown as TickerData,
+  '006380.KS': data_kr_006380 as unknown as TickerData,
+  '016790.KQ': data_kr_016790 as unknown as TickerData,
   'A': data_us_A as unknown as TickerData,
   'AA': data_us_AA as unknown as TickerData,
   'AAOI': data_us_AAOI as unknown as TickerData,
@@ -1960,6 +1966,7 @@ export const allTickersData: Record<string, TickerData> = {
   'ABEV': data_us_ABEV as unknown as TickerData,
   'ABNB': data_us_ABNB as unknown as TickerData,
   'ABT': data_us_ABT as unknown as TickerData,
+  'ABVX': data_us_ABVX as unknown as TickerData,
   'ACGL': data_us_ACGL as unknown as TickerData,
   'ACN': data_us_ACN as unknown as TickerData,
   'ADBE': data_us_ADBE as unknown as TickerData,
@@ -2087,6 +2094,7 @@ export const allTickersData: Record<string, TickerData> = {
   'BNS': data_us_BNS as unknown as TickerData,
   'BNT': data_us_BNT as unknown as TickerData,
   'BNTX': data_us_BNTX as unknown as TickerData,
+  'BNY': data_us_BNY as unknown as TickerData,
   'BP': data_us_BP as unknown as TickerData,
   'BR': data_us_BR as unknown as TickerData,
   'BRK-A': data_us_BRK_A as unknown as TickerData,
@@ -2639,6 +2647,7 @@ export const allTickersData: Record<string, TickerData> = {
   'PWR': data_us_PWR as unknown as TickerData,
   'PYPL': data_us_PYPL as unknown as TickerData,
   'Q': data_us_Q as unknown as TickerData,
+  'QBTS': data_us_QBTS as unknown as TickerData,
   'QCOM': data_us_QCOM as unknown as TickerData,
   'QSR': data_us_QSR as unknown as TickerData,
   'QXO': data_us_QXO as unknown as TickerData,
@@ -2659,6 +2668,7 @@ export const allTickersData: Record<string, TickerData> = {
   'RGC': data_us_RGC as unknown as TickerData,
   'RGLD': data_us_RGLD as unknown as TickerData,
   'RIO': data_us_RIO as unknown as TickerData,
+  'RIOT': data_us_RIOT as unknown as TickerData,
   'RIVN': data_us_RIVN as unknown as TickerData,
   'RJF': data_us_RJF as unknown as TickerData,
   'RKLB': data_us_RKLB as unknown as TickerData,
