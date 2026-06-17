@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import type { PeriodKey } from 'src/sections/top100/types';
+import type { PeriodKey } from 'src/library/shared/signals';
 import type { PeriodConfig, UseTrendSimulationReturn } from '../hooks/use-trend-simulation';
 
 import Box from '@mui/material/Box';

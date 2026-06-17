@@ -26,11 +26,11 @@ import {
   convertToWeeklyBars,
 } from './indicators.ts';
 import { calcTrendTouchPoints } from './signals.ts';
-import type { TrendTouchPoint, TrendPeriodKey } from './signals.ts';
+import type { TrendTouchPoint } from './signals.ts';
+// PeriodKey의 단일 출처는 signals.ts. 이 파일을 import하는 곳들과의 하위 호환을 위해 재export. (#67)
+export type { PeriodKey } from './signals.ts';
 
 // ── 공용 타입 ─────────────────────────────────────────────────────────────────
-
-export type PeriodKey = TrendPeriodKey;
 
 export type BarUnit = 'daily' | 'weekly';
 

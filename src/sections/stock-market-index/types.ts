@@ -1,4 +1,5 @@
-export type PeriodKey = '3m' | '1y' | '2y' | '3y';
+// PeriodKey의 단일 출처는 library/shared/signals.ts. 자체 재정의 대신 재export한다. (#67)
+export type { PeriodKey } from 'src/library/shared/signals';
 
 export interface PeriodData {
   trend: string;

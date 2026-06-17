@@ -1,6 +1,6 @@
 'use client';
 
-import type { PeriodKey } from 'src/sections/top100/types';
+import type { PeriodKey } from 'src/library/shared/signals';
 
 import ChartApex from 'react-apexcharts';
 import { useMemo, useState } from 'react';

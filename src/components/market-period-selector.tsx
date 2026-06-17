@@ -1,6 +1,6 @@
 'use client';
 
-import type { PeriodKey } from 'src/sections/top100/types';
+import type { PeriodKey } from 'src/library/shared/signals';
 
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
