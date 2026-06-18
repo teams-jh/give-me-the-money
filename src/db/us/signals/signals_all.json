@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-18 18:06",
+  "generated_at": "2026-06-18 20:20",
   "market": "us",
   "analyzed_count": 954,
   "skipped_count": 3,
@@ -4163,6 +4163,138 @@
       ]
     },
     {
+      "ticker": "INCY",
+      "name": "Incyte Corporation",
+      "sector": "Healthcare",
+      "totalScore": 6.5,
+      "techScore": 1.5,
+      "fundScore": 5,
+      "rsi": 48.11,
+      "macd": 1.4737,
+      "bandWidth": 16.15,
+      "volRatio": 0.94,
+      "atr": 3.8171,
+      "stopLoss": 93.26,
+      "mdd": -33.83,
+      "high52w": 110.57,
+      "low52w": 67.26,
+      "stochK": 44.38,
+      "roc20": 3.55,
+      "mfi": 50.92,
+      "adx": 16.73,
+      "supertrendDir": "bullish",
+      "pe": 13.872882,
+      "pb": 3.4927635,
+      "roe": 0.30823,
+      "roa": 0.13888,
+      "dividendYield": null,
+      "insiderPct": 0.01885,
+      "shortRatio": 8.37,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "golden_cross_20_120",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "골든크로스 MA20/MA120 (3봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "macd_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "MACD 데드크로스 (당일)",
+          "value": 1.4737,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -33.83%)",
+          "value": -33.83,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (4봉 전)",
+          "value": 78.93,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (2봉 전)",
+          "value": 76.72,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bullish",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "ROC 상승 모멘텀 (5d:-6.1% 20d:+3.5% 60d:+9.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 96.346)",
+          "value": 96.346,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 1% vs 이전 -29%)",
+          "value": 0.013535864527748355,
+          "scoreAffecting": true
+        },
+        {
+          "type": "short_elevated",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "공매도 주의 (숏 커버 8.4일)",
+          "value": 8.37,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_high_quality",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "고성장·고수익 (매출+21% / 순이익률 26.7%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "peg_undervalued",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "PEG 저평가 (0.36 — 성장 대비 저평가)",
+          "value": 0.36,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_excellent",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "우수한 수익성 (ROE 30.8% / ROA 13.9%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (25.6%)",
+          "value": 25.552000000000003,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
       "ticker": "BLD",
       "name": "TopBuild Corp.",
       "sector": "Industrials",
@@ -5636,138 +5768,6 @@
           "strength": "weak",
           "label": "우수한 영업이익률 (41.1%)",
           "value": 41.094002,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
-      "ticker": "INCY",
-      "name": "Incyte Corporation",
-      "sector": "Healthcare",
-      "totalScore": 6,
-      "techScore": 1,
-      "fundScore": 5,
-      "rsi": 49.51,
-      "macd": 1.8458,
-      "bandWidth": 16.58,
-      "volRatio": 0.86,
-      "atr": 3.8969,
-      "stopLoss": 93.9,
-      "mdd": -33.83,
-      "high52w": 110.57,
-      "low52w": 67.26,
-      "stochK": 61.89,
-      "roc20": 4.79,
-      "mfi": 51.63,
-      "adx": 18,
-      "supertrendDir": "bullish",
-      "pe": 14.149717,
-      "pb": 3.562462,
-      "roe": 0.30823,
-      "roa": 0.13888,
-      "dividendYield": null,
-      "insiderPct": 0.01885,
-      "shortRatio": 8.37,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "golden_cross_20_120",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "골든크로스 MA20/MA120 (2봉 전)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "bb_upper_breakout",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "볼린저밴드 상단 돌파 (2봉 전)",
-          "value": 108.53,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -33.83%)",
-          "value": -33.83,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (3봉 전)",
-          "value": 78.93,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (1봉 전)",
-          "value": 76.72,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bullish",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "ROC 상승 모멘텀 (5d:-3.4% 20d:+4.8% 60d:+9.9%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 96.346)",
-          "value": 96.346,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 1% vs 이전 -29%)",
-          "value": 0.013535864527748355,
-          "scoreAffecting": true
-        },
-        {
-          "type": "short_elevated",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "공매도 주의 (숏 커버 8.4일)",
-          "value": 8.37,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_high_quality",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "고성장·고수익 (매출+21% / 순이익률 26.7%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "peg_undervalued",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "PEG 저평가 (0.36 — 성장 대비 저평가)",
-          "value": 0.36,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_excellent",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "우수한 수익성 (ROE 30.8% / ROA 13.9%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (25.6%)",
-          "value": 25.552000000000003,
           "scoreAffecting": false
         }
       ]
