@@ -14,7 +14,7 @@ import {
   resolvePeriodDates,
   resolveFilterStartMs,
 } from 'src/library/shared/trendSim';
-import type { SimResult, PriceDataPoint, BarUnit, PeriodConfig } from 'src/library/shared/trendSim';
+import type { SimResult, PriceDataPoint, BarUnit, PeriodKey, PeriodConfig } from 'src/library/shared/trendSim';
 
 export type { PeriodConfig, BarUnit };
 
@@ -40,7 +40,7 @@ export interface UseTrendSimulationReturn {
 
 // ----------------------------------------------------------------------
 
-type PeriodKey = keyof (typeof PERIOD_BARS)['daily'];
+// PeriodKey는 src/library/shared/signals.ts가 SSOT (trendSim.ts를 통해 재export). (#67)
 
 const PERIOD_ORDER: PeriodKey[] = ['3m', '1y', '2y', '3y'];
 

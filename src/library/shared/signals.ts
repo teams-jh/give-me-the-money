@@ -1322,6 +1322,13 @@ export function calcTrendTouchPoints(
  */
 export type TrendPeriodKey = '3m' | '1y' | '2y' | '3y';
 
+/**
+ * 기간 키의 단일 출처(SSOT).
+ * 웹(`src/sections`, `src/components`)과 스크립트가 모두 이 타입 하나만 참조한다.
+ * (구) `src/sections/top100/types`에서 가져오던 깨진 import를 대체한다. (#67)
+ */
+export type PeriodKey = TrendPeriodKey;
+
 /** intersectSimResults에 전달되는 종목별 최소 인터페이스 */
 export interface TrendSimEntry {
   ticker:        string;
