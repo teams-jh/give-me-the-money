@@ -393,7 +393,26 @@ const getMetricValue = (ticker: string, metric: string) => {
   }
 };
 
-export function MultiStockAnalysisView() {
+// Generate list of themes (unique sectors & industries)
+interface ThemeOption {
+  value: string;
+  type: 'Sector' | 'Industry';
+}
+
+const themesList: ThemeOption[] = (() => {
+  const sectors = new Set<string>();
+  const industries = new Set<string>();
+  Object.values(allTickersData).forEach((data) => {
+    if (data?.info?.sector) sectors.add(data.info.sector);
+    if (data?.info?.industry) industries.add(data.info.industry);
+  });
+  return [
+    ...Array.from(sectors).map((s) => ({ value: s, type: 'Sector' as const })),
+    ...Array.from(industries).map((i) => ({ value: i, type: 'Industry' as const })),
+  ].sort((a, b) => a.value.localeCompare(b.value));
+})();
+
+export function ThemeAnalysisView() {
   const theme = useTheme();
 
   const [market, setMarket] = useState<'US' | 'KR'>('KR');
@@ -406,7 +425,29 @@ export function MultiStockAnalysisView() {
   const [startDate, setStartDate] = useState<string>(getLocalDateString(oneMonthAgo));
   const [endDate, setEndDate] = useState<string>(getLocalDateString(today));
 
-  const [selectedTickers, setSelectedTickers] = useState<string[]>(['064960.KS', '005930.KS']);
+  // Default theme is Auto Parts
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption | null>(
+    themesList.find((t) => t.value === 'Auto Parts' || t.value === 'Automotive') ||
+      themesList[0] ||
+      null
+  );
+
+  const getThemeTickers = useCallback(
+    (themeOpt: ThemeOption | null, currentMarket: 'US' | 'KR') => {
+      if (!themeOpt) return [];
+      return allTickersList.filter((ticker) => {
+        const isUS = !ticker.includes('.');
+        if (currentMarket === 'US' && !isUS) return false;
+        if (currentMarket === 'KR' && isUS) return false;
+
+        const data = allTickersData[ticker];
+        return data?.info?.sector === themeOpt.value || data?.info?.industry === themeOpt.value;
+      });
+    },
+    []
+  );
+
+  const [selectedTickers, setSelectedTickers] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState('');
 
   const [selectedMetric, setSelectedMetric] = useState<string>('trailing_pe');
@@ -417,6 +458,107 @@ export function MultiStockAnalysisView() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Pre-populate when selectedTheme or market changes
+  useEffect(() => {
+    const tickers = getThemeTickers(selectedTheme, market);
+    setSelectedTickers(tickers);
+  }, [selectedTheme, market, getThemeTickers]);
+
+  const handleMarketChange = (newMarket: 'US' | 'KR') => {
+    setMarket(newMarket);
+    setInputValue('');
+  };
+
+  const tickerOptions = useMemo(() => {
+    const filteredList = allTickersList.filter((ticker) => {
+      if (market === 'US') {
+        return !ticker.includes('.');
+      }
+      return ticker.includes('.');
+    });
+
+    return filteredList.map((ticker) => ({
+      ticker,
+      name: allTickersData[ticker]?.info?.kr_name || allTickersData[ticker]?.info?.name || ticker,
+    }));
+  }, [market]);
+
+  const selectedOptions = useMemo(
+    () =>
+      selectedTickers.map(
+        (t) => tickerOptions.find((o) => o.ticker === t) || { ticker: t, name: t }
+      ),
+    [selectedTickers, tickerOptions]
+  );
+
+  const chartSeries = useMemo(
+    () =>
+      selectedTickers
+        .map((ticker) => {
+          const data = allTickersData[ticker];
+          if (!data || !data.prices) return null;
+
+          const daysMap: Record<string, number> = { '3m': 63, '1y': 252, '2y': 504, '3y': 756 };
+          let slice = data.prices;
+
+          if (period === 'custom' && startDate && endDate) {
+            slice = slice.filter((p) => p.date >= startDate && p.date <= endDate);
+          } else {
+            const days = daysMap[period === 'custom' ? '1y' : period];
+            slice = slice.slice(-days);
+          }
+
+          return {
+            name: data.info?.kr_name || data.info?.name || ticker,
+            data: slice.map((p) => ({
+              x: new Date(p.date).getTime(),
+              y: p.close,
+            })),
+          };
+        })
+        .filter((s) => s !== null) as any[],
+    [selectedTickers, period, startDate, endDate]
+  );
+
+  const chartOptions = useMemo<any>(
+    () => ({
+      chart: {
+        toolbar: { show: true },
+        zoom: { enabled: true },
+        background: 'transparent',
+        fontFamily: theme.typography.fontFamily,
+      },
+      xaxis: {
+        type: 'datetime',
+        labels: { style: { colors: theme.palette.text.secondary } },
+      },
+      yaxis: {
+        labels: {
+          style: { colors: theme.palette.text.secondary },
+          formatter: (value: number) => value.toLocaleString(),
+        },
+      },
+      stroke: { curve: 'smooth', width: 2 },
+      tooltip: {
+        theme: theme.palette.mode,
+        x: { format: 'yyyy-MM-dd' },
+        y: {
+          formatter: (value: number) => value.toLocaleString(),
+        },
+      },
+      grid: {
+        borderColor: alpha(theme.palette.grey[500], 0.1),
+        strokeDashArray: 3,
+      },
+      legend: {
+        position: 'bottom',
+        horizontalAlign: 'center',
+        labels: { colors: theme.palette.text.primary },
+      },
+    }),
+    [theme]
+  );
 
   const treeData = useMemo(() => {
     const children = selectedTickers.map((ticker) => {
@@ -516,108 +658,6 @@ export function MultiStockAnalysisView() {
     [theme, selectedMetric]
   );
 
-  const handleMarketChange = (newMarket: 'US' | 'KR') => {
-    setMarket(newMarket);
-    if (newMarket === 'US') {
-      setSelectedTickers(['AAPL', 'MSFT']);
-    } else {
-      setSelectedTickers(['064960.KS', '005930.KS']);
-    }
-    setInputValue('');
-  };
-
-  const tickerOptions = useMemo(() => {
-    const filteredList = allTickersList.filter((ticker) => {
-      if (market === 'US') {
-        return !ticker.includes('.');
-      }
-      return ticker.includes('.');
-    });
-
-    return filteredList.map((ticker) => ({
-      ticker,
-      name: allTickersData[ticker]?.info?.kr_name || allTickersData[ticker]?.info?.name || ticker,
-    }));
-  }, [market]);
-
-  const selectedOptions = useMemo(
-    () =>
-      selectedTickers.map(
-        (t) => tickerOptions.find((o) => o.ticker === t) || { ticker: t, name: t }
-      ),
-    [selectedTickers, tickerOptions]
-  );
-
-  const chartSeries = useMemo(
-    () =>
-      selectedTickers
-        .map((ticker) => {
-          const data = allTickersData[ticker];
-          if (!data || !data.prices) return null;
-
-          const daysMap: Record<string, number> = { '3m': 63, '1y': 252, '2y': 504, '3y': 756 };
-          let slice = data.prices;
-
-          if (period === 'custom' && startDate && endDate) {
-            slice = slice.filter((p) => p.date >= startDate && p.date <= endDate);
-          } else {
-            const days = daysMap[period === 'custom' ? '1y' : period];
-            slice = slice.slice(-days);
-          }
-
-          return {
-            name: data.info?.kr_name || data.info?.name || ticker,
-            data: slice.map((p) => ({
-              x: new Date(p.date).getTime(),
-              y: p.close,
-            })),
-          };
-        })
-        .filter((s) => s !== null) as any[],
-    [selectedTickers, period, startDate, endDate]
-  );
-
-  const chartOptions = useMemo<any>(
-    () => ({
-      chart: {
-        toolbar: { show: true },
-        zoom: { enabled: true },
-        background: 'transparent',
-        fontFamily: theme.typography.fontFamily,
-      },
-      xaxis: {
-        type: 'datetime',
-        labels: { style: { colors: theme.palette.text.secondary } },
-      },
-      yaxis: {
-        labels: {
-          style: { colors: theme.palette.text.secondary },
-          formatter: (value: number) => value.toLocaleString(),
-        },
-      },
-      stroke: { curve: 'smooth', width: 2 },
-      tooltip: {
-        theme: theme.palette.mode,
-        x: { format: 'yyyy-MM-dd' },
-        y: {
-          formatter: (value: number) => value.toLocaleString(),
-        },
-      },
-      grid: {
-        borderColor: alpha(theme.palette.grey[500], 0.1),
-        strokeDashArray: 3,
-      },
-      legend: {
-        position: 'bottom',
-        horizontalAlign: 'center',
-        labels: { colors: theme.palette.text.primary },
-      },
-    }),
-    [theme]
-  );
-
-  const metricObj = METRICS.find((m) => m.value === selectedMetric) || METRICS[0];
-
   const rankingData = useMemo(
     () =>
       selectedTickers
@@ -639,6 +679,8 @@ export function MultiStockAnalysisView() {
     [selectedTickers, selectedMetric, sortOrder]
   );
 
+  const metricObj = METRICS.find((m) => m.value === selectedMetric) || METRICS[0];
+
   return (
     <DashboardContent maxWidth="xl">
       <Stack spacing={4}>
@@ -651,10 +693,11 @@ export function MultiStockAnalysisView() {
         >
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 800 }}>
-              다중 종목 분석 📈
+              테마 분석 🏷️
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-              여러 종목을 선택하여 주가 추이를 비교하고, 주요 재무 지표를 크기순으로 나열해 보세요.
+              특정 테마(섹터/산업군)를 선택하여 소속 종목들의 추이를 비교하고 자유롭게 종목을 조절해
+              보세요.
             </Typography>
           </Box>
 
@@ -672,6 +715,22 @@ export function MultiStockAnalysisView() {
 
         <Card sx={{ p: 3, boxShadow: theme.customShadows?.card }}>
           <Stack spacing={3}>
+            <Autocomplete
+              fullWidth
+              options={themesList}
+              groupBy={(option) => option.type}
+              getOptionLabel={(option) => option.value}
+              value={selectedTheme}
+              onChange={(e, v) => setSelectedTheme(v)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="분석할 테마(섹터/산업군) 선택"
+                  placeholder="테마 검색 및 선택..."
+                />
+              )}
+            />
+
             <Autocomplete
               multiple
               fullWidth
@@ -704,7 +763,7 @@ export function MultiStockAnalysisView() {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="비교할 종목 추가 (다중 선택 가능)"
+                  label="비교할 종목 추가/제외 (해당 테마 종목 자동 추가됨)"
                   placeholder="티커 또는 회사명 검색..."
                 />
               )}
@@ -728,7 +787,7 @@ export function MultiStockAnalysisView() {
               }}
             >
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                📊 기업별 지표 비교
+                📊 테마 내 기업 지표 비교
               </Typography>
               <Stack direction="row" spacing={1.5} alignItems="center">
                 {viewMode === 'list' && (
@@ -769,100 +828,92 @@ export function MultiStockAnalysisView() {
               </Stack>
             </Box>
 
-            {viewMode === 'list' ? (
-              <>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                  {Object.entries(groupedMetrics).map(([category, items]) => (
-                    <Box key={category}>
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ color: 'primary.main', mb: 1.2, fontWeight: 700 }}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+              {Object.entries(groupedMetrics).map(([category, items]) => (
+                <Box key={category}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ color: 'primary.main', mb: 1.2, fontWeight: 700 }}
+                  >
+                    🏷️ {category}
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {items.map((m) => (
+                      <Button
+                        key={m.value}
+                        variant={selectedMetric === m.value ? 'contained' : 'outlined'}
+                        color={selectedMetric === m.value ? 'primary' : 'inherit'}
+                        size="small"
+                        onClick={() => setSelectedMetric(m.value)}
+                        sx={{
+                          borderRadius: 1.5,
+                          textTransform: 'none',
+                          fontWeight: selectedMetric === m.value ? 700 : 500,
+                          fontSize: '0.8rem',
+                          py: 0.6,
+                          px: 1.5,
+                        }}
                       >
-                        🏷️ {category}
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {items.map((m) => (
-                          <Button
-                            key={m.value}
-                            variant={selectedMetric === m.value ? 'contained' : 'outlined'}
-                            color={selectedMetric === m.value ? 'primary' : 'inherit'}
-                            size="small"
-                            onClick={() => setSelectedMetric(m.value)}
-                            sx={{
-                              borderRadius: 1.5,
-                              textTransform: 'none',
-                              fontWeight: selectedMetric === m.value ? 700 : 500,
-                              fontSize: '0.8rem',
-                              py: 0.6,
-                              px: 1.5,
-                            }}
-                          >
-                            {m.label}
-                          </Button>
-                        ))}
-                      </Box>
-                    </Box>
-                  ))}
+                        {m.label}
+                      </Button>
+                    ))}
+                  </Box>
                 </Box>
+              ))}
+            </Box>
 
-                <Alert severity="info" sx={{ fontWeight: 600 }}>
-                  💡 {metricObj.description}
-                </Alert>
+            <Alert severity="info" sx={{ fontWeight: 600 }}>
+              💡 {metricObj.description}
+            </Alert>
 
-                <Stack spacing={2} sx={{ mt: 2 }}>
-                  {rankingData.map((item, index) => (
-                    <Box
-                      key={item.ticker}
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        p: 2,
-                        borderRadius: 1,
-                        bgcolor: alpha(theme.palette.grey[500], 0.04),
-                        border: '1px solid',
-                        borderColor: alpha(theme.palette.grey[500], 0.1),
-                      }}
-                    >
-                      <Stack direction="row" alignItems="center" spacing={2}>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            color: 'text.secondary',
-                            width: 24,
-                            textAlign: 'center',
-                            fontWeight: 800,
-                          }}
-                        >
-                          {index + 1}
-                        </Typography>
-                        <Box>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                            {item.name}
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                            {item.ticker}
-                          </Typography>
-                        </Box>
-                      </Stack>
+            {viewMode === 'list' ? (
+              <Stack spacing={2} sx={{ mt: 2 }}>
+                {rankingData.map((item, index) => (
+                  <Box
+                    key={item.ticker}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      p: 2,
+                      borderRadius: 1,
+                      bgcolor: alpha(theme.palette.grey[500], 0.04),
+                      border: '1px solid',
+                      borderColor: alpha(theme.palette.grey[500], 0.1),
+                    }}
+                  >
+                    <Stack direction="row" alignItems="center" spacing={2}>
                       <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: 700, color: 'primary.main' }}
+                        variant="h6"
+                        sx={{
+                          color: 'text.secondary',
+                          width: 24,
+                          textAlign: 'center',
+                          fontWeight: 800,
+                        }}
                       >
-                        {formatValue(item.value, metricObj.unit, item.currency)}
+                        {index + 1}
                       </Typography>
-                    </Box>
-                  ))}
-                  {rankingData.length === 0 && (
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'text.secondary', textAlign: 'center' }}
-                    >
-                      종목을 선택해주세요.
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                          {item.name}
+                        </Typography>
+                        <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                          {item.ticker}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                      {formatValue(item.value, metricObj.unit, item.currency)}
                     </Typography>
-                  )}
-                </Stack>
-              </>
+                  </Box>
+                ))}
+                {rankingData.length === 0 && (
+                  <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+                    종목을 선택해주세요.
+                  </Typography>
+                )}
+              </Stack>
             ) : (
               <Box
                 sx={{
