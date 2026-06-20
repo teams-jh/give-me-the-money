@@ -98,12 +98,12 @@ export function NavItem({
       )}
 
       {hasChild && (
-        <ItemArrow
-          {...ownerState}
-          className={navSectionClasses.item.arrow}
-          sx={slotProps?.arrow}
-        >
-          {open ? <ExpandMoreIcon sx={{ width: 16, height: 16 }} /> : <ChevronRightIcon sx={{ width: 16, height: 16 }} />}
+        <ItemArrow {...ownerState} className={navSectionClasses.item.arrow} sx={slotProps?.arrow}>
+          {open ? (
+            <ExpandMoreIcon sx={{ width: 16, height: 16 }} />
+          ) : (
+            <ChevronRightIcon sx={{ width: 16, height: 16 }} />
+          )}
         </ItemArrow>
       )}
     </ItemRoot>

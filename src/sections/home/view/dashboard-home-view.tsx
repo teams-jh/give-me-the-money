@@ -85,7 +85,7 @@ export function DashboardHomeView() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'primary.main'
+              color: 'primary.main',
             }}
           >
             <TrendingUpRoundedIcon sx={{ fontSize: 40 }} />
@@ -94,7 +94,8 @@ export function DashboardHomeView() {
             분석 리포트 준비 중
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 400 }}>
-            AI가 당신의 투자 성향을 분석하여 맞춤형 종목을 추천해 드릴 예정입니다. 조금만 기다려 주세요!
+            AI가 당신의 투자 성향을 분석하여 맞춤형 종목을 추천해 드릴 예정입니다. 조금만 기다려
+            주세요!
           </Typography>
         </Box>
       </Stack>
@@ -119,13 +120,14 @@ function SummaryCard({ title, value, percent, icon, color }: SummaryCardProps) {
         p: 3,
         borderRadius: 2,
         bgcolor: 'background.paper',
-        boxShadow: (t) => `0 0 2px 0 ${alpha(t.palette.common.black, 0.2)}, 0 12px 24px -4px ${alpha(t.palette.common.black, 0.12)}`,
+        boxShadow: (t) =>
+          `0 0 2px 0 ${alpha(t.palette.common.black, 0.2)}, 0 12px 24px -4px ${alpha(t.palette.common.black, 0.12)}`,
         position: 'relative',
         overflow: 'hidden',
         transition: 'transform 0.3s ease',
         '&:hover': {
           transform: 'translateY(-4px)',
-        }
+        },
       }}
     >
       <Box
@@ -141,7 +143,7 @@ function SummaryCard({ title, value, percent, icon, color }: SummaryCardProps) {
           alignItems: 'center',
           justifyContent: 'center',
           color,
-          p: 2
+          p: 2,
         }}
       >
         {icon}
@@ -166,7 +168,7 @@ function SummaryCard({ title, value, percent, icon, color }: SummaryCardProps) {
             justifyContent: 'center',
             borderRadius: '50%',
             bgcolor: alpha(color, 0.1),
-            color
+            color,
           }}
         >
           <TrendingUpRoundedIcon sx={{ fontSize: 12 }} />

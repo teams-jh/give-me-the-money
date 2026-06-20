@@ -21,7 +21,11 @@ export const NavSubheader = styled(({ open, children, className, ...other }: Nav
     className={mergeClasses([navSectionClasses.subheader, className])}
   >
     <span className="subheader-icon">
-      {open ? <ExpandMoreIcon sx={{ width: 16, height: 16 }} /> : <ChevronRightIcon sx={{ width: 16, height: 16 }} />}
+      {open ? (
+        <ExpandMoreIcon sx={{ width: 16, height: 16 }} />
+      ) : (
+        <ChevronRightIcon sx={{ width: 16, height: 16 }} />
+      )}
     </span>
     {children}
   </ListSubheader>

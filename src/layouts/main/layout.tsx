@@ -61,10 +61,7 @@ export function MainLayout({
       leftArea: (
         <>
           {/** @slot Nav mobile */}
-          <MenuButton
-            onClick={onOpen}
-            sx={{ mr: 1, ml: -1 }}
-          />
+          <MenuButton onClick={onOpen} sx={{ mr: 1, ml: -1 }} />
           <NavMobile data={navData} open={open} onClose={onClose} />
 
           {/** @slot Logo */}

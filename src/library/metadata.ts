@@ -1,6 +1,6 @@
 /**
  * Metadata Library
- * 
+ *
  * This file provides access to ticker metadata JSON files in src/db/metadata.
  */
 
@@ -65,5 +65,14 @@ export const metadata = {
  * Helper to get ticker list by index name
  */
 export const getTickersByIndex = (
-  index: 'all' | 'kr' | 'us' | 'nasdaq100' | 'russell1000' | 'kospi300' | 'kosdaq200' | 'manualKr' | 'manualUs'
+  index:
+    | 'all'
+    | 'kr'
+    | 'us'
+    | 'nasdaq100'
+    | 'russell1000'
+    | 'kospi300'
+    | 'kosdaq200'
+    | 'manualKr'
+    | 'manualUs'
 ): string[] => metadata[index].tickers;

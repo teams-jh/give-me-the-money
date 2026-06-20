@@ -158,7 +158,8 @@ export function useChartTrendSimulator() {
     const projectedLines: ProjectedLine[] = [];
 
     const firstPrice =
-      allPrices[startIndex][priceBasis as keyof Omit<PriceData, 'date'>] || allPrices[startIndex].close;
+      allPrices[startIndex][priceBasis as keyof Omit<PriceData, 'date'>] ||
+      allPrices[startIndex].close;
     const bhShares = START_CAPITAL / firstPrice;
     let lastBuyPrice = 0;
 
@@ -342,14 +343,17 @@ export function useChartTrendSimulator() {
     endDate,
   ]);
 
-  const formatMoney = useCallback((value: number) => {
-    const symbol = market === 'KR' ? '₩' : '$';
-    const digits = market === 'KR' ? 0 : 2;
-    return `${symbol}${value.toLocaleString(undefined, {
-      minimumFractionDigits: digits,
-      maximumFractionDigits: digits,
-    })}`;
-  }, [market]);
+  const formatMoney = useCallback(
+    (value: number) => {
+      const symbol = market === 'KR' ? '₩' : '$';
+      const digits = market === 'KR' ? 0 : 2;
+      return `${symbol}${value.toLocaleString(undefined, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })}`;
+    },
+    [market]
+  );
 
   // Chart Setup
   const chartSeries = useMemo(() => {

@@ -1,6 +1,6 @@
 /**
  * Ticker Data Library
- * 
+ *
  * This file provides access to all ticker JSON files in src/db/tickers.
  * Note: Importing all 1000+ JSON files eagerly will significantly increase the bundle size.
  */
@@ -82,7 +82,7 @@ export interface TickerData {
 
 /**
  * 1. Eager Import (All files bundled)
- * 
+ *
  * Static import from auto-generated file to ensure compatibility with Next.js/Turbopack.
  */
 import { allTickersData } from './all-tickers-data';
@@ -91,7 +91,7 @@ export { allTickersData };
 
 /**
  * 2. Dynamic Loader (Recommended for performance)
- * 
+ *
  * Only loads the specific ticker data when needed.
  */
 export const getTickerData = async (ticker: string): Promise<TickerData> => {
@@ -130,7 +130,4 @@ export const getTickerData = async (ticker: string): Promise<TickerData> => {
 import allKrMetadata from '../db/metadata/all_kr_tickers.json';
 import allUsMetadata from '../db/metadata/all_us_tickers.json';
 
-export const tickers = [
-  ...allKrMetadata.tickers,
-  ...allUsMetadata.tickers,
-];
+export const tickers = [...allKrMetadata.tickers, ...allUsMetadata.tickers];

@@ -1,4 +1,3 @@
-
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -16,23 +15,23 @@ import { useRouter } from 'src/routes/hooks';
 // ----------------------------------------------------------------------
 
 const FEATURES = [
-  { 
-    icon: <TrendingUpRoundedIcon />, 
-    label: '실시간 시장 분석', 
+  {
+    icon: <TrendingUpRoundedIcon />,
+    label: '실시간 시장 분석',
     desc: '전 세계 시장의 흐름을 초단위로 포착하여 기회를 드립니다.',
-    color: '#10B981' // Emerald
+    color: '#10B981', // Emerald
   },
-  { 
-    icon: <InsightsRoundedIcon />, 
-    label: 'AI 수익 극대화', 
+  {
+    icon: <InsightsRoundedIcon />,
+    label: 'AI 수익 극대화',
     desc: '고도화된 알고리즘이 당신의 포트폴리오를 최적화합니다.',
-    color: '#F59E0B' // Amber/Gold
+    color: '#F59E0B', // Amber/Gold
   },
-  { 
-    icon: <AccountBalanceWalletRoundedIcon />, 
-    label: '자산 관리 솔루션', 
+  {
+    icon: <AccountBalanceWalletRoundedIcon />,
+    label: '자산 관리 솔루션',
     desc: '체계적인 리스크 관리로 흔들림 없는 자산을 구축하세요.',
-    color: '#3B82F6' // Blue
+    color: '#3B82F6', // Blue
   },
 ];
 
@@ -105,7 +104,7 @@ export function HomeHero() {
             THE MONEY
           </Box>
         </Typography>
-        
+
         {/* Decorative elements */}
         <Box
           sx={{
@@ -114,7 +113,7 @@ export function HomeHero() {
             right: -40,
             opacity: 0.15,
             transform: 'rotate(15deg)',
-            display: { xs: 'none', md: 'block' }
+            display: { xs: 'none', md: 'block' },
           }}
         >
           <TrendingUpRoundedIcon sx={{ fontSize: 120, color: '#10B981' }} />
@@ -133,7 +132,8 @@ export function HomeHero() {
             fontSize: { xs: '1rem', md: '1.25rem' },
           }}
         >
-          단순한 투자를 넘어, 당신의 부를 창조하는 기술.<br />
+          단순한 투자를 넘어, 당신의 부를 창조하는 기술.
+          <br />
           지금 바로 상위 1%의 투자 전략을 경험하세요.
         </Typography>
       </Box>
@@ -142,11 +142,7 @@ export function HomeHero() {
 
   const renderFeatures = () => (
     <Box sx={{ width: '100%', mt: 4 }}>
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={3}
-        justifyContent="center"
-      >
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} justifyContent="center">
         {FEATURES.map((item) => (
           <Box
             key={item.label}
@@ -169,7 +165,7 @@ export function HomeHero() {
                   transform: 'scale(1.1) rotate(5deg)',
                   bgcolor: item.color,
                   color: 'common.white',
-                }
+                },
               },
             }}
           >
@@ -272,21 +268,17 @@ export function HomeHero() {
           backgroundImage: `radial-gradient(circle at 20% 30%, ${alpha('#10B981', 0.05)} 0%, transparent 50%),
                             radial-gradient(circle at 80% 70%, ${alpha('#F59E0B', 0.05)} 0%, transparent 50%)`,
           pointerEvents: 'none',
-        }
+        },
       }}
     >
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 9 }}>
-        <Stack
-          spacing={4}
-          alignItems="center"
-          sx={{ textAlign: 'center' }}
-        >
+        <Stack spacing={4} alignItems="center" sx={{ textAlign: 'center' }}>
           {renderTitle()}
           {renderFeatures()}
           {renderCTA()}
         </Stack>
       </Container>
-      
+
       {/* Background decoration lines */}
       <Box
         sx={{
@@ -299,7 +291,7 @@ export function HomeHero() {
           background: 'linear-gradient(to top, transparent, #10B981)',
           maskImage: 'linear-gradient(to top, black, transparent)',
           zIndex: 1,
-          pointerEvents: 'none'
+          pointerEvents: 'none',
         }}
       />
     </Box>

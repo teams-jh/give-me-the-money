@@ -20,16 +20,8 @@ import { useChartTrendSimulator } from '../hooks/use-chart-trend-simulator';
 export function ChartTrendView() {
   const simulator = useChartTrendSimulator();
 
-  const {
-    market,
-    setMarket,
-    period,
-    setPeriod,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-  } = simulator;
+  const { market, setMarket, period, setPeriod, startDate, setStartDate, endDate, setEndDate } =
+    simulator;
 
   return (
     <DashboardContent maxWidth="xl">
@@ -46,7 +38,8 @@ export function ChartTrendView() {
               차트 추세 채널 분석 📊
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-              과거 가격을 바탕으로 동적 회귀 채널을 긋고, 상/하단 터치에 따른 매매 성과를 시뮬레이션합니다.
+              과거 가격을 바탕으로 동적 회귀 채널을 긋고, 상/하단 터치에 따른 매매 성과를
+              시뮬레이션합니다.
             </Typography>
           </Box>
 

@@ -5,9 +5,9 @@
  * 중복 구현돼 있던 toOHLCV / toFundamentalData / (date,close) 추출을 통합한다.
  */
 
-import type { FundamentalData, QuarterlyEarning } from "./fundamentals.ts";
-import type { OHLCV } from "./indicators.ts";
-import type { DailyPrice, RawTicker } from "./tickerTypes.ts";
+import type { OHLCV } from './indicators.ts';
+import type { RawTicker, DailyPrice } from './tickerTypes.ts';
+import type { FundamentalData, QuarterlyEarning } from './fundamentals.ts';
 
 /** prices → OHLCV 배열 (adj_close 는 분석에서 사용하지 않으므로 제외) */
 export function toOHLCV(raw: RawTicker): OHLCV[] {

@@ -7,23 +7,44 @@ import type { OHLCV } from './indicators.ts';
 import { it, expect, describe } from 'vitest';
 
 import {
-  analyzeSignals, detectRSISignal, detectMACDCross, detectROCSignal,
-  detectMFISignal, detectBBBreakout, detectRiskSignal, detectGoldenCross,
-  detectVolumeSpike, detectOBVDivergence, detectHighLowBreakout,
-  detectStochasticSignal, detectSupertrendSignal, detectPriceVolumeDivergence,
-} from './signals.ts';
+  analyzeSignals,
+  detectRSISignal,
+  detectMACDCross,
+  detectROCSignal,
+  detectMFISignal,
+  detectBBBreakout,
+  detectRiskSignal,
+  detectGoldenCross,
+  detectVolumeSpike,
+  detectOBVDivergence,
+  intersectSimResults,
+  calcTrendTouchPoints,
+  detectHighLowBreakout,
+  detectStochasticSignal,
+ detectSupertrendSignal , detectPriceVolumeDivergence } from './signals.ts';
 
 function makeOHLCV(closes: number[], vol = 1_000_000): OHLCV[] {
   return closes.map((close, i) => ({
     date: `2024-01-${String(i + 1).padStart(2, '0')}`,
-    open: close * 0.99, high: close * 1.02, low: close * 0.98,
-    close, volume: vol,
+    open: close * 0.99,
+    high: close * 1.02,
+    low: close * 0.98,
+    close,
+    volume: vol,
   }));
 }
-function rising(n: number, s = 100, d = 2) { return Array.from({ length: n }, (_, i) => s + d * i); }
-function falling(n: number, s = 100, d = 2) { return Array.from({ length: n }, (_, i) => s - d * i); }
-function flat(n: number, b = 100) { return Array.from({ length: n }, (_, i) => b + (i % 3) * 0.1); }
-function vols(n: number, v = 1_000_000) { return Array.from({ length: n }, () => v); }
+function rising(n: number, s = 100, d = 2) {
+  return Array.from({ length: n }, (_, i) => s + d * i);
+}
+function falling(n: number, s = 100, d = 2) {
+  return Array.from({ length: n }, (_, i) => s - d * i);
+}
+function flat(n: number, b = 100) {
+  return Array.from({ length: n }, (_, i) => b + (i % 3) * 0.1);
+}
+function vols(n: number, v = 1_000_000) {
+  return Array.from({ length: n }, () => v);
+}
 
 describe('detectGoldenCross', () => {
   it('데이터 부족 → alerts 빈 배열', () => {
@@ -44,11 +65,13 @@ describe('detectRSISignal', () => {
   });
   it('과매도(급락) → bullish 가능', () => {
     const r = detectRSISignal(falling(30, 100, 5));
-    if (r.rsi !== null && r.rsi < 30) expect(r.alerts.some(a => a.direction === 'bullish')).toBe(true);
+    if (r.rsi !== null && r.rsi < 30)
+      expect(r.alerts.some((a) => a.direction === 'bullish')).toBe(true);
   });
   it('과매수(급등) → bearish 가능', () => {
     const r = detectRSISignal(rising(30, 100, 5));
-    if (r.rsi !== null && r.rsi > 70) expect(r.alerts.some(a => a.direction === 'bearish')).toBe(true);
+    if (r.rsi !== null && r.rsi > 70)
+      expect(r.alerts.some((a) => a.direction === 'bearish')).toBe(true);
   });
   it('횡보 → alerts 배열', () => {
     expect(Array.isArray(detectRSISignal(flat(30)).alerts)).toBe(true);
@@ -58,14 +81,17 @@ describe('detectRSISignal', () => {
 describe('detectMACDCross', () => {
   it('데이터 부족 → macd=null', () => {
     const r = detectMACDCross(rising(10));
-    expect(r.macd).toBeNull(); expect(r.signal).toBeNull();
+    expect(r.macd).toBeNull();
+    expect(r.signal).toBeNull();
   });
   it('충분한 데이터 → macd 숫자 또는 null', () => {
     const r = detectMACDCross(rising(60, 100, 0.5));
     expect(typeof r.macd === 'number' || r.macd === null).toBe(true);
   });
   it('상승→하락 전환 → alerts 배열', () => {
-    expect(Array.isArray(detectMACDCross([...rising(40, 100, 2), ...falling(20, 180, 3)]).alerts)).toBe(true);
+    expect(
+      Array.isArray(detectMACDCross([...rising(40, 100, 2), ...falling(20, 180, 3)]).alerts)
+    ).toBe(true);
   });
 });
 
@@ -91,7 +117,8 @@ describe('detectVolumeSpike', () => {
     expect(detectVolumeSpike(flat(30), vols(30)).alerts).toHaveLength(0);
   });
   it('거래량 4배 급증 → alerts 생성 가능', () => {
-    const c = [...flat(29), 105]; const v = [...vols(29, 1_000_000), 4_000_000];
+    const c = [...flat(29), 105];
+    const v = [...vols(29, 1_000_000), 4_000_000];
     const r = detectVolumeSpike(c, v);
     if (r.volRatio !== null && r.volRatio >= 2) expect(r.alerts.length).toBeGreaterThan(0);
   });
@@ -133,7 +160,8 @@ describe('detectRiskSignal', () => {
 describe('detectHighLowBreakout', () => {
   it('데이터 부족 → high52w=null, low52w=null', () => {
     const r = detectHighLowBreakout(rising(5));
-    expect(r.high52w).toBeNull(); expect(r.low52w).toBeNull();
+    expect(r.high52w).toBeNull();
+    expect(r.low52w).toBeNull();
   });
   it('충분한 데이터 → alerts 배열', () => {
     expect(Array.isArray(detectHighLowBreakout(rising(260, 100, 0.5)).alerts)).toBe(true);
@@ -141,7 +169,7 @@ describe('detectHighLowBreakout', () => {
   it('신고가 근처 → bullish 알림 가능', () => {
     const closes = [...Array.from({ length: 255 }, (_, i) => 100 + i * 0.1), 200];
     const r = detectHighLowBreakout(closes);
-    if (r.alerts.length > 0) expect(r.alerts.some(a => a.direction === 'bullish')).toBe(true);
+    if (r.alerts.length > 0) expect(r.alerts.some((a) => a.direction === 'bullish')).toBe(true);
   });
 });
 
@@ -162,7 +190,8 @@ describe('detectPriceVolumeDivergence', () => {
 describe('detectStochasticSignal', () => {
   it('데이터 부족 → k=null, d=null', () => {
     const r = detectStochasticSignal(makeOHLCV(rising(5)));
-    expect(r.k).toBeNull(); expect(r.d).toBeNull();
+    expect(r.k).toBeNull();
+    expect(r.d).toBeNull();
   });
   it('충분한 데이터 → k 반환', () => {
     const r = detectStochasticSignal(makeOHLCV(flat(30)));
@@ -170,7 +199,8 @@ describe('detectStochasticSignal', () => {
   });
   it('과매도(급락) → bullish 가능', () => {
     const r = detectStochasticSignal(makeOHLCV(falling(30, 100, 3)));
-    if (r.k !== null && r.k < 20) expect(r.alerts.some(a => a.direction === 'bullish')).toBe(true);
+    if (r.k !== null && r.k < 20)
+      expect(r.alerts.some((a) => a.direction === 'bullish')).toBe(true);
   });
 });
 
@@ -198,7 +228,10 @@ describe('detectMFISignal', () => {
   });
   it('충분한 데이터 → mfi 0~100', () => {
     const r = detectMFISignal(makeOHLCV(flat(30)));
-    if (r.mfi !== null) { expect(r.mfi).toBeGreaterThanOrEqual(0); expect(r.mfi).toBeLessThanOrEqual(100); }
+    if (r.mfi !== null) {
+      expect(r.mfi).toBeGreaterThanOrEqual(0);
+      expect(r.mfi).toBeLessThanOrEqual(100);
+    }
   });
   it('alerts 배열', () => {
     expect(Array.isArray(detectMFISignal(makeOHLCV(rising(20))).alerts)).toBe(true);
@@ -269,15 +302,18 @@ describe('detectMFISignal 추가 브랜치', () => {
   function makeHighVolOHLCV(closes: number[]): OHLCV[] {
     return closes.map((close, i) => ({
       date: `2024-02-${String(i + 1).padStart(2, '0')}`,
-      open: close * 0.99, high: close * 1.02, low: close * 0.98,
-      close, volume: 10_000_000,
+      open: close * 0.99,
+      high: close * 1.02,
+      low: close * 0.98,
+      close,
+      volume: 10_000_000,
     }));
   }
 
   it('rsiArr 외부 제공 → 내부 RSI 재계산 없이 사용', () => {
     const closes = rising(30, 100, 1);
     const data = makeHighVolOHLCV(closes);
-    const rsiArr: (number | null)[] = Array.from({ length: 30 }, (_, i) => i < 14 ? null : 50);
+    const rsiArr: (number | null)[] = Array.from({ length: 30 }, (_, i) => (i < 14 ? null : 50));
     const result = detectMFISignal(data, rsiArr);
     expect(Array.isArray(result.alerts)).toBe(true);
   });
@@ -287,7 +323,7 @@ describe('detectMFISignal 추가 브랜치', () => {
     const data = makeHighVolOHLCV(rising(30, 100, 3));
     const result = detectMFISignal(data);
     if (result.mfi !== null && result.mfi > 80) {
-      expect(result.alerts.some(a => a.direction === 'bearish')).toBe(true);
+      expect(result.alerts.some((a) => a.direction === 'bearish')).toBe(true);
     }
   });
 
@@ -308,7 +344,9 @@ describe('detectROCSignal 추가 브랜치', () => {
     const result = detectROCSignal(closes);
     if (result.roc5 !== null && result.roc20 !== null && result.roc60 !== null) {
       if (result.roc5 > 0 && result.roc20 > 0 && result.roc60 > 0) {
-        expect(result.alerts.some(a => a.strength === 'strong' && a.direction === 'bullish')).toBe(true);
+        expect(
+          result.alerts.some((a) => a.strength === 'strong' && a.direction === 'bullish')
+        ).toBe(true);
       }
     }
   });
@@ -318,7 +356,9 @@ describe('detectROCSignal 추가 브랜치', () => {
     const result = detectROCSignal(closes);
     if (result.roc5 !== null && result.roc20 !== null && result.roc60 !== null) {
       if (result.roc5 < 0 && result.roc20 < 0 && result.roc60 < 0) {
-        expect(result.alerts.some(a => a.strength === 'strong' && a.direction === 'bearish')).toBe(true);
+        expect(
+          result.alerts.some((a) => a.strength === 'strong' && a.direction === 'bearish')
+        ).toBe(true);
       }
     }
   });
@@ -326,7 +366,7 @@ describe('detectROCSignal 추가 브랜치', () => {
   it('2구간 음수 → bearish normal 가능', () => {
     // 최근 5봉만 상승, 나머지는 하락
     const down60 = Array.from({ length: 65 }, (_, i) => 200 - i * 2);
-    const up5    = Array.from({ length: 5 }, (_, i) => 70 + i);
+    const up5 = Array.from({ length: 5 }, (_, i) => 70 + i);
     const closes = [...down60, ...up5];
     const result = detectROCSignal(closes);
     expect(Array.isArray(result.alerts)).toBe(true);
@@ -347,15 +387,15 @@ describe('detectROCSignal 2개 양수/음수 브랜치', () => {
   it('roc5 양수, roc20 양수, roc60 양수 모두 → strong bullish 확인', () => {
     const closes = Array.from({ length: 70 }, (_, i) => 100 + i * 2);
     const result = detectROCSignal(closes);
-    const hasStrongBullish = result.alerts.some(a => a.type === 'roc_strong_bullish');
-    const hasBullishNormal = result.alerts.some(a => a.type === 'roc_bullish');
+    const hasStrongBullish = result.alerts.some((a) => a.type === 'roc_strong_bullish');
+    const hasBullishNormal = result.alerts.some((a) => a.type === 'roc_bullish');
     // 둘 중 하나 - 데이터에 따라 달라짐
     expect(hasStrongBullish || hasBullishNormal || result.alerts.length === 0).toBe(true);
   });
 
   it('roc5 음수, roc20 음수, roc60 양수 → bearish normal 가능', () => {
     // 장기 상승 후 단기 급락
-    const longUp  = Array.from({ length: 65 }, (_, i) => 100 + i * 1);
+    const longUp = Array.from({ length: 65 }, (_, i) => 100 + i * 1);
     const shortDown = Array.from({ length: 5 }, (_, i) => 165 - i * 5);
     const closes = [...longUp, ...shortDown];
     const result = detectROCSignal(closes);
@@ -369,8 +409,11 @@ describe('detectStochasticSignal 추가 브랜치', () => {
   function makeOHLCVLocal(closes: number[], vol = 1_000_000): OHLCV[] {
     return closes.map((close, i) => ({
       date: `2024-03-${String(i + 1).padStart(2, '0')}`,
-      open: close * 0.99, high: close * 1.02, low: close * 0.98,
-      close, volume: vol,
+      open: close * 0.99,
+      high: close * 1.02,
+      low: close * 0.98,
+      close,
+      volume: vol,
     }));
   }
 
@@ -378,23 +421,21 @@ describe('detectStochasticSignal 추가 브랜치', () => {
     const closes = Array.from({ length: 30 }, (_, i) => 100 + i * 5);
     const result = detectStochasticSignal(makeOHLCVLocal(closes));
     if (result.k !== null && result.k > 80) {
-      expect(result.alerts.some(a => a.direction === 'bearish')).toBe(true);
+      expect(result.alerts.some((a) => a.direction === 'bearish')).toBe(true);
     }
   });
 
   it('lookback 내 교차 탐지 브랜치 커버', () => {
     // 하락→상승 전환: k가 d를 상향 돌파 가능
     const down = Array.from({ length: 15 }, (_, i) => 100 - i * 3);
-    const up   = Array.from({ length: 15 }, (_, i) => 55 + i * 3);
+    const up = Array.from({ length: 15 }, (_, i) => 55 + i * 3);
     const result = detectStochasticSignal(makeOHLCVLocal([...down, ...up]), 10);
     expect(Array.isArray(result.alerts)).toBe(true);
   });
 });
 
-
 // ── calcTrendTouchPoints ───────────────────────────────────────────────────────
 
-import { calcTrendTouchPoints } from './signals.ts';
 
 /**
  * 테스트용 평평한 추세선 (m=0, c=100)
@@ -409,27 +450,24 @@ function makeTimestamps(n: number): number[] {
   return Array.from({ length: n }, (_, i) => i * 86_400_000);
 }
 
-function makeParams(
-  overrides: Partial<ReturnType<typeof baseParams>> & { n?: number }
-) {
+function makeParams(overrides: Partial<ReturnType<typeof baseParams>> & { n?: number }) {
   const n = overrides.n ?? 5;
   return { ...baseParams(n), ...overrides };
 }
 
 function baseParams(n: number) {
   return {
-    timestamps:        makeTimestamps(n),
-    highPrices:        Array(n).fill(95),   // 기본: 비반응 구간
-    closePrices:       Array(n).fill(95),
+    timestamps: makeTimestamps(n),
+    highPrices: Array(n).fill(95), // 기본: 비반응 구간
+    closePrices: Array(n).fill(95),
     ...FLAT_LINE,
-    trendMinIdx:       0,
-    trendMaxIdx:       n - 1,
-    touchBasis:        'both' as const,
+    trendMinIdx: 0,
+    trendMaxIdx: n - 1,
+    touchBasis: 'both' as const,
   };
 }
 
 describe('calcTrendTouchPoints', () => {
-
   // ── 기본 동작 ────────────────────────────────────────────────────────────
 
   it('빈 배열 → 모든 카운트 0, touchPoints 빈 배열', () => {
@@ -450,7 +488,7 @@ describe('calcTrendTouchPoints', () => {
   // ── 터치 판정 ─────────────────────────────────────────────────────────────
 
   it('close가 터치 구간(98~100)이고 작도 범위 내 → closeTouchCount 증가', () => {
-    const closes = [95, 99, 95, 95, 95];   // 인덱스 1만 터치
+    const closes = [95, 99, 95, 95, 95]; // 인덱스 1만 터치
     const r = calcTrendTouchPoints({
       ...baseParams(5),
       closePrices: closes,
@@ -461,7 +499,7 @@ describe('calcTrendTouchPoints', () => {
   });
 
   it('high가 터치 구간이고 작도 범위 내 → highTouchCount 증가', () => {
-    const highs = [95, 95, 99, 95, 95];    // 인덱스 2만 터치
+    const highs = [95, 95, 99, 95, 95]; // 인덱스 2만 터치
     const r = calcTrendTouchPoints({
       ...baseParams(5),
       highPrices: highs,
@@ -497,7 +535,7 @@ describe('calcTrendTouchPoints', () => {
   });
 
   it('high가 돌파 구간이고 작도 범위 밖이어도 → 돌파 카운팅됨 (전체 날짜 범위)', () => {
-    const highs = [95, 95, 95, 105, 95];   // 인덱스 3: 작도 범위 밖
+    const highs = [95, 95, 95, 105, 95]; // 인덱스 3: 작도 범위 밖
     const r = calcTrendTouchPoints({
       ...baseParams(5),
       highPrices: highs,
@@ -515,7 +553,7 @@ describe('calcTrendTouchPoints', () => {
     const r = calcTrendTouchPoints({
       ...baseParams(1),
       closePrices: [103],
-      highPrices:  [103],
+      highPrices: [103],
     });
     expect(r.touchPoints).toHaveLength(1);
     expect(r.touchPoints[0]).toMatchObject({ priceType: 'close', type: 'breakout' });
@@ -526,7 +564,7 @@ describe('calcTrendTouchPoints', () => {
     const r = calcTrendTouchPoints({
       ...baseParams(1),
       closePrices: [99],
-      highPrices:  [99],
+      highPrices: [99],
     });
     expect(r.touchPoints).toHaveLength(1);
     expect(r.touchPoints[0]).toMatchObject({ priceType: 'close', type: 'touch' });
@@ -536,7 +574,7 @@ describe('calcTrendTouchPoints', () => {
     const r = calcTrendTouchPoints({
       ...baseParams(3),
       closePrices: [99, 103, 99],
-      highPrices:  [99, 103, 99],
+      highPrices: [99, 103, 99],
     });
     expect(r.touchPoints).toHaveLength(3);
     expect(r.touchCount + r.breakoutCount).toBe(3);
@@ -549,8 +587,8 @@ describe('calcTrendTouchPoints', () => {
     const r = calcTrendTouchPoints({
       ...baseParams(1),
       closePrices: [95],
-      highPrices:  [103],
-      touchBasis:  'close',
+      highPrices: [103],
+      touchBasis: 'close',
     });
     expect(r.breakoutCount).toBe(0);
   });
@@ -560,8 +598,8 @@ describe('calcTrendTouchPoints', () => {
     const r = calcTrendTouchPoints({
       ...baseParams(1),
       closePrices: [99],
-      highPrices:  [95],
-      touchBasis:  'high',
+      highPrices: [95],
+      touchBasis: 'high',
     });
     expect(r.touchCount).toBe(0);
   });
@@ -573,13 +611,14 @@ describe('calcTrendTouchPoints', () => {
     // touchTolerance=2% → R_1 기준 터치: 98.98 <= price <= 101
     // close[1] = 100 → 터치
     const r = calcTrendTouchPoints({
-      timestamps:   makeTimestamps(3),
-      highPrices:   [95, 95, 95],
-      closePrices:  [95, 100, 95],
-      m: 1, c: 100,
-      trendMinIdx:  0,
-      trendMaxIdx:  2,
-      touchTolerance:    2,
+      timestamps: makeTimestamps(3),
+      highPrices: [95, 95, 95],
+      closePrices: [95, 100, 95],
+      m: 1,
+      c: 100,
+      trendMinIdx: 0,
+      trendMaxIdx: 2,
+      touchTolerance: 2,
       breakoutTolerance: 2,
       touchBasis: 'close',
     });
@@ -593,7 +632,7 @@ describe('calcTrendTouchPoints', () => {
     const ts = makeTimestamps(3);
     const r = calcTrendTouchPoints({
       ...baseParams(3),
-      closePrices: [95, 99, 95],  // 인덱스 1 터치
+      closePrices: [95, 99, 95], // 인덱스 1 터치
     });
     expect(r.touchPoints[0].x).toBe(ts[1]);
   });
@@ -605,34 +644,30 @@ describe('calcTrendTouchPoints', () => {
     });
     expect(r.touchPoints[0].y).toBeCloseTo(99.5);
   });
-
 });
-
 
 // ── intersectSimResults ────────────────────────────────────────────────────────
 
-import { intersectSimResults } from './signals.ts';
 import type { TrendSimEntry } from './signals.ts';
 
 function makeEntries(tickers: string[]): TrendSimEntry[] {
-  return tickers.map(t => ({
-    ticker:        t,
-    name:          `${t} Corp`,
-    touchCount:    2,
+  return tickers.map((t) => ({
+    ticker: t,
+    name: `${t} Corp`,
+    touchCount: 2,
     breakoutCount: 1,
-    slope:         0.5,
+    slope: 0.5,
   }));
 }
 
 describe('intersectSimResults', () => {
-
   it('빈 객체 입력 → 빈 배열', () => {
     expect(intersectSimResults({})).toHaveLength(0);
   });
 
   it('기간 1개 → 해당 기간 종목 전체 반환', () => {
     const r = intersectSimResults({ '1y': makeEntries(['AAA', 'BBB']) });
-    expect(r.map(x => x.ticker)).toEqual(expect.arrayContaining(['AAA', 'BBB']));
+    expect(r.map((x) => x.ticker)).toEqual(expect.arrayContaining(['AAA', 'BBB']));
     expect(r).toHaveLength(2);
   });
 
@@ -641,7 +676,7 @@ describe('intersectSimResults', () => {
       '3m': makeEntries(['AAA', 'BBB', 'CCC']),
       '1y': makeEntries(['BBB', 'CCC', 'DDD']),
     });
-    expect(r.map(x => x.ticker).sort()).toEqual(['BBB', 'CCC']);
+    expect(r.map((x) => x.ticker).sort()).toEqual(['BBB', 'CCC']);
   });
 
   it('기간 3개 AND 교집합 — 모든 기간 공통 종목만 반환', () => {
@@ -650,7 +685,7 @@ describe('intersectSimResults', () => {
       '1y': makeEntries(['B', 'C', 'D']),
       '2y': makeEntries(['C', 'D', 'E']),
     });
-    expect(r.map(x => x.ticker)).toEqual(['C']);
+    expect(r.map((x) => x.ticker)).toEqual(['C']);
   });
 
   it('공통 종목 없으면 빈 배열', () => {
@@ -663,9 +698,11 @@ describe('intersectSimResults', () => {
 
   it('longestPeriodResult는 가장 긴 기간(우선순위: 3y>2y>1y>3m) 기준', () => {
     const entries3m = makeEntries(['X']);
-    const entries1y = [{ ticker: 'X', name: 'X Corp', touchCount: 9, breakoutCount: 5, slope: 1.0 }];
+    const entries1y = [
+      { ticker: 'X', name: 'X Corp', touchCount: 9, breakoutCount: 5, slope: 1.0 },
+    ];
     const r = intersectSimResults({ '3m': entries3m, '1y': entries1y });
-    expect(r[0].longestPeriodResult.touchCount).toBe(9);  // 1y 기준
+    expect(r[0].longestPeriodResult.touchCount).toBe(9); // 1y 기준
   });
 
   it('periodStats에 선택된 기간별 통계가 모두 포함', () => {
@@ -690,7 +727,7 @@ describe('intersectSimResults', () => {
       '1y': makeEntries(['A', 'B']),
       '3m': makeEntries(['B', 'C']),
     });
-    expect(a.map(x => x.ticker)).toContain('B');
+    expect(a.map((x) => x.ticker)).toContain('B');
     expect(a).toHaveLength(1);
   });
 
@@ -701,5 +738,4 @@ describe('intersectSimResults', () => {
     expect(r[0].ticker).toBe('TSLA');
     expect(r[0].name).toBe('Tesla Inc');
   });
-
 });

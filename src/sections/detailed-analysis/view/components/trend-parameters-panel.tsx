@@ -77,7 +77,11 @@ export function TrendParametersPanel({ simulator }: Props) {
             </Box>
           )}
           renderInput={(params) => (
-            <TextField {...params} label="종목 검색 및 설정" placeholder="티커 또는 회사명 검색..." />
+            <TextField
+              {...params}
+              label="종목 검색 및 설정"
+              placeholder="티커 또는 회사명 검색..."
+            />
           )}
         />
 

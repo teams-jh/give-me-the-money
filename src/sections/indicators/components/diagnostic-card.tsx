@@ -54,7 +54,10 @@ export function DiagnosticCard({ title, label, status, desc, value }: Diagnostic
           <Typography variant="subtitle2" sx={{ fontWeight: 800, color: activeColor, mb: 0.5 }}>
             {label}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.82rem', lineHeight: 1.4 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: 'text.secondary', fontSize: '0.82rem', lineHeight: 1.4 }}
+          >
             {desc}
           </Typography>
         </Box>

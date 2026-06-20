@@ -4,15 +4,15 @@ export const getIsMobile = () => {
   if (typeof window === 'undefined') return false;
 
   const userAgent = window.navigator.userAgent;
-  const isMobileUA =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      userAgent
-    );
+  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    userAgent
+  );
 
   // iOS 13+ iPad detection (which defaults to Desktop mode)
   // @ts-ignore
-  const isIPad = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || 
-                 (userAgent.includes('Macintosh') && 'ontouchend' in document);
+  const isIPad =
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+    (userAgent.includes('Macintosh') && 'ontouchend' in document);
 
   // Check for PWA standalone mode
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches;

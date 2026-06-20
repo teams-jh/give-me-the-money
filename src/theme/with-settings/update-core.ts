@@ -30,7 +30,9 @@ export function applySettingsToTheme(
 
   const lightPalette = theme.colorSchemes?.light?.palette as ColorSystem['palette'];
 
-  const primaryColorPalette = createPaletteChannel(primaryColorPresets[primaryColor as ThemeColorPreset]) as any;
+  const primaryColorPalette = createPaletteChannel(
+    primaryColorPresets[primaryColor as ThemeColorPreset]
+  ) as any;
   // const secondaryColorPalette = createPaletteChannel(secondaryColorPresets[primaryColor]);
 
   const updateColorScheme = (schemeName: ThemeColorScheme) => {
@@ -38,27 +40,35 @@ export function applySettingsToTheme(
 
     const updatedPalette = {
       ...currentScheme?.palette,
-      ...(isDefaultPrimaryColor ? {} : {
-        primary: primaryColorPalette,
-        // secondary: secondaryColorPalette,
-      }),
-      ...(schemeName === 'light' ? {
-        background: {
-          ...lightPalette?.background,
-          ...(isDefaultContrast ? {} : {
-            default: (lightPalette as any).grey[200],
-            defaultChannel: hexToRgbChannel((lightPalette as any).grey[200]),
+      ...(isDefaultPrimaryColor
+        ? {}
+        : {
+            primary: primaryColorPalette,
+            // secondary: secondaryColorPalette,
           }),
-        },
-      } : {}),
+      ...(schemeName === 'light'
+        ? {
+            background: {
+              ...lightPalette?.background,
+              ...(isDefaultContrast
+                ? {}
+                : {
+                    default: (lightPalette as any).grey[200],
+                    defaultChannel: hexToRgbChannel((lightPalette as any).grey[200]),
+                  }),
+            },
+          }
+        : {}),
     };
 
     const updatedCustomShadows = {
       ...currentScheme?.customShadows,
-      ...(isDefaultPrimaryColor ? {} : {
-        primary: createShadowColor(primaryColorPalette.mainChannel),
-        // secondary: createShadowColor(secondaryColorPalette.mainChannel),
-      }),
+      ...(isDefaultPrimaryColor
+        ? {}
+        : {
+            primary: createShadowColor(primaryColorPalette.mainChannel),
+            // secondary: createShadowColor(secondaryColorPalette.mainChannel),
+          }),
     };
 
     return {

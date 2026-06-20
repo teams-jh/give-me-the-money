@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-
 import type { PeriodKey } from 'src/sections/top100/types';
 import type { PeriodConfig, UseTrendSimulationReturn } from '../hooks/use-trend-simulation';
+
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -14,13 +14,15 @@ import Tabs from '@mui/material/Tabs';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { alpha, useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 
 // ----------------------------------------------------------------------
 
-interface Props { sim: UseTrendSimulationReturn; }
+interface Props {
+  sim: UseTrendSimulationReturn;
+}
 
 const PERIOD_OPTIONS: { value: PeriodKey; label: string }[] = [
   { value: '3m', label: '3개월' },
@@ -30,17 +32,22 @@ const PERIOD_OPTIONS: { value: PeriodKey; label: string }[] = [
 ];
 
 const inputStyle = (theme: any) => ({
-  padding: '7px 10px', borderRadius: 8,
+  padding: '7px 10px',
+  borderRadius: 8,
   border: `1px solid ${theme.palette.divider}`,
   backgroundColor: theme.palette.background.paper,
   color: theme.palette.text.primary,
-  fontSize: '0.8rem', width: '100%',
+  fontSize: '0.8rem',
+  width: '100%',
 });
 
 // ── 기간별 설정 패널 ────────────────────────────────────────────────────
 
 function PeriodConfigPanel({
-  period, config, onChange, theme,
+  period,
+  config,
+  onChange,
+  theme,
 }: {
   period: PeriodKey;
   config: PeriodConfig;
@@ -48,21 +55,27 @@ function PeriodConfigPanel({
   theme: any;
 }) {
   const accentColor = theme.palette.warning.main;
-  const secColor    = theme.palette.secondary.main;
+  const secColor = theme.palette.secondary.main;
 
   return (
     <Grid container spacing={2.5}>
-
       {/* 추세 알고리즘 */}
       <Grid size={{ xs: 12, md: 4 }}>
-        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>⚙️ 추세 알고리즘</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>
+          ⚙️ 추세 알고리즘
+        </Typography>
         <Stack direction="row" spacing={1}>
-          {([
-            { key: 'swing',      label: '스윙' },
-            { key: 'zigzag',     label: '지그재그' },
-            { key: 'regression', label: '회귀' },
-          ] as const).map(({ key, label }) => (
-            <Chip key={key} label={label} size="small"
+          {(
+            [
+              { key: 'swing', label: '스윙' },
+              { key: 'zigzag', label: '지그재그' },
+              { key: 'regression', label: '회귀' },
+            ] as const
+          ).map(({ key, label }) => (
+            <Chip
+              key={key}
+              label={label}
+              size="small"
               color={config.trendAlgo === key ? 'warning' : 'default'}
               variant={config.trendAlgo === key ? 'filled' : 'outlined'}
               onClick={() => onChange({ trendAlgo: key })}
@@ -75,8 +88,12 @@ function PeriodConfigPanel({
             <Typography variant="caption" sx={{ fontWeight: 700 }}>
               지그재그 임계값: <span style={{ color: accentColor }}>{config.zigzagThreshold}%</span>
             </Typography>
-            <input type="range" min={1} max={10} value={config.zigzagThreshold}
-              onChange={e => onChange({ zigzagThreshold: Number(e.target.value) })}
+            <input
+              type="range"
+              min={1}
+              max={10}
+              value={config.zigzagThreshold}
+              onChange={(e) => onChange({ zigzagThreshold: Number(e.target.value) })}
               style={{ width: '100%', cursor: 'pointer', accentColor }}
             />
           </Box>
@@ -84,10 +101,16 @@ function PeriodConfigPanel({
         {config.trendAlgo === 'regression' && (
           <Box sx={{ mt: 1.5 }}>
             <Typography variant="caption" sx={{ fontWeight: 700 }}>
-              표준편차 배수: <span style={{ color: accentColor }}>{config.regressionStdDev.toFixed(1)}x</span>
+              표준편차 배수:{' '}
+              <span style={{ color: accentColor }}>{config.regressionStdDev.toFixed(1)}x</span>
             </Typography>
-            <input type="range" min={1.0} max={3.0} step={0.1} value={config.regressionStdDev}
-              onChange={e => onChange({ regressionStdDev: Number(e.target.value) })}
+            <input
+              type="range"
+              min={1.0}
+              max={3.0}
+              step={0.1}
+              value={config.regressionStdDev}
+              onChange={(e) => onChange({ regressionStdDev: Number(e.target.value) })}
               style={{ width: '100%', cursor: 'pointer', accentColor }}
             />
           </Box>
@@ -96,15 +119,22 @@ function PeriodConfigPanel({
 
       {/* 봉 단위 */}
       <Grid size={{ xs: 12, md: 2 }}>
-        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>📊 봉 단위</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>
+          📊 봉 단위
+        </Typography>
         <Stack direction="row" spacing={1}>
-          {([
-            { key: 'daily',  label: '일봉' },
-            { key: 'weekly', label: '주봉' },
-          ] as const).map(({ key, label }) => {
+          {(
+            [
+              { key: 'daily', label: '일봉' },
+              { key: 'weekly', label: '주봉' },
+            ] as const
+          ).map(({ key, label }) => {
             const isSelected = (config.barUnit ?? 'daily') === key;
             return (
-              <Chip key={key} label={label} size="small"
+              <Chip
+                key={key}
+                label={label}
+                size="small"
                 color={isSelected ? 'secondary' : 'default'}
                 variant={isSelected ? 'filled' : 'outlined'}
                 onClick={() => onChange({ barUnit: key, trendStartDate: '', trendEndDate: '' })}
@@ -117,14 +147,21 @@ function PeriodConfigPanel({
 
       {/* 분석 기준 가격 */}
       <Grid size={{ xs: 12, md: 3 }}>
-        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>🎯 분석 기준 가격</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>
+          🎯 분석 기준 가격
+        </Typography>
         <Stack direction="row" spacing={1}>
-          {([
-            { key: 'highlow', label: '고/저점' },
-            { key: 'close',   label: '종가' },
-            { key: 'open',    label: '시가' },
-          ] as const).map(({ key, label }) => (
-            <Chip key={key} label={label} size="small"
+          {(
+            [
+              { key: 'highlow', label: '고/저점' },
+              { key: 'close', label: '종가' },
+              { key: 'open', label: '시가' },
+            ] as const
+          ).map(({ key, label }) => (
+            <Chip
+              key={key}
+              label={label}
+              size="small"
               color={config.trendBase === key ? 'primary' : 'default'}
               variant={config.trendBase === key ? 'filled' : 'outlined'}
               onClick={() => onChange({ trendBase: key })}
@@ -143,17 +180,27 @@ function PeriodConfigPanel({
           </Typography>
         </Typography>
         <Stack direction="row" spacing={1} alignItems="center">
-          <input type="date" value={config.trendStartDate} max={config.trendEndDate || undefined}
-            onChange={e => onChange({ trendStartDate: e.target.value })}
+          <input
+            type="date"
+            value={config.trendStartDate}
+            max={config.trendEndDate || undefined}
+            onChange={(e) => onChange({ trendStartDate: e.target.value })}
             style={inputStyle(theme)}
           />
-          <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>~</Typography>
-          <input type="date" value={config.trendEndDate} min={config.trendStartDate || undefined}
-            onChange={e => onChange({ trendEndDate: e.target.value })}
+          <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>
+            ~
+          </Typography>
+          <input
+            type="date"
+            value={config.trendEndDate}
+            min={config.trendStartDate || undefined}
+            onChange={(e) => onChange({ trendEndDate: e.target.value })}
             style={inputStyle(theme)}
           />
           {(config.trendStartDate || config.trendEndDate) && (
-            <Button size="small" variant="outlined"
+            <Button
+              size="small"
+              variant="outlined"
               onClick={() => onChange({ trendStartDate: '', trendEndDate: '' })}
               sx={{ whiteSpace: 'nowrap', px: 1, minWidth: 'auto', flexShrink: 0 }}
             >
@@ -165,18 +212,29 @@ function PeriodConfigPanel({
 
       {/* 터치 인정 기준 */}
       <Grid size={{ xs: 12, md: 4 }}>
-        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>🎯 터치 인정 기준</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>
+          🎯 터치 인정 기준
+        </Typography>
         <Stack direction="row" spacing={1}>
-          {([
-            { key: 'both',  label: '종가+고가' },
-            { key: 'close', label: '종가만' },
-            { key: 'high',  label: '고가만' },
-          ] as const).map(({ key, label }) => (
-            <Chip key={key} label={label} size="small"
+          {(
+            [
+              { key: 'both', label: '종가+고가' },
+              { key: 'close', label: '종가만' },
+              { key: 'high', label: '고가만' },
+            ] as const
+          ).map(({ key, label }) => (
+            <Chip
+              key={key}
+              label={label}
+              size="small"
               color={config.trendTouchBasis === key ? 'warning' : 'default'}
               variant={config.trendTouchBasis === key ? 'filled' : 'outlined'}
               onClick={() => onChange({ trendTouchBasis: key })}
-              sx={{ flex: 1, fontWeight: config.trendTouchBasis === key ? 700 : 500, cursor: 'pointer' }}
+              sx={{
+                flex: 1,
+                fontWeight: config.trendTouchBasis === key ? 700 : 500,
+                cursor: 'pointer',
+              }}
             />
           ))}
         </Stack>
@@ -185,10 +243,16 @@ function PeriodConfigPanel({
       {/* 터치 인정 범위 */}
       <Grid size={{ xs: 12, md: 4 }}>
         <Typography variant="body2" sx={{ fontWeight: 700, mb: 1 }}>
-          📐 터치 인정 범위: <span style={{ color: accentColor }}>-{config.trendTouchTolerance}%</span>
+          📐 터치 인정 범위:{' '}
+          <span style={{ color: accentColor }}>-{config.trendTouchTolerance}%</span>
         </Typography>
-        <input type="range" min={0.1} max={5.0} step={0.1} value={config.trendTouchTolerance}
-          onChange={e => onChange({ trendTouchTolerance: Number(e.target.value) })}
+        <input
+          type="range"
+          min={0.1}
+          max={5.0}
+          step={0.1}
+          value={config.trendTouchTolerance}
+          onChange={(e) => onChange({ trendTouchTolerance: Number(e.target.value) })}
           style={{ width: '100%', cursor: 'pointer', accentColor }}
         />
       </Grid>
@@ -196,10 +260,16 @@ function PeriodConfigPanel({
       {/* 돌파 인정 범위 */}
       <Grid size={{ xs: 12, md: 4 }}>
         <Typography variant="body2" sx={{ fontWeight: 700, mb: 1 }}>
-          📈 돌파 인정 범위: <span style={{ color: secColor }}>+{config.trendBreakoutTolerance}%</span>
+          📈 돌파 인정 범위:{' '}
+          <span style={{ color: secColor }}>+{config.trendBreakoutTolerance}%</span>
         </Typography>
-        <input type="range" min={0.1} max={5.0} step={0.1} value={config.trendBreakoutTolerance}
-          onChange={e => onChange({ trendBreakoutTolerance: Number(e.target.value) })}
+        <input
+          type="range"
+          min={0.1}
+          max={5.0}
+          step={0.1}
+          value={config.trendBreakoutTolerance}
+          onChange={(e) => onChange({ trendBreakoutTolerance: Number(e.target.value) })}
           style={{ width: '100%', cursor: 'pointer', accentColor: secColor }}
         />
       </Grid>
@@ -213,13 +283,21 @@ function PeriodConfigPanel({
           </Typography>
         </Typography>
         <Stack direction="row" spacing={1} alignItems="center">
-          <input type="date" value={config.filterStartDate} max={config.filterEndDate || undefined}
-            onChange={e => onChange({ filterStartDate: e.target.value })}
+          <input
+            type="date"
+            value={config.filterStartDate}
+            max={config.filterEndDate || undefined}
+            onChange={(e) => onChange({ filterStartDate: e.target.value })}
             style={inputStyle(theme)}
           />
-          <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>~</Typography>
-          <input type="date" value={config.filterEndDate} min={config.filterStartDate || undefined}
-            onChange={e => onChange({ filterEndDate: e.target.value })}
+          <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>
+            ~
+          </Typography>
+          <input
+            type="date"
+            value={config.filterEndDate}
+            min={config.filterStartDate || undefined}
+            onChange={(e) => onChange({ filterEndDate: e.target.value })}
             style={inputStyle(theme)}
           />
         </Stack>
@@ -227,35 +305,51 @@ function PeriodConfigPanel({
 
       {/* 기울기 필터 */}
       <Grid size={{ xs: 12, md: 4 }}>
-        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>📉 저항선 기울기 필터</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>
+          📉 저항선 기울기 필터
+        </Typography>
         <Stack direction="row" spacing={1}>
-          {([
-            { key: 'all',      label: '전체' },
-            { key: 'positive', label: '양의 기울기' },
-            { key: 'negative', label: '음의 기울기' },
-          ] as const).map(({ key, label }) => (
-            <Chip key={key} label={label} size="small"
+          {(
+            [
+              { key: 'all', label: '전체' },
+              { key: 'positive', label: '양의 기울기' },
+              { key: 'negative', label: '음의 기울기' },
+            ] as const
+          ).map(({ key, label }) => (
+            <Chip
+              key={key}
+              label={label}
+              size="small"
               color={config.slopeFilter === key ? 'primary' : 'default'}
               variant={config.slopeFilter === key ? 'filled' : 'outlined'}
               onClick={() => onChange({ slopeFilter: key, slopeMin: '', slopeMax: '' })}
-              sx={{ flex: 1, fontWeight: config.slopeFilter === key ? 700 : 500, cursor: 'pointer' }}
+              sx={{
+                flex: 1,
+                fontWeight: config.slopeFilter === key ? 700 : 500,
+                cursor: 'pointer',
+              }}
             />
           ))}
         </Stack>
         {config.slopeFilter !== 'all' && (
           <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-            <input type="number" placeholder="최소" value={config.slopeMin}
-              onChange={e => onChange({ slopeMin: e.target.value })}
+            <input
+              type="number"
+              placeholder="최소"
+              value={config.slopeMin}
+              onChange={(e) => onChange({ slopeMin: e.target.value })}
               style={{ ...inputStyle(theme), flex: 1 }}
             />
-            <input type="number" placeholder="최대" value={config.slopeMax}
-              onChange={e => onChange({ slopeMax: e.target.value })}
+            <input
+              type="number"
+              placeholder="최대"
+              value={config.slopeMax}
+              onChange={(e) => onChange({ slopeMax: e.target.value })}
               style={{ ...inputStyle(theme), flex: 1 }}
             />
           </Stack>
         )}
       </Grid>
-
     </Grid>
   );
 }
@@ -265,12 +359,18 @@ function PeriodConfigPanel({
 export function TrendInputPanel({ sim }: Props) {
   const theme = useTheme() as any;
   const {
-    simMarket, setSimMarket,
-    simPeriods, togglePeriod,
-    periodConfigs, updatePeriodConfig,
-    isSimulating, runSimulation,
-    enablePatternFilter, setEnablePatternFilter,
-    minTouchesPattern, setMinTouchesPattern,
+    simMarket,
+    setSimMarket,
+    simPeriods,
+    togglePeriod,
+    periodConfigs,
+    updatePeriodConfig,
+    isSimulating,
+    runSimulation,
+    enablePatternFilter,
+    setEnablePatternFilter,
+    minTouchesPattern,
+    setMinTouchesPattern,
   } = sim;
 
   const [activeTab, setActiveTab] = useState<PeriodKey>(simPeriods[0] ?? '1y');
@@ -285,17 +385,19 @@ export function TrendInputPanel({ sim }: Props) {
   return (
     <Card sx={{ p: 3, border: `1px solid ${theme.palette.divider}`, borderRadius: 2 }}>
       <Stack spacing={3}>
-
         {/* 헤더 */}
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>⚙️ 시뮬레이션 설정</Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+              ⚙️ 시뮬레이션 설정
+            </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               선택한 모든 기간 조건을 동시에 만족하는 종목(AND 교집합)만 표시됩니다.
             </Typography>
           </Box>
           <Button
-            variant="contained" color="warning"
+            variant="contained"
+            color="warning"
             onClick={runSimulation}
             disabled={isSimulating || simPeriods.length === 0}
             startIcon={isSimulating ? <CircularProgress size={16} color="inherit" /> : undefined}
@@ -310,10 +412,14 @@ export function TrendInputPanel({ sim }: Props) {
         {/* 시장 + 기간 */}
         <Grid container spacing={3} alignItems="flex-start">
           <Grid size={{ xs: 12, sm: 3 }}>
-            <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>🌍 시장</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>
+              🌍 시장
+            </Typography>
             <Stack direction="row" spacing={1}>
-              {(['US', 'KR'] as const).map(m => (
-                <Chip key={m} label={m === 'US' ? '미국' : '국내'}
+              {(['US', 'KR'] as const).map((m) => (
+                <Chip
+                  key={m}
+                  label={m === 'US' ? '미국' : '국내'}
                   color={simMarket === m ? 'primary' : 'default'}
                   variant={simMarket === m ? 'filled' : 'outlined'}
                   onClick={() => setSimMarket(m)}
@@ -326,7 +432,11 @@ export function TrendInputPanel({ sim }: Props) {
           <Grid size={{ xs: 12, sm: 9 }}>
             <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5 }}>
               📅 기간
-              <Typography component="span" variant="caption" sx={{ color: 'text.secondary', ml: 1 }}>
+              <Typography
+                component="span"
+                variant="caption"
+                sx={{ color: 'text.secondary', ml: 1 }}
+              >
                 (AND 교집합 — 복수 선택 시 각 기간 독립 설정)
               </Typography>
             </Typography>
@@ -334,7 +444,9 @@ export function TrendInputPanel({ sim }: Props) {
               {PERIOD_OPTIONS.map(({ value, label }) => {
                 const active = simPeriods.includes(value);
                 return (
-                  <Chip key={value} label={label}
+                  <Chip
+                    key={value}
+                    label={label}
                     color={active ? 'info' : 'default'}
                     variant={active ? 'filled' : 'outlined'}
                     onClick={() => togglePeriod(value)}
@@ -353,9 +465,11 @@ export function TrendInputPanel({ sim }: Props) {
             onChange={(_, v) => setActiveTab(v)}
             sx={{ borderBottom: `1px solid ${theme.palette.divider}`, minHeight: 40 }}
           >
-            {simPeriods.map(p => (
-              <Tab key={p} value={p}
-                label={PERIOD_OPTIONS.find(o => o.value === p)?.label ?? p}
+            {simPeriods.map((p) => (
+              <Tab
+                key={p}
+                value={p}
+                label={PERIOD_OPTIONS.find((o) => o.value === p)?.label ?? p}
                 sx={{ fontWeight: activeTab === p ? 800 : 500, minHeight: 40, py: 0.5 }}
               />
             ))}
@@ -367,7 +481,7 @@ export function TrendInputPanel({ sim }: Props) {
           <PeriodConfigPanel
             period={activeTab}
             config={currentConfig}
-            onChange={updates => updatePeriodConfig(activeTab, updates)}
+            onChange={(updates) => updatePeriodConfig(activeTab, updates)}
             theme={theme}
           />
         ) : simPeriods.length > 0 ? (
@@ -384,7 +498,9 @@ export function TrendInputPanel({ sim }: Props) {
 
         {/* 결과 필터 - 돌파 패턴만 */}
         <Stack direction="row" spacing={3} alignItems="center" flexWrap="wrap">
-          <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>🔍 결과 필터</Typography>
+          <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
+            🔍 결과 필터
+          </Typography>
           <Chip
             label={enablePatternFilter ? `⚡ 터치 후 돌파 패턴 ON` : '터치 후 돌파 패턴 OFF'}
             color={enablePatternFilter ? 'success' : 'default'}
@@ -401,15 +517,22 @@ export function TrendInputPanel({ sim }: Props) {
                 </span>
               </Typography>
               <Box sx={{ width: 120 }}>
-                <input type="range" min={1} max={10} value={minTouchesPattern}
-                  onChange={e => setMinTouchesPattern(Number(e.target.value))}
-                  style={{ width: '100%', cursor: 'pointer', accentColor: theme.palette.primary.main }}
+                <input
+                  type="range"
+                  min={1}
+                  max={10}
+                  value={minTouchesPattern}
+                  onChange={(e) => setMinTouchesPattern(Number(e.target.value))}
+                  style={{
+                    width: '100%',
+                    cursor: 'pointer',
+                    accentColor: theme.palette.primary.main,
+                  }}
                 />
               </Box>
             </Stack>
           )}
         </Stack>
-
       </Stack>
     </Card>
   );

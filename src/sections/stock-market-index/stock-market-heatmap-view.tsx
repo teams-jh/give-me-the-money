@@ -105,7 +105,7 @@ export function StockMarketHeatmapView({
     '& .MuiToggleButtonGroup-grouped': {
       border: 'none !important',
       '&:not(:first-of-type)': { borderRadius: '4px !important', marginLeft: '0px !important' },
-      '&:first-of-type': { borderRadius: '4px !important' }
+      '&:first-of-type': { borderRadius: '4px !important' },
     },
     '& .MuiToggleButton-root': {
       border: 'none !important',
@@ -126,10 +126,10 @@ export function StockMarketHeatmapView({
         color: 'primary.main',
         boxShadow: theme.shadows[1],
         fontWeight: 800,
-        '&:hover': { bgcolor: 'background.paper' }
+        '&:hover': { bgcolor: 'background.paper' },
       },
-      '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.04) }
-    }
+      '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.04) },
+    },
   };
 
   // Speed segmented controls shared styles (20px height)
@@ -144,7 +144,7 @@ export function StockMarketHeatmapView({
     '& .MuiToggleButtonGroup-grouped': {
       border: 'none !important',
       '&:not(:first-of-type)': { borderRadius: '3px !important', marginLeft: '0px !important' },
-      '&:first-of-type': { borderRadius: '3px !important' }
+      '&:first-of-type': { borderRadius: '3px !important' },
     },
     '& .MuiToggleButton-root': {
       border: 'none !important',
@@ -165,29 +165,45 @@ export function StockMarketHeatmapView({
         color: 'primary.main',
         boxShadow: theme.shadows[1],
         fontWeight: 800,
-        '&:hover': { bgcolor: 'background.paper' }
+        '&:hover': { bgcolor: 'background.paper' },
       },
-      '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.04) }
-    }
+      '&:hover': { bgcolor: alpha(theme.palette.text.primary, 0.04) },
+    },
   };
 
   const renderControls = () => (
-    <Card sx={{ p: 0.75, px: 1.5, borderRadius: 1, bgcolor: 'background.paper', border: `1px solid ${theme.palette.divider}`, boxShadow: theme.shadows[1] }}>
+    <Card
+      sx={{
+        p: 0.75,
+        px: 1.5,
+        borderRadius: 1,
+        bgcolor: 'background.paper',
+        border: `1px solid ${theme.palette.divider}`,
+        boxShadow: theme.shadows[1],
+      }}
+    >
       <Stack spacing={1}>
-        
         {/* Row 1: All selectors in one ultra-flat line */}
-        <Stack 
-          direction="row" 
-          alignItems="center" 
-          justifyContent="space-between" 
-          flexWrap="wrap" 
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          flexWrap="wrap"
           gap={1.5}
         >
           {/* Selectors with Inline Labels */}
           <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" gap={1.2}>
             {/* Period Selector */}
             <Stack direction="row" spacing={0.75} alignItems="center">
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 기간
               </Typography>
               <ToggleButtonGroup
@@ -208,7 +224,15 @@ export function StockMarketHeatmapView({
 
             {/* Return Selector */}
             <Stack direction="row" spacing={0.75} alignItems="center">
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 기준
               </Typography>
               <ToggleButtonGroup
@@ -227,7 +251,15 @@ export function StockMarketHeatmapView({
 
             {/* Grouping Selector */}
             <Stack direction="row" spacing={0.75} alignItems="center">
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 분류
               </Typography>
               <ToggleButtonGroup
@@ -246,7 +278,15 @@ export function StockMarketHeatmapView({
 
             {/* Size Selector */}
             <Stack direction="row" spacing={0.75} alignItems="center">
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 크기
               </Typography>
               <ToggleButtonGroup
@@ -265,7 +305,15 @@ export function StockMarketHeatmapView({
 
             {/* Sector Selector */}
             <Stack direction="row" spacing={0.75} alignItems="center">
-              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 800, fontSize: '0.7rem', whiteSpace: 'nowrap' }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary',
+                  fontWeight: 800,
+                  fontSize: '0.7rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 섹터
               </Typography>
               <TextField
@@ -296,11 +344,15 @@ export function StockMarketHeatmapView({
                     fontWeight: 700,
                     fontSize: '0.72rem',
                     cursor: 'pointer',
-                  }
+                  },
                 }}
               >
                 <option value="all">전체보기</option>
-                {sectors.map(s => <option key={s} value={s}>{s}</option>)}
+                {sectors.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
               </TextField>
             </Stack>
           </Stack>
@@ -329,8 +381,8 @@ export function StockMarketHeatmapView({
                     height: 22,
                     fontSize: '0.72rem',
                     fontWeight: 700,
-                  }
-                }
+                  },
+                },
               }}
               InputProps={{
                 startAdornment: (
@@ -342,8 +394,22 @@ export function StockMarketHeatmapView({
             />
 
             {/* Legend */}
-            <Stack direction="row" spacing={0.25} alignItems="center" sx={{ bgcolor: 'background.neutral', px: 0.75, py: 0.25, borderRadius: 0.5, height: 26 }}>
-              <Typography variant="caption" sx={{ color: 'text.secondary', mr: 0.25, fontWeight: 800, fontSize: '0.62rem' }}>
+            <Stack
+              direction="row"
+              spacing={0.25}
+              alignItems="center"
+              sx={{
+                bgcolor: 'background.neutral',
+                px: 0.75,
+                py: 0.25,
+                borderRadius: 0.5,
+                height: 26,
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.secondary', mr: 0.25, fontWeight: 800, fontSize: '0.62rem' }}
+              >
                 변동:
               </Typography>
               <Box sx={{ width: 8, height: 8, bgcolor: '#b71c1c', borderRadius: 0.2 }} />
@@ -364,7 +430,7 @@ export function StockMarketHeatmapView({
             </Stack>
 
             {/* Fullscreen Button */}
-            <Tooltip title={isFullScreen ? "전체화면 종료" : "전체화면 보기"}>
+            <Tooltip title={isFullScreen ? '전체화면 종료' : '전체화면 보기'}>
               <IconButton
                 size="small"
                 onClick={() => setIsFullScreen(!isFullScreen)}
@@ -377,7 +443,7 @@ export function StockMarketHeatmapView({
                   '&:hover': {
                     bgcolor: alpha(theme.palette.primary.main, 0.1),
                     color: 'primary.main',
-                  }
+                  },
                 }}
               >
                 {isFullScreen ? (
@@ -394,23 +460,32 @@ export function StockMarketHeatmapView({
 
         {/* Row 2: Timeline Player Slider in ultra-flat row */}
         {availableDates.length > 0 ? (
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ width: '100%', height: 26 }}>
+          <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+            sx={{ width: '100%', height: 26 }}
+          >
             {/* Controls & Progress info */}
             <Stack direction="row" spacing={0.5} alignItems="center" sx={{ minWidth: 160 }}>
               <IconButton
                 color="primary"
                 size="small"
                 onClick={() => setIsPlaying(!isPlaying)}
-                sx={{ 
-                  width: 24, 
+                sx={{
+                  width: 24,
                   height: 24,
                   bgcolor: alpha(theme.palette.primary.main, 0.1),
-                  '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
+                  '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) },
                 }}
               >
-                {isPlaying ? <PauseRoundedIcon sx={{ fontSize: 16 }} /> : <PlayArrowRoundedIcon sx={{ fontSize: 16 }} />}
+                {isPlaying ? (
+                  <PauseRoundedIcon sx={{ fontSize: 16 }} />
+                ) : (
+                  <PlayArrowRoundedIcon sx={{ fontSize: 16 }} />
+                )}
               </IconButton>
-              
+
               <IconButton
                 color="secondary"
                 size="small"
@@ -419,21 +494,32 @@ export function StockMarketHeatmapView({
                   setDateIndex(0);
                 }}
                 disabled={dateIndex === 0}
-                sx={{ 
-                  width: 24, 
+                sx={{
+                  width: 24,
                   height: 24,
                   bgcolor: alpha(theme.palette.grey[500], 0.1),
-                  '&:hover': { bgcolor: alpha(theme.palette.grey[500], 0.2) }
+                  '&:hover': { bgcolor: alpha(theme.palette.grey[500], 0.2) },
                 }}
               >
                 <RefreshRoundedIcon sx={{ fontSize: 14 }} />
               </IconButton>
 
               <Box sx={{ minWidth: 90, pl: 0.25, display: 'flex', gap: 0.5, alignItems: 'center' }}>
-                <Typography variant="caption" sx={{ fontWeight: 850, color: 'primary.main', fontFamily: 'monospace', fontSize: '0.72rem' }}>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: 850,
+                    color: 'primary.main',
+                    fontFamily: 'monospace',
+                    fontSize: '0.72rem',
+                  }}
+                >
                   {availableDates[dateIndex] || ''}
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.62rem' }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', fontWeight: 700, fontSize: '0.62rem' }}
+                >
                   ({(((dateIndex + 1) / availableDates.length) * 100).toFixed(0)}%)
                 </Typography>
               </Box>
@@ -462,11 +548,11 @@ export function StockMarketHeatmapView({
                       boxShadow: `0px 0px 0px 4px ${alpha(theme.palette.primary.main, 0.16)}`,
                     },
                   },
-                  '& .MuiSlider-rail': { bgcolor: 'divider' }
+                  '& .MuiSlider-rail': { bgcolor: 'divider' },
                 }}
               />
             </Box>
-            
+
             {/* Speed Toggle */}
             <Box>
               <ToggleButtonGroup
@@ -483,7 +569,10 @@ export function StockMarketHeatmapView({
             </Box>
           </Stack>
         ) : (
-          <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', py: 0.5 }}>
+          <Typography
+            variant="body2"
+            sx={{ color: 'text.secondary', textAlign: 'center', py: 0.5 }}
+          >
             날짜 데이터를 불러올 수 없습니다.
           </Typography>
         )}
@@ -494,7 +583,17 @@ export function StockMarketHeatmapView({
   const renderTreemap = (height: number) => {
     if (availableDates.length > 0 && dateIndex !== -1 && isMounted) {
       return (
-        <Box sx={{ height, width: '100%', position: 'relative', bgcolor: 'background.neutral', borderRadius: 1.5, overflow: 'hidden', p: 1 }}>
+        <Box
+          sx={{
+            height,
+            width: '100%',
+            position: 'relative',
+            bgcolor: 'background.neutral',
+            borderRadius: 1.5,
+            overflow: 'hidden',
+            p: 1,
+          }}
+        >
           <ResponsiveTreeMap
             data={treeData}
             identity="id"
@@ -505,7 +604,7 @@ export function StockMarketHeatmapView({
             label={(node: any) => {
               if (node.data && typeof node.data.activeReturn === 'number') {
                 const isKorean = node.id.endsWith('.KS') || node.id.endsWith('.KQ');
-                const displayName = isKorean ? (node.data.name || node.id) : node.id;
+                const displayName = isKorean ? node.data.name || node.id : node.id;
                 return `${displayName} (${node.data.activeReturn >= 0 ? '+' : ''}${node.data.activeReturn.toFixed(1)}%)`;
               }
               return node.id;
@@ -556,9 +655,7 @@ export function StockMarketHeatmapView({
     <Stack spacing={3}>
       {renderControls()}
 
-      <Card sx={{ p: 3, borderRadius: 2 }}>
-        {renderTreemap(600)}
-      </Card>
+      <Card sx={{ p: 3, borderRadius: 2 }}>{renderTreemap(600)}</Card>
 
       {/* Fullscreen Heatmap Dialog */}
       <Dialog
@@ -568,12 +665,31 @@ export function StockMarketHeatmapView({
         sx={{
           '& .MuiDialog-paper': {
             bgcolor: 'background.default',
-          }
+          },
         }}
       >
-        <DialogContent sx={{ p: 2, display: 'flex', flexDirection: 'column', height: '100vh', gap: 1.5, overflow: 'hidden' }}>
+        <DialogContent
+          sx={{
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100vh',
+            gap: 1.5,
+            overflow: 'hidden',
+          }}
+        >
           {renderControls()}
-          <Box sx={{ flexGrow: 1, width: '100%', position: 'relative', bgcolor: 'background.neutral', borderRadius: 1.5, overflow: 'hidden', p: 1 }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              width: '100%',
+              position: 'relative',
+              bgcolor: 'background.neutral',
+              borderRadius: 1.5,
+              overflow: 'hidden',
+              p: 1,
+            }}
+          >
             {renderTreemap('100%') as any}
           </Box>
         </DialogContent>

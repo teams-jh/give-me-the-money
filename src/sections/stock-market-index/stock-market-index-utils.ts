@@ -28,10 +28,10 @@ export function transformTickerToStock(data: TickerData): Stock {
 function calculatePeriodData(data: TickerData, days: number): PeriodData {
   const allPrices = data.prices || [];
   const slice = allPrices.slice(-days);
-  
+
   const series: PriceSeries = {
-    labels: slice.map(p => p.date),
-    values: slice.map(p => p.close),
+    labels: slice.map((p) => p.date),
+    values: slice.map((p) => p.close),
   };
 
   const result = sharedClassifyTrend(series, 5);
@@ -61,6 +61,6 @@ function calculatePeriodData(data: TickerData, days: number): PeriodData {
     chart_labels: result.chartLabels,
     chart_data: result.chartData,
     regression: result.regression,
-    actual_prices: slice.map(p => p.close),
+    actual_prices: slice.map((p) => p.close),
   };
 }

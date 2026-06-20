@@ -229,10 +229,7 @@ export function ExchangeRateView() {
       enabled: false,
     },
     colors: compareWithUsdi
-      ? [
-          isUp ? theme.palette.error.main : theme.palette.success.main,
-          theme.palette.info.main,
-        ]
+      ? [isUp ? theme.palette.error.main : theme.palette.success.main, theme.palette.info.main]
       : [isUp ? theme.palette.error.main : theme.palette.success.main],
     stroke: {
       width: compareWithUsdi ? [3, 2] : [3],
@@ -244,7 +241,9 @@ export function ExchangeRateView() {
         shade: theme.palette.mode,
         type: 'vertical',
         shadeIntensity: 0.5,
-        gradientToColors: [alpha(isUp ? theme.palette.error.main : theme.palette.success.main, 0.1)],
+        gradientToColors: [
+          alpha(isUp ? theme.palette.error.main : theme.palette.success.main, 0.1),
+        ],
         inverseColors: false,
         opacityFrom: 0.6,
         opacityTo: 0.1,
@@ -408,7 +407,8 @@ export function ExchangeRateView() {
             실시간 환율 조회 및 분석 💱
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            USD/KRW 실시간 시장 환율 흐름을 조회하고, 환율 상승/하락에 따른 자산 시뮬레이션 및 경제적 파급 효과를 분석합니다.
+            USD/KRW 실시간 시장 환율 흐름을 조회하고, 환율 상승/하락에 따른 자산 시뮬레이션 및
+            경제적 파급 효과를 분석합니다.
           </Typography>
         </Box>
 
@@ -420,7 +420,9 @@ export function ExchangeRateView() {
               sx={{
                 p: 3,
                 border: `1px solid ${theme.palette.divider}`,
-                boxShadow: theme.customShadows?.card || `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
+                boxShadow:
+                  theme.customShadows?.card ||
+                  `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
                 position: 'relative',
                 overflow: 'hidden',
                 '&:hover': {
@@ -472,7 +474,9 @@ export function ExchangeRateView() {
               sx={{
                 p: 3,
                 border: `1px solid ${theme.palette.divider}`,
-                boxShadow: theme.customShadows?.card || `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
+                boxShadow:
+                  theme.customShadows?.card ||
+                  `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
               }}
             >
               <Stack spacing={1.5}>
@@ -492,12 +496,15 @@ export function ExchangeRateView() {
                 <LinearProgress
                   variant="determinate"
                   value={currentPercentage}
-                  color={currentPercentage > 75 ? 'error' : currentPercentage < 25 ? 'success' : 'info'}
+                  color={
+                    currentPercentage > 75 ? 'error' : currentPercentage < 25 ? 'success' : 'info'
+                  }
                   sx={{ height: 6, borderRadius: 3, bgcolor: alpha(theme.palette.grey[500], 0.12) }}
                 />
 
                 <Typography variant="caption" sx={{ color: 'text.secondary', textAlign: 'center' }}>
-                  현재 환율은 52주 고점 대비 <b>{(100 - currentPercentage).toFixed(1)}%</b> 아래에 있습니다.
+                  현재 환율은 52주 고점 대비 <b>{(100 - currentPercentage).toFixed(1)}%</b> 아래에
+                  있습니다.
                 </Typography>
               </Stack>
             </Card>
@@ -509,7 +516,9 @@ export function ExchangeRateView() {
               sx={{
                 p: 3,
                 border: `1px solid ${theme.palette.divider}`,
-                boxShadow: theme.customShadows?.card || `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
+                boxShadow:
+                  theme.customShadows?.card ||
+                  `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
               }}
             >
               <Stack spacing={1.5}>
@@ -537,7 +546,9 @@ export function ExchangeRateView() {
               sx={{
                 p: 3,
                 border: `1px solid ${theme.palette.divider}`,
-                boxShadow: theme.customShadows?.card || `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
+                boxShadow:
+                  theme.customShadows?.card ||
+                  `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
               }}
             >
               <Stack spacing={1.5}>
@@ -551,7 +562,10 @@ export function ExchangeRateView() {
                     color="warning"
                     sx={{ fontWeight: 800, borderRadius: 1 }}
                   />
-                  <Typography variant="subtitle2" sx={{ fontWeight: 700, color: theme.palette.warning.main }}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 700, color: theme.palette.warning.main }}
+                  >
                     주의 단계 유지 ⚠️
                   </Typography>
                 </Stack>
@@ -573,10 +587,17 @@ export function ExchangeRateView() {
                 p: 3,
                 height: '100%',
                 border: `1px solid ${theme.palette.divider}`,
-                boxShadow: theme.customShadows?.card || `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
+                boxShadow:
+                  theme.customShadows?.card ||
+                  `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
               }}
             >
-              <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ mb: 3 }}
+              >
                 <Stack spacing={0.5}>
                   <Typography variant="h6" sx={{ fontWeight: 800 }}>
                     USD/KRW 환율 차트 추이
@@ -645,7 +666,9 @@ export function ExchangeRateView() {
                 p: 3,
                 height: '100%',
                 border: `1px solid ${theme.palette.divider}`,
-                boxShadow: theme.customShadows?.card || `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
+                boxShadow:
+                  theme.customShadows?.card ||
+                  `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -653,7 +676,10 @@ export function ExchangeRateView() {
             >
               <Stack spacing={2.5}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}
+                  >
                     <CalculateRoundedIcon color="primary" />
                     실시간 환전 계산기
                   </Typography>
@@ -782,8 +808,12 @@ export function ExchangeRateView() {
                             textAlign: 'center',
                           }}
                         >
-                          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
-                            ${amount.toLocaleString()} ➡️ {Math.round(amount * currentRate).toLocaleString()}원
+                          <Typography
+                            variant="caption"
+                            sx={{ color: 'text.secondary', fontWeight: 600 }}
+                          >
+                            ${amount.toLocaleString()} ➡️{' '}
+                            {Math.round(amount * currentRate).toLocaleString()}원
                           </Typography>
                         </Box>
                       </Grid>
@@ -793,7 +823,10 @@ export function ExchangeRateView() {
               </Stack>
 
               <Box sx={{ mt: 3 }}>
-                <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', textAlign: 'center' }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.disabled', display: 'block', textAlign: 'center' }}
+                >
                   * 위 계산은 시뮬레이션이며 실시간 은행 수수료가 적용되지 않았습니다.
                 </Typography>
               </Box>
@@ -834,7 +867,8 @@ export function ExchangeRateView() {
                     영업이익 증대 효과
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                    원/달러 환율이 상승하면 달러로 제품을 판매하는 수출 기업(삼성전자, 현대차, 조선업 등)의 한화 환산 매출 및 영업이익률이 개선됩니다.
+                    원/달러 환율이 상승하면 달러로 제품을 판매하는 수출 기업(삼성전자, 현대차,
+                    조선업 등)의 한화 환산 매출 및 영업이익률이 개선됩니다.
                   </Typography>
                 </Stack>
               </Card>
@@ -866,7 +900,8 @@ export function ExchangeRateView() {
                     원가 부담 극대화
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                    석유화학, 철강, 정유, 항공 등 원자재 및 에너지 수입량이 많은 내수 기반 업종은 환율 상승 시 원가 부담이 급증하여 마진이 크게 축소됩니다.
+                    석유화학, 철강, 정유, 항공 등 원자재 및 에너지 수입량이 많은 내수 기반 업종은
+                    환율 상승 시 원가 부담이 급증하여 마진이 크게 축소됩니다.
                   </Typography>
                 </Stack>
               </Card>
@@ -898,7 +933,9 @@ export function ExchangeRateView() {
                     주식 시장 수급 악화
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                    급격한 원화 가치 하락(환율 상승) 시 외국인 투자자는 국내 주식 시장(코스피/코스닥)에서 환차손을 피하기 위해 자금을 회수하고 순매도를 이어갈 가능성이 높습니다.
+                    급격한 원화 가치 하락(환율 상승) 시 외국인 투자자는 국내 주식
+                    시장(코스피/코스닥)에서 환차손을 피하기 위해 자금을 회수하고 순매도를 이어갈
+                    가능성이 높습니다.
                   </Typography>
                 </Stack>
               </Card>
@@ -930,7 +967,8 @@ export function ExchangeRateView() {
                     인플레이션 장기화 우려
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
-                    고환율 기조는 원자재와 소비재 수입 가격을 자극하여 국내 물가 지수(CPI) 상승 압력을 늘리고, 이는 한국은행의 기준금리 인하 시점을 뒤로 미루는 요인이 됩니다.
+                    고환율 기조는 원자재와 소비재 수입 가격을 자극하여 국내 물가 지수(CPI) 상승
+                    압력을 늘리고, 이는 한국은행의 기준금리 인하 시점을 뒤로 미루는 요인이 됩니다.
                   </Typography>
                 </Stack>
               </Card>

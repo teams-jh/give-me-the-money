@@ -46,7 +46,11 @@ export function calculateRSI(data: number[], period: number = 14): number[] {
   return rsi;
 }
 
-export function calculateBollingerBands(data: number[], period: number = 20, multiplier: number = 2) {
+export function calculateBollingerBands(
+  data: number[],
+  period: number = 20,
+  multiplier: number = 2
+) {
   const sma = calculateSMA(data, period);
   const upper: number[] = [];
   const lower: number[] = [];
@@ -88,7 +92,7 @@ export function calculateMACD(data: number[], shortPeriod = 12, longPeriod = 26,
   const ema26 = calculateEMA(data, longPeriod);
 
   const macdLine = ema12.map((val, idx) => Number((val - ema26[idx]).toFixed(2)));
-  const signalLine = calculateEMA(macdLine, signalPeriod).map(val => Number(val.toFixed(2)));
+  const signalLine = calculateEMA(macdLine, signalPeriod).map((val) => Number(val.toFixed(2)));
   const histogram = macdLine.map((val, idx) => Number((val - signalLine[idx]).toFixed(2)));
 
   return { macdLine, signalLine, histogram };
@@ -96,8 +100,8 @@ export function calculateMACD(data: number[], shortPeriod = 12, longPeriod = 26,
 
 export function calculateEnvelope(data: number[], period: number = 20, percent: number = 0.1) {
   const sma = calculateSMA(data, period);
-  const upper = sma.map(val => Number((val * (1 + percent)).toFixed(2)));
-  const lower = sma.map(val => Number((val * (1 - percent)).toFixed(2)));
+  const upper = sma.map((val) => Number((val * (1 + percent)).toFixed(2)));
+  const lower = sma.map((val) => Number((val * (1 - percent)).toFixed(2)));
   return { sma, upper, lower };
 }
 

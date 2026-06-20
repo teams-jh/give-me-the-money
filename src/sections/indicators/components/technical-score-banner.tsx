@@ -51,7 +51,12 @@ export function TechnicalScoreBanner({
         <Grid container spacing={2} alignItems="center">
           <Grid size={{ xs: 12, md: 8.5 }}>
             <Stack spacing={1}>
-              <Stack direction="row" spacing={1.5} alignItems="center" sx={{ flexWrap: 'wrap', gap: 1 }}>
+              <Stack
+                direction="row"
+                spacing={1.5}
+                alignItems="center"
+                sx={{ flexWrap: 'wrap', gap: 1 }}
+              >
                 <Chip
                   label="차트 종합 분석 지수"
                   color="primary"
@@ -66,8 +71,8 @@ export function TechnicalScoreBanner({
                 </Typography>
               </Stack>
               <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.4 }}>
-                RSI {latestRsi.toFixed(1)} 수준과 MACD 오실레이터, 이동평균선의 정합성을 바탕으로 도출한 {stockName}({stockTicker})의 기술적 모멘텀 점수는{' '}
-                <b>{score}점</b>입니다.
+                RSI {latestRsi.toFixed(1)} 수준과 MACD 오실레이터, 이동평균선의 정합성을 바탕으로
+                도출한 {stockName}({stockTicker})의 기술적 모멘텀 점수는 <b>{score}점</b>입니다.
               </Typography>
             </Stack>
           </Grid>
@@ -85,7 +90,10 @@ export function TechnicalScoreBanner({
               }}
             >
               <Box sx={{ minWidth: 80, textAlign: 'center' }}>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, display: 'block', mb: 0.2 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', fontWeight: 700, display: 'block', mb: 0.2 }}
+                >
                   종합 점수
                 </Typography>
                 <Typography

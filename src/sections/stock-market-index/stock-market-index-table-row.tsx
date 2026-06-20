@@ -31,8 +31,8 @@ export function StockTableRow({ stock, index, period, onClick }: Props) {
   const trendColor = getTrendColor(data.trend, theme);
 
   return (
-    <TableRow 
-      hover 
+    <TableRow
+      hover
       onClick={onClick}
       sx={{ cursor: 'pointer', '&:last-child td, &:last-child th': { border: 0 } }}
     >
@@ -55,7 +55,7 @@ export function StockTableRow({ stock, index, period, onClick }: Props) {
               bgcolor: (t) => alpha(t.palette.primary.main, 0.1),
               color: 'primary.main',
               fontWeight: 800,
-              fontSize: 12
+              fontSize: 12,
             }}
           >
             {stock.ticker.substring(0, 4)}
@@ -87,7 +87,7 @@ export function StockTableRow({ stock, index, period, onClick }: Props) {
             color: trendColor,
             fontWeight: 700,
             fontSize: 10,
-            borderRadius: 0.5
+            borderRadius: 0.5,
           }}
         />
       </TableCell>
@@ -103,7 +103,8 @@ export function StockTableRow({ stock, index, period, onClick }: Props) {
             variant="subtitle2"
             sx={{ color: isPositive ? 'success.main' : 'error.main', fontWeight: 700 }}
           >
-            {isPositive ? '+' : ''}{data.total_return}%
+            {isPositive ? '+' : ''}
+            {data.total_return}%
           </Typography>
         </Stack>
       </TableCell>
