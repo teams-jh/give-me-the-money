@@ -21,7 +21,9 @@ import {
   calcTrendTouchPoints,
   detectHighLowBreakout,
   detectStochasticSignal,
- detectSupertrendSignal , detectPriceVolumeDivergence } from './signals.ts';
+  detectSupertrendSignal,
+  detectPriceVolumeDivergence,
+} from './signals.ts';
 
 function makeOHLCV(closes: number[], vol = 1_000_000): OHLCV[] {
   return closes.map((close, i) => ({
@@ -435,7 +437,6 @@ describe('detectStochasticSignal 추가 브랜치', () => {
 });
 
 // ── calcTrendTouchPoints ───────────────────────────────────────────────────────
-
 
 /**
  * 테스트용 평평한 추세선 (m=0, c=100)

@@ -101,7 +101,7 @@ export function useTrendSimulation(): UseTrendSimulationReturn {
         filterEndDate: lastDate,
       },
     });
-  }, [referenceInfo]);  
+  }, [referenceInfo]);
 
   // ── 기간 토글 ─────────────────────────────────────────────────────────
   const togglePeriod = useCallback(

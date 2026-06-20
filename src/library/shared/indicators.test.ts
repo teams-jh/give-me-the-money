@@ -1,5 +1,5 @@
 import type {
- calcMA ,
+  calcMA,
   OHLCBar,
   calcEMA,
   calcRSI,
@@ -9,10 +9,10 @@ import type {
   calcROC,
   calcMACD,
   type OHLCV,
-  calcBollingerBands } from './indicators.ts';
+  calcBollingerBands,
+} from './indicators.ts';
 
 import { it, expect, describe } from 'vitest';
-
 
 // ── 테스트용 헬퍼 ─────────────────────────────────────────────────────────────
 
@@ -357,7 +357,8 @@ import {
   calcDonchianChannels,
   calcSupportResistance,
   calcLinearRegressionChannel,
- calcZigZagSupportResistance } from './indicators.ts';
+  calcZigZagSupportResistance,
+} from './indicators.ts';
 
 describe('calcStochastic', () => {
   it('결과 배열 길이는 입력과 동일하다', () => {
@@ -801,7 +802,6 @@ describe('calcZigZagSupportResistance 추가 브랜치', () => {
 });
 
 // ── convertToWeeklyBars ───────────────────────────────────────────────────────
-
 
 function bar(date: string, open: number, high: number, low: number, close: number): OHLCBar {
   return { date, open, high, low, close };

@@ -13,6 +13,7 @@ export const paths = {
   stockMarketIndex: '/stock-market-index',
   detailedAnalysis: {
     root: '/detailed-analysis',
+    singleStock: '/detailed-analysis/single-stock',
     periodic: '/detailed-analysis/periodic',
     trendFollowing: '/detailed-analysis/trend-following',
     chartTrend: '/detailed-analysis/chart-trend',
