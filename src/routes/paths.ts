@@ -16,6 +16,7 @@ export const paths = {
     singleStock: '/detailed-analysis/single-stock',
     multiStock: '/detailed-analysis/multi-stock',
     theme: '/detailed-analysis/theme',
+    divergence: '/detailed-analysis/divergence',
     periodic: '/detailed-analysis/periodic',
     trendFollowing: '/detailed-analysis/trend-following',
     chartTrend: '/detailed-analysis/chart-trend',
