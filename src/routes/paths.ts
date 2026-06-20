@@ -10,21 +10,12 @@ export const paths = {
   dashboard: {
     root: '/dashboard',
   },
-  fileManager: '/drive',
-  practice: {
-    root: `/practice`,
-    myTests: `/practice/my-tests`,
-    randomTest: `/practice/random-test`,
-  },
-  listening: {
-    root: `/listening`,
-    playlist: `/listening/playlist`,
-    random: `/listening/random`,
-  },
   stockMarketIndex: '/stock-market-index',
-  chartAnalysis: '/chart-analysis',
   detailedAnalysis: {
     root: '/detailed-analysis',
+    singleStock: '/detailed-analysis/single-stock',
+    multiStock: '/detailed-analysis/multi-stock',
+    theme: '/detailed-analysis/theme',
     periodic: '/detailed-analysis/periodic',
     trendFollowing: '/detailed-analysis/trend-following',
     chartTrend: '/detailed-analysis/chart-trend',

@@ -51,7 +51,11 @@ export function NavItem({
 
       {hasChild && (
         <ItemArrow {...ownerState}>
-          {open ? <ExpandMoreIcon sx={{ width: 16, height: 16 }} /> : <ChevronRightIcon sx={{ width: 16, height: 16 }} />}
+          {open ? (
+            <ExpandMoreIcon sx={{ width: 16, height: 16 }} />
+          ) : (
+            <ChevronRightIcon sx={{ width: 16, height: 16 }} />
+          )}
         </ItemArrow>
       )}
     </ItemRoot>

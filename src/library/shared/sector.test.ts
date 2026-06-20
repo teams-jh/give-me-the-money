@@ -11,11 +11,7 @@ import type { StockInput } from './sector.ts';
 
 import { it, expect, describe } from 'vitest';
 
-import {
-  getQuarterKey,
-  calcSectorRotation,
-  calcSectorStrengthRotation,
-} from './sector.ts';
+import { getQuarterKey, calcSectorRotation, calcSectorStrengthRotation } from './sector.ts';
 
 // ── 헬퍼 ─────────────────────────────────────────────────────────────────────
 
@@ -27,7 +23,7 @@ import {
 function makeQuarterPrices(
   startDate: string,
   direction: 'up' | 'down' | 'flat',
-  n = 65,
+  n = 65
 ): { date: string; close: number }[] {
   const prices: { date: string; close: number }[] = [];
   const d = new Date(startDate);
@@ -36,7 +32,7 @@ function makeQuarterPrices(
   for (let i = 0; i < n; i++) {
     // 주말 건너뜀
     while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
-    if (direction === 'up')   close = 100 + i * 0.5;
+    if (direction === 'up') close = 100 + i * 0.5;
     if (direction === 'down') close = 100 - i * 0.5;
     if (direction === 'flat') close = 100 + (i % 3) * 0.05;
     prices.push({ date: d.toISOString().slice(0, 10), close });
@@ -50,7 +46,7 @@ function makeStock(
   ticker: string,
   sector: string,
   q1Direction: 'up' | 'down' | 'flat',
-  q2Direction: 'up' | 'down' | 'flat',
+  q2Direction: 'up' | 'down' | 'flat'
 ): StockInput {
   const q1 = makeQuarterPrices('2024-01-02', q1Direction, 65);
   const q2 = makeQuarterPrices('2024-04-01', q2Direction, 65);
@@ -99,7 +95,8 @@ describe('calcSectorRotation', () => {
 
   it('Unknown 섹터 종목 → 제외', () => {
     const stock: StockInput = {
-      ticker: 'X', sector: 'Unknown',
+      ticker: 'X',
+      sector: 'Unknown',
       prices: makeQuarterPrices('2024-01-02', 'up'),
     };
     const result = calcSectorRotation([stock], 1);
@@ -116,12 +113,12 @@ describe('calcSectorRotation', () => {
 
   it('충분한 데이터: 2섹터 × 3종목 → 분기 랭킹 생성', () => {
     const stocks: StockInput[] = [
-      makeStock('A1', 'Technology', 'up',   'up'),
-      makeStock('A2', 'Technology', 'up',   'up'),
-      makeStock('A3', 'Technology', 'up',   'up'),
-      makeStock('B1', 'Finance',    'down', 'flat'),
-      makeStock('B2', 'Finance',    'down', 'flat'),
-      makeStock('B3', 'Finance',    'down', 'flat'),
+      makeStock('A1', 'Technology', 'up', 'up'),
+      makeStock('A2', 'Technology', 'up', 'up'),
+      makeStock('A3', 'Technology', 'up', 'up'),
+      makeStock('B1', 'Finance', 'down', 'flat'),
+      makeStock('B2', 'Finance', 'down', 'flat'),
+      makeStock('B3', 'Finance', 'down', 'flat'),
     ];
 
     const result = calcSectorRotation(stocks, 3, false);
@@ -140,18 +137,18 @@ describe('calcSectorRotation', () => {
 
   it('두 분기: 두 번째 분기에 rankChange 반영됨', () => {
     const stocks: StockInput[] = [
-      makeStock('A1', 'Technology', 'up',   'down'),
-      makeStock('A2', 'Technology', 'up',   'down'),
-      makeStock('A3', 'Technology', 'up',   'down'),
-      makeStock('B1', 'Finance',    'down', 'up'),
-      makeStock('B2', 'Finance',    'down', 'up'),
-      makeStock('B3', 'Finance',    'down', 'up'),
+      makeStock('A1', 'Technology', 'up', 'down'),
+      makeStock('A2', 'Technology', 'up', 'down'),
+      makeStock('A3', 'Technology', 'up', 'down'),
+      makeStock('B1', 'Finance', 'down', 'up'),
+      makeStock('B2', 'Finance', 'down', 'up'),
+      makeStock('B3', 'Finance', 'down', 'up'),
     ];
 
     const result = calcSectorRotation(stocks, 3, false);
     if (result.rankings.length >= 2) {
       const q2Rows = result.rankings[1]!.rows;
-      const hasRankChange = q2Rows.some(r => r.rankChange !== null);
+      const hasRankChange = q2Rows.some((r) => r.rankChange !== null);
       expect(hasRankChange).toBe(true);
     }
   });
@@ -175,13 +172,12 @@ describe('calcSectorRotation', () => {
   it('excludePartialFirst=true → 부분 분기 제외', () => {
     // 2024-02-01 시작 → Q1이 부분 분기
     const makePartialStock = (ticker: string): StockInput => ({
-      ticker, sector: 'Technology',
+      ticker,
+      sector: 'Technology',
       prices: makeQuarterPrices('2024-02-01', 'up', 65),
     });
 
-    const stocks = [
-      makePartialStock('A'), makePartialStock('B'), makePartialStock('C'),
-    ];
+    const stocks = [makePartialStock('A'), makePartialStock('B'), makePartialStock('C')];
     const resultExcl = calcSectorRotation(stocks, 1, true);
     const resultIncl = calcSectorRotation(stocks, 1, false);
 
@@ -201,7 +197,8 @@ describe('calcSectorStrengthRotation', () => {
 
   it('Unknown 섹터 → 제외', () => {
     const stock: StockInput = {
-      ticker: 'X', sector: 'Unknown',
+      ticker: 'X',
+      sector: 'Unknown',
       prices: makeQuarterPrices('2024-01-02', 'up'),
     };
     const result = calcSectorStrengthRotation([stock], 1);
@@ -217,12 +214,12 @@ describe('calcSectorStrengthRotation', () => {
 
   it('충분한 데이터: 2섹터 × 3종목 → strengthSeries 생성', () => {
     const stocks: StockInput[] = [
-      makeStock('A1', 'Technology', 'up',   'up'),
-      makeStock('A2', 'Technology', 'up',   'up'),
-      makeStock('A3', 'Technology', 'up',   'up'),
-      makeStock('B1', 'Finance',    'down', 'flat'),
-      makeStock('B2', 'Finance',    'down', 'flat'),
-      makeStock('B3', 'Finance',    'down', 'flat'),
+      makeStock('A1', 'Technology', 'up', 'up'),
+      makeStock('A2', 'Technology', 'up', 'up'),
+      makeStock('A3', 'Technology', 'up', 'up'),
+      makeStock('B1', 'Finance', 'down', 'flat'),
+      makeStock('B2', 'Finance', 'down', 'flat'),
+      makeStock('B3', 'Finance', 'down', 'flat'),
     ];
 
     const result = calcSectorStrengthRotation(stocks, 3, false);
@@ -238,18 +235,18 @@ describe('calcSectorStrengthRotation', () => {
 
   it('두 번째 분기 rankChange 반영', () => {
     const stocks: StockInput[] = [
-      makeStock('A1', 'Technology', 'up',   'down'),
-      makeStock('A2', 'Technology', 'up',   'down'),
-      makeStock('A3', 'Technology', 'up',   'down'),
-      makeStock('B1', 'Finance',    'down', 'up'),
-      makeStock('B2', 'Finance',    'down', 'up'),
-      makeStock('B3', 'Finance',    'down', 'up'),
+      makeStock('A1', 'Technology', 'up', 'down'),
+      makeStock('A2', 'Technology', 'up', 'down'),
+      makeStock('A3', 'Technology', 'up', 'down'),
+      makeStock('B1', 'Finance', 'down', 'up'),
+      makeStock('B2', 'Finance', 'down', 'up'),
+      makeStock('B3', 'Finance', 'down', 'up'),
     ];
 
     const result = calcSectorStrengthRotation(stocks, 3, false);
     if (result.rankings.length >= 2) {
       const q2Rows = result.rankings[1]!.rows;
-      const hasRankChange = q2Rows.some(r => r.rankChange !== null);
+      const hasRankChange = q2Rows.some((r) => r.rankChange !== null);
       expect(hasRankChange).toBe(true);
     }
   });
@@ -264,7 +261,7 @@ describe('calcSectorStrengthRotation', () => {
     const result = calcSectorStrengthRotation(stocks, 3, false);
     if (result.rankings.length > 0) {
       const lastQ = result.rankings[result.rankings.length - 1]!;
-      const techRow = lastQ.rows.find(r => r.sector === 'Technology');
+      const techRow = lastQ.rows.find((r) => r.sector === 'Technology');
       if (techRow) {
         // 강한 상승이면 strengthScore 양수 가능성 높음
         expect(typeof techRow.strengthScore).toBe('number');
@@ -327,7 +324,8 @@ describe('calcSectorRotation 추가 브랜치', () => {
   function makeSectorQStock(ticker: string, sector: string, quarter: 'Q1' | 'Q2'): StockInput {
     const startDate = quarter === 'Q1' ? '2024-01-02' : '2024-04-01';
     return {
-      ticker, sector,
+      ticker,
+      sector,
       prices: makeQuarterPrices(startDate, 'up', 65),
     };
   }
@@ -346,10 +344,10 @@ describe('calcSectorRotation 추가 브랜치', () => {
     // sectorSeries에 null 존재 여부 확인
     if (result.sectors.length > 0) {
       const techSeries = result.sectorSeries['Technology'];
-      const finSeries  = result.sectorSeries['Finance'];
+      const finSeries = result.sectorSeries['Finance'];
       // null이 포함될 수 있음
       if (techSeries) expect(techSeries.returns.length).toBe(result.quarters.length);
-      if (finSeries)  expect(finSeries.returns.length).toBe(result.quarters.length);
+      if (finSeries) expect(finSeries.returns.length).toBe(result.quarters.length);
     }
   });
 
@@ -358,7 +356,8 @@ describe('calcSectorRotation 추가 브랜치', () => {
       // prices 1개 → skip
       { ticker: 'X', sector: 'Technology', prices: [{ date: '2024-01-02', close: 100 }] },
       ...Array.from({ length: 3 }, (_, i) => ({
-        ticker: `A${i}`, sector: 'Technology',
+        ticker: `A${i}`,
+        sector: 'Technology',
         prices: makeQuarterPrices('2024-01-02', 'up', 65),
       })),
     ];

@@ -167,9 +167,22 @@ export function TechnicalDiagnosticsPanel({
   };
 
   const rsiDiag = getRsiDiagnostic(techAnalysis.latestRsi);
-  const maDiag = getMaDiagnostic(techAnalysis.currentPrice, techAnalysis.latestSma20, techAnalysis.latestSma50);
-  const macdDiag = getMacdDiagnostic(techAnalysis.latestHist, techAnalysis.latestMacd, techAnalysis.latestSignal);
-  const bbDiag = getBbDiagnostic(techAnalysis.currentPrice, techAnalysis.latestBbUpper, techAnalysis.latestBbLower, techAnalysis.latestBbSma);
+  const maDiag = getMaDiagnostic(
+    techAnalysis.currentPrice,
+    techAnalysis.latestSma20,
+    techAnalysis.latestSma50
+  );
+  const macdDiag = getMacdDiagnostic(
+    techAnalysis.latestHist,
+    techAnalysis.latestMacd,
+    techAnalysis.latestSignal
+  );
+  const bbDiag = getBbDiagnostic(
+    techAnalysis.currentPrice,
+    techAnalysis.latestBbUpper,
+    techAnalysis.latestBbLower,
+    techAnalysis.latestBbSma
+  );
 
   const hasAnyIndicator =
     showSma5 ||
@@ -280,8 +293,6 @@ export function TechnicalDiagnosticsPanel({
             />
           </>
         )}
-
-
 
         {!hasAnyIndicator && (
           <Card

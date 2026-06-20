@@ -126,7 +126,7 @@ export async function deleteFileScripts(fileIds: string[], section?: string): Pr
 
 export async function deleteTreeItems(ids: string[], section?: string): Promise<void> {
   const data = await getAppData();
-  
+
   const getDescendantIds = (tree: any[], targetIds: string[]): string[] => {
     const descendantIds: string[] = [];
     const traverse = (nodes: any[], isDescendant = false) => {
@@ -179,7 +179,6 @@ export async function deleteTreeItems(ids: string[], section?: string): Promise<
         delete data.scripts[scriptId];
       }
     });
-
   } else if (data.sections?.[section]) {
     const allIdsToDelete = getDescendantIds(data.sections[section].tree, ids);
     allIdsToDelete.forEach((id) => {

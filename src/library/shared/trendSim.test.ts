@@ -15,26 +15,27 @@
  *   applyPatternFilter   — 패턴 필터
  */
 
-import { describe, it, expect } from 'vitest';
+import type { SimResult, PeriodConfig, PriceDataPoint } from './trendSim.ts';
+
+import { it, expect, describe } from 'vitest';
 
 import {
-  PERIOD_BARS,
   snapDateUp,
+  PERIOD_BARS,
   snapDateDown,
-  buildTrendIndices,
-  selectPriceBasis,
-  calcTrendLine,
-  buildChartData,
-  calcSlopeInfo,
-  filterTouchPoints,
   runTickerSim,
+  calcTrendLine,
+  calcSlopeInfo,
+  buildChartData,
   sortSimResults,
+  selectPriceBasis,
+  buildTrendIndices,
+  filterTouchPoints,
   applyPatternFilter,
   resolvePeriodDates,
   resolveFilterStartMs,
   DEFAULT_FILTER_LOOKBACK_BARS,
 } from './trendSim.ts';
-import type { PriceDataPoint, PeriodConfig, TouchPoint, SimResult } from './trendSim.ts';
 
 // ── 헬퍼 ────────────────────────────────────────────────────────────────────
 
@@ -42,31 +43,31 @@ function makePrices(n: number, base = 100, step = 1): PriceDataPoint[] {
   return Array.from({ length: n }, (_, i) => {
     const close = base + i * step;
     return {
-      date:  `2024-${String(Math.floor(i / 28) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
-      open:  close * 0.99,
-      high:  close * 1.02,
-      low:   close * 0.98,
+      date: `2024-${String(Math.floor(i / 28) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
+      open: close * 0.99,
+      high: close * 1.02,
+      low: close * 0.98,
       close,
     };
   });
 }
 
 const BASE_CFG: PeriodConfig = {
-  barUnit:                'daily',
-  trendBase:              'highlow',
-  trendAlgo:              'swing',
-  zigzagThreshold:        5,
-  regressionStdDev:       2.0,
-  trendStartDate:         '',
-  trendEndDate:           '',
-  trendTouchBasis:        'both',
-  trendTouchTolerance:    2,
+  barUnit: 'daily',
+  trendBase: 'highlow',
+  trendAlgo: 'swing',
+  zigzagThreshold: 5,
+  regressionStdDev: 2.0,
+  trendStartDate: '',
+  trendEndDate: '',
+  trendTouchBasis: 'both',
+  trendTouchTolerance: 2,
   trendBreakoutTolerance: 2,
-  filterStartDate:        '',
-  filterEndDate:          '',
-  slopeFilter:            'all',
-  slopeMin:               '',
-  slopeMax:               '',
+  filterStartDate: '',
+  filterEndDate: '',
+  slopeFilter: 'all',
+  slopeMin: '',
+  slopeMax: '',
 };
 
 // ── PERIOD_BARS ──────────────────────────────────────────────────────────────
@@ -146,9 +147,9 @@ describe('buildTrendIndices', () => {
 
 describe('selectPriceBasis', () => {
   const H = [110, 120, 130];
-  const L = [90,  95,  100];
+  const L = [90, 95, 100];
   const C = [100, 110, 120];
-  const O = [98,  108, 118];
+  const O = [98, 108, 118];
 
   it('highlow → 각각 그대로', () => {
     const r = selectPriceBasis('highlow', H, L, C, O);
@@ -184,7 +185,10 @@ describe('calcTrendLine', () => {
     expect(r.cS).toBeCloseTo(90);
   });
   it('저항선 null이면 cR=null', () => {
-    const srRaw = [{ resistance: null, support: 90 }, { resistance: null, support: 95 }];
+    const srRaw = [
+      { resistance: null, support: 90 },
+      { resistance: null, support: 95 },
+    ];
     const r = calcTrendLine(srRaw, 0, 1);
     expect(r.cR).toBeNull();
   });
@@ -218,7 +222,14 @@ describe('buildChartData', () => {
     expect(r.zigzagData!.length).toBeGreaterThan(0);
   });
   it('cR=null → resistanceData 빈 배열', () => {
-    const r = buildChartData(timestamps, 3, [0, 1, 2], srRaw, { mR: 0, cR: null, mS: 0, cS: null }, 'swing');
+    const r = buildChartData(
+      timestamps,
+      3,
+      [0, 1, 2],
+      srRaw,
+      { mR: 0, cR: null, mS: 0, cS: null },
+      'swing'
+    );
     expect(r.resistanceData).toHaveLength(0);
     expect(r.supportData).toBeUndefined();
   });
@@ -228,16 +239,25 @@ describe('buildChartData', () => {
 
 describe('calcSlopeInfo', () => {
   it('상승 → positive', () => {
-    const r = calcSlopeInfo([{ x: 0, y: 100 }, { x: 1, y: 110 }]);
+    const r = calcSlopeInfo([
+      { x: 0, y: 100 },
+      { x: 1, y: 110 },
+    ]);
     expect(r.slopeType).toBe('positive');
     expect(r.slope).toBeCloseTo(10);
   });
   it('하락 → negative', () => {
-    const r = calcSlopeInfo([{ x: 0, y: 110 }, { x: 1, y: 100 }]);
+    const r = calcSlopeInfo([
+      { x: 0, y: 110 },
+      { x: 1, y: 100 },
+    ]);
     expect(r.slopeType).toBe('negative');
   });
   it('횡보 → flat', () => {
-    const r = calcSlopeInfo([{ x: 0, y: 100 }, { x: 1, y: 100 }]);
+    const r = calcSlopeInfo([
+      { x: 0, y: 100 },
+      { x: 1, y: 100 },
+    ]);
     expect(r.slopeType).toBe('flat');
   });
   it('빈 배열 → flat, slope=0', () => {
@@ -252,9 +272,9 @@ describe('calcSlopeInfo', () => {
 describe('filterTouchPoints', () => {
   const points = [
     { x: 1000, y: 100, priceType: 'close' as const, type: 'touch' as const },
-    { x: 2000, y: 105, priceType: 'high'  as const, type: 'breakout' as const },
+    { x: 2000, y: 105, priceType: 'high' as const, type: 'breakout' as const },
     { x: 3000, y: 110, priceType: 'close' as const, type: 'breakout' as const },
-    { x: 4000, y: 108, priceType: 'high'  as const, type: 'breakout' as const },
+    { x: 4000, y: 108, priceType: 'high' as const, type: 'breakout' as const },
   ];
 
   it('터치는 항상 유지, 돌파는 범위 내만', () => {
@@ -296,13 +316,13 @@ describe('runTickerSim', () => {
 
   it('자동 채움 시 2봉도 null (마지막 1봉 제외 → 작도 가용 봉 1개, 유효 추세선 불가)', () => {
     // resolvePeriodDates가 trendEnd를 마지막-1로 채우므로 작도 범위가 첫 봉 1개로 좁혀짐
-    const dates = makePrices(2).map(p => p.date);
+    const dates = makePrices(2).map((p) => p.date);
     const resolved = resolvePeriodDates(BASE_CFG, dates);
     expect(runTickerSim('TWO', 'TwoBars', makePrices(2), resolved)).toBeNull();
   });
 
   it('자동 채움 시 3봉이면 작도 가능 (가용 봉 2개)', () => {
-    const dates = makePrices(3).map(p => p.date);
+    const dates = makePrices(3).map((p) => p.date);
     const resolved = resolvePeriodDates(BASE_CFG, dates);
     // 결과는 totalCount=0이면 null일 수 있으나, 최소한 작도 가드(1개봉)에는 걸리지 않아야 함
     const r = runTickerSim('THREE', 'ThreeBars', makePrices(3), resolved);
@@ -358,7 +378,11 @@ describe('runTickerSim', () => {
 
   it('잘못된 날짜 문자열 → crash 없음 (NaN 방어)', () => {
     const prices = makePrices(80, 100, 0.5);
-    const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: 'invalid-date', filterEndDate: 'bad' };
+    const cfg: PeriodConfig = {
+      ...BASE_CFG,
+      filterStartDate: 'invalid-date',
+      filterEndDate: 'bad',
+    };
     expect(() => runTickerSim('TEST', 'Test', prices, cfg)).not.toThrow();
   });
 
@@ -374,18 +398,27 @@ describe('runTickerSim', () => {
 describe('sortSimResults', () => {
   function makeResult(totalCount: number): SimResult {
     return {
-      ticker: 'X', name: 'X',
-      touchCount: 0, closeTouchCount: 0, highTouchCount: 0,
-      breakoutCount: 0, closeBreakoutCount: 0, highBreakoutCount: 0,
-      prices: [], resistanceData: [], latestResistance: null,
-      touchPoints: [], slopeType: 'flat', totalCount,
+      ticker: 'X',
+      name: 'X',
+      touchCount: 0,
+      closeTouchCount: 0,
+      highTouchCount: 0,
+      breakoutCount: 0,
+      closeBreakoutCount: 0,
+      highBreakoutCount: 0,
+      prices: [],
+      resistanceData: [],
+      latestResistance: null,
+      touchPoints: [],
+      slopeType: 'flat',
+      totalCount,
     };
   }
 
   it('totalCount 내림차순 정렬', () => {
     const results = [makeResult(1), makeResult(5), makeResult(3)];
     sortSimResults(results);
-    expect(results.map(r => r.totalCount)).toEqual([5, 3, 1]);
+    expect(results.map((r) => r.totalCount)).toEqual([5, 3, 1]);
   });
   it('totalCount undefined → 0으로 처리', () => {
     const results = [makeResult(2), { ...makeResult(0), totalCount: undefined }];
@@ -408,14 +441,21 @@ describe('applyPatternFilter', () => {
    */
   function makeResult(overrides: Partial<SimResult> = {}): SimResult {
     return {
-      ticker: 'X', name: 'X',
-      touchCount: 3, closeTouchCount: 2, highTouchCount: 1,
-      breakoutCount: 1, closeBreakoutCount: 1, highBreakoutCount: 0,
-      prices: [], resistanceData: [], latestResistance: null,
+      ticker: 'X',
+      name: 'X',
+      touchCount: 3,
+      closeTouchCount: 2,
+      highTouchCount: 1,
+      breakoutCount: 1,
+      closeBreakoutCount: 1,
+      highBreakoutCount: 0,
+      prices: [],
+      resistanceData: [],
+      latestResistance: null,
       touchPoints: [
-        { x: 500,  y: 100, priceType: 'close', type: 'touch' },
-        { x: 800,  y: 102, priceType: 'high',  type: 'touch' },
-        { x: 900,  y: 104, priceType: 'close', type: 'touch' },
+        { x: 500, y: 100, priceType: 'close', type: 'touch' },
+        { x: 800, y: 102, priceType: 'high', type: 'touch' },
+        { x: 900, y: 104, priceType: 'close', type: 'touch' },
         { x: 1500, y: 110, priceType: 'close', type: 'breakout' },
       ],
       slopeType: 'positive',
@@ -459,13 +499,20 @@ describe('applyPatternFilter', () => {
      * touchPoints: touch@500, touch@1200(filterStart 이후!), breakout@1500
      */
     const result: SimResult = {
-      ticker: 'Y', name: 'Y',
-      touchCount: 2, closeTouchCount: 1, highTouchCount: 1,
-      breakoutCount: 1, closeBreakoutCount: 1, highBreakoutCount: 0,
-      prices: [], resistanceData: [], latestResistance: null,
+      ticker: 'Y',
+      name: 'Y',
+      touchCount: 2,
+      closeTouchCount: 1,
+      highTouchCount: 1,
+      breakoutCount: 1,
+      closeBreakoutCount: 1,
+      highBreakoutCount: 0,
+      prices: [],
+      resistanceData: [],
+      latestResistance: null,
       touchPoints: [
-        { x: 500,  y: 100, priceType: 'close', type: 'touch' },
-        { x: 1200, y: 105, priceType: 'high',  type: 'touch' }, // filterStart(1000) 이후!
+        { x: 500, y: 100, priceType: 'close', type: 'touch' },
+        { x: 1200, y: 105, priceType: 'high', type: 'touch' }, // filterStart(1000) 이후!
         { x: 1500, y: 110, priceType: 'close', type: 'breakout' },
       ],
       slopeType: 'positive',
@@ -483,7 +530,7 @@ describe('applyPatternFilter', () => {
       breakoutCount: 1,
       touchPoints: [
         { x: 500, y: 100, priceType: 'close', type: 'touch' },
-        { x: 800, y: 102, priceType: 'high',  type: 'touch' },
+        { x: 800, y: 102, priceType: 'high', type: 'touch' },
       ],
     });
     expect(applyPatternFilter([result], 1000, 1)).toHaveLength(0);
@@ -525,10 +572,10 @@ describe('resolvePeriodDates', () => {
   it('명시된 날짜는 보존', () => {
     const cfg: PeriodConfig = {
       ...BASE_CFG,
-      trendStartDate:  '2024-01-02',
-      trendEndDate:    '2024-01-04',
+      trendStartDate: '2024-01-02',
+      trendEndDate: '2024-01-04',
       filterStartDate: '2024-01-03',
-      filterEndDate:   '2024-01-04',
+      filterEndDate: '2024-01-04',
     };
     const r = resolvePeriodDates(cfg, dates);
     expect(r.trendStartDate).toBe('2024-01-02');
@@ -544,7 +591,14 @@ describe('resolvePeriodDates', () => {
 
   it('종목별 dates가 다르면 각자 자기 마지막-LOOKBACK으로 채움', () => {
     const datesA = ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'];
-    const datesB = ['2024-02-01', '2024-02-02', '2024-02-03', '2024-02-04', '2024-02-05', '2024-02-06'];
+    const datesB = [
+      '2024-02-01',
+      '2024-02-02',
+      '2024-02-03',
+      '2024-02-04',
+      '2024-02-05',
+      '2024-02-06',
+    ];
     const rA = resolvePeriodDates(BASE_CFG, datesA);
     const rB = resolvePeriodDates(BASE_CFG, datesB);
     expect(rA.filterStartDate).toBe('2024-01-02'); // datesA[1]
@@ -567,7 +621,7 @@ describe('resolvePeriodDates', () => {
   it('잘못된 날짜 문자열 → 자동 채움으로 폴백 (resolveFilterStartMs와 일관)', () => {
     const cfg: PeriodConfig = {
       ...BASE_CFG,
-      trendStartDate:  'invalid-date',
+      trendStartDate: 'invalid-date',
       filterStartDate: 'invalid-date',
     };
     const r = resolvePeriodDates(cfg, dates);
@@ -578,7 +632,7 @@ describe('resolvePeriodDates', () => {
   it('잘못된 filterStartDate → resolvePeriodDates와 resolveFilterStartMs 결과가 일치', () => {
     const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: 'invalid-date' };
     const resolved = resolvePeriodDates(cfg, dates);
-    const ms       = resolveFilterStartMs(cfg, dates);
+    const ms = resolveFilterStartMs(cfg, dates);
     expect(new Date(resolved.filterStartDate).getTime()).toBe(ms);
   });
 
@@ -589,8 +643,12 @@ describe('resolvePeriodDates', () => {
     const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
     // 일봉 dates: 마지막 3거래일 전 = 2024-01-17
     const daily = [
-      '2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18',
-      '2024-01-19', '2024-01-22',
+      '2024-01-15',
+      '2024-01-16',
+      '2024-01-17',
+      '2024-01-18',
+      '2024-01-19',
+      '2024-01-22',
     ];
     // dailyDates 없이 호출 → 주봉 기준 (버그 상황)
     const rWithout = resolvePeriodDates(BASE_CFG, weeklyDates);
@@ -610,10 +668,21 @@ describe('resolvePeriodDates', () => {
     // 주봉 slice가 과거 시점 기준으로 끝나는 경우 (예: trendEndDate 명시 시뮬레이션)
     // dailyDates: 2024-01-01 ~ 2024-01-22 (15 거래일)
     const daily = [
-      '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05',
-      '2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11',
-      '2024-01-12', '2024-01-15', '2024-01-16', '2024-01-17',
-      '2024-01-18', '2024-01-19', '2024-01-22',
+      '2024-01-02',
+      '2024-01-03',
+      '2024-01-04',
+      '2024-01-05',
+      '2024-01-08',
+      '2024-01-09',
+      '2024-01-10',
+      '2024-01-11',
+      '2024-01-12',
+      '2024-01-15',
+      '2024-01-16',
+      '2024-01-17',
+      '2024-01-18',
+      '2024-01-19',
+      '2024-01-22',
     ];
     // 주봉 slice의 마지막이 2024-01-15 (과거)
     const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15'];
@@ -625,7 +694,14 @@ describe('resolvePeriodDates', () => {
   it('filterStartDate 명시 시 dailyDates 무관하게 명시값 우선', () => {
     const cfg: PeriodConfig = { ...BASE_CFG, filterStartDate: '2024-01-03' };
     const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
-    const daily = ['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22'];
+    const daily = [
+      '2024-01-15',
+      '2024-01-16',
+      '2024-01-17',
+      '2024-01-18',
+      '2024-01-19',
+      '2024-01-22',
+    ];
     const r = resolvePeriodDates(cfg, weeklyDates, 3, daily);
     expect(r.filterStartDate).toBe('2024-01-03'); // 명시값 그대로
   });
@@ -656,7 +732,14 @@ describe('resolveFilterStartMs', () => {
 
   it('주봉 dates + dailyDates 전달 → 일봉 기준 ms 반환', () => {
     const weeklyDates = ['2024-01-01', '2024-01-08', '2024-01-15', '2024-01-22'];
-    const daily = ['2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18', '2024-01-19', '2024-01-22'];
+    const daily = [
+      '2024-01-15',
+      '2024-01-16',
+      '2024-01-17',
+      '2024-01-18',
+      '2024-01-19',
+      '2024-01-22',
+    ];
     const ms = resolveFilterStartMs(BASE_CFG, weeklyDates, 3, daily);
     expect(ms).toBe(new Date('2024-01-17').getTime()); // daily[-4] = 3거래일 전
   });

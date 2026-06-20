@@ -14,8 +14,7 @@ export function applySettingsToComponents(settingsState?: SettingsState): {
         fontSize: settingsState?.fontSize,
       },
       body: {
-        [`& .${cardClasses.root}`]: {
-        },
+        [`& .${cardClasses.root}`]: {},
       },
     }),
   };

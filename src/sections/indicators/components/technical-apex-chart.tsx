@@ -37,12 +37,7 @@ export function TechnicalApexChart({
         </Stack>
 
         <Box sx={{ height: 500 }}>
-          <ChartApex
-            options={chartOptions}
-            series={chartSeries}
-            type="line"
-            height="100%"
-          />
+          <ChartApex options={chartOptions} series={chartSeries} type="line" height="100%" />
         </Box>
       </Card>
     </Grid>

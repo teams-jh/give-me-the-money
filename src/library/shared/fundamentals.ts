@@ -24,62 +24,68 @@
  *   - analyzeFundamentals        : 위 전체 통합 → FundamentalSummary
  */
 
-import type { Alert, SignalStrength, SignalDirection } from "./signals.ts";
+import type { Alert, SignalStrength, SignalDirection } from './signals.ts';
 
 // ── 입력 타입 ─────────────────────────────────────────────────────────────────
 
 /** ticker JSON에서 추출한 펀더멘털 데이터 */
 export interface FundamentalData {
   // 밸류에이션
-  pe:              number | null;   // trailing PER
-  pb:              number | null;   // Price to Book
-  pegRatio:        number | null;   // PEG Ratio (PER ÷ 이익성장률)
+  pe: number | null; // trailing PER
+  pb: number | null; // Price to Book
+  pegRatio: number | null; // PEG Ratio (PER ÷ 이익성장률)
   // 수익성
-  roe:             number | null;   // Return on Equity
-  roa:             number | null;   // Return on Assets
-  operatingMargin: number | null;   // 영업이익률
-  profitMargins:   number | null;   // 순이익률
-  revenueGrowth:   number | null;   // 매출 성장률 YoY
-  quarterlyEarnings: QuarterlyEarning[];  // 최근 분기 순이익 (시간 내림차순)
+  roe: number | null; // Return on Equity
+  roa: number | null; // Return on Assets
+  operatingMargin: number | null; // 영업이익률
+  profitMargins: number | null; // 순이익률
+  revenueGrowth: number | null; // 매출 성장률 YoY
+  quarterlyEarnings: QuarterlyEarning[]; // 최근 분기 순이익 (시간 내림차순)
   // 배당
-  dividendYield:   number | null;   // 배당수익률 (0~1)
-  payoutRatio:     number | null;   // 배당성향 (0~1)
+  dividendYield: number | null; // 배당수익률 (0~1)
+  payoutRatio: number | null; // 배당성향 (0~1)
   // 소유구조
-  insiderPct:      number | null;   // 내부자 보유 비율 (0~1)
-  institutionPct:  number | null;   // 기관 보유 비율 (0~1)
-  shortRatio:      number | null;   // 공매도 비율 (일 수)
+  insiderPct: number | null; // 내부자 보유 비율 (0~1)
+  institutionPct: number | null; // 기관 보유 비율 (0~1)
+  shortRatio: number | null; // 공매도 비율 (일 수)
 }
 
 export interface QuarterlyEarning {
-  quarter:    string;   // e.g. "2025Q4"
-  net_income: number;   // 순이익 (음수 = 적자)
+  quarter: string; // e.g. "2025Q4"
+  net_income: number; // 순이익 (음수 = 적자)
 }
 
 // ── 출력 타입 ─────────────────────────────────────────────────────────────────
 
 /** 종목별 펀더멘털 신호 요약 */
 export interface FundamentalSummary {
-  ticker:    string;
-  score:     number;          // 양수 = 매수, 음수 = 매도
-  pe:        number | null;
-  pb:        number | null;
-  roe:       number | null;
-  roa:       number | null;
+  ticker: string;
+  score: number; // 양수 = 매수, 음수 = 매도
+  pe: number | null;
+  pb: number | null;
+  roe: number | null;
+  roa: number | null;
   dividendYield: number | null;
   insiderPct: number | null;
   shortRatio: number | null;
-  earningsTrend: "accelerating" | "decelerating" | "turnaround" | "deteriorating" | "stable" | "insufficient";
-  alerts:    Alert[];
+  earningsTrend:
+    | 'accelerating'
+    | 'decelerating'
+    | 'turnaround'
+    | 'deteriorating'
+    | 'stable'
+    | 'insufficient';
+  alerts: Alert[];
 }
 
 // ── 내부 유틸 ─────────────────────────────────────────────────────────────────
 
 function makeAlert(
-  type:      string,
+  type: string,
   direction: SignalDirection,
-  strength:  SignalStrength,
-  label:     string,
-  value?:    number,
+  strength: SignalStrength,
+  label: string,
+  value?: number
 ): Alert {
   return { type, direction, strength, label, value, scoreAffecting: true };
 }
@@ -114,30 +120,53 @@ export function detectValuation(data: FundamentalData): Alert[] {
     if (data.pe < 0) {
       // 적자 기업: scoreAffecting=false (정보성만)
       alerts.push({
-        type: "pe_negative", direction: "bearish", strength: "normal",
+        type: 'pe_negative',
+        direction: 'bearish',
+        strength: 'normal',
         label: `PER 음수 (적자기업, PE ${data.pe.toFixed(1)})`,
-        value: data.pe, scoreAffecting: false,
+        value: data.pe,
+        scoreAffecting: false,
       });
     } else if (data.pe > 0 && data.pe <= 10) {
-      alerts.push(makeAlert(
-        "pe_undervalued", "bullish", "normal",
-        `PER 저평가 (PE ${data.pe.toFixed(1)})`, data.pe,
-      ));
+      alerts.push(
+        makeAlert(
+          'pe_undervalued',
+          'bullish',
+          'normal',
+          `PER 저평가 (PE ${data.pe.toFixed(1)})`,
+          data.pe
+        )
+      );
     } else if (data.pe > 30 && data.pe <= 50) {
-      alerts.push(makeAlert(
-        "pe_overvalued", "bearish", "normal",
-        `PER 고평가 (PE ${data.pe.toFixed(1)})`, data.pe,
-      ));
+      alerts.push(
+        makeAlert(
+          'pe_overvalued',
+          'bearish',
+          'normal',
+          `PER 고평가 (PE ${data.pe.toFixed(1)})`,
+          data.pe
+        )
+      );
     } else if (data.pe > 50) {
-      alerts.push(makeAlert(
-        "pe_extreme", "bearish", "strong",
-        `PER 과도 고평가 (PE ${data.pe.toFixed(1)})`, data.pe,
-      ));
+      alerts.push(
+        makeAlert(
+          'pe_extreme',
+          'bearish',
+          'strong',
+          `PER 과도 고평가 (PE ${data.pe.toFixed(1)})`,
+          data.pe
+        )
+      );
     } else if (data.pe > 20 && data.pe <= 30) {
       alerts.push({
-        ...makeAlert("pe_caution", "bearish", "weak",
-          `PER 주의 구간 (PE ${data.pe.toFixed(1)})`, data.pe),
-        scoreAffecting: false,   // 주의 구간은 정보성만
+        ...makeAlert(
+          'pe_caution',
+          'bearish',
+          'weak',
+          `PER 주의 구간 (PE ${data.pe.toFixed(1)})`,
+          data.pe
+        ),
+        scoreAffecting: false, // 주의 구간은 정보성만
       });
     }
   }
@@ -145,15 +174,25 @@ export function detectValuation(data: FundamentalData): Alert[] {
   // ── PBR ──────────────────────────────────────────────────────────────────
   if (data.pb !== null) {
     if (data.pb < 1) {
-      alerts.push(makeAlert(
-        "pb_undervalued", "bullish", "normal",
-        `PBR 청산가치 이하 (PB ${data.pb.toFixed(2)})`, data.pb,
-      ));
+      alerts.push(
+        makeAlert(
+          'pb_undervalued',
+          'bullish',
+          'normal',
+          `PBR 청산가치 이하 (PB ${data.pb.toFixed(2)})`,
+          data.pb
+        )
+      );
     } else if (data.pb > 5) {
-      alerts.push(makeAlert(
-        "pb_overvalued", "bearish", "normal",
-        `PBR 고평가 (PB ${data.pb.toFixed(2)})`, data.pb,
-      ));
+      alerts.push(
+        makeAlert(
+          'pb_overvalued',
+          'bearish',
+          'normal',
+          `PBR 고평가 (PB ${data.pb.toFixed(2)})`,
+          data.pb
+        )
+      );
     }
   }
 
@@ -162,10 +201,10 @@ export function detectValuation(data: FundamentalData): Alert[] {
 
 // ── 2. 분기 순이익 가속도 감지 ────────────────────────────────────────────────
 
-type EarningsTrend = FundamentalSummary["earningsTrend"];
+type EarningsTrend = FundamentalSummary['earningsTrend'];
 
 interface EarningsResult {
-  trend:  EarningsTrend;
+  trend: EarningsTrend;
   alerts: Alert[];
 }
 
@@ -187,40 +226,55 @@ export function detectEarningsAcceleration(data: FundamentalData): EarningsResul
   const alerts: Alert[] = [];
   const qe = data.quarterlyEarnings;
 
-  if (qe.length < 2) return { trend: "insufficient", alerts };
+  if (qe.length < 2) return { trend: 'insufficient', alerts };
 
   // 최신 → 과거 순 (이미 내림차순으로 저장됨)
   const latest = qe[0]!.net_income;
-  const prev1  = qe[1]!.net_income;
-  const prev2  = qe.length >= 3 ? qe[2]!.net_income : null;
-  const prev3  = qe.length >= 4 ? qe[3]!.net_income : null;
+  const prev1 = qe[1]!.net_income;
+  const prev2 = qe.length >= 3 ? qe[2]!.net_income : null;
+  const prev3 = qe.length >= 4 ? qe[3]!.net_income : null;
 
   // ── 1. 흑자 전환 ──────────────────────────────────────────────────────────
   if (latest > 0 && prev1 < 0) {
-    alerts.push(makeAlert(
-      "earnings_turnaround", "bullish", "strong",
-      `흑자 전환 (직전 적자→최신 흑자 ${(latest / 1e8).toFixed(0)}억)`, latest,
-    ));
-    return { trend: "turnaround", alerts };
+    alerts.push(
+      makeAlert(
+        'earnings_turnaround',
+        'bullish',
+        'strong',
+        `흑자 전환 (직전 적자→최신 흑자 ${(latest / 1e8).toFixed(0)}억)`,
+        latest
+      )
+    );
+    return { trend: 'turnaround', alerts };
   }
 
   // ── 2. 적자 전환 ──────────────────────────────────────────────────────────
   if (latest < 0 && prev1 > 0) {
-    alerts.push(makeAlert(
-      "earnings_deteriorating", "bearish", "strong",
-      `적자 전환 (직전 흑자→최신 적자 ${(latest / 1e8).toFixed(0)}억)`, latest,
-    ));
-    return { trend: "deteriorating", alerts };
+    alerts.push(
+      makeAlert(
+        'earnings_deteriorating',
+        'bearish',
+        'strong',
+        `적자 전환 (직전 흑자→최신 적자 ${(latest / 1e8).toFixed(0)}억)`,
+        latest
+      )
+    );
+    return { trend: 'deteriorating', alerts };
   }
 
   // ── 3. 연속 적자 ──────────────────────────────────────────────────────────
   const allNeg3 = latest < 0 && prev1 < 0 && (prev2 === null || prev2 < 0);
   if (allNeg3) {
-    alerts.push(makeAlert(
-      "earnings_consecutive_loss", "bearish", "normal",
-      `연속 적자 (최근 ${qe.length >= 3 ? 3 : 2}분기)`, latest,
-    ));
-    return { trend: "deteriorating", alerts };
+    alerts.push(
+      makeAlert(
+        'earnings_consecutive_loss',
+        'bearish',
+        'normal',
+        `연속 적자 (최근 ${qe.length >= 3 ? 3 : 2}분기)`,
+        latest
+      )
+    );
+    return { trend: 'deteriorating', alerts };
   }
 
   // ── 4. 이익 가속 / 감속 (4분기 있을 때) ────────────────────────────────────
@@ -228,42 +282,47 @@ export function detectEarningsAcceleration(data: FundamentalData): EarningsResul
     // 최근 성장률: latest vs prev1
     // 이전 성장률: prev1 vs prev2
     const recentGrowth = prev1 !== 0 ? (latest - prev1) / Math.abs(prev1) : 0;
-    const priorGrowth  = prev2 !== 0 ? (prev1  - prev2) / Math.abs(prev2) : 0;
+    const priorGrowth = prev2 !== 0 ? (prev1 - prev2) / Math.abs(prev2) : 0;
 
-    const accelerating = recentGrowth > priorGrowth + 0.1;   // 10%p 이상 가속
-    const decelerating = recentGrowth < priorGrowth - 0.1;   // 10%p 이상 감속
+    const accelerating = recentGrowth > priorGrowth + 0.1; // 10%p 이상 가속
+    const decelerating = recentGrowth < priorGrowth - 0.1; // 10%p 이상 감속
 
     if (accelerating && latest > 0) {
-      alerts.push(makeAlert(
-        "earnings_accelerating", "bullish", "normal",
-        `이익 성장 가속 (최근 ${(recentGrowth * 100).toFixed(0)}% vs 이전 ${(priorGrowth * 100).toFixed(0)}%)`,
-        recentGrowth,
-      ));
-      return { trend: "accelerating", alerts };
+      alerts.push(
+        makeAlert(
+          'earnings_accelerating',
+          'bullish',
+          'normal',
+          `이익 성장 가속 (최근 ${(recentGrowth * 100).toFixed(0)}% vs 이전 ${(priorGrowth * 100).toFixed(0)}%)`,
+          recentGrowth
+        )
+      );
+      return { trend: 'accelerating', alerts };
     }
 
     if (decelerating && latest > 0) {
-      alerts.push(makeAlert(
-        "earnings_decelerating", "bearish", "normal",
-        `이익 성장 감속 (최근 ${(recentGrowth * 100).toFixed(0)}% vs 이전 ${(priorGrowth * 100).toFixed(0)}%)`,
-        recentGrowth,
-      ));
-      return { trend: "decelerating", alerts };
+      alerts.push(
+        makeAlert(
+          'earnings_decelerating',
+          'bearish',
+          'normal',
+          `이익 성장 감속 (최근 ${(recentGrowth * 100).toFixed(0)}% vs 이전 ${(priorGrowth * 100).toFixed(0)}%)`,
+          recentGrowth
+        )
+      );
+      return { trend: 'decelerating', alerts };
     }
   }
 
   // ── 5. 4분기 연속 흑자 ────────────────────────────────────────────────────
-  if (qe.length >= 4 && qe.every(q => q.net_income > 0)) {
+  if (qe.length >= 4 && qe.every((q) => q.net_income > 0)) {
     alerts.push({
-      ...makeAlert(
-        "earnings_all_positive", "bullish", "weak",
-        `4분기 연속 흑자`, latest,
-      ),
-      scoreAffecting: false,   // 정보성
+      ...makeAlert('earnings_all_positive', 'bullish', 'weak', `4분기 연속 흑자`, latest),
+      scoreAffecting: false, // 정보성
     });
   }
 
-  return { trend: "stable", alerts };
+  return { trend: 'stable', alerts };
 }
 
 // ── 3. 소유구조 신호 ──────────────────────────────────────────────────────────
@@ -289,23 +348,30 @@ export function detectOwnership(data: FundamentalData): Alert[] {
 
   // ── 내부자 보유비율 ───────────────────────────────────────────────────────
   if (data.insiderPct !== null) {
-    const pct = data.insiderPct * 100;  // 0~1 → %
+    const pct = data.insiderPct * 100; // 0~1 → %
 
     if (pct > 50) {
-      alerts.push(makeAlert(
-        "insider_very_high", "bullish", "strong",
-        `내부자 고보유 (${pct.toFixed(1)}%)`, pct,
-      ));
+      alerts.push(
+        makeAlert(
+          'insider_very_high',
+          'bullish',
+          'strong',
+          `내부자 고보유 (${pct.toFixed(1)}%)`,
+          pct
+        )
+      );
     } else if (pct > 30) {
-      alerts.push(makeAlert(
-        "insider_high", "bullish", "normal",
-        `내부자 보유 높음 (${pct.toFixed(1)}%)`, pct,
-      ));
+      alerts.push(
+        makeAlert('insider_high', 'bullish', 'normal', `내부자 보유 높음 (${pct.toFixed(1)}%)`, pct)
+      );
     } else if (pct < 1) {
       alerts.push({
         ...makeAlert(
-          "insider_very_low", "bearish", "weak",
-          `내부자 보유 낮음 (${pct.toFixed(1)}%)`, pct,
+          'insider_very_low',
+          'bearish',
+          'weak',
+          `내부자 보유 낮음 (${pct.toFixed(1)}%)`,
+          pct
         ),
         scoreAffecting: false,
       });
@@ -317,20 +383,35 @@ export function detectOwnership(data: FundamentalData): Alert[] {
     const sr = data.shortRatio;
 
     if (sr > 20) {
-      alerts.push(makeAlert(
-        "short_extreme", "bearish", "strong",
-        `극단적 공매도 (숏 커버 ${sr.toFixed(1)}일, 쇼트스퀴즈 주의)`, sr,
-      ));
+      alerts.push(
+        makeAlert(
+          'short_extreme',
+          'bearish',
+          'strong',
+          `극단적 공매도 (숏 커버 ${sr.toFixed(1)}일, 쇼트스퀴즈 주의)`,
+          sr
+        )
+      );
     } else if (sr > 10) {
-      alerts.push(makeAlert(
-        "short_high", "bearish", "normal",
-        `높은 공매도 비율 (숏 커버 ${sr.toFixed(1)}일)`, sr,
-      ));
+      alerts.push(
+        makeAlert(
+          'short_high',
+          'bearish',
+          'normal',
+          `높은 공매도 비율 (숏 커버 ${sr.toFixed(1)}일)`,
+          sr
+        )
+      );
     } else if (sr > 5) {
-      alerts.push(makeAlert(
-        "short_elevated", "bearish", "weak",
-        `공매도 주의 (숏 커버 ${sr.toFixed(1)}일)`, sr,
-      ));
+      alerts.push(
+        makeAlert(
+          'short_elevated',
+          'bearish',
+          'weak',
+          `공매도 주의 (숏 커버 ${sr.toFixed(1)}일)`,
+          sr
+        )
+      );
     }
   }
 
@@ -356,47 +437,71 @@ export function detectOwnership(data: FundamentalData): Alert[] {
  */
 export function detectGrowthQuality(data: FundamentalData): Alert[] {
   const alerts: Alert[] = [];
-  const rg = data.revenueGrowth;   // YoY 소수 (0.15 = 15%)
-  const pm = data.profitMargins;   // 소수
+  const rg = data.revenueGrowth; // YoY 소수 (0.15 = 15%)
+  const pm = data.profitMargins; // 소수
 
   if (rg !== null && pm !== null) {
     const rgPct = rg * 100;
     const pmPct = pm * 100;
 
     if (rgPct > 20 && pmPct > 10) {
-      alerts.push(makeAlert(
-        "growth_high_quality", "bullish", "strong",
-        `고성장·고수익 (매출+${rgPct.toFixed(0)}% / 순이익률 ${pmPct.toFixed(1)}%)`,
-      ));
+      alerts.push(
+        makeAlert(
+          'growth_high_quality',
+          'bullish',
+          'strong',
+          `고성장·고수익 (매출+${rgPct.toFixed(0)}% / 순이익률 ${pmPct.toFixed(1)}%)`
+        )
+      );
     } else if (rgPct > 10 && pmPct > 5) {
-      alerts.push(makeAlert(
-        "growth_balanced", "bullish", "normal",
-        `균형 성장 (매출+${rgPct.toFixed(0)}% / 순이익률 ${pmPct.toFixed(1)}%)`,
-      ));
+      alerts.push(
+        makeAlert(
+          'growth_balanced',
+          'bullish',
+          'normal',
+          `균형 성장 (매출+${rgPct.toFixed(0)}% / 순이익률 ${pmPct.toFixed(1)}%)`
+        )
+      );
     } else if (rgPct < 0 && pmPct < 0) {
-      alerts.push(makeAlert(
-        "growth_double_negative", "bearish", "strong",
-        `역성장·적자 (매출${rgPct.toFixed(0)}% / 순이익률 ${pmPct.toFixed(1)}%)`,
-      ));
+      alerts.push(
+        makeAlert(
+          'growth_double_negative',
+          'bearish',
+          'strong',
+          `역성장·적자 (매출${rgPct.toFixed(0)}% / 순이익률 ${pmPct.toFixed(1)}%)`
+        )
+      );
     } else if (rgPct > 0 && pmPct < 0) {
-      alerts.push(makeAlert(
-        "growth_margin_erosion", "bearish", "normal",
-        `외형성장·이익잠식 (매출+${rgPct.toFixed(0)}% / 순이익률 ${pmPct.toFixed(1)}%)`,
-      ));
+      alerts.push(
+        makeAlert(
+          'growth_margin_erosion',
+          'bearish',
+          'normal',
+          `외형성장·이익잠식 (매출+${rgPct.toFixed(0)}% / 순이익률 ${pmPct.toFixed(1)}%)`
+        )
+      );
     } else if (rgPct < -10) {
-      alerts.push(makeAlert(
-        "growth_revenue_decline", "bearish", "normal",
-        `매출 역성장 경보 (${rgPct.toFixed(0)}% YoY)`,
-      ));
+      alerts.push(
+        makeAlert(
+          'growth_revenue_decline',
+          'bearish',
+          'normal',
+          `매출 역성장 경보 (${rgPct.toFixed(0)}% YoY)`
+        )
+      );
     }
   } else if (rg !== null) {
     // profitMargins 없을 때 매출 성장만으로 판단
     const rgPct = rg * 100;
     if (rgPct < -10) {
-      alerts.push(makeAlert(
-        "growth_revenue_decline", "bearish", "normal",
-        `매출 역성장 경보 (${rgPct.toFixed(0)}% YoY)`,
-      ));
+      alerts.push(
+        makeAlert(
+          'growth_revenue_decline',
+          'bearish',
+          'normal',
+          `매출 역성장 경보 (${rgPct.toFixed(0)}% YoY)`
+        )
+      );
     }
   }
 
@@ -405,14 +510,24 @@ export function detectGrowthQuality(data: FundamentalData): Alert[] {
     const peg = data.pegRatio;
     if (peg > 0 && peg < 1) {
       alerts.push({
-        ...makeAlert("peg_undervalued", "bullish", "weak",
-          `PEG 저평가 (${peg.toFixed(2)} — 성장 대비 저평가)`, peg),
+        ...makeAlert(
+          'peg_undervalued',
+          'bullish',
+          'weak',
+          `PEG 저평가 (${peg.toFixed(2)} — 성장 대비 저평가)`,
+          peg
+        ),
         scoreAffecting: true,
       });
     } else if (peg > 3) {
       alerts.push({
-        ...makeAlert("peg_overvalued", "bearish", "weak",
-          `PEG 고평가 (${peg.toFixed(2)} — 성장 대비 고평가)`, peg),
+        ...makeAlert(
+          'peg_overvalued',
+          'bearish',
+          'weak',
+          `PEG 고평가 (${peg.toFixed(2)} — 성장 대비 고평가)`,
+          peg
+        ),
         scoreAffecting: true,
       });
     }
@@ -440,49 +555,70 @@ export function detectGrowthQuality(data: FundamentalData): Alert[] {
  */
 export function detectDividend(data: FundamentalData): Alert[] {
   const alerts: Alert[] = [];
-  const yld     = data.dividendYield;    // 0~1
-  const payout  = data.payoutRatio;      // 0~1 (>1 = 적자배당)
+  const yld = data.dividendYield; // 0~1
+  const payout = data.payoutRatio; // 0~1 (>1 = 적자배당)
 
   if (yld === null || yld === 0) return alerts;
 
-  const yldPct    = yld * 100;
+  const yldPct = yld * 100;
   const payoutPct = payout !== null ? payout * 100 : null;
 
   // ── 배당 매력 ────────────────────────────────────────────────────────────
   if (yldPct > 5 && (payoutPct === null || payoutPct < 70)) {
-    alerts.push(makeAlert(
-      "dividend_high_sustainable", "bullish", "strong",
-      `고배당·지속가능 (수익률 ${yldPct.toFixed(1)}%${payoutPct !== null ? ` / 성향 ${payoutPct.toFixed(0)}%` : ""})`,
-      yldPct,
-    ));
+    alerts.push(
+      makeAlert(
+        'dividend_high_sustainable',
+        'bullish',
+        'strong',
+        `고배당·지속가능 (수익률 ${yldPct.toFixed(1)}%${payoutPct !== null ? ` / 성향 ${payoutPct.toFixed(0)}%` : ''})`,
+        yldPct
+      )
+    );
   } else if (yldPct > 3 && (payoutPct === null || payoutPct < 80)) {
-    alerts.push(makeAlert(
-      "dividend_attractive", "bullish", "normal",
-      `배당 매력 (수익률 ${yldPct.toFixed(1)}%${payoutPct !== null ? ` / 성향 ${payoutPct.toFixed(0)}%` : ""})`,
-      yldPct,
-    ));
+    alerts.push(
+      makeAlert(
+        'dividend_attractive',
+        'bullish',
+        'normal',
+        `배당 매력 (수익률 ${yldPct.toFixed(1)}%${payoutPct !== null ? ` / 성향 ${payoutPct.toFixed(0)}%` : ''})`,
+        yldPct
+      )
+    );
   } else if (yldPct > 1) {
     alerts.push({
-      ...makeAlert("dividend_exists", "bullish", "weak",
-        `배당 지급 (수익률 ${yldPct.toFixed(1)}%)`, yldPct),
-      scoreAffecting: false,   // 정보성
+      ...makeAlert(
+        'dividend_exists',
+        'bullish',
+        'weak',
+        `배당 지급 (수익률 ${yldPct.toFixed(1)}%)`,
+        yldPct
+      ),
+      scoreAffecting: false, // 정보성
     });
   }
 
   // ── 배당 위험 ────────────────────────────────────────────────────────────
   if (payoutPct !== null) {
     if (payoutPct > 100) {
-      alerts.push(makeAlert(
-        "dividend_unsustainable", "bearish", "normal",
-        `배당 지속 불가 (성향 ${payoutPct.toFixed(0)}% — 이익 초과 배당)`,
-        payoutPct,
-      ));
+      alerts.push(
+        makeAlert(
+          'dividend_unsustainable',
+          'bearish',
+          'normal',
+          `배당 지속 불가 (성향 ${payoutPct.toFixed(0)}% — 이익 초과 배당)`,
+          payoutPct
+        )
+      );
     } else if (payoutPct > 80 && yldPct < 2) {
-      alerts.push(makeAlert(
-        "dividend_high_payout_low_yield", "bearish", "weak",
-        `고성향·저수익 배당 (성향 ${payoutPct.toFixed(0)}% / 수익률 ${yldPct.toFixed(1)}%)`,
-        payoutPct,
-      ));
+      alerts.push(
+        makeAlert(
+          'dividend_high_payout_low_yield',
+          'bearish',
+          'weak',
+          `고성향·저수익 배당 (성향 ${payoutPct.toFixed(0)}% / 수익률 ${yldPct.toFixed(1)}%)`,
+          payoutPct
+        )
+      );
     }
   }
 
@@ -512,7 +648,7 @@ export function detectProfitabilityTrend(data: FundamentalData): Alert[] {
   const alerts: Alert[] = [];
   const roe = data.roe;
   const roa = data.roa;
-  const om  = data.operatingMargin;
+  const om = data.operatingMargin;
 
   // ── ROE 기반 ─────────────────────────────────────────────────────────────
   if (roe !== null) {
@@ -520,44 +656,68 @@ export function detectProfitabilityTrend(data: FundamentalData): Alert[] {
     const roaPct = roa !== null ? roa * 100 : null;
 
     if (roePct > 20 && roaPct !== null && roaPct > 10) {
-      alerts.push(makeAlert(
-        "profitability_excellent", "bullish", "strong",
-        `우수한 수익성 (ROE ${roePct.toFixed(1)}% / ROA ${roaPct.toFixed(1)}%)`,
-      ));
+      alerts.push(
+        makeAlert(
+          'profitability_excellent',
+          'bullish',
+          'strong',
+          `우수한 수익성 (ROE ${roePct.toFixed(1)}% / ROA ${roaPct.toFixed(1)}%)`
+        )
+      );
     } else if (roePct > 15) {
-      alerts.push(makeAlert(
-        "profitability_good", "bullish", "normal",
-        `양호한 자본효율 (ROE ${roePct.toFixed(1)}%)`,
-        roePct,
-      ));
+      alerts.push(
+        makeAlert(
+          'profitability_good',
+          'bullish',
+          'normal',
+          `양호한 자본효율 (ROE ${roePct.toFixed(1)}%)`,
+          roePct
+        )
+      );
     } else if (roePct < -20) {
-      alerts.push(makeAlert(
-        "profitability_critical", "bearish", "strong",
-        `심각한 자본 훼손 (ROE ${roePct.toFixed(1)}%)`,
-        roePct,
-      ));
+      alerts.push(
+        makeAlert(
+          'profitability_critical',
+          'bearish',
+          'strong',
+          `심각한 자본 훼손 (ROE ${roePct.toFixed(1)}%)`,
+          roePct
+        )
+      );
     } else if (roePct < 0) {
-      alerts.push(makeAlert(
-        "profitability_negative_roe", "bearish", "normal",
-        `자본 잠식 위험 (ROE ${roePct.toFixed(1)}%)`,
-        roePct,
-      ));
+      alerts.push(
+        makeAlert(
+          'profitability_negative_roe',
+          'bearish',
+          'normal',
+          `자본 잠식 위험 (ROE ${roePct.toFixed(1)}%)`,
+          roePct
+        )
+      );
     }
   } else if (roa !== null) {
     // ROE 없을 때 ROA만으로 판단
     const roaPct = roa * 100;
     if (roaPct > 10) {
-      alerts.push(makeAlert(
-        "profitability_roa_good", "bullish", "normal",
-        `우수한 자산효율 (ROA ${roaPct.toFixed(1)}%)`,
-        roaPct,
-      ));
+      alerts.push(
+        makeAlert(
+          'profitability_roa_good',
+          'bullish',
+          'normal',
+          `우수한 자산효율 (ROA ${roaPct.toFixed(1)}%)`,
+          roaPct
+        )
+      );
     } else if (roaPct < 0) {
-      alerts.push(makeAlert(
-        "profitability_roa_negative", "bearish", "normal",
-        `자산 수익성 악화 (ROA ${roaPct.toFixed(1)}%)`,
-        roaPct,
-      ));
+      alerts.push(
+        makeAlert(
+          'profitability_roa_negative',
+          'bearish',
+          'normal',
+          `자산 수익성 악화 (ROA ${roaPct.toFixed(1)}%)`,
+          roaPct
+        )
+      );
     }
   }
 
@@ -565,16 +725,25 @@ export function detectProfitabilityTrend(data: FundamentalData): Alert[] {
   if (om !== null) {
     const omPct = om * 100;
     if (omPct < -10) {
-      alerts.push(makeAlert(
-        "profitability_operating_loss", "bearish", "normal",
-        `영업 구조 문제 (영업이익률 ${omPct.toFixed(1)}%)`,
-        omPct,
-      ));
+      alerts.push(
+        makeAlert(
+          'profitability_operating_loss',
+          'bearish',
+          'normal',
+          `영업 구조 문제 (영업이익률 ${omPct.toFixed(1)}%)`,
+          omPct
+        )
+      );
     } else if (omPct > 20) {
       alerts.push({
-        ...makeAlert("profitability_high_margin", "bullish", "weak",
-          `우수한 영업이익률 (${omPct.toFixed(1)}%)`, omPct),
-        scoreAffecting: false,   // 정보성 (ROE와 중복 방지)
+        ...makeAlert(
+          'profitability_high_margin',
+          'bullish',
+          'weak',
+          `우수한 영업이익률 (${omPct.toFixed(1)}%)`,
+          omPct
+        ),
+        scoreAffecting: false, // 정보성 (ROE와 중복 방지)
       });
     }
   }
@@ -585,10 +754,14 @@ export function detectProfitabilityTrend(data: FundamentalData): Alert[] {
 // ── 통합 분석 ─────────────────────────────────────────────────────────────────
 
 const SCORE_WEIGHT: Record<string, number> = {
-  bullish: 1, bearish: -1, neutral: 0,
+  bullish: 1,
+  bearish: -1,
+  neutral: 0,
 };
 const STRENGTH_MULT: Record<string, number> = {
-  strong: 2, normal: 1, weak: 0.5,
+  strong: 2,
+  normal: 1,
+  weak: 0.5,
 };
 
 /**
@@ -597,16 +770,13 @@ const STRENGTH_MULT: Record<string, number> = {
  * @param ticker - 티커 심볼
  * @param data   - FundamentalData
  */
-export function analyzeFundamentals(
-  ticker: string,
-  data:   FundamentalData,
-): FundamentalSummary {
-  const valAlerts    = detectValuation(data);
-  const earnResult   = detectEarningsAcceleration(data);
-  const ownAlerts    = detectOwnership(data);
+export function analyzeFundamentals(ticker: string, data: FundamentalData): FundamentalSummary {
+  const valAlerts = detectValuation(data);
+  const earnResult = detectEarningsAcceleration(data);
+  const ownAlerts = detectOwnership(data);
   const growthAlerts = detectGrowthQuality(data);
-  const divAlerts    = detectDividend(data);
-  const profAlerts   = detectProfitabilityTrend(data);
+  const divAlerts = detectDividend(data);
+  const profAlerts = detectProfitabilityTrend(data);
 
   const allAlerts: Alert[] = [
     ...valAlerts,
@@ -624,15 +794,15 @@ export function analyzeFundamentals(
 
   return {
     ticker,
-    score:         Math.round(score * 10) / 10,
-    pe:            data.pe,
-    pb:            data.pb,
-    roe:           data.roe,
-    roa:           data.roa,
+    score: Math.round(score * 10) / 10,
+    pe: data.pe,
+    pb: data.pb,
+    roe: data.roe,
+    roa: data.roa,
     dividendYield: data.dividendYield,
-    insiderPct:    data.insiderPct,
-    shortRatio:    data.shortRatio,
+    insiderPct: data.insiderPct,
+    shortRatio: data.shortRatio,
     earningsTrend: earnResult.trend,
-    alerts:        allAlerts,
+    alerts: allAlerts,
   };
 }

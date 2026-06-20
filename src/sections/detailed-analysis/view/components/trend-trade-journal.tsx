@@ -57,7 +57,11 @@ export function TrendTradeJournal({ simulator }: Props) {
                           : '부분 매도 (SELL)'
                     }
                     color={
-                      t.action === 'BUY' ? 'success' : t.action === 'STOP_LOSS' ? 'error' : 'warning'
+                      t.action === 'BUY'
+                        ? 'success'
+                        : t.action === 'STOP_LOSS'
+                          ? 'error'
+                          : 'warning'
                     }
                     size="small"
                     variant="soft"

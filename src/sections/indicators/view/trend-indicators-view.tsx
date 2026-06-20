@@ -4,9 +4,9 @@ import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { useTrendSimulation } from '../hooks/use-trend-simulation';
 import { TrendInputPanel } from '../components/trend-input-panel';
 import { TrendResultList } from '../components/trend-result-list';
+import { useTrendSimulation } from '../hooks/use-trend-simulation';
 
 // ----------------------------------------------------------------------
 

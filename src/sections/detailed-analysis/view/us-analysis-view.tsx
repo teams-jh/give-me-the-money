@@ -20,7 +20,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 
-
 // ----------------------------------------------------------------------
 
 const DAILY_INVESTMENT = 10; // 매일 10달러
@@ -40,7 +39,12 @@ interface UsAnalysisViewProps {
 
 export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewProps) {
   const theme = useTheme();
-  const [selectedTickers, setSelectedTickers] = useState<string[]>(['AAPL', 'MSFT', 'NVDA', 'TSLA']);
+  const [selectedTickers, setSelectedTickers] = useState<string[]>([
+    'AAPL',
+    'MSFT',
+    'NVDA',
+    'TSLA',
+  ]);
   const [inputValue, setInputValue] = useState('');
   const [currentTab, setCurrentTab] = useState<'comparison' | 'dca'>('comparison');
   const [priceType, setPriceType] = useState<'open' | 'high' | 'low' | 'close'>('close');
@@ -75,45 +79,53 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
       .filter((item): item is NonNullable<typeof item> => item !== null);
   }, [selectedTickers, period, startDate, endDate, priceType]);
 
-  const comparisonSeries = useMemo(() => rawChartData.map((item) => ({
-      name: item.companyName,
-      data: item.chart_data.map((val, idx) => ({
-        x: new Date(item.chart_labels[idx]).getTime(),
-        y: val,
-      })),
-    })), [rawChartData]);
-
-  const dcaData = useMemo(() => rawChartData.map((item) => {
-      let cumulativeShares = 0;
-      let totalInvested = 0;
-      const history: { x: number; y: number }[] = [];
-
-      item.chart_data.forEach((price, idx) => {
-        totalInvested += DAILY_INVESTMENT;
-        cumulativeShares += DAILY_INVESTMENT / price;
-        const currentValue = cumulativeShares * price;
-
-        history.push({
+  const comparisonSeries = useMemo(
+    () =>
+      rawChartData.map((item) => ({
+        name: item.companyName,
+        data: item.chart_data.map((val, idx) => ({
           x: new Date(item.chart_labels[idx]).getTime(),
-          y: Number(currentValue.toFixed(2)),
+          y: val,
+        })),
+      })),
+    [rawChartData]
+  );
+
+  const dcaData = useMemo(
+    () =>
+      rawChartData.map((item) => {
+        let cumulativeShares = 0;
+        let totalInvested = 0;
+        const history: { x: number; y: number }[] = [];
+
+        item.chart_data.forEach((price, idx) => {
+          totalInvested += DAILY_INVESTMENT;
+          cumulativeShares += DAILY_INVESTMENT / price;
+          const currentValue = cumulativeShares * price;
+
+          history.push({
+            x: new Date(item.chart_labels[idx]).getTime(),
+            y: Number(currentValue.toFixed(2)),
+          });
         });
-      });
 
-      const finalValue = history[history.length - 1]?.y || 0;
-      const totalInvestedAmount = totalInvested;
-      const profit = finalValue - totalInvestedAmount;
-      const profitPct = totalInvestedAmount > 0 ? (profit / totalInvestedAmount) * 100 : 0;
+        const finalValue = history[history.length - 1]?.y || 0;
+        const totalInvestedAmount = totalInvested;
+        const profit = finalValue - totalInvestedAmount;
+        const profitPct = totalInvestedAmount > 0 ? (profit / totalInvestedAmount) * 100 : 0;
 
-      return {
-        ticker: item.ticker,
-        companyName: item.companyName,
-        history,
-        finalValue,
-        totalInvestedAmount,
-        profit,
-        profitPct,
-      };
-    }), [rawChartData]);
+        return {
+          ticker: item.ticker,
+          companyName: item.companyName,
+          history,
+          finalValue,
+          totalInvestedAmount,
+          profit,
+          profitPct,
+        };
+      }),
+    [rawChartData]
+  );
 
   const dcaSeries = useMemo(() => {
     const series = dcaData.map((item) => ({
@@ -137,47 +149,52 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
     return series;
   }, [dcaData]);
 
-  const formatMoney = (value: number) => `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatMoney = (value: number) =>
+    `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  const chartOptions = useMemo<any>(() => ({
-    chart: {
-      toolbar: { show: true },
-      zoom: { enabled: true },
-      background: 'transparent',
-      fontFamily: theme.typography.fontFamily,
-    },
-    xaxis: {
-      type: 'datetime',
-      labels: { style: { colors: theme.palette.text.secondary } },
-    },
-    yaxis: {
-      title: {
-        text: currentTab === 'comparison' ? '주가 ($)' : '평가 금액 ($)',
-        style: { color: theme.palette.text.secondary, fontWeight: 600 },
+  const chartOptions = useMemo<any>(
+    () => ({
+      chart: {
+        toolbar: { show: true },
+        zoom: { enabled: true },
+        background: 'transparent',
+        fontFamily: theme.typography.fontFamily,
       },
-      labels: {
-        style: { colors: theme.palette.text.secondary },
-        formatter: (value: number) => `$${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`,
+      xaxis: {
+        type: 'datetime',
+        labels: { style: { colors: theme.palette.text.secondary } },
       },
-    },
-    stroke: { curve: 'smooth', width: 3 },
-    legend: {
-      position: 'bottom',
-      horizontalAlign: 'center',
-      labels: { colors: theme.palette.text.secondary },
-    },
-    tooltip: {
-      theme: theme.palette.mode,
-      x: { format: 'yyyy-MM-dd' },
-      y: {
-        formatter: (value: number) => formatMoney(value),
+      yaxis: {
+        title: {
+          text: currentTab === 'comparison' ? '주가 ($)' : '평가 금액 ($)',
+          style: { color: theme.palette.text.secondary, fontWeight: 600 },
+        },
+        labels: {
+          style: { colors: theme.palette.text.secondary },
+          formatter: (value: number) =>
+            `$${value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`,
+        },
       },
-    },
-    grid: {
-      borderColor: alpha(theme.palette.grey[500], 0.1),
-      strokeDashArray: 3,
-    },
-  }), [theme, currentTab]);
+      stroke: { curve: 'smooth', width: 3 },
+      legend: {
+        position: 'bottom',
+        horizontalAlign: 'center',
+        labels: { colors: theme.palette.text.secondary },
+      },
+      tooltip: {
+        theme: theme.palette.mode,
+        x: { format: 'yyyy-MM-dd' },
+        y: {
+          formatter: (value: number) => formatMoney(value),
+        },
+      },
+      grid: {
+        borderColor: alpha(theme.palette.grey[500], 0.1),
+        strokeDashArray: 3,
+      },
+    }),
+    [theme, currentTab]
+  );
 
   const tickerOptions = useMemo(() => {
     const filtered = allTickersList.filter((t) => !t.includes('.'));
@@ -214,8 +231,7 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
               const query = state.inputValue.toLowerCase();
               return options.filter(
                 (opt) =>
-                  opt.ticker.toLowerCase().includes(query) ||
-                  opt.name.toLowerCase().includes(query)
+                  opt.ticker.toLowerCase().includes(query) || opt.name.toLowerCase().includes(query)
               );
             }}
             renderOption={(props, option) => (
@@ -268,7 +284,10 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
             direction="row"
             alignItems="center"
             spacing={2}
-            sx={{ width: { xs: '100%', md: 'auto' }, justifyContent: { xs: 'space-between', md: 'flex-end' } }}
+            sx={{
+              width: { xs: '100%', md: 'auto' },
+              justifyContent: { xs: 'space-between', md: 'flex-end' },
+            }}
           >
             <ToggleButtonGroup
               size="small"
@@ -279,16 +298,26 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
               }}
               color="primary"
             >
-              <ToggleButton value="open" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>시가</ToggleButton>
-              <ToggleButton value="high" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>고가</ToggleButton>
-              <ToggleButton value="low" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>저가</ToggleButton>
-              <ToggleButton value="close" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>종가</ToggleButton>
+              <ToggleButton value="open" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>
+                시가
+              </ToggleButton>
+              <ToggleButton value="high" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>
+                고가
+              </ToggleButton>
+              <ToggleButton value="low" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>
+                저가
+              </ToggleButton>
+              <ToggleButton value="close" sx={{ px: 1.5, py: 0.5, fontWeight: 700 }}>
+                종가
+              </ToggleButton>
             </ToggleButtonGroup>
 
             <Button
               variant={currentTab === 'dca' ? 'contained' : 'outlined'}
               color="primary"
-              onClick={() => setCurrentTab((prev) => (prev === 'comparison' ? 'dca' : 'comparison'))}
+              onClick={() =>
+                setCurrentTab((prev) => (prev === 'comparison' ? 'dca' : 'comparison'))
+              }
               startIcon={<span>💰</span>}
               sx={{ borderRadius: 1, fontWeight: 700 }}
             >
@@ -299,9 +328,17 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
 
         <Box sx={{ p: 3 }}>
           {currentTab === 'dca' && (
-            <Box sx={{ mb: 3, p: 2, bgcolor: alpha(theme.palette.primary.main, 0.05), borderRadius: 1.5 }}>
+            <Box
+              sx={{
+                mb: 3,
+                p: 2,
+                bgcolor: alpha(theme.palette.primary.main, 0.05),
+                borderRadius: 1.5,
+              }}
+            >
               <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 700 }}>
-                💡 시뮬레이션 조건: 매일 10달러씩 각 종목의 {PRICE_TYPE_LABELS[priceType]} 기준으로 매수했을 경우
+                💡 시뮬레이션 조건: 매일 10달러씩 각 종목의 {PRICE_TYPE_LABELS[priceType]} 기준으로
+                매수했을 경우
               </Typography>
             </Box>
           )}
@@ -315,8 +352,12 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
                 height="100%"
               />
             ) : (
-              <Box sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography sx={{ color: 'text.disabled' }}>비교할 종목을 추가해 주세요.</Typography>
+              <Box
+                sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                <Typography sx={{ color: 'text.disabled' }}>
+                  비교할 종목을 추가해 주세요.
+                </Typography>
               </Box>
             )}
           </Box>
@@ -331,7 +372,10 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
                 <Typography variant="subtitle2" sx={{ color: 'text.primary', fontWeight: 700 }}>
                   {item.companyName}
                 </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 2 }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.secondary', display: 'block', mb: 2 }}
+                >
                   {item.ticker}
                 </Typography>
 
@@ -342,13 +386,19 @@ export function UsAnalysisView({ period, startDate, endDate }: UsAnalysisViewPro
                 <Stack direction="row" justifyContent="center" spacing={1}>
                   <Typography
                     variant="body2"
-                    sx={{ color: item.profit >= 0 ? 'success.main' : 'error.main', fontWeight: 700 }}
+                    sx={{
+                      color: item.profit >= 0 ? 'success.main' : 'error.main',
+                      fontWeight: 700,
+                    }}
                   >
                     {item.profit >= 0 ? '+' : ''}
                     {formatMoney(item.profit)} ({item.profitPct.toFixed(2)}%)
                   </Typography>
                 </Stack>
-                <Typography variant="caption" sx={{ color: 'text.disabled', mt: 2, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  sx={{ color: 'text.disabled', mt: 2, display: 'block' }}
+                >
                   총 투자금: {formatMoney(item.totalInvestedAmount)}
                 </Typography>
               </Card>

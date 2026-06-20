@@ -35,7 +35,13 @@ export function TickerSelectionCard({
   const theme = useTheme();
 
   return (
-    <Card sx={{ p: 3, boxShadow: theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}` }}>
+    <Card
+      sx={{
+        p: 3,
+        boxShadow:
+          theme.customShadows?.card || `0 4px 16px 0 ${alpha(theme.palette.common.black, 0.04)}`,
+      }}
+    >
       <Grid container spacing={3} alignItems="center">
         <Grid size={{ xs: 12, md: 7 }}>
           <Autocomplete
@@ -45,7 +51,11 @@ export function TickerSelectionCard({
             handleHomeEndKeys
             options={tickerOptions}
             getOptionLabel={(option) => `${option.name} (${option.ticker})`}
-            value={selectedStockMeta ? { ticker: selectedStockMeta.ticker, name: selectedStockMeta.name } : null}
+            value={
+              selectedStockMeta
+                ? { ticker: selectedStockMeta.ticker, name: selectedStockMeta.name }
+                : null
+            }
             onChange={(e, v) => handleTickerChange(v)}
             filterOptions={(options, state) => {
               const query = state.inputValue.toLowerCase().trim();
@@ -60,8 +70,7 @@ export function TickerSelectionCard({
 
               return options.filter(
                 (opt) =>
-                  opt.ticker.toLowerCase().includes(query) ||
-                  opt.name.toLowerCase().includes(query)
+                  opt.ticker.toLowerCase().includes(query) || opt.name.toLowerCase().includes(query)
               );
             }}
             renderOption={(props, option) => (
@@ -94,7 +103,10 @@ export function TickerSelectionCard({
               sx={{ minWidth: 0 }}
             >
               <Box sx={{ minWidth: 0, flexShrink: 1 }}>
-                <Typography variant="overline" sx={{ color: 'text.disabled', fontWeight: 800, display: 'block' }}>
+                <Typography
+                  variant="overline"
+                  sx={{ color: 'text.disabled', fontWeight: 800, display: 'block' }}
+                >
                   현재 선택된 종목
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
@@ -129,7 +141,8 @@ export function TickerSelectionCard({
                   }}
                 >
                   {techAnalysis.dailyChange >= 0 ? '▲' : '▼'}{' '}
-                  {formatMoney(Math.abs(techAnalysis.dailyChange))} ({techAnalysis.dailyChangePct.toFixed(2)}%)
+                  {formatMoney(Math.abs(techAnalysis.dailyChange))} (
+                  {techAnalysis.dailyChangePct.toFixed(2)}%)
                 </Typography>
               </Box>
             </Stack>

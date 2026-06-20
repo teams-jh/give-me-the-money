@@ -12,18 +12,18 @@
  * DB에 저장 완료된 정제 데이터는 RawPrice(non-null) 를 사용한다.
  */
 export interface PriceRow {
-  date:      string;
-  open:      number | null;
-  high:      number | null;
-  low:       number | null;
-  close:     number | null;
+  date: string;
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number | null;
   adj_close: number | null;
-  volume:    number | null;
+  volume: number | null;
 }
 
 /** 분기 순이익 한 건 (수집 스크립트 공용) */
 export interface QuarterlyEarning {
-  quarter:    string | null;
+  quarter: string | null;
   net_income: number | null;
 }
 

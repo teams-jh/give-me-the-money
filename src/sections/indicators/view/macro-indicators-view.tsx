@@ -83,7 +83,8 @@ export function MacroIndicatorsView() {
             글로벌 매크로 지표 분석 🌍
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            금리, 환율, 인플레이션(CPI), 고용 등 주식 시장에 강력한 영향을 미치는 거시 경제 지표들의 실시간 상태 및 상호 작용을 시뮬레이션합니다.
+            금리, 환율, 인플레이션(CPI), 고용 등 주식 시장에 강력한 영향을 미치는 거시 경제 지표들의
+            실시간 상태 및 상호 작용을 시뮬레이션합니다.
           </Typography>
         </Box>
 
@@ -132,7 +133,9 @@ export function MacroIndicatorsView() {
                 인플레이션 둔화 조짐 속 금리 동결 📉
               </Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', maxW: 750 }}>
-                최근 발표된 CPI 지수가 예상치에 부합하며 연준의 금리 인상 사이클이 사실상 종료된 것으로 시장은 해석하고 있습니다. 다만 긴축 기조의 장기화 가능성이 여전히 잔존하여 외국인 자본 유출입 변동성을 예의주시할 필요가 있습니다.
+                최근 발표된 CPI 지수가 예상치에 부합하며 연준의 금리 인상 사이클이 사실상 종료된
+                것으로 시장은 해석하고 있습니다. 다만 긴축 기조의 장기화 가능성이 여전히 잔존하여
+                외국인 자본 유출입 변동성을 예의주시할 필요가 있습니다.
               </Typography>
             </Grid>
 
@@ -153,7 +156,10 @@ export function MacroIndicatorsView() {
                 <Typography variant="overline" sx={{ color: 'text.disabled', fontWeight: 800 }}>
                   매크로 종합 센티먼트
                 </Typography>
-                <Typography variant="h2" sx={{ fontWeight: 900, color: theme.palette.info.main, my: 1 }}>
+                <Typography
+                  variant="h2"
+                  sx={{ fontWeight: 900, color: theme.palette.info.main, my: 1 }}
+                >
                   65%
                 </Typography>
                 <LinearProgress
@@ -179,12 +185,17 @@ export function MacroIndicatorsView() {
                 p: 3,
                 height: '100%',
                 border: `1px solid ${alpha(theme.palette.divider, 0.8)}`,
-                boxShadow: theme.customShadows?.card || `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
+                boxShadow:
+                  theme.customShadows?.card ||
+                  `0 2px 12px 0 ${alpha(theme.palette.common.black, 0.03)}`,
               }}
             >
               <Stack spacing={4}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="h6" sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: 1 }}
+                  >
                     <SavingsRoundedIcon color="secondary" />
                     미국 기준금리(FFR) 가상 시나리오
                   </Typography>
@@ -228,14 +239,27 @@ export function MacroIndicatorsView() {
                 </Box>
 
                 {/* Forecast Matrix based on Simulated Interest Rate */}
-                <Box sx={{ bgcolor: alpha(theme.palette.grey[500], 0.03), p: 2.5, borderRadius: 2, border: `1px solid ${theme.palette.divider}` }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box
+                  sx={{
+                    bgcolor: alpha(theme.palette.grey[500], 0.03),
+                    p: 2.5,
+                    borderRadius: 2,
+                    border: `1px solid ${theme.palette.divider}`,
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: 800, mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}
+                  >
                     📊 시장 부문별 가상 시그널
                   </Typography>
 
                   <Stack spacing={2.5}>
                     <Box>
-                      <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 700, display: 'block', mb: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'text.disabled', fontWeight: 700, display: 'block', mb: 0.5 }}
+                      >
                         1. 주식 시장 (Stock Markets)
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -244,7 +268,10 @@ export function MacroIndicatorsView() {
                     </Box>
 
                     <Box>
-                      <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 700, display: 'block', mb: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'text.disabled', fontWeight: 700, display: 'block', mb: 0.5 }}
+                      >
                         2. 채권 시장 / 금리 (Bond Yields)
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -253,7 +280,10 @@ export function MacroIndicatorsView() {
                     </Box>
 
                     <Box>
-                      <Typography variant="caption" sx={{ color: 'text.disabled', fontWeight: 700, display: 'block', mb: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'text.disabled', fontWeight: 700, display: 'block', mb: 0.5 }}
+                      >
                         3. 환율 (USD / KRW)
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -333,7 +363,17 @@ export function MacroIndicatorsView() {
 }
 
 // Helper Card Component
-function MacroCard({ title, value, change, isUp, category, icon, impact, description, correlation }: MacroIndicatorCardProps) {
+function MacroCard({
+  title,
+  value,
+  change,
+  isUp,
+  category,
+  icon,
+  impact,
+  description,
+  correlation,
+}: MacroIndicatorCardProps) {
   const theme = useTheme();
 
   return (
@@ -389,12 +429,20 @@ function MacroCard({ title, value, change, isUp, category, icon, impact, descrip
                 variant="caption"
                 sx={{
                   fontWeight: 700,
-                  color: isUp ? 'error.main' : change === '0.00%p' ? 'text.disabled' : 'success.main',
+                  color: isUp
+                    ? 'error.main'
+                    : change === '0.00%p'
+                      ? 'text.disabled'
+                      : 'success.main',
                   display: 'flex',
                   alignItems: 'center',
                 }}
               >
-                {isUp ? <TrendingUpRoundedIcon sx={{ fontSize: 14, mr: 0.2 }} /> : <TrendingDownRoundedIcon sx={{ fontSize: 14, mr: 0.2 }} />}
+                {isUp ? (
+                  <TrendingUpRoundedIcon sx={{ fontSize: 14, mr: 0.2 }} />
+                ) : (
+                  <TrendingDownRoundedIcon sx={{ fontSize: 14, mr: 0.2 }} />
+                )}
                 {change}
               </Typography>
             </Stack>
@@ -405,7 +453,16 @@ function MacroCard({ title, value, change, isUp, category, icon, impact, descrip
           {description}
         </Typography>
 
-        <Stack direction="row" spacing={1} sx={{ p: 1.5, bgcolor: alpha(theme.palette.secondary.main, 0.03), borderRadius: 1, borderLeft: `3px solid ${theme.palette.secondary.main}` }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            p: 1.5,
+            bgcolor: alpha(theme.palette.secondary.main, 0.03),
+            borderRadius: 1,
+            borderLeft: `3px solid ${theme.palette.secondary.main}`,
+          }}
+        >
           <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 600 }}>
             <b>시장 영향:</b> {correlation}
           </Typography>

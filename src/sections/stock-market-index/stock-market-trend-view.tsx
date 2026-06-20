@@ -77,7 +77,7 @@ export function StockMarketTrendView({
             ),
           }}
         />
-        
+
         <TextField
           select
           size="small"
@@ -119,12 +119,12 @@ export function StockMarketTrendView({
                 t === 'bullish'
                   ? 'success'
                   : t === 'bearish'
-                  ? 'error'
-                  : t === 'recovering'
-                  ? 'primary'
-                  : t === 'sideways'
-                  ? 'warning'
-                  : 'inherit'
+                    ? 'error'
+                    : t === 'recovering'
+                      ? 'primary'
+                      : t === 'sideways'
+                        ? 'warning'
+                        : 'inherit'
               }
             >
               {t === 'all' ? '전체' : `${getTrendLabel(t).split(' ')[0]} (${trendCounts[t]})`}

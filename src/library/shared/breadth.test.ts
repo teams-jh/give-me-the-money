@@ -9,11 +9,7 @@
 
 import { it, expect, describe } from 'vitest';
 
-import {
-  calcMarketBreadth,
-  getMarketCondition,
-  buildSnapshotDates,
-} from './breadth.ts';
+import { calcMarketBreadth, getMarketCondition, buildSnapshotDates } from './breadth.ts';
 
 // ── 헬퍼: 거래일 생성 ─────────────────────────────────────────────────────────
 
@@ -136,7 +132,8 @@ describe('calcMarketBreadth', () => {
     // 종목의 날짜가 모두 snapDate 이후
     const snapDate = '2023-01-01';
     const stock = {
-      ticker: 'AAPL', sector: 'Tech',
+      ticker: 'AAPL',
+      sector: 'Tech',
       prices: [{ date: '2023-02-01', close: 100 }],
     };
     const result = calcMarketBreadth([stock], [snapDate], 5);
@@ -146,7 +143,8 @@ describe('calcMarketBreadth', () => {
   it('데이터 부족 (minPts 미달) → skip', () => {
     const dates = makeWeekdays(3);
     const stock = {
-      ticker: 'AAPL', sector: 'Tech',
+      ticker: 'AAPL',
+      sector: 'Tech',
       prices: risingPrices(dates),
     };
     const snapDate = dates[2]!;
@@ -158,7 +156,8 @@ describe('calcMarketBreadth', () => {
   it('정상 상승 종목 → bullish 스냅샷 생성', () => {
     const dates = makeWeekdays(30);
     const stock = {
-      ticker: 'AAPL', sector: 'Tech',
+      ticker: 'AAPL',
+      sector: 'Tech',
       prices: risingPrices(dates, 100, 2), // 강한 상승
     };
     const snapDate = dates[29]!;

@@ -3,8 +3,8 @@
 import type { SimResult } from 'src/library/shared/trendSim';
 import type { UseChartIndicatorsReturn } from 'src/sections/indicators/hooks/use-chart-indicators';
 
-import { useState, useEffect } from 'react';
 import ChartApex from 'react-apexcharts';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -156,7 +156,9 @@ export function SimulationResultsModal({ indicators }: Props) {
   });
 
   // Sort by totalCount in descending order
-  const sortedProcessed = [...processedResults].sort((a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0));
+  const sortedProcessed = [...processedResults].sort(
+    (a, b) => (b.totalCount ?? 0) - (a.totalCount ?? 0)
+  );
 
   // Filter results by slope type, slope range, Touch-then-Breakout pattern, and zero-count exclusion
   const filteredResults = sortedProcessed.filter((sim) => {
@@ -188,7 +190,10 @@ export function SimulationResultsModal({ indicators }: Props) {
   });
 
   // Get active subset of paginated simulation results
-  const paginatedResults = filteredResults.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const paginatedResults = filteredResults.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
 
   const getMiniChartOptions = (sim: SimResult) => {
     const annotations: any = { points: [] };
@@ -331,9 +336,9 @@ export function SimulationResultsModal({ indicators }: Props) {
             📊 {market === 'US' ? '미국 주식' : '국내 주식'} 추세선 터치 & 돌파 종합 시뮬레이션
           </Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-            설정하신 파라미터(터치 인정 범위 -a%, 돌파 인정 범위 +b%, 터치 인정 기준, 분석 알고리즘)를 기반으로{' '}
-            <strong>전체 {simResults.length}개 종목</strong>의 상단 저항선 터치 및 돌파 횟수 총합이 많은 순으로 정렬한
-            결과입니다.
+            설정하신 파라미터(터치 인정 범위 -a%, 돌파 인정 범위 +b%, 터치 인정 기준, 분석
+            알고리즘)를 기반으로 <strong>전체 {simResults.length}개 종목</strong>의 상단 저항선 터치
+            및 돌파 횟수 총합이 많은 순으로 정렬한 결과입니다.
           </Typography>
         </Box>
         <IconButton onClick={handleClose} sx={{ color: 'text.secondary' }}>
@@ -344,8 +349,15 @@ export function SimulationResultsModal({ indicators }: Props) {
       {/* Filters Panel */}
       <Stack spacing={2} sx={{ mb: 3 }}>
         {/* 📅 Date Range Filter */}
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems={{ xs: 'flex-start', sm: 'center' }}>
-          <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1.5}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}
+          >
             📅 분석 날짜 범위 필터:
           </Typography>
           <Stack direction="row" spacing={1} alignItems="center">
@@ -443,16 +455,25 @@ export function SimulationResultsModal({ indicators }: Props) {
         </Stack>
 
         {/* Dynamic Slope Filter Chips */}
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems={{ xs: 'flex-start', sm: 'center' }}>
-          <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1.5}
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}
+          >
             📈 저항선 기울기 필터:
           </Typography>
           <Stack direction="row" spacing={1}>
-            {([
-              { key: 'all', label: '전체 (All)' },
-              { key: 'positive', label: '📈 양의 기울기 (우상향)' },
-              { key: 'negative', label: '📉 음의 기울기 (우하향)' },
-            ] as const).map((opt) => {
+            {(
+              [
+                { key: 'all', label: '전체 (All)' },
+                { key: 'positive', label: '📈 양의 기울기 (우상향)' },
+                { key: 'negative', label: '📉 음의 기울기 (우하향)' },
+              ] as const
+            ).map((opt) => {
               const isActive = slopeFilter === opt.key;
               return (
                 <Chip
@@ -482,7 +503,10 @@ export function SimulationResultsModal({ indicators }: Props) {
               alignSelf: 'flex-start',
             }}
           >
-            <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.primary', minWidth: 140 }}>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 800, color: 'text.primary', minWidth: 140 }}
+            >
               📏 {slopeFilter === 'positive' ? '양의' : '음의'} 기울기 범위 (%) :
             </Typography>
 
@@ -490,7 +514,7 @@ export function SimulationResultsModal({ indicators }: Props) {
               <input
                 type="number"
                 step="any"
-                placeholder={slopeFilter === 'positive' ? "최소 (예: 0)" : "최소 (예: -50)"}
+                placeholder={slopeFilter === 'positive' ? '최소 (예: 0)' : '최소 (예: -50)'}
                 value={slopeFilter === 'positive' ? minPosSlope : minNegSlope}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -516,7 +540,7 @@ export function SimulationResultsModal({ indicators }: Props) {
               <input
                 type="number"
                 step="any"
-                placeholder={slopeFilter === 'positive' ? "최대 (예: 30)" : "최대 (예: 0)"}
+                placeholder={slopeFilter === 'positive' ? '최대 (예: 30)' : '최대 (예: 0)'}
                 value={slopeFilter === 'positive' ? maxPosSlope : maxNegSlope}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -573,11 +597,18 @@ export function SimulationResultsModal({ indicators }: Props) {
         )}
 
         {/* Touch-then-Breakout Pattern Filter */}
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems={{ xs: 'flex-start', md: 'center' }}>
-          <Typography variant="body2" sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={2}
+          alignItems={{ xs: 'flex-start', md: 'center' }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ fontWeight: 800, color: 'text.secondary', minWidth: 160 }}
+          >
             🎯 돌파 패턴 필터:
           </Typography>
-          
+
           <Stack direction="row" spacing={1} alignItems="center">
             <Chip
               label={enablePatternFilter ? '⚡ 터치 후 돌파 패턴 ON' : '터치 후 돌파 패턴 OFF'}
@@ -593,7 +624,10 @@ export function SimulationResultsModal({ indicators }: Props) {
             {enablePatternFilter && (
               <Stack direction="row" spacing={1.5} alignItems="center" sx={{ ml: 2 }}>
                 <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                  최소 터치 횟수 (N): <span style={{ color: theme.palette.primary.main, fontWeight: 900 }}>{minTouchesPattern}회</span>
+                  최소 터치 횟수 (N):{' '}
+                  <span style={{ color: theme.palette.primary.main, fontWeight: 900 }}>
+                    {minTouchesPattern}회
+                  </span>
                 </Typography>
                 <input
                   type="range"
@@ -616,7 +650,8 @@ export function SimulationResultsModal({ indicators }: Props) {
 
           {filteredResults.length !== simResults.length && (
             <Typography variant="caption" sx={{ color: 'text.secondary', ml: { md: 'auto' } }}>
-              (필터 결과: <strong>{filteredResults.length}개 종목</strong> / 전체 {simResults.length}개)
+              (필터 결과: <strong>{filteredResults.length}개 종목</strong> / 전체{' '}
+              {simResults.length}개)
             </Typography>
           )}
         </Stack>
@@ -660,7 +695,12 @@ export function SimulationResultsModal({ indicators }: Props) {
                   }}
                 >
                   {/* Card Top Information */}
-                  <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    sx={{ mb: 2 }}
+                  >
                     <Box sx={{ maxWidth: '60%' }}>
                       <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
                         <Chip
@@ -673,7 +713,10 @@ export function SimulationResultsModal({ indicators }: Props) {
                           {sim.name}
                         </Typography>
                       </Stack>
-                      <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'text.secondary', fontWeight: 600 }}
+                      >
                         코드: {sim.ticker}
                       </Typography>
                       <Box sx={{ mt: 0.5 }}>
@@ -713,20 +756,39 @@ export function SimulationResultsModal({ indicators }: Props) {
 
                     {/* Touch & Breakout Badges */}
                     <Stack spacing={0.5} alignItems="flex-end">
-                      <Typography variant="subtitle2" sx={{ color: 'primary.main', fontWeight: 900, fontSize: '0.85rem' }}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ color: 'primary.main', fontWeight: 900, fontSize: '0.85rem' }}
+                      >
                         ✨ 총합: {sim.touchCount + sim.breakoutCount}회
                       </Typography>
-                      <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 800, fontSize: '0.75rem' }}>
-                        🔴 터치: {sim.touchCount}회 (종 {sim.closeTouchCount}/고 {sim.highTouchCount})
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'error.main', fontWeight: 800, fontSize: '0.75rem' }}
+                      >
+                        🔴 터치: {sim.touchCount}회 (종 {sim.closeTouchCount}/고{' '}
+                        {sim.highTouchCount})
                       </Typography>
-                      <Typography variant="caption" sx={{ color: 'secondary.main', fontWeight: 800, fontSize: '0.75rem' }}>
-                        ⚡ 돌파: {sim.breakoutCount}회 (종 {sim.closeBreakoutCount}/고 {sim.highBreakoutCount})
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'secondary.main', fontWeight: 800, fontSize: '0.75rem' }}
+                      >
+                        ⚡ 돌파: {sim.breakoutCount}회 (종 {sim.closeBreakoutCount}/고{' '}
+                        {sim.highBreakoutCount})
                       </Typography>
                     </Stack>
                   </Stack>
 
                   {/* Sparkline Candlestick Chart */}
-                  <Box sx={{ height: 180, mb: 2, bgcolor: alpha(theme.palette.action.hover, 0.3), borderRadius: 1.5, p: 1 }}>
+                  <Box
+                    sx={{
+                      height: 180,
+                      mb: 2,
+                      bgcolor: alpha(theme.palette.action.hover, 0.3),
+                      borderRadius: 1.5,
+                      p: 1,
+                    }}
+                  >
                     <ChartApex
                       options={chartOptions}
                       series={chartSeries}

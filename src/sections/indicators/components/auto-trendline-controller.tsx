@@ -82,19 +82,30 @@ export function AutoTrendlineController({ indicators }: Props) {
                 ✨ 실시간 자동 추세선 설정 (Auto Trendline Controller)
               </Typography>
               <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                화면에 노출된 캔들 범위 내에서 수학적 알고리즘을 통해 자동으로 최적의 지지선(Support)과
-                저항선(Resistance)을 실시간 작도합니다.
+                화면에 노출된 캔들 범위 내에서 수학적 알고리즘을 통해 자동으로 최적의
+                지지선(Support)과 저항선(Resistance)을 실시간 작도합니다.
                 {showAutoTrend && (
-                  <span style={{ marginLeft: '8px', display: 'inline-flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span
+                    style={{
+                      marginLeft: '8px',
+                      display: 'inline-flex',
+                      gap: '8px',
+                      alignItems: 'center',
+                      flexWrap: 'wrap',
+                    }}
+                  >
                     <span style={{ color: theme.palette.text.secondary, fontWeight: 500 }}>|</span>
                     <span style={{ color: theme.palette.error.main, fontWeight: 800 }}>
-                      🔴 종가 (터치: {indicators.dynamicLines?.closeTouchCount ?? 0}회, 돌파: {indicators.dynamicLines?.closeBreakoutCount ?? 0}회)
+                      🔴 종가 (터치: {indicators.dynamicLines?.closeTouchCount ?? 0}회, 돌파:{' '}
+                      {indicators.dynamicLines?.closeBreakoutCount ?? 0}회)
                     </span>
                     <span style={{ color: theme.palette.warning.main, fontWeight: 800 }}>
-                      🟠 고가 (터치: {indicators.dynamicLines?.highTouchCount ?? 0}회, 돌파: {indicators.dynamicLines?.highBreakoutCount ?? 0}회)
+                      🟠 고가 (터치: {indicators.dynamicLines?.highTouchCount ?? 0}회, 돌파:{' '}
+                      {indicators.dynamicLines?.highBreakoutCount ?? 0}회)
                     </span>
                     <span style={{ color: theme.palette.primary.main, fontWeight: 800 }}>
-                      ✨ 총합 (터치: {indicators.dynamicLines?.touchCount ?? 0}회, 돌파: {indicators.dynamicLines?.breakoutCount ?? 0}회)
+                      ✨ 총합 (터치: {indicators.dynamicLines?.touchCount ?? 0}회, 돌파:{' '}
+                      {indicators.dynamicLines?.breakoutCount ?? 0}회)
                     </span>
                   </span>
                 )}
@@ -108,9 +119,7 @@ export function AutoTrendlineController({ indicators }: Props) {
                   onClick={runSimulation}
                   disabled={isSimulating}
                   startIcon={
-                    isSimulating ? (
-                      <CircularProgress size={16} color="inherit" />
-                    ) : undefined
+                    isSimulating ? <CircularProgress size={16} color="inherit" /> : undefined
                   }
                   sx={{
                     fontWeight: 800,
@@ -149,12 +158,19 @@ export function AutoTrendlineController({ indicators }: Props) {
                 <Grid container spacing={3}>
                   {/* 1. 기준 가격 선택 */}
                   <Grid size={{ xs: 12, md: 4 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}
+                    >
                       🎯 분석 기준 가격 (Price Base)
                     </Typography>
                     <Stack direction="row" spacing={1}>
                       {(['highlow', 'close', 'open'] as const).map((base) => {
-                        const labelMap = { highlow: '고점/저점', close: '종가 기준', open: '시가 기준' };
+                        const labelMap = {
+                          highlow: '고점/저점',
+                          close: '종가 기준',
+                          open: '시가 기준',
+                        };
                         const isActive = trendBase === base;
                         return (
                           <Chip
@@ -172,7 +188,10 @@ export function AutoTrendlineController({ indicators }: Props) {
 
                   {/* 2. 알고리즘 선택 */}
                   <Grid size={{ xs: 12, md: 5.5 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}
+                    >
                       ⚙️ 추세 분석 알고리즘 (Algorithm)
                     </Typography>
                     <Stack direction="row" spacing={1}>
@@ -199,14 +218,19 @@ export function AutoTrendlineController({ indicators }: Props) {
 
                   {/* 3. 작도 선 스타일 선택 */}
                   <Grid size={{ xs: 12, md: 2.5 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, mb: 1.5, color: 'text.primary' }}
+                    >
                       📈 선 스타일 (Style)
                     </Typography>
                     <Stack direction="row" spacing={1}>
-                      {([
-                        { key: 'straight', label: '직선' },
-                        { key: 'smooth', label: '곡선' },
-                      ] as const).map((style) => {
+                      {(
+                        [
+                          { key: 'straight', label: '직선' },
+                          { key: 'smooth', label: '곡선' },
+                        ] as const
+                      ).map((style) => {
                         const isActive = lineCurve === style.key;
                         return (
                           <Chip
@@ -252,8 +276,12 @@ export function AutoTrendlineController({ indicators }: Props) {
                           >
                             📅 실시간 추세선 작도 범위 설정 (Trendline Date Range)
                           </Typography>
-                          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
-                            추세선을 연산할 날짜 범위를 선택합니다. 기본값은 분석 기간의 마지막 영업일 하루 전까지입니다.
+                          <Typography
+                            variant="caption"
+                            sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}
+                          >
+                            추세선을 연산할 날짜 범위를 선택합니다. 기본값은 분석 기간의 마지막
+                            영업일 하루 전까지입니다.
                           </Typography>
                         </Box>
 
@@ -263,7 +291,12 @@ export function AutoTrendlineController({ indicators }: Props) {
                           alignItems="center"
                           sx={{ flexGrow: 1, maxWidth: { md: '60%' } }}
                         >
-                          <Stack direction="row" spacing={1} alignItems="center" sx={{ width: '100%' }}>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            alignItems="center"
+                            sx={{ width: '100%' }}
+                          >
                             <input
                               type="date"
                               value={trendStartDate}
@@ -344,9 +377,14 @@ export function AutoTrendlineController({ indicators }: Props) {
                 <Stack spacing={2}>
                   {trendAlgo === 'zigzag' && (
                     <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}
+                      >
                         ⚡ 지그재그 반전 비율:{' '}
-                        <span style={{ color: theme.palette.warning.main }}>{zigzagThreshold}%</span>
+                        <span style={{ color: theme.palette.warning.main }}>
+                          {zigzagThreshold}%
+                        </span>
                       </Typography>
                       <Stack direction="row" spacing={1} alignItems="center">
                         <input
@@ -367,7 +405,10 @@ export function AutoTrendlineController({ indicators }: Props) {
 
                   {trendAlgo === 'regression' && (
                     <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}
+                      >
                         ⚡ 표준편차 채널 배수:{' '}
                         <span style={{ color: theme.palette.warning.main }}>
                           {regressionStdDev.toFixed(1)}x
@@ -399,22 +440,31 @@ export function AutoTrendlineController({ indicators }: Props) {
                       >
                         ⚡ 스윙 극점 필터링
                       </Typography>
-                      <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
-                        화면 내 스윙 고점과 저점 상위극점을 연결하여 안정적인 수평 채널을 확인합니다.
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'text.secondary', display: 'block' }}
+                      >
+                        화면 내 스윙 고점과 저점 상위극점을 연결하여 안정적인 수평 채널을
+                        확인합니다.
                       </Typography>
                     </Box>
                   )}
 
                   <Box sx={{ mt: 1.5 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}
+                    >
                       🎯 터치 인정 기준 (Touch Basis)
                     </Typography>
                     <Stack direction="row" spacing={0.5}>
-                      {([
-                        { key: 'both', label: '종가+고가' },
-                        { key: 'close', label: '종가만' },
-                        { key: 'high', label: '고가만' },
-                      ] as const).map((basis) => {
+                      {(
+                        [
+                          { key: 'both', label: '종가+고가' },
+                          { key: 'close', label: '종가만' },
+                          { key: 'high', label: '고가만' },
+                        ] as const
+                      ).map((basis) => {
                         const isActive = trendTouchBasis === basis.key;
                         return (
                           <Chip
@@ -432,9 +482,14 @@ export function AutoTrendlineController({ indicators }: Props) {
                   </Box>
 
                   <Box>
-                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}
+                    >
                       📐 터치 인정 범위 (-a%):{' '}
-                      <span style={{ color: theme.palette.warning.main }}>-{trendTouchTolerance}%</span>
+                      <span style={{ color: theme.palette.warning.main }}>
+                        -{trendTouchTolerance}%
+                      </span>
                     </Typography>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <input
@@ -454,9 +509,14 @@ export function AutoTrendlineController({ indicators }: Props) {
                   </Box>
 
                   <Box>
-                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}
+                    >
                       📈 돌파 인정 범위 (+b%):{' '}
-                      <span style={{ color: theme.palette.secondary.main }}>+{trendBreakoutTolerance}%</span>
+                      <span style={{ color: theme.palette.secondary.main }}>
+                        +{trendBreakoutTolerance}%
+                      </span>
                     </Typography>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <input

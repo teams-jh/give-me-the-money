@@ -1,11 +1,14 @@
 'use client';
 
 import type { PeriodKey } from 'src/sections/top100/types';
+import type { TrendTouchPoint } from 'src/library/shared/signals';
+import type { SimResult, TouchPoint, PriceDataPoint } from 'src/library/shared/trendSim';
 
 import { useMemo, useState, useEffect, useCallback } from 'react';
 
 import { alpha, useTheme } from '@mui/material/styles';
 
+import { calcTrendTouchPoints } from 'src/library/shared/signals';
 import { allTickersData, tickers as allTickersList } from 'src/library/tickers';
 import {
   calcMA,
@@ -18,12 +21,9 @@ import {
   calcLinearRegressionChannel,
   calcZigZagSupportResistance,
 } from 'src/library/shared/indicators';
-import { calcTrendTouchPoints } from 'src/library/shared/signals';
-import type { TrendTouchPoint } from 'src/library/shared/signals';
-import type { PriceDataPoint, TouchPoint, SimResult } from 'src/library/shared/trendSim';
 
 // trendSim.ts로 이동한 타입 re-export (하위 호환)
-export type { PriceDataPoint, TouchPoint, SimResult };
+export type { SimResult, TouchPoint, PriceDataPoint };
 
 // ----------------------------------------------------------------------
 
@@ -498,7 +498,7 @@ export function useChartIndicators() {
   // activeStockDataSlice.dates를 미리 타임스탬프 배열로 변환 (캐시)
   // dynamicLines, runSimulation에서 재사용 — 슬라이더 변경 시 불필요한 재파싱 방지
   const activeTimestamps = useMemo(
-    () => activeStockDataSlice?.dates.map(d => new Date(d).getTime()) ?? [],
+    () => activeStockDataSlice?.dates.map((d) => new Date(d).getTime()) ?? [],
     [activeStockDataSlice]
   );
 
@@ -563,33 +563,51 @@ export function useChartIndicators() {
 
     const deltaX = lastIdx - firstIdx || 1;
 
-    const mSupport = supportStart !== null && supportStart !== undefined && supportEnd !== null && supportEnd !== undefined 
-      ? (supportEnd - supportStart) / deltaX 
-      : 0;
-    const cSupport = supportStart !== null && supportStart !== undefined 
-      ? supportStart - mSupport * firstIdx 
-      : null;
+    const mSupport =
+      supportStart !== null &&
+      supportStart !== undefined &&
+      supportEnd !== null &&
+      supportEnd !== undefined
+        ? (supportEnd - supportStart) / deltaX
+        : 0;
+    const cSupport =
+      supportStart !== null && supportStart !== undefined
+        ? supportStart - mSupport * firstIdx
+        : null;
 
-    const mResistance = resistanceStart !== null && resistanceStart !== undefined && resistanceEnd !== null && resistanceEnd !== undefined 
-      ? (resistanceEnd - resistanceStart) / deltaX 
-      : 0;
-    const cResistance = resistanceStart !== null && resistanceStart !== undefined 
-      ? resistanceStart - mResistance * firstIdx 
-      : null;
+    const mResistance =
+      resistanceStart !== null &&
+      resistanceStart !== undefined &&
+      resistanceEnd !== null &&
+      resistanceEnd !== undefined
+        ? (resistanceEnd - resistanceStart) / deltaX
+        : 0;
+    const cResistance =
+      resistanceStart !== null && resistanceStart !== undefined
+        ? resistanceStart - mResistance * firstIdx
+        : null;
 
-    const supportData = cSupport !== null && cSupport !== undefined
-      ? [
-          { x: new Date(dates[0]).getTime(), y: cSupport },
-          { x: new Date(dates[dates.length - 1]).getTime(), y: mSupport * (dates.length - 1) + cSupport }
-        ]
-      : [];
+    const supportData =
+      cSupport !== null && cSupport !== undefined
+        ? [
+            { x: new Date(dates[0]).getTime(), y: cSupport },
+            {
+              x: new Date(dates[dates.length - 1]).getTime(),
+              y: mSupport * (dates.length - 1) + cSupport,
+            },
+          ]
+        : [];
 
-    const resistanceData = cResistance !== null && cResistance !== undefined
-      ? [
-          { x: new Date(dates[0]).getTime(), y: cResistance },
-          { x: new Date(dates[dates.length - 1]).getTime(), y: mResistance * (dates.length - 1) + cResistance }
-        ]
-      : [];
+    const resistanceData =
+      cResistance !== null && cResistance !== undefined
+        ? [
+            { x: new Date(dates[0]).getTime(), y: cResistance },
+            {
+              x: new Date(dates[dates.length - 1]).getTime(),
+              y: mResistance * (dates.length - 1) + cResistance,
+            },
+          ]
+        : [];
 
     const zigzagData = srRaw
       .map((pt, idx) => ({
@@ -598,30 +616,56 @@ export function useChartIndicators() {
       }))
       .filter((pt): pt is { x: number; y: number } => pt.y !== null && pt.y !== undefined);
 
-    const touchResult = (cResistance !== null && cResistance !== undefined)
-      ? calcTrendTouchPoints({
-          timestamps:        activeTimestamps,
-          highPrices,
-          closePrices,
-          m:                 mResistance,
-          c:                 cResistance,
-          trendMinIdx:       trendIndices[0],
-          trendMaxIdx:       trendIndices[trendIndices.length - 1],
-          touchTolerance:    trendTouchTolerance,
-          breakoutTolerance: trendBreakoutTolerance,
-          touchBasis:        trendTouchBasis,
-        })
-      : { touchPoints: [], touchCount: 0, closeTouchCount: 0, highTouchCount: 0, breakoutCount: 0, closeBreakoutCount: 0, highBreakoutCount: 0 };
+    const touchResult =
+      cResistance !== null && cResistance !== undefined
+        ? calcTrendTouchPoints({
+            timestamps: activeTimestamps,
+            highPrices,
+            closePrices,
+            m: mResistance,
+            c: cResistance,
+            trendMinIdx: trendIndices[0],
+            trendMaxIdx: trendIndices[trendIndices.length - 1],
+            touchTolerance: trendTouchTolerance,
+            breakoutTolerance: trendBreakoutTolerance,
+            touchBasis: trendTouchBasis,
+          })
+        : {
+            touchPoints: [],
+            touchCount: 0,
+            closeTouchCount: 0,
+            highTouchCount: 0,
+            breakoutCount: 0,
+            closeBreakoutCount: 0,
+            highBreakoutCount: 0,
+          };
 
     return {
       supportData,
       resistanceData,
       zigzagData,
-      latestSupport: cSupport !== null && cSupport !== undefined ? mSupport * (dates.length - 1) + cSupport : null,
-      latestResistance: cResistance !== null && cResistance !== undefined ? mResistance * (dates.length - 1) + cResistance : null,
+      latestSupport:
+        cSupport !== null && cSupport !== undefined
+          ? mSupport * (dates.length - 1) + cSupport
+          : null,
+      latestResistance:
+        cResistance !== null && cResistance !== undefined
+          ? mResistance * (dates.length - 1) + cResistance
+          : null,
       ...touchResult,
     };
-  }, [activeStockDataSlice, trendStartDate, trendEndDate, trendBase, trendAlgo, zigzagThreshold, regressionStdDev, trendTouchTolerance, trendBreakoutTolerance, trendTouchBasis]);
+  }, [
+    activeStockDataSlice,
+    trendStartDate,
+    trendEndDate,
+    trendBase,
+    trendAlgo,
+    zigzagThreshold,
+    regressionStdDev,
+    trendTouchTolerance,
+    trendBreakoutTolerance,
+    trendTouchBasis,
+  ]);
 
   // Chart configuration for selected ticker
   const chartData = useMemo(() => {
@@ -890,10 +934,14 @@ export function useChartIndicators() {
       const { max, min, maxDate, minDate, maxIdx, minIdx, visibleIndices } = visibleHighLow;
 
       const maxPos =
-        visibleIndices.length > 1 ? visibleIndices.indexOf(maxIdx) / (visibleIndices.length - 1) : 0.5;
+        visibleIndices.length > 1
+          ? visibleIndices.indexOf(maxIdx) / (visibleIndices.length - 1)
+          : 0.5;
 
       const minPos =
-        visibleIndices.length > 1 ? visibleIndices.indexOf(minIdx) / (visibleIndices.length - 1) : 0.5;
+        visibleIndices.length > 1
+          ? visibleIndices.indexOf(minIdx) / (visibleIndices.length - 1)
+          : 0.5;
 
       // Adjust textAnchor and offsetX to prevent clipping at boundaries (left/right edges)
       let maxAnchor = 'middle';
@@ -920,26 +968,46 @@ export function useChartIndicators() {
         {
           x: maxDate,
           y: max,
-          marker: { size: 5, fillColor: theme.palette.error.main, strokeColor: '#fff', strokeWidth: 2 },
+          marker: {
+            size: 5,
+            fillColor: theme.palette.error.main,
+            strokeColor: '#fff',
+            strokeWidth: 2,
+          },
           label: {
             borderColor: theme.palette.error.main,
             offsetY: -10,
             offsetX: maxOffsetX,
             textAnchor: maxAnchor,
-            style: { color: '#fff', background: theme.palette.error.main, fontWeight: 700, fontSize: '11px' },
+            style: {
+              color: '#fff',
+              background: theme.palette.error.main,
+              fontWeight: 700,
+              fontSize: '11px',
+            },
             text: `최고가: ${formatMoney(max)}`,
           },
         },
         {
           x: minDate,
           y: min,
-          marker: { size: 5, fillColor: theme.palette.info.main, strokeColor: '#fff', strokeWidth: 2 },
+          marker: {
+            size: 5,
+            fillColor: theme.palette.info.main,
+            strokeColor: '#fff',
+            strokeWidth: 2,
+          },
           label: {
             borderColor: theme.palette.info.main,
             offsetY: 10,
             offsetX: minOffsetX,
             textAnchor: minAnchor,
-            style: { color: '#fff', background: theme.palette.info.main, fontWeight: 700, fontSize: '11px' },
+            style: {
+              color: '#fff',
+              background: theme.palette.info.main,
+              fontWeight: 700,
+              fontSize: '11px',
+            },
             text: `최저가: ${formatMoney(min)}`,
           },
         }
@@ -950,7 +1018,7 @@ export function useChartIndicators() {
       dynamicLines.touchPoints.forEach((tp) => {
         const isClose = tp.priceType === 'close';
         const isBreak = tp.type === 'breakout';
-        
+
         let color = theme.palette.warning.main;
         let text = '고가 터치';
 
@@ -979,7 +1047,7 @@ export function useChartIndicators() {
               background: color,
               fontWeight: 700,
               fontSize: '10px',
-              padding: { left: 4, right: 4, top: 2, bottom: 2 }
+              padding: { left: 4, right: 4, top: 2, bottom: 2 },
             },
             text,
           },
@@ -1030,7 +1098,10 @@ export function useChartIndicators() {
         {
           y: max,
           borderColor: theme.palette.error.main,
-          label: { text: '100% (High)', style: { color: '#fff', background: theme.palette.error.main } },
+          label: {
+            text: '100% (High)',
+            style: { color: '#fff', background: theme.palette.error.main },
+          },
         },
         {
           y: max - diff * 0.236,
@@ -1059,7 +1130,10 @@ export function useChartIndicators() {
         {
           y: min,
           borderColor: theme.palette.success.main,
-          label: { text: '0% (Low)', style: { color: '#fff', background: theme.palette.success.main } },
+          label: {
+            text: '0% (Low)',
+            style: { color: '#fff', background: theme.palette.success.main },
+          },
         }
       );
     }
@@ -1079,14 +1153,20 @@ export function useChartIndicators() {
         background: 'transparent',
         fontFamily: theme.typography.fontFamily,
         events: {
-          zoomed: (_chartContext: unknown, { xaxis }: { xaxis: { min?: number; max?: number } }) => {
+          zoomed: (
+            _chartContext: unknown,
+            { xaxis }: { xaxis: { min?: number; max?: number } }
+          ) => {
             if (xaxis?.min && xaxis?.max) {
               setVisibleRange({ min: Math.round(xaxis.min), max: Math.round(xaxis.max) });
             } else {
               setVisibleRange(null);
             }
           },
-          scrolled: (_chartContext: unknown, { xaxis }: { xaxis: { min?: number; max?: number } }) => {
+          scrolled: (
+            _chartContext: unknown,
+            { xaxis }: { xaxis: { min?: number; max?: number } }
+          ) => {
             if (xaxis?.min && xaxis?.max) {
               setVisibleRange({ min: Math.round(xaxis.min), max: Math.round(xaxis.max) });
             } else {
@@ -1172,7 +1252,20 @@ export function useChartIndicators() {
         },
       },
     };
-  }, [theme, market, chartData, showFib, visibleHighLow, formatMoney, lineCurve, visibleRange, showAutoTrend, dynamicLines, trendStartDate, trendEndDate]);
+  }, [
+    theme,
+    market,
+    chartData,
+    showFib,
+    visibleHighLow,
+    formatMoney,
+    lineCurve,
+    visibleRange,
+    showAutoTrend,
+    dynamicLines,
+    trendStartDate,
+    trendEndDate,
+  ]);
 
   const runSimulation = useCallback(() => {
     setIsSimulating(true);
@@ -1231,7 +1324,8 @@ export function useChartIndicators() {
         const currentOpens =
           trendBase === 'close' ? simCloses : trendBase === 'open' ? simOpens : simOpens;
 
-        let srRaw: { support: number | null; resistance: number | null; zigzag?: number | null }[] = [];
+        let srRaw: { support: number | null; resistance: number | null; zigzag?: number | null }[] =
+          [];
 
         if (trendAlgo === 'regression') {
           srRaw = calcLinearRegressionChannel(currentCloses, regressionStdDev);
@@ -1259,50 +1353,85 @@ export function useChartIndicators() {
 
         const deltaX = lastIdx - firstIdx || 1;
 
-        const mSupport = supportStart !== null && supportStart !== undefined && supportEnd !== null && supportEnd !== undefined 
-          ? (supportEnd - supportStart) / deltaX 
-          : 0;
-        const cSupport = supportStart !== null && supportStart !== undefined 
-          ? supportStart - mSupport * firstIdx 
-          : null;
+        const mSupport =
+          supportStart !== null &&
+          supportStart !== undefined &&
+          supportEnd !== null &&
+          supportEnd !== undefined
+            ? (supportEnd - supportStart) / deltaX
+            : 0;
+        const cSupport =
+          supportStart !== null && supportStart !== undefined
+            ? supportStart - mSupport * firstIdx
+            : null;
 
-        const mResistance = resistanceStart !== null && resistanceStart !== undefined && resistanceEnd !== null && resistanceEnd !== undefined 
-          ? (resistanceEnd - resistanceStart) / deltaX 
-          : 0;
-        const cResistance = resistanceStart !== null && resistanceStart !== undefined 
-          ? resistanceStart - mResistance * firstIdx 
-          : null;
+        const mResistance =
+          resistanceStart !== null &&
+          resistanceStart !== undefined &&
+          resistanceEnd !== null &&
+          resistanceEnd !== undefined
+            ? (resistanceEnd - resistanceStart) / deltaX
+            : 0;
+        const cResistance =
+          resistanceStart !== null && resistanceStart !== undefined
+            ? resistanceStart - mResistance * firstIdx
+            : null;
 
-        const touchResult = (cResistance !== null && cResistance !== undefined)
-          ? calcTrendTouchPoints({
-              timestamps:        simulationTimestamps,
-              highPrices,
-              closePrices,
-              m:                 mResistance,
-              c:                 cResistance,
-              trendMinIdx:       simTrendIndices[0],
-              trendMaxIdx:       simTrendIndices[simTrendIndices.length - 1],
-              touchTolerance:    trendTouchTolerance,
-              breakoutTolerance: trendBreakoutTolerance,
-              touchBasis:        trendTouchBasis,
-            })
-          : { touchPoints: [] as TrendTouchPoint[], touchCount: 0, closeTouchCount: 0, highTouchCount: 0, breakoutCount: 0, closeBreakoutCount: 0, highBreakoutCount: 0 };
+        const touchResult =
+          cResistance !== null && cResistance !== undefined
+            ? calcTrendTouchPoints({
+                timestamps: simulationTimestamps,
+                highPrices,
+                closePrices,
+                m: mResistance,
+                c: cResistance,
+                trendMinIdx: simTrendIndices[0],
+                trendMaxIdx: simTrendIndices[simTrendIndices.length - 1],
+                touchTolerance: trendTouchTolerance,
+                breakoutTolerance: trendBreakoutTolerance,
+                touchBasis: trendTouchBasis,
+              })
+            : {
+                touchPoints: [] as TrendTouchPoint[],
+                touchCount: 0,
+                closeTouchCount: 0,
+                highTouchCount: 0,
+                breakoutCount: 0,
+                closeBreakoutCount: 0,
+                highBreakoutCount: 0,
+              };
 
-        const { touchPoints: itemTouchPoints, touchCount, closeTouchCount, highTouchCount, breakoutCount, closeBreakoutCount, highBreakoutCount } = touchResult;
+        const {
+          touchPoints: itemTouchPoints,
+          touchCount,
+          closeTouchCount,
+          highTouchCount,
+          breakoutCount,
+          closeBreakoutCount,
+          highBreakoutCount,
+        } = touchResult;
 
-        const resistanceData = cResistance !== null && cResistance !== undefined
-          ? [
-              { x: new Date(dates[0]).getTime(), y: cResistance },
-              { x: new Date(dates[dates.length - 1]).getTime(), y: mResistance * (dates.length - 1) + cResistance }
-            ]
-          : [];
+        const resistanceData =
+          cResistance !== null && cResistance !== undefined
+            ? [
+                { x: new Date(dates[0]).getTime(), y: cResistance },
+                {
+                  x: new Date(dates[dates.length - 1]).getTime(),
+                  y: mResistance * (dates.length - 1) + cResistance,
+                },
+              ]
+            : [];
 
-        const supportData = cSupport !== null && cSupport !== undefined
-          ? [
-              { x: new Date(dates[0]).getTime(), y: cSupport },
-              { x: new Date(dates[dates.length - 1]).getTime(), y: mSupport * (dates.length - 1) + cSupport }
-            ]
-          : [];
+        const supportData =
+          cSupport !== null && cSupport !== undefined
+            ? [
+                { x: new Date(dates[0]).getTime(), y: cSupport },
+                {
+                  x: new Date(dates[dates.length - 1]).getTime(),
+                  y: mSupport * (dates.length - 1) + cSupport,
+                },
+              ]
+            : [];
 
         const zigzagData = srRaw
           .map((pt, idx) => ({
@@ -1331,14 +1460,17 @@ export function useChartIndicators() {
           resistanceData,
           supportData,
           zigzagData: trendAlgo === 'zigzag' ? zigzagData : undefined,
-          latestResistance: cResistance !== null && cResistance !== undefined ? mResistance * (dates.length - 1) + cResistance : null,
+          latestResistance:
+            cResistance !== null && cResistance !== undefined
+              ? mResistance * (dates.length - 1) + cResistance
+              : null,
           touchPoints: itemTouchPoints,
           slopeType,
           slope: slopePercent,
         });
       }
 
-      results.sort((a, b) => (b.touchCount + b.breakoutCount) - (a.touchCount + a.breakoutCount));
+      results.sort((a, b) => b.touchCount + b.breakoutCount - (a.touchCount + a.breakoutCount));
 
       setSimResults(results);
       setIsSimulating(false);

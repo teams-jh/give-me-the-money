@@ -24,27 +24,27 @@
 
 /** OHLCV 일봉 한 개 */
 export interface OHLCV {
-  date:   string;
-  open:   number;
-  high:   number;
-  low:    number;
-  close:  number;
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
   volume: number;
 }
 
 /** MACD 한 봉의 계산 결과 */
 export interface MACDPoint {
-  macd:      number | null;   // MACD 선 (EMA12 - EMA26)
-  signal:    number | null;   // 시그널 선 (MACD의 EMA9)
-  histogram: number | null;   // 히스토그램 (MACD - Signal)
+  macd: number | null; // MACD 선 (EMA12 - EMA26)
+  signal: number | null; // 시그널 선 (MACD의 EMA9)
+  histogram: number | null; // 히스토그램 (MACD - Signal)
 }
 
 /** 볼린저밴드 한 봉의 계산 결과 */
 export interface BBPoint {
-  upper: number | null;   // 상단 밴드 (mid + k*σ)
-  mid:   number | null;   // 중간선 (SMA)
-  lower: number | null;   // 하단 밴드 (mid - k*σ)
-  width: number | null;   // 밴드폭 (upper - lower) / mid, %
+  upper: number | null; // 상단 밴드 (mid + k*σ)
+  mid: number | null; // 중간선 (SMA)
+  lower: number | null; // 하단 밴드 (mid - k*σ)
+  width: number | null; // 밴드폭 (upper - lower) / mid, %
 }
 
 // ── 내부 헬퍼 ─────────────────────────────────────────────────────────────────
@@ -73,7 +73,7 @@ export function calcMA(closes: number[], period: number): (number | null)[] {
       continue;
     }
     const slice = closes.slice(i - period + 1, i + 1);
-    const avg   = slice.reduce((s, v) => s + v, 0) / period;
+    const avg = slice.reduce((s, v) => s + v, 0) / period;
     result.push(round(avg, 4));
   }
   return result;
@@ -92,7 +92,7 @@ export function calcMA(closes: number[], period: number): (number | null)[] {
  */
 export function calcEMA(closes: number[], period: number): (number | null)[] {
   const result: (number | null)[] = [];
-  const k = 2 / (period + 1);   // smoothing factor
+  const k = 2 / (period + 1); // smoothing factor
 
   let ema: number | null = null;
 
@@ -149,7 +149,7 @@ export function calcRSI(closes: number[], period: number = 14): (number | null)[
   for (let i = 0; i < period; i++) {
     const c = changes[i] as number;
     if (c > 0) avgGain += c;
-    else        avgLoss += Math.abs(c);
+    else avgLoss += Math.abs(c);
   }
   avgGain /= period;
   avgLoss /= period;
@@ -164,7 +164,7 @@ export function calcRSI(closes: number[], period: number = 14): (number | null)[
 
   // Wilder 스무딩
   for (let i = period + 1; i < closes.length; i++) {
-    const c    = changes[i - 1] as number;
+    const c = changes[i - 1] as number;
     const gain = c > 0 ? c : 0;
     const loss = c < 0 ? Math.abs(c) : 0;
 
@@ -195,10 +195,10 @@ export function calcRSI(closes: number[], period: number = 14): (number | null)[
  * @returns (closes.length) 개의 MACDPoint 배열
  */
 export function calcMACD(
-  closes:       number[],
-  fastPeriod:   number = 12,
-  slowPeriod:   number = 26,
-  signalPeriod: number = 9,
+  closes: number[],
+  fastPeriod: number = 12,
+  slowPeriod: number = 26,
+  signalPeriod: number = 9
 ): MACDPoint[] {
   const emaFast = calcEMA(closes, fastPeriod);
   const emaSlow = calcEMA(closes, slowPeriod);
@@ -251,21 +251,21 @@ export function calcMACD(
 export function calcBollingerBands(
   closes: number[],
   period: number = 20,
-  k:      number = 2,
+  k: number = 2
 ): BBPoint[] {
   return closes.map((_, i) => {
     if (i < period - 1) return { upper: null, mid: null, lower: null, width: null };
 
     const slice = closes.slice(i - period + 1, i + 1);
-    const mid   = slice.reduce((s, v) => s + v, 0) / period;
+    const mid = slice.reduce((s, v) => s + v, 0) / period;
 
     // 표본 표준편차 (분모 N, TradingView 기본)
     const variance = slice.reduce((s, v) => s + (v - mid) ** 2, 0) / period;
-    const sigma    = Math.sqrt(variance);
+    const sigma = Math.sqrt(variance);
 
     const upper = round(mid + k * sigma, 4);
     const lower = round(mid - k * sigma, 4);
-    const width  = mid !== 0 ? round((upper - lower) / mid * 100, 2) : null;
+    const width = mid !== 0 ? round(((upper - lower) / mid) * 100, 2) : null;
 
     return { upper, mid: round(mid, 4), lower, width };
   });
@@ -291,13 +291,13 @@ export function calcATR(ohlcv: OHLCV[], period: number = 14): (number | null)[] 
   if (ohlcv.length < period + 1) return result;
 
   // TR 계산
-  const tr: number[] = [0];   // 인덱스 0은 prevClose 없어서 0으로 패딩
+  const tr: number[] = [0]; // 인덱스 0은 prevClose 없어서 0으로 패딩
   for (let i = 1; i < ohlcv.length; i++) {
-    const cur  = ohlcv[i] as OHLCV;
+    const cur = ohlcv[i] as OHLCV;
     const prev = ohlcv[i - 1] as OHLCV;
-    const hl   = cur.high - cur.low;
-    const hpc  = Math.abs(cur.high - prev.close);
-    const lpc  = Math.abs(cur.low  - prev.close);
+    const hl = cur.high - cur.low;
+    const hpc = Math.abs(cur.high - prev.close);
+    const lpc = Math.abs(cur.low - prev.close);
     tr.push(Math.max(hl, hpc, lpc));
   }
 
@@ -340,12 +340,12 @@ export function calcOBV(closes: number[], volumes: number[]): number[] {
       result.push(0);
       continue;
     }
-    const cur  = closes[i] as number;
+    const cur = closes[i] as number;
     const prev = closes[i - 1] as number;
-    const vol  = volumes[i] as number;
+    const vol = volumes[i] as number;
 
-    if (cur > prev)       obv += vol;
-    else if (cur < prev)  obv -= vol;
+    if (cur > prev) obv += vol;
+    else if (cur < prev) obv -= vol;
     // cur === prev: 변화 없음
 
     result.push(obv);
@@ -369,11 +369,11 @@ export function calcMDD(closes: number[]): number {
   if (closes.length === 0) return 0;
 
   let peak = closes[0] as number;
-  let mdd  = 0;
+  let mdd = 0;
 
   for (const c of closes) {
     if (c > peak) peak = c;
-    const dd = (c - peak) / peak * 100;
+    const dd = ((c - peak) / peak) * 100;
     if (dd < mdd) mdd = dd;
   }
 
@@ -384,8 +384,8 @@ export function calcMDD(closes: number[]): number {
 
 /** Stochastic 한 봉의 계산 결과 */
 export interface StochPoint {
-  k: number | null;   // Fast %K: (종가 - N봉 최저) / (N봉 최고 - N봉 최저) × 100
-  d: number | null;   // Slow %D: %K의 단순 이동평균 (smoothD)
+  k: number | null; // Fast %K: (종가 - N봉 최저) / (N봉 최고 - N봉 최저) × 100
+  d: number | null; // Slow %D: %K의 단순 이동평균 (smoothD)
 }
 
 /**
@@ -404,10 +404,10 @@ export interface StochPoint {
  * @param smoothD - %D 스무딩 기간 (기본 3)
  */
 export function calcStochastic(
-  ohlcv:   OHLCV[],
+  ohlcv: OHLCV[],
   kPeriod: number = 14,
   smoothK: number = 3,
-  smoothD: number = 3,
+  smoothD: number = 3
 ): StochPoint[] {
   const n = ohlcv.length;
   const result: StochPoint[] = new Array(n).fill(null).map(() => ({ k: null, d: null }));
@@ -416,11 +416,11 @@ export function calcStochastic(
   const fastK: (number | null)[] = new Array(n).fill(null);
   for (let i = kPeriod - 1; i < n; i++) {
     const window = ohlcv.slice(i - kPeriod + 1, i + 1);
-    const highest = Math.max(...window.map(o => o.high));
-    const lowest  = Math.min(...window.map(o => o.low));
-    const denom   = highest - lowest;
-    const cur     = ohlcv[i] as OHLCV;
-    fastK[i] = denom === 0 ? 50 : round((cur.close - lowest) / denom * 100, 2);
+    const highest = Math.max(...window.map((o) => o.high));
+    const lowest = Math.min(...window.map((o) => o.low));
+    const denom = highest - lowest;
+    const cur = ohlcv[i] as OHLCV;
+    fastK[i] = denom === 0 ? 50 : round(((cur.close - lowest) / denom) * 100, 2);
   }
 
   // Slow %K = MA(fastK, smoothK)
@@ -452,9 +452,9 @@ export function calcStochastic(
 
 /** ADX 한 봉의 계산 결과 */
 export interface ADXPoint {
-  adx:     number | null;   // Average Directional Index (추세 강도, 0~100)
-  plusDI:  number | null;   // +DI (상승 방향 지수)
-  minusDI: number | null;   // -DI (하락 방향 지수)
+  adx: number | null; // Average Directional Index (추세 강도, 0~100)
+  plusDI: number | null; // +DI (상승 방향 지수)
+  minusDI: number | null; // -DI (하락 방향 지수)
 }
 
 /**
@@ -479,61 +479,63 @@ export interface ADXPoint {
  */
 export function calcADX(ohlcv: OHLCV[], period: number = 14): ADXPoint[] {
   const n = ohlcv.length;
-  const result: ADXPoint[] = new Array(n).fill(null).map(() => ({ adx: null, plusDI: null, minusDI: null }));
+  const result: ADXPoint[] = new Array(n)
+    .fill(null)
+    .map(() => ({ adx: null, plusDI: null, minusDI: null }));
 
   if (n < period * 2 + 1) return result;
 
   // ── 1봉씩 +DM, -DM, TR 계산 ────────────────────────────────────────────
-  const plusDMs:  number[] = [0];
+  const plusDMs: number[] = [0];
   const minusDMs: number[] = [0];
-  const trs:      number[] = [0];
+  const trs: number[] = [0];
 
   for (let i = 1; i < n; i++) {
-    const cur  = ohlcv[i] as OHLCV;
+    const cur = ohlcv[i] as OHLCV;
     const prev = ohlcv[i - 1] as OHLCV;
 
-    const upMove   = cur.high - prev.high;
+    const upMove = cur.high - prev.high;
     const downMove = prev.low - cur.low;
 
     plusDMs.push(upMove > downMove && upMove > 0 ? upMove : 0);
     minusDMs.push(downMove > upMove && downMove > 0 ? downMove : 0);
 
-    const hl  = cur.high - cur.low;
+    const hl = cur.high - cur.low;
     const hpc = Math.abs(cur.high - prev.close);
-    const lpc = Math.abs(cur.low  - prev.close);
+    const lpc = Math.abs(cur.low - prev.close);
     trs.push(Math.max(hl, hpc, lpc));
   }
 
   // ── Wilder 스무딩 초기값: 1~period 단순 합산 ───────────────────────────
-  let smPlusDM  = plusDMs.slice(1, period + 1).reduce((s, v) => s + v, 0);
+  let smPlusDM = plusDMs.slice(1, period + 1).reduce((s, v) => s + v, 0);
   let smMinusDM = minusDMs.slice(1, period + 1).reduce((s, v) => s + v, 0);
-  let smTR      = trs.slice(1, period + 1).reduce((s, v) => s + v, 0);
+  let smTR = trs.slice(1, period + 1).reduce((s, v) => s + v, 0);
 
   // DX 배열 (ADX 계산에 사용)
   const dxArr: (number | null)[] = new Array(n).fill(null);
 
   const calcDIandDX = (idx: number): void => {
-    const plusDI  = smTR > 0 ? round(smPlusDM  / smTR * 100, 2) : 0;
-    const minusDI = smTR > 0 ? round(smMinusDM / smTR * 100, 2) : 0;
-    const diSum   = plusDI + minusDI;
-    const dx      = diSum > 0 ? round(Math.abs(plusDI - minusDI) / diSum * 100, 2) : 0;
+    const plusDI = smTR > 0 ? round((smPlusDM / smTR) * 100, 2) : 0;
+    const minusDI = smTR > 0 ? round((smMinusDM / smTR) * 100, 2) : 0;
+    const diSum = plusDI + minusDI;
+    const dx = diSum > 0 ? round((Math.abs(plusDI - minusDI) / diSum) * 100, 2) : 0;
     result[idx] = { adx: null, plusDI, minusDI };
-    dxArr[idx]  = dx;
+    dxArr[idx] = dx;
   };
 
-  calcDIandDX(period);  // 첫 DI 값 (index = period)
+  calcDIandDX(period); // 첫 DI 값 (index = period)
 
   // ── Wilder 스무딩 반복 ──────────────────────────────────────────────────
   for (let i = period + 1; i < n; i++) {
-    smPlusDM  = smPlusDM  - smPlusDM  / period + (plusDMs[i]  as number);
+    smPlusDM = smPlusDM - smPlusDM / period + (plusDMs[i] as number);
     smMinusDM = smMinusDM - smMinusDM / period + (minusDMs[i] as number);
-    smTR      = smTR      - smTR      / period + (trs[i]      as number);
+    smTR = smTR - smTR / period + (trs[i] as number);
     calcDIandDX(i);
   }
 
   // ── ADX: DX의 Wilder EMA (period 개 쌓인 이후) ─────────────────────────
-  const firstDXIdx = period;                          // DX가 시작되는 인덱스
-  const adxStartIdx = firstDXIdx + period - 1;        // ADX 초기값 인덱스
+  const firstDXIdx = period; // DX가 시작되는 인덱스
+  const adxStartIdx = firstDXIdx + period - 1; // ADX 초기값 인덱스
 
   if (adxStartIdx >= n) return result;
 
@@ -572,7 +574,7 @@ export function calcROC(closes: number[], period: number = 20): (number | null)[
 
   for (let i = period; i < closes.length; i++) {
     const prev = closes[i - period] as number;
-    const cur  = closes[i] as number;
+    const cur = closes[i] as number;
     if (prev === 0) continue;
     result[i] = round((cur / prev - 1) * 100, 2);
   }
@@ -603,14 +605,14 @@ export function calcMFI(ohlcv: OHLCV[], period: number = 14): (number | null)[] 
   const result: (number | null)[] = new Array(n).fill(null);
 
   // Typical Price, Raw Money Flow 계산
-  const tp: number[] = ohlcv.map(o => (o.high + o.low + o.close) / 3);
+  const tp: number[] = ohlcv.map((o) => (o.high + o.low + o.close) / 3);
   const mf: number[] = tp.map((t, i) => t * (ohlcv[i] as OHLCV).volume);
 
   // MF 방향 분류 (TP 기준)
   const posMF: number[] = new Array(n).fill(0);
   const negMF: number[] = new Array(n).fill(0);
   for (let i = 1; i < n; i++) {
-    if ((tp[i] as number) > (tp[i - 1] as number))      posMF[i] = mf[i] as number;
+    if ((tp[i] as number) > (tp[i - 1] as number)) posMF[i] = mf[i] as number;
     else if ((tp[i] as number) < (tp[i - 1] as number)) negMF[i] = mf[i] as number;
     // TP 동일: 양쪽 모두 0 유지
   }
@@ -635,10 +637,10 @@ export function calcMFI(ohlcv: OHLCV[], period: number = 14): (number | null)[] 
 
 /** Supertrend 한 봉의 계산 결과 */
 export interface SupertrendPoint {
-  supertrend: number | null;        // 현재 Supertrend 선 값
-  direction:  "bullish" | "bearish" | null;  // 추세 방향
-  upper:      number | null;        // 상단 밴드 (bearish 구간 기준선)
-  lower:      number | null;        // 하단 밴드 (bullish 구간 기준선)
+  supertrend: number | null; // 현재 Supertrend 선 값
+  direction: 'bullish' | 'bearish' | null; // 추세 방향
+  upper: number | null; // 상단 밴드 (bearish 구간 기준선)
+  lower: number | null; // 하단 밴드 (bullish 구간 기준선)
 }
 
 /**
@@ -665,9 +667,9 @@ export interface SupertrendPoint {
  * @param multiplier - ATR 배수 (기본 3.0)
  */
 export function calcSupertrend(
-  ohlcv:      OHLCV[],
-  period:     number = 10,
-  multiplier: number = 3.0,
+  ohlcv: OHLCV[],
+  period: number = 10,
+  multiplier: number = 3.0
 ): SupertrendPoint[] {
   const n = ohlcv.length;
   const empty: SupertrendPoint = { supertrend: null, direction: null, upper: null, lower: null };
@@ -677,42 +679,40 @@ export function calcSupertrend(
 
   let prevUpper: number | null = null;
   let prevLower: number | null = null;
-  let prevDir:   "bullish" | "bearish" | null = null;
+  let prevDir: 'bullish' | 'bearish' | null = null;
 
   for (let i = 0; i < n; i++) {
     const atr = atrArr[i];
     if (atr === null) continue;
 
-    const cur  = ohlcv[i] as OHLCV;
-    const mid  = (cur.high + cur.low) / 2;
-    let upper  = round(mid + multiplier * atr, 4);
-    let lower  = round(mid - multiplier * atr, 4);
+    const cur = ohlcv[i] as OHLCV;
+    const mid = (cur.high + cur.low) / 2;
+    let upper = round(mid + multiplier * atr, 4);
+    let lower = round(mid - multiplier * atr, 4);
 
     // 밴드 조정: 이전 밴드보다 안쪽으로 좁아지지 않도록
     if (prevLower !== null && prevUpper !== null) {
-      lower = (lower > prevLower || (ohlcv[i - 1] as OHLCV).close < prevLower)
-        ? lower : prevLower;
-      upper = (upper < prevUpper || (ohlcv[i - 1] as OHLCV).close > prevUpper)
-        ? upper : prevUpper;
+      lower = lower > prevLower || (ohlcv[i - 1] as OHLCV).close < prevLower ? lower : prevLower;
+      upper = upper < prevUpper || (ohlcv[i - 1] as OHLCV).close > prevUpper ? upper : prevUpper;
     }
 
     // 방향 결정
-    let dir: "bullish" | "bearish";
+    let dir: 'bullish' | 'bearish';
     if (prevDir === null) {
-      dir = cur.close > upper ? "bullish" : "bearish";
-    } else if (prevDir === "bullish") {
-      dir = cur.close < lower ? "bearish" : "bullish";
+      dir = cur.close > upper ? 'bullish' : 'bearish';
+    } else if (prevDir === 'bullish') {
+      dir = cur.close < lower ? 'bearish' : 'bullish';
     } else {
-      dir = cur.close > upper ? "bullish" : "bearish";
+      dir = cur.close > upper ? 'bullish' : 'bearish';
     }
 
-    const supertrend = dir === "bullish" ? lower : upper;
+    const supertrend = dir === 'bullish' ? lower : upper;
 
     result[i] = { supertrend: round(supertrend, 4), direction: dir, upper, lower };
 
     prevUpper = upper;
     prevLower = lower;
-    prevDir   = dir;
+    prevDir = dir;
   }
 
   return result;
@@ -723,7 +723,7 @@ export function calcSupertrend(
 /** 엔벨로프 한 봉의 계산 결과 */
 export interface EnvPoint {
   upper: number | null;
-  mid:   number | null;
+  mid: number | null;
   lower: number | null;
 }
 
@@ -738,7 +738,7 @@ export interface EnvPoint {
 export function calcEnvelope(
   closes: number[],
   period: number = 20,
-  percent: number = 0.1,
+  percent: number = 0.1
 ): EnvPoint[] {
   const sma = calcMA(closes, period);
   return closes.map((_, i) => {
@@ -755,7 +755,7 @@ export function calcEnvelope(
 /** 돈천 채널 한 봉의 계산 결과 */
 export interface DonchianPoint {
   upper: number | null;
-  mid:   number | null;
+  mid: number | null;
   lower: number | null;
 }
 
@@ -766,10 +766,7 @@ export interface DonchianPoint {
  * @param period - 기간 (기본 20)
  * @returns (closes.length) 개의 DonchianPoint 배열
  */
-export function calcDonchianChannels(
-  closes: number[],
-  period: number = 20,
-): DonchianPoint[] {
+export function calcDonchianChannels(closes: number[], period: number = 20): DonchianPoint[] {
   return closes.map((_, i) => {
     if (i < period - 1) return { upper: null, mid: null, lower: null };
     const slice = closes.slice(i - period + 1, i + 1);
@@ -855,7 +852,7 @@ export function calcSupportResistance(
   const p1 = sortedPeaks[0];
   // Find the next highest peak that is at least 20% of the chart width away
   const minDistance = n * 0.2;
-  let p2 = sortedPeaks.find(p => Math.abs(p.idx - p1.idx) >= minDistance);
+  let p2 = sortedPeaks.find((p) => Math.abs(p.idx - p1.idx) >= minDistance);
   if (!p2) {
     p2 = sortedPeaks[1] || p1;
   }
@@ -864,7 +861,7 @@ export function calcSupportResistance(
   // Sort by value ascending to find the absolute lowest troughs
   const sortedTroughs = [...troughs].sort((a, b) => a.val - b.val);
   const t1 = sortedTroughs[0];
-  let t2 = sortedTroughs.find(t => Math.abs(t.idx - t1.idx) >= minDistance);
+  let t2 = sortedTroughs.find((t) => Math.abs(t.idx - t1.idx) >= minDistance);
   if (!t2) {
     t2 = sortedTroughs[1] || t1;
   }
@@ -901,10 +898,7 @@ export interface TrendlinePoint {
  * - 상승 추세선: 보여지는 범위 내 최저점부터 시작하여 가격 하락을 허용하지 않는 (가장 완만한) 저점들을 연결
  * - 하락 추세선: 보여지는 범위 내 최고점부터 시작하여 가격 돌파를 허용하지 않는 (가장 완만한) 고점들을 연결
  */
-export function calcTrendlines(
-  highs: number[],
-  lows: number[]
-): TrendlinePoint[] {
+export function calcTrendlines(highs: number[], lows: number[]): TrendlinePoint[] {
   const n = highs.length;
   const result: TrendlinePoint[] = Array.from({ length: n }, () => ({ up: null, down: null }));
   if (n < 2) return result;
@@ -1102,11 +1096,16 @@ export function calcZigZagSupportResistance(
     }
 
     // 추세방향 결정
-    if (standardHigh * (1 - (downPct / 100)) > H && standardLow * (1 + (upPct / 100)) < L) {
-      trend = (standardHighBar === standardLowBar) ? 양방향 : (standardHighBar > standardLowBar ? 상승 : 하락);
-    } else if (standardHigh * (1 - (downPct / 100)) > H) {
+    if (standardHigh * (1 - downPct / 100) > H && standardLow * (1 + upPct / 100) < L) {
+      trend =
+        standardHighBar === standardLowBar
+          ? 양방향
+          : standardHighBar > standardLowBar
+            ? 상승
+            : 하락;
+    } else if (standardHigh * (1 - downPct / 100) > H) {
       trend = 하락;
-    } else if (standardLow * (1 + (upPct / 100)) < L) {
+    } else if (standardLow * (1 + upPct / 100) < L) {
       trend = 상승;
     }
 
@@ -1128,9 +1127,12 @@ export function calcZigZagSupportResistance(
       } else {
         plotPeak(i - goBar[1], go[1]);
       }
-    }
-
-    else if (prevTrend === 하락 && trend === 하락 && go[1] < standardHigh && standardHigh * (1 - (downPct / 100)) > H) {
+    } else if (
+      prevTrend === 하락 &&
+      trend === 하락 &&
+      go[1] < standardHigh &&
+      standardHigh * (1 - downPct / 100) > H
+    ) {
       for (let j = 18; j >= 1; j--) {
         go[j + 1] = go[j];
         goBar[j + 1] = goBar[j];
@@ -1148,9 +1150,7 @@ export function calcZigZagSupportResistance(
 
       plotTrough(i - jeoBar[1], jeo[1]);
       doubleWave = go[1];
-    }
-
-    else if (prevTrend === 하락 && trend === 상승) {
+    } else if (prevTrend === 하락 && trend === 상승) {
       for (let j = 18; j >= 1; j--) {
         jeo[j + 1] = jeo[j];
         jeoBar[j + 1] = jeoBar[j];
@@ -1167,9 +1167,12 @@ export function calcZigZagSupportResistance(
       } else {
         plotTrough(i - jeoBar[1], jeo[1]);
       }
-    }
-
-    else if (prevTrend === 상승 && trend === 상승 && jeo[1] > standardLow && standardLow * (1 + (upPct / 100)) < L) {
+    } else if (
+      prevTrend === 상승 &&
+      trend === 상승 &&
+      jeo[1] > standardLow &&
+      standardLow * (1 + upPct / 100) < L
+    ) {
       for (let j = 18; j >= 1; j--) {
         go[j + 1] = go[j];
         goBar[j + 1] = goBar[j];
@@ -1187,9 +1190,7 @@ export function calcZigZagSupportResistance(
 
       plotPeak(i - goBar[1], go[1]);
       doubleWave = jeo[1];
-    }
-
-    else if (trend === 양방향) {
+    } else if (trend === 양방향) {
       for (let j = 18; j >= 1; j--) {
         go[j + 1] = go[j];
         goBar[j + 1] = goBar[j];
@@ -1247,8 +1248,8 @@ export function calcZigZagSupportResistance(
     }
   }
 
-  const peaks = uniquePoints.filter(p => p.type === 'peak');
-  const troughs = uniquePoints.filter(p => p.type === 'trough');
+  const peaks = uniquePoints.filter((p) => p.type === 'peak');
+  const troughs = uniquePoints.filter((p) => p.type === 'trough');
 
   // 데이터 부족 시 안전 예외 처리 (첫점과 마지막점을 채워 지지/저항선의 정합성 유지)
   if (peaks.length < 2) {
@@ -1304,7 +1305,6 @@ export function calcZigZagSupportResistance(
   return result;
 }
 
-
 // ── convertToWeeklyBars ───────────────────────────────────────────────────────
 
 /**
@@ -1320,12 +1320,12 @@ export function calcZigZagSupportResistance(
  * 입력 데이터는 날짜 오름차순 정렬을 가정한다.
  */
 export interface OHLCBar {
-  date:  string;
-  open:  number;
-  high:  number;
-  low:   number;
+  date: string;
+  open: number;
+  high: number;
+  low: number;
   close: number;
-  [key: string]: unknown;  // 기타 필드 허용 (volume 등)
+  [key: string]: unknown; // 기타 필드 허용 (volume 등)
 }
 
 /** ISO 주차 키 캐시 — 같은 날짜 문자열은 한 번만 계산 */
@@ -1342,8 +1342,8 @@ function isoWeekKey(dateStr: string): string {
   // ISO 8601: 목요일이 속한 연도를 기준
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  const week      = Math.ceil(((date.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
-  const result    = `${date.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
+  const week = Math.ceil(((date.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7);
+  const result = `${date.getUTCFullYear()}-W${String(week).padStart(2, '0')}`;
 
   weekKeyCache.set(dateStr, result);
   return result;
@@ -1355,11 +1355,11 @@ export function convertToWeeklyBars(dailyPrices: OHLCBar[]): OHLCBar[] {
   const weekMap = new Map<string, OHLCBar>();
 
   for (const bar of dailyPrices) {
-    const key   = isoWeekKey(bar.date);
+    const key = isoWeekKey(bar.date);
     // 누락 필드는 close로 폴백 → NaN 방지
-    const open  = bar.open  ?? bar.close;
-    const high  = bar.high  ?? bar.close;
-    const low   = bar.low   ?? bar.close;
+    const open = bar.open ?? bar.close;
+    const high = bar.high ?? bar.close;
+    const low = bar.low ?? bar.close;
     const close = bar.close;
 
     if (!weekMap.has(key)) {
@@ -1368,10 +1368,10 @@ export function convertToWeeklyBars(dailyPrices: OHLCBar[]): OHLCBar[] {
     } else {
       // 이후 거래일 → high/low 갱신, close·date 최신화
       const prev = weekMap.get(key)!;
-      prev.high  = Math.max(prev.high, high);
-      prev.low   = Math.min(prev.low,  low);
+      prev.high = Math.max(prev.high, high);
+      prev.low = Math.min(prev.low, low);
       prev.close = close;
-      prev.date  = bar.date;
+      prev.date = bar.date;
     }
   }
 

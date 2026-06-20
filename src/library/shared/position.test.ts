@@ -5,12 +5,12 @@ import { calcPositionSize, type PositionInput } from './position.ts';
 // ── 기본 입력 fixture ─────────────────────────────────────────────────────────
 
 const BASE: PositionInput = {
-  totalCapital:  10_000_000,  // 1천만원
-  riskPct:       1,           // 1%
-  currentPrice:  100_000,     // 10만원
-  atr:           3_000,       // ATR 3000원
+  totalCapital: 10_000_000, // 1천만원
+  riskPct: 1, // 1%
+  currentPrice: 100_000, // 10만원
+  atr: 3_000, // ATR 3000원
   atrMultiplier: 1.5,
-  targetRatios:  [1, 2, 3],
+  targetRatios: [1, 2, 3],
 };
 
 // ── 핵심 계산 공식 검증 ───────────────────────────────────────────────────────
@@ -72,12 +72,12 @@ describe('calcPositionSize — 목표가 (targets)', () => {
     const { targetRatios: _, ...withoutTargets } = BASE;
     const r = calcPositionSize(withoutTargets);
     expect(r.targets).toHaveLength(3);
-    expect(r.targets.map(t => t.ratio)).toEqual([1, 2, 3]);
+    expect(r.targets.map((t) => t.ratio)).toEqual([1, 2, 3]);
   });
 
   it('커스텀 targetRatios가 그대로 반영된다', () => {
     const r = calcPositionSize({ ...BASE, targetRatios: [1.5, 3, 5] });
-    expect(r.targets.map(t => t.ratio)).toEqual([1.5, 3, 5]);
+    expect(r.targets.map((t) => t.ratio)).toEqual([1.5, 3, 5]);
   });
 });
 
@@ -98,7 +98,7 @@ describe('calcPositionSize — 경고 조건', () => {
   it('shares가 0이면 경고를 추가한다 (자본 너무 적음)', () => {
     const r = calcPositionSize({
       ...BASE,
-      totalCapital: 1_000,  // 1000원 → riskAmount=10원 < lossPerShare
+      totalCapital: 1_000, // 1000원 → riskAmount=10원 < lossPerShare
       riskPct: 1,
     });
     expect(r.shares).toBe(0);
@@ -108,19 +108,19 @@ describe('calcPositionSize — 경고 조건', () => {
   it('capitalUsagePct > 30%이면 경고를 추가한다', () => {
     const r = calcPositionSize({
       ...BASE,
-      riskPct:      5,       // 리스크 높임 → 수량 많아짐 → 자본 비중 증가
-      atrMultiplier: 0.1,    // 손절폭 줄임 → 수량 폭발적 증가
+      riskPct: 5, // 리스크 높임 → 수량 많아짐 → 자본 비중 증가
+      atrMultiplier: 0.1, // 손절폭 줄임 → 수량 폭발적 증가
     });
-    expect(r.warnings.some(w => w.includes('30%'))).toBe(true);
+    expect(r.warnings.some((w) => w.includes('30%'))).toBe(true);
   });
 
   it('stopLossPct > 10%이면 경고를 추가한다 (손절 폭 과다)', () => {
     const r = calcPositionSize({
       ...BASE,
-      atr:           20_000, // ATR이 매우 크면 손절 폭이 20%+
+      atr: 20_000, // ATR이 매우 크면 손절 폭이 20%+
       atrMultiplier: 1.5,
     });
-    expect(r.warnings.some(w => w.includes('10%'))).toBe(true);
+    expect(r.warnings.some((w) => w.includes('10%'))).toBe(true);
   });
 
   it('유효한 입력에서는 경고가 없다', () => {
@@ -154,28 +154,39 @@ describe('calcPositionSize — 엣지 케이스', () => {
     // 이 케이스에서는 "10%를 초과" 경고가 붙는다 (stopLossPct=300%)
     const r = calcPositionSize({ ...BASE, atrMultiplier: 100 });
     expect(r.stopLoss).toBeLessThan(0);
-    expect(r.warnings.some(w => w.includes('10%'))).toBe(true);
+    expect(r.warnings.some((w) => w.includes('10%'))).toBe(true);
   });
 
   it('반환 객체에 모든 필드가 존재한다', () => {
     const r = calcPositionSize(BASE);
     const requiredKeys: (keyof typeof r)[] = [
-      'totalCapital', 'riskPct', 'currentPrice', 'atr', 'atrMultiplier',
-      'riskAmount', 'stopLoss', 'stopLossPct', 'lossPerShare',
-      'shares', 'totalInvestment', 'capitalUsagePct', 'actualRisk',
-      'targets', 'warnings',
+      'totalCapital',
+      'riskPct',
+      'currentPrice',
+      'atr',
+      'atrMultiplier',
+      'riskAmount',
+      'stopLoss',
+      'stopLossPct',
+      'lossPerShare',
+      'shares',
+      'totalInvestment',
+      'capitalUsagePct',
+      'actualRisk',
+      'targets',
+      'warnings',
     ];
-    requiredKeys.forEach(key => {
+    requiredKeys.forEach((key) => {
       expect(r).toHaveProperty(key);
     });
   });
 
   it('US 종목 (소수점 가격) 계산도 정확하다', () => {
     const r = calcPositionSize({
-      totalCapital:  10_000,    // $10,000
-      riskPct:       1,
-      currentPrice:  185.50,    // AAPL 수준
-      atr:           3.20,
+      totalCapital: 10_000, // $10,000
+      riskPct: 1,
+      currentPrice: 185.5, // AAPL 수준
+      atr: 3.2,
       atrMultiplier: 1.5,
     });
     // riskAmount = 100
@@ -183,7 +194,7 @@ describe('calcPositionSize — 엣지 케이스', () => {
     // lossPerShare = 4.80
     // shares = floor(100/4.80) = 20
     expect(r.riskAmount).toBe(100);
-    expect(r.stopLoss).toBeCloseTo(180.70, 1);
+    expect(r.stopLoss).toBeCloseTo(180.7, 1);
     expect(r.shares).toBe(20);
   });
 });

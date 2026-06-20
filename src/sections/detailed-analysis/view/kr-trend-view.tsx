@@ -67,15 +67,17 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
   // Scanning State
   const [isScanOpen, setIsScanOpen] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const [scanResults, setScanResults] = useState<{
-    ticker: string;
-    name: string;
-    strategyReturn: number;
-    bhReturn: number;
-    outperformance: number;
-    finalValue: number;
-    tradesCount: number;
-  }[]>([]);
+  const [scanResults, setScanResults] = useState<
+    {
+      ticker: string;
+      name: string;
+      strategyReturn: number;
+      bhReturn: number;
+      outperformance: number;
+      finalValue: number;
+      tradesCount: number;
+    }[]
+  >([]);
 
   // Load ticker options
   const tickerOptions = useMemo(() => {
@@ -181,7 +183,8 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
             const proceeds = sharesToSell * currPrice;
             cash += proceeds;
             shares -= sharesToSell;
-            const profitPct = lastBuyPrice > 0 ? ((currPrice - lastBuyPrice) / lastBuyPrice) * 100 : 0;
+            const profitPct =
+              lastBuyPrice > 0 ? ((currPrice - lastBuyPrice) / lastBuyPrice) * 100 : 0;
             trades.push({
               date,
               action: 'SELL',
@@ -227,7 +230,19 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
       outperformance,
       totalTrades: trades.length,
     };
-  }, [selectedTickerData, buyThreshold, sellThreshold, sellRatio, buyMethod, buyAmount, buyShares, priceBasis, period, startDate, endDate]);
+  }, [
+    selectedTickerData,
+    buyThreshold,
+    sellThreshold,
+    sellRatio,
+    buyMethod,
+    buyAmount,
+    buyShares,
+    priceBasis,
+    period,
+    startDate,
+    endDate,
+  ]);
 
   const formatMoney = (value: number) => `${value.toLocaleString()}원`;
 
@@ -259,48 +274,51 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
     ];
   }, [backtestResult, currentTab, priceBasis]);
 
-  const chartOptions = useMemo<any>(() => ({
-    chart: {
-      toolbar: { show: true },
-      zoom: { enabled: true },
-      background: 'transparent',
-      fontFamily: theme.typography.fontFamily,
-    },
-    xaxis: {
-      type: 'datetime',
-      labels: { style: { colors: theme.palette.text.secondary } },
-    },
-    yaxis: {
-      title: {
-        text: currentTab === 'price' ? '주가 (원)' : '자산 가치 (원)',
-        style: { color: theme.palette.text.secondary, fontWeight: 600 },
+  const chartOptions = useMemo<any>(
+    () => ({
+      chart: {
+        toolbar: { show: true },
+        zoom: { enabled: true },
+        background: 'transparent',
+        fontFamily: theme.typography.fontFamily,
       },
-      labels: {
-        style: { colors: theme.palette.text.secondary },
-        formatter: (value: number) => {
-          if (currentTab === 'price') return value.toLocaleString();
-          return value >= 10000 ? `${(value / 10000).toFixed(0)}만` : value.toLocaleString();
+      xaxis: {
+        type: 'datetime',
+        labels: { style: { colors: theme.palette.text.secondary } },
+      },
+      yaxis: {
+        title: {
+          text: currentTab === 'price' ? '주가 (원)' : '자산 가치 (원)',
+          style: { color: theme.palette.text.secondary, fontWeight: 600 },
+        },
+        labels: {
+          style: { colors: theme.palette.text.secondary },
+          formatter: (value: number) => {
+            if (currentTab === 'price') return value.toLocaleString();
+            return value >= 10000 ? `${(value / 10000).toFixed(0)}만` : value.toLocaleString();
+          },
         },
       },
-    },
-    stroke: { curve: 'smooth', width: 2.5 },
-    legend: {
-      position: 'bottom',
-      horizontalAlign: 'center',
-      labels: { colors: theme.palette.text.secondary },
-    },
-    tooltip: {
-      theme: theme.palette.mode,
-      x: { format: 'yyyy-MM-dd' },
-      y: {
-        formatter: (value: number) => formatMoney(value),
+      stroke: { curve: 'smooth', width: 2.5 },
+      legend: {
+        position: 'bottom',
+        horizontalAlign: 'center',
+        labels: { colors: theme.palette.text.secondary },
       },
-    },
-    grid: {
-      borderColor: alpha(theme.palette.grey[500], 0.1),
-      strokeDashArray: 3,
-    },
-  }), [theme, currentTab]);
+      tooltip: {
+        theme: theme.palette.mode,
+        x: { format: 'yyyy-MM-dd' },
+        y: {
+          formatter: (value: number) => formatMoney(value),
+        },
+      },
+      grid: {
+        borderColor: alpha(theme.palette.grey[500], 0.1),
+        strokeDashArray: 3,
+      },
+    }),
+    [theme, currentTab]
+  );
 
   // Run all simulation backtest logic
   const handleRunAllSimulation = () => {
@@ -383,10 +401,12 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
           }
         });
 
-        const finalValue = cash + shares * (slice[slice.length - 1][priceBasis] || slice[slice.length - 1].close);
+        const finalValue =
+          cash + shares * (slice[slice.length - 1][priceBasis] || slice[slice.length - 1].close);
         const strategyReturn = ((finalValue - START_CAPITAL) / START_CAPITAL) * 100;
 
-        const finalBhValue = bhShares * (slice[slice.length - 1][priceBasis] || slice[slice.length - 1].close);
+        const finalBhValue =
+          bhShares * (slice[slice.length - 1][priceBasis] || slice[slice.length - 1].close);
         const bhReturn = ((finalBhValue - START_CAPITAL) / START_CAPITAL) * 100;
         const outperformance = strategyReturn - bhReturn;
 
@@ -479,15 +499,26 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
                   }}
                   color="primary"
                 >
-                  <ToggleButton value="open" sx={{ fontWeight: 700 }}>시가</ToggleButton>
-                  <ToggleButton value="high" sx={{ fontWeight: 700 }}>고가</ToggleButton>
-                  <ToggleButton value="low" sx={{ fontWeight: 700 }}>저가</ToggleButton>
-                  <ToggleButton value="close" sx={{ fontWeight: 700 }}>종가</ToggleButton>
+                  <ToggleButton value="open" sx={{ fontWeight: 700 }}>
+                    시가
+                  </ToggleButton>
+                  <ToggleButton value="high" sx={{ fontWeight: 700 }}>
+                    고가
+                  </ToggleButton>
+                  <ToggleButton value="low" sx={{ fontWeight: 700 }}>
+                    저가
+                  </ToggleButton>
+                  <ToggleButton value="close" sx={{ fontWeight: 700 }}>
+                    종가
+                  </ToggleButton>
                 </ToggleButtonGroup>
               </Stack>
 
               <Stack spacing={1}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between' }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between' }}
+                >
                   <span>전일 대비 매수 기준 (a%)</span>
                   <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 800 }}>
                     +{buyThreshold.toFixed(1)}% 이상
@@ -517,9 +548,15 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
                   }}
                   color="primary"
                 >
-                  <ToggleButton value="allIn" sx={{ fontWeight: 700 }}>전액 매수</ToggleButton>
-                  <ToggleButton value="amount" sx={{ fontWeight: 700 }}>고정 금액</ToggleButton>
-                  <ToggleButton value="shares" sx={{ fontWeight: 700 }}>고정 주식수</ToggleButton>
+                  <ToggleButton value="allIn" sx={{ fontWeight: 700 }}>
+                    전액 매수
+                  </ToggleButton>
+                  <ToggleButton value="amount" sx={{ fontWeight: 700 }}>
+                    고정 금액
+                  </ToggleButton>
+                  <ToggleButton value="shares" sx={{ fontWeight: 700 }}>
+                    고정 주식수
+                  </ToggleButton>
                 </ToggleButtonGroup>
 
                 {buyMethod === 'amount' && (
@@ -546,7 +583,10 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
               </Stack>
 
               <Stack spacing={1}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between' }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between' }}
+                >
                   <span>전일 대비 매도 기준 (b%)</span>
                   <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 800 }}>
                     -{sellThreshold.toFixed(1)}% 이하
@@ -563,7 +603,10 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
               </Stack>
 
               <Stack spacing={1}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between' }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 700, display: 'flex', justifyContent: 'space-between' }}
+                >
                   <span>보유 주식 매도 비율 (c%)</span>
                   <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 800 }}>
                     보유량의 {sellRatio}% 매도
@@ -705,15 +748,19 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
 
             <Box sx={{ p: 3, height: 400 }}>
               {backtestResult ? (
-                <ChartApex
-                  options={chartOptions}
-                  series={chartSeries}
-                  type="line"
-                  height="100%"
-                />
+                <ChartApex options={chartOptions} series={chartSeries} type="line" height="100%" />
               ) : (
-                <Box sx={{ height: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Typography sx={{ color: 'text.disabled' }}>데이터 로딩 실패 또는 데이터가 없습니다.</Typography>
+                <Box
+                  sx={{
+                    height: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography sx={{ color: 'text.disabled' }}>
+                    데이터 로딩 실패 또는 데이터가 없습니다.
+                  </Typography>
                 </Box>
               )}
             </Box>
@@ -748,7 +795,7 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
                         label={t.action === 'BUY' ? '매수 (BUY)' : '매도 (SELL)'}
                         color={t.action === 'BUY' ? 'success' : 'error'}
                         size="small"
-                        variant={"soft" as any}
+                        variant={'soft' as any}
                         sx={{ fontWeight: 700 }}
                       />
                     </TableCell>
@@ -796,7 +843,14 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
           },
         }}
       >
-        <DialogTitle sx={{ fontWeight: 800, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <DialogTitle
+          sx={{
+            fontWeight: 800,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
           <span>전체 종목 시뮬레이션 순위 결과 📊</span>
           {isScanning && <CircularProgress size={24} />}
         </DialogTitle>
@@ -807,7 +861,10 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
               <Typography variant="body1" sx={{ fontWeight: 700, color: 'text.secondary' }}>
                 전체 종목 백테스팅 스캔 중... ⚡
               </Typography>
-              <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', mt: 1 }}>
+              <Typography
+                variant="caption"
+                sx={{ color: 'text.disabled', display: 'block', mt: 1 }}
+              >
                 해당 조건으로 시장의 모든 종목에 대한 시뮬레이션을 역동적으로 수행하고 있습니다.
               </Typography>
             </Box>
@@ -816,12 +873,36 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
               <Table stickyHeader size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}>순위</TableCell>
-                    <TableCell sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}>종목명 (티커)</TableCell>
-                    <TableCell sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}>전략 수익률</TableCell>
-                    <TableCell sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}>단순 보유 수익률</TableCell>
-                    <TableCell sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}>초과 수익률</TableCell>
-                    <TableCell sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}>거래 횟수</TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}
+                    >
+                      순위
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}
+                    >
+                      종목명 (티커)
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}
+                    >
+                      전략 수익률
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}
+                    >
+                      단순 보유 수익률
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}
+                    >
+                      초과 수익률
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 700, bgcolor: 'background.neutral', whiteSpace: 'nowrap' }}
+                    >
+                      거래 횟수
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -830,9 +911,14 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
                       key={row.ticker}
                       hover
                       onClick={() => handleSelectTickerFromScan(row.ticker)}
-                      sx={{ cursor: 'pointer', '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) } }}
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.05) },
+                      }}
                     >
-                      <TableCell sx={{ fontWeight: 800, whiteSpace: 'nowrap' }}>{idx + 1}위</TableCell>
+                      <TableCell sx={{ fontWeight: 800, whiteSpace: 'nowrap' }}>
+                        {idx + 1}위
+                      </TableCell>
                       <TableCell sx={{ whiteSpace: 'nowrap' }}>
                         <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                           {row.name}
@@ -841,15 +927,32 @@ export function KrTrendView({ period, startDate, endDate }: KrTrendViewProps) {
                           {row.ticker}
                         </Typography>
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 800, color: row.strategyReturn >= 0 ? 'success.main' : 'error.main', whiteSpace: 'nowrap' }}>
+                      <TableCell
+                        sx={{
+                          fontWeight: 800,
+                          color: row.strategyReturn >= 0 ? 'success.main' : 'error.main',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
                         {row.strategyReturn >= 0 ? '+' : ''}
                         {row.strategyReturn.toFixed(2)}%
                       </TableCell>
-                      <TableCell sx={{ color: row.bhReturn >= 0 ? 'text.primary' : 'error.main', whiteSpace: 'nowrap' }}>
+                      <TableCell
+                        sx={{
+                          color: row.bhReturn >= 0 ? 'text.primary' : 'error.main',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
                         {row.bhReturn >= 0 ? '+' : ''}
                         {row.bhReturn.toFixed(2)}%
                       </TableCell>
-                      <TableCell sx={{ fontWeight: 700, color: row.outperformance >= 0 ? 'success.main' : 'error.main', whiteSpace: 'nowrap' }}>
+                      <TableCell
+                        sx={{
+                          fontWeight: 700,
+                          color: row.outperformance >= 0 ? 'success.main' : 'error.main',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
                         {row.outperformance >= 0 ? '+' : ''}
                         {row.outperformance.toFixed(2)}%
                       </TableCell>

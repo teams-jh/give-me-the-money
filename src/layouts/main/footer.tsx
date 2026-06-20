@@ -78,8 +78,8 @@ export function Footer({
                 [theme.breakpoints.up(layoutQuery)]: { mx: 'unset' },
               })}
             >
-              Give Me The Money는 최신 금융 기술과 AI 알고리즘을 결합하여 
-              당신의 투자 성공을 돕는 스마트 자산 관리 플랫폼입니다.
+              Give Me The Money는 최신 금융 기술과 AI 알고리즘을 결합하여 당신의 투자 성공을 돕는
+              스마트 자산 관리 플랫폼입니다.
             </Typography>
 
             <Box
@@ -90,7 +90,7 @@ export function Footer({
                 justifyContent: 'center',
                 [theme.breakpoints.up(layoutQuery)]: { mb: 0, justifyContent: 'flex-start' },
               })}
-             />
+            />
           </Grid>
 
           <Grid size={{ xs: 12, [layoutQuery]: 6 }}>
@@ -162,7 +162,7 @@ export function HomeFooter({ sx, ...other }: FooterProps) {
         <Logo />
         <Box sx={{ mt: 2, typography: 'caption', color: 'text.secondary' }}>
           © 2026 Give Me The Money. All rights reserved.
-          <br /> 
+          <br />
           Invest smarter, Grow faster.
         </Box>
       </Container>

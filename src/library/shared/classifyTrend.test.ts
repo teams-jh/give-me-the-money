@@ -103,8 +103,8 @@ describe('classifyTrend', () => {
   it('전반 하락 후 급반등 → recovering', () => {
     // 전반 2/3 : 하락, 후반 1/3 : 강한 상승
     const n = 30;
-    const earlyN = Math.max(4, Math.floor(n * 2 / 3)); // 20
-    const lateN  = n - earlyN;                           // 10
+    const earlyN = Math.max(4, Math.floor((n * 2) / 3)); // 20
+    const lateN = n - earlyN; // 10
 
     const earlyPrices = falling(earlyN, 100, 1.5); // 하락
     // 후반은 마지막 early 가격부터 강하게 반등
