@@ -53,6 +53,7 @@ export const navData: NavSectionProps['data'] = [
         icon: ICONS.detailed,
         children: [
           { title: '단일 종목 분석', path: paths.detailedAnalysis.singleStock },
+          { title: '다중 종목 분석', path: paths.detailedAnalysis.multiStock },
           { title: '적립 투자', path: paths.detailedAnalysis.periodic },
           { title: '추세 추종', path: paths.detailedAnalysis.trendFollowing },
           { title: '차트 추세 분석', path: paths.detailedAnalysis.chartTrend },
@@ -96,6 +97,7 @@ export const mainNavData: NavMainProps['data'] = [
         subheader: '상세 분석',
         items: [
           { title: '단일 종목 분석', path: paths.detailedAnalysis.singleStock },
+          { title: '다중 종목 분석', path: paths.detailedAnalysis.multiStock },
           { title: '적립 투자', path: paths.detailedAnalysis.periodic },
           { title: '추세 추종', path: paths.detailedAnalysis.trendFollowing },
           { title: '차트 추세 분석', path: paths.detailedAnalysis.chartTrend },
