@@ -1,6 +1,6 @@
 'use client';
 
-import type { PeriodKey } from 'src/sections/top100/types';
+import type { PeriodKey } from 'src/library/shared/trendSim';
 import type { PeriodConfig, UseTrendSimulationReturn } from '../hooks/use-trend-simulation';
 
 import { useState, useEffect } from 'react';
@@ -25,6 +25,7 @@ interface Props {
 }
 
 const PERIOD_OPTIONS: { value: PeriodKey; label: string }[] = [
+  { value: '1m', label: '1개월' },
   { value: '3m', label: '3개월' },
   { value: '1y', label: '1년' },
   { value: '2y', label: '2년' },
@@ -392,7 +393,7 @@ export function TrendInputPanel({ sim }: Props) {
               ⚙️ 시뮬레이션 설정
             </Typography>
             <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              선택한 모든 기간 조건을 동시에 만족하는 종목(AND 교집합)만 표시됩니다.
+              선택한 기간 중 하나라도 조건을 만족하는 종목(OR 합집합)을 표시합니다.
             </Typography>
           </Box>
           <Button
@@ -437,7 +438,7 @@ export function TrendInputPanel({ sim }: Props) {
                 variant="caption"
                 sx={{ color: 'text.secondary', ml: 1 }}
               >
-                (AND 교집합 — 복수 선택 시 각 기간 독립 설정)
+                (OR 합집합 — 복수 선택 시 각 기간 독립 설정)
               </Typography>
             </Typography>
             <Stack direction="row" spacing={1}>
