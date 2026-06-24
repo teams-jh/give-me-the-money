@@ -43,7 +43,7 @@ export interface UseTrendSimulationReturn {
 
 type PeriodKey = keyof (typeof PERIOD_BARS)['daily'];
 
-const PERIOD_ORDER: PeriodKey[] = ['3m', '1y', '2y', '3y'];
+const PERIOD_ORDER: PeriodKey[] = ['1m', '3m', '1y', '2y', '3y'];
 
 const DEFAULT_CONFIG: Omit<
   PeriodConfig,
