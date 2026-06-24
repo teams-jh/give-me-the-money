@@ -8,7 +8,7 @@
  *   1. scripts/simulate_trend.config.json 읽기
  *   2. 마켓 루프 (us, kr 순차 실행)
  *   3. 기간 루프 → 티커 루프 → runTickerSim()
- *   4. 패턴 필터 → AND 교집합 (intersectSimResults)
+ *   4. 패턴 필터 → OR 합집합 (intersectSimResults)
  *   5. src/db/{market}/trend_sim/sim_{market}_{periods}_{datetime}.json 저장
  *   6. python3 scripts/simulate_trend_chart.py {json경로} 호출
  *
@@ -139,7 +139,7 @@ function runMarketSim(cfg: MarketSimConfig): void {
 
   console.log("=".repeat(60));
   console.log(`  추세 시뮬레이션 [${cfg.market.toUpperCase()}]`);
-  console.log(`  기간: ${cfg.periods.join(" + ")}  |  AND 교집합`);
+  console.log(`  기간: ${cfg.periods.join(" + ")}  |  OR 합집합`);
   if (cfg.n) console.log(`  대상: 상위 ${cfg.n}개`);
   console.log("=".repeat(60));
 
@@ -269,9 +269,9 @@ function runMarketSim(cfg: MarketSimConfig): void {
     }
   }
 
-  // 5. AND 교집합
+  // 5. OR 합집합
   const finalResults = intersectSimResults(resultsByPeriod);
-  log(`\n🎯 AND 교집합 결과: ${finalResults.length}개 종목`);
+  log(`\n🎯 OR 합집합 결과: ${finalResults.length}개 종목`);
 
   // 6. JSON 저장
   const tag      = dateTag();

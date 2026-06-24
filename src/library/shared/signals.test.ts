@@ -672,29 +672,30 @@ describe('intersectSimResults', () => {
     expect(r).toHaveLength(2);
   });
 
-  it('기간 2개 AND 교집합 — 공통 종목만 반환', () => {
+  it('기간 2개 OR 합집합 — 어느 한 기간에라도 있는 종목 전체 반환', () => {
     const r = intersectSimResults({
       '3m': makeEntries(['AAA', 'BBB', 'CCC']),
       '1y': makeEntries(['BBB', 'CCC', 'DDD']),
     });
-    expect(r.map((x) => x.ticker).sort()).toEqual(['BBB', 'CCC']);
+    expect(r.map((x) => x.ticker).sort()).toEqual(['AAA', 'BBB', 'CCC', 'DDD']);
   });
 
-  it('기간 3개 AND 교집합 — 모든 기간 공통 종목만 반환', () => {
+  it('기간 3개 OR 합집합 — 하나라도 해당하는 종목 전체 반환', () => {
     const r = intersectSimResults({
       '3m': makeEntries(['A', 'B', 'C']),
       '1y': makeEntries(['B', 'C', 'D']),
       '2y': makeEntries(['C', 'D', 'E']),
     });
-    expect(r.map((x) => x.ticker)).toEqual(['C']);
+    expect(r.map((x) => x.ticker).sort()).toEqual(['A', 'B', 'C', 'D', 'E']);
   });
 
-  it('공통 종목 없으면 빈 배열', () => {
+  it('겹치는 종목 없어도 각 기간 종목 모두 반환', () => {
     const r = intersectSimResults({
       '3m': makeEntries(['AAA']),
       '1y': makeEntries(['BBB']),
     });
-    expect(r).toHaveLength(0);
+    expect(r).toHaveLength(2);
+    expect(r.map((x) => x.ticker).sort()).toEqual(['AAA', 'BBB']);
   });
 
   it('longestPeriodResult는 가장 긴 기간(우선순위: 3y>2y>1y>3m) 기준', () => {
@@ -704,6 +705,17 @@ describe('intersectSimResults', () => {
     ];
     const r = intersectSimResults({ '3m': entries3m, '1y': entries1y });
     expect(r[0].longestPeriodResult.touchCount).toBe(9); // 1y 기준
+  });
+
+  it('longestPeriodResult — 가장 긴 기간에 없는 종목은 존재하는 기간 중 가장 긴 것 사용', () => {
+    const r = intersectSimResults({
+      '3m': [{ ticker: 'ONLY3M', name: 'Only3M', touchCount: 4, breakoutCount: 2, slope: 0.5 }],
+      '1y': [{ ticker: 'ONLY1Y', name: 'Only1Y', touchCount: 7, breakoutCount: 3, slope: 1.0 }],
+    });
+    const only3m = r.find((x) => x.ticker === 'ONLY3M');
+    expect(only3m?.longestPeriodResult.touchCount).toBe(4); // 1y에 없으므로 3m 사용
+    expect(only3m?.periodStats['3m']?.touchCount).toBe(4);
+    expect(only3m?.periodStats['1y']).toBeUndefined();
   });
 
   it('periodStats에 선택된 기간별 통계가 모두 포함', () => {
@@ -723,13 +735,13 @@ describe('intersectSimResults', () => {
     expect(r[0].periodStats['1y']?.slope).toBe(0);
   });
 
-  it('기간 순서 무관하게 동일한 교집합 반환', () => {
+  it('기간 순서 무관하게 동일한 OR 합집합 반환', () => {
     const a = intersectSimResults({
       '1y': makeEntries(['A', 'B']),
       '3m': makeEntries(['B', 'C']),
     });
-    expect(a.map((x) => x.ticker)).toContain('B');
-    expect(a).toHaveLength(1);
+    expect(a.map((x) => x.ticker).sort()).toEqual(['A', 'B', 'C']);
+    expect(a).toHaveLength(3);
   });
 
   it('ticker, name이 결과에 올바르게 포함', () => {

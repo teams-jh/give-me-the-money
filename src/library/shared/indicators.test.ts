@@ -1,6 +1,6 @@
-import type {
+import type { OHLCBar, OHLCV } from './indicators.ts';
+import {
   calcMA,
-  OHLCBar,
   calcEMA,
   calcRSI,
   calcATR,
@@ -8,7 +8,6 @@ import type {
   calcMDD,
   calcROC,
   calcMACD,
-  type OHLCV,
   calcBollingerBands,
 } from './indicators.ts';
 

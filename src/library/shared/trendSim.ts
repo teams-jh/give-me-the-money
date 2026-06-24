@@ -97,8 +97,8 @@ export interface PeriodConfig {
 
 /** 기간 × 봉 단위 → 봉 수 */
 export const PERIOD_BARS: Record<BarUnit, Record<PeriodKey, number>> = {
-  daily: { '3m': 63, '1y': 252, '2y': 504, '3y': 756 },
-  weekly: { '3m': 13, '1y': 52, '2y': 104, '3y': 156 },
+  daily: { '1m': 21, '3m': 63, '1y': 252, '2y': 504, '3y': 756 },
+  weekly: { '1m': 4, '3m': 13, '1y': 52, '2y': 104, '3y': 156 },
 };
 
 /**

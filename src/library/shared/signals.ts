@@ -1465,16 +1465,17 @@ export function calcTrendTouchPoints(
 // ── intersectSimResults ────────────────────────────────────────────────────────
 
 /**
- * 기간 단위로 실행된 시뮬레이션 결과를 AND 교집합으로 합산한다.
+ * 기간 단위로 실행된 시뮬레이션 결과를 OR 합집합으로 합산한다.
  *
- * - 선택된 모든 기간에서 조건을 동시에 만족하는 종목만 최종 결과에 포함
+ * - 선택된 기간 중 하나라도 조건을 만족하는 종목이면 최종 결과에 포함
  * - longestPeriodResult: 미니차트 렌더링용으로 가장 긴 기간의 결과를 참조
+ *   (가장 긴 기간에 없는 종목은 존재하는 기간 중 가장 긴 것을 사용)
  *
  * @example
- * // 3m, 1y 두 기간 선택 → A ∩ B
+ * // 3m, 1y 두 기간 선택 → A ∪ B
  * const final = intersectSimResults({ '3m': results3m, '1y': results1y });
  */
-export type TrendPeriodKey = '3m' | '1y' | '2y' | '3y';
+export type TrendPeriodKey = '1m' | '3m' | '1y' | '2y' | '3y';
 
 /** intersectSimResults에 전달되는 종목별 최소 인터페이스 */
 export interface TrendSimEntry {
@@ -1501,7 +1502,7 @@ export interface TrendSimFinalResult<T extends TrendSimEntry = TrendSimEntry> {
 }
 
 /** 기간 우선순위 (짧은 순) */
-const PERIOD_ORDER: TrendPeriodKey[] = ['3m', '1y', '2y', '3y'];
+const PERIOD_ORDER: TrendPeriodKey[] = ['1m', '3m', '1y', '2y', '3y'];
 
 export function intersectSimResults<T extends TrendSimEntry>(
   resultsByPeriod: Partial<Record<TrendPeriodKey, T[]>>
@@ -1517,34 +1518,40 @@ export function intersectSimResults<T extends TrendSimEntry>(
     return { period: p, map };
   });
 
+  // OR 합집합: 하나라도 존재하는 ticker 전체 수집
+  const allTickers = new Set<string>();
+  periodMaps.forEach((pm) => pm.map.forEach((_, ticker) => allTickers.add(ticker)));
+
+  if (allTickers.size === 0) return [];
+
+  // 가장 긴 기간 맵 (longestPeriodResult 렌더링용)
   const longestPeriod = periods[periods.length - 1];
   const longestMap = periodMaps.find((pm) => pm.period === longestPeriod)!.map;
-  const baseMap = periodMaps[0].map;
 
-  if (baseMap.size === 0) return [];
+  return [...allTickers].map((ticker) => {
+    const periodStats: Partial<Record<TrendPeriodKey, TrendPeriodStat>> = {};
 
-  return (
-    [...baseMap.keys()]
-      // 모든 기간에 존재하는 ticker만 (AND 교집합)
-      .filter((ticker) => periodMaps.every((pm) => pm.map.has(ticker)))
-      .map((ticker) => {
-        const periodStats: Partial<Record<TrendPeriodKey, TrendPeriodStat>> = {};
-
-        periodMaps.forEach((pm) => {
-          const entry = pm.map.get(ticker)!;
-          periodStats[pm.period] = {
-            touchCount: entry.touchCount,
-            breakoutCount: entry.breakoutCount,
-            slope: entry.slope ?? 0,
-          };
-        });
-
-        return {
-          ticker,
-          name: longestMap.get(ticker)!.name,
-          periodStats,
-          longestPeriodResult: longestMap.get(ticker)!,
+    periodMaps.forEach((pm) => {
+      const entry = pm.map.get(ticker);
+      if (entry) {
+        periodStats[pm.period] = {
+          touchCount: entry.touchCount,
+          breakoutCount: entry.breakoutCount,
+          slope: entry.slope ?? 0,
         };
-      })
-  );
+      }
+    });
+
+    // longestPeriodResult: 가장 긴 기간에 없으면 존재하는 기간 중 가장 긴 것 사용
+    const longestEntry =
+      longestMap.get(ticker) ??
+      [...periodMaps].reverse().find((pm) => pm.map.has(ticker))!.map.get(ticker)!;
+
+    return {
+      ticker,
+      name: longestEntry.name,
+      periodStats,
+      longestPeriodResult: longestEntry,
+    };
+  });
 }
