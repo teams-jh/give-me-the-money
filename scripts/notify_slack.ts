@@ -278,9 +278,9 @@ export async function notifySlack(opts: NotifyOptions): Promise<void> {
     batches.push(fileIds.slice(i, i + COMPLETE_UPLOAD_BATCH_SIZE));
   }
 
-  for (let i = 0; i < batches.length; i++) {
+  for (const [i, batch] of batches.entries()) {
     const batchComment = batches.length > 1 ? `${comment}  [${i + 1}/${batches.length}]` : comment;
-    await completeUpload(opts.token, opts.channel, batches[i]!, batchComment);
+    await completeUpload(opts.token, opts.channel, batch, batchComment);
   }
 
   console.log(`✅ Slack 전송 완료: ${fileIds.length}개 파일 → 채널 ${opts.channel} (${batches.length}개 메시지)`);
