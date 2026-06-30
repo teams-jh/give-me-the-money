@@ -100,14 +100,16 @@ jobs:
           # workflow_dispatch(수동): Added+Modified 모두 → 테스트 재실행 시에도 전송
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
             PNGS=$(git diff-tree --no-commit-id --name-only --diff-filter=A -r HEAD -- "src/db/kr/trend_sim/*.png" | paste -sd, -)
+            JSON_PATH=$(git diff-tree --no-commit-id --name-only --diff-filter=A -r HEAD -- "src/db/kr/trend_sim/*.json" | head -n1)
           else
             PNGS=$(git diff-tree --no-commit-id --name-only -r HEAD -- "src/db/kr/trend_sim/*.png" | paste -sd, -)
+            JSON_PATH=$(git diff-tree --no-commit-id --name-only -r HEAD -- "src/db/kr/trend_sim/*.json" | head -n1)
           fi
           if [ -z "$PNGS" ]; then
             echo "전송할 PNG 없음 — Slack 전송 건너뜀"
           else
-            echo "Slack 전송 대상: $PNGS"
-            server_node/node_modules/.bin/tsx scripts/notify_slack.ts --files "$PNGS" --market kr
+            echo "Slack 전송 대상: $PNGS (json: $JSON_PATH)"
+            server_node/node_modules/.bin/tsx scripts/notify_slack.ts --files "$PNGS" --market kr --json "$JSON_PATH"
           fi
 
   # ── US 추세 시뮬레이션 ────────────────────────────────────────────────────
@@ -195,14 +197,16 @@ jobs:
           # workflow_dispatch(수동): Added+Modified 모두 → 테스트 재실행 시에도 전송
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
             PNGS=$(git diff-tree --no-commit-id --name-only --diff-filter=A -r HEAD -- "src/db/us/trend_sim/*.png" | paste -sd, -)
+            JSON_PATH=$(git diff-tree --no-commit-id --name-only --diff-filter=A -r HEAD -- "src/db/us/trend_sim/*.json" | head -n1)
           else
             PNGS=$(git diff-tree --no-commit-id --name-only -r HEAD -- "src/db/us/trend_sim/*.png" | paste -sd, -)
+            JSON_PATH=$(git diff-tree --no-commit-id --name-only -r HEAD -- "src/db/us/trend_sim/*.json" | head -n1)
           fi
           if [ -z "$PNGS" ]; then
             echo "전송할 PNG 없음 — Slack 전송 건너뜀"
           else
-            echo "Slack 전송 대상: $PNGS"
-            server_node/node_modules/.bin/tsx scripts/notify_slack.ts --files "$PNGS" --market us
+            echo "Slack 전송 대상: $PNGS (json: $JSON_PATH)"
+            server_node/node_modules/.bin/tsx scripts/notify_slack.ts --files "$PNGS" --market us --json "$JSON_PATH"
           fi
 
       - name: Notify on failure

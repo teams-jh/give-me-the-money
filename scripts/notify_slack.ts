@@ -8,7 +8,12 @@
  *   3. files.completeUploadExternal → 채널에 게시 (initial_comment 포함)
  *
  * 사용:
- *   tsx scripts/notify_slack.ts --files "a.png,b.png" --market kr
+ *   tsx scripts/notify_slack.ts --files "a.png,b.png" --market kr --json src/db/kr/trend_sim/sim_kr_1y_20250605.json
+ *
+ * --json (옵션): simulate_trend.ts 가 생성한 결과 JSON 경로.
+ *   제공하면 종목 리스트 텍스트를 함께 전송한다.
+ *     - us: 티커명 (예: AAPL, MSFT)
+ *     - kr: 종목코드(종목명) (예: 005930(삼성전자))
  *
  * 환경변수:
  *   SLACK_BOT_TOKEN   — xoxb-... (scope: files:write, chat:write)
@@ -26,15 +31,27 @@ const SLACK_API = "https://slack.com/api";
 // ── 타입 ────────────────────────────────────────────────────────────────────────
 
 export interface NotifyArgs {
-  files:  string[];
-  market: string;
+  files:    string[];
+  market:   string;
+  jsonPath: string;
 }
 
 export interface NotifyOptions {
-  token:   string;
-  channel: string;
-  files:   string[];
-  market:  string;
+  token:    string;
+  channel:  string;
+  files:    string[];
+  market:   string;
+  jsonPath?: string;
+}
+
+/** simulate_trend.ts 가 저장한 sim JSON 의 results 항목 중 종목 리스트 텍스트 구성에 필요한 부분 */
+interface SimResultEntry {
+  ticker: string;
+  name:   string;
+}
+
+interface SimOutputForList {
+  results: SimResultEntry[];
 }
 
 interface GetUploadUrlResponse {
@@ -56,8 +73,9 @@ interface SlackApiResponse {
  * 빈 항목/공백은 제거한다.
  */
 export function parseNotifyArgs(argv: string[]): NotifyArgs {
-  let files:  string[] = [];
+  let files:    string[] = [];
   let market = "";
+  let jsonPath = "";
 
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === "--files" && i + 1 < argv.length) {
@@ -69,10 +87,13 @@ export function parseNotifyArgs(argv: string[]): NotifyArgs {
     } else if (argv[i] === "--market" && i + 1 < argv.length) {
       market = argv[i + 1].trim();
       i++;
+    } else if (argv[i] === "--json" && i + 1 < argv.length) {
+      jsonPath = argv[i + 1].trim();
+      i++;
     }
   }
 
-  return { files, market };
+  return { files, market, jsonPath };
 }
 
 // ── 1+2단계: 파일 업로드 → file_id ─────────────────────────────────────────────────
@@ -157,6 +178,39 @@ export async function completeUpload(
   }
 }
 
+// ── 종목 리스트 텍스트 구성 ──────────────────────────────────────────────────────
+
+/**
+ * sim JSON의 results 배열로부터 종목 리스트 텍스트를 만든다.
+ * - us: 티커명 (예: AAPL, MSFT)
+ * - kr: 종목코드(종목명) (예: 005930(삼성전자), 000660(SK하이닉스))
+ */
+export function buildTickerListText(market: string, results: SimResultEntry[]): string {
+  if (results.length === 0) return "";
+
+  if (market === "kr") {
+    return results.map(r => `${r.ticker}(${r.name})`).join(", ");
+  }
+  return results.map(r => r.ticker).join(", ");
+}
+
+/**
+ * sim JSON 파일을 읽어 종목 리스트 텍스트를 만든다.
+ * 파일이 없거나 파싱 실패 시 빈 문자열을 반환한다(Slack 전송 자체는 막지 않음).
+ */
+export function loadTickerListText(market: string, jsonPath: string): string {
+  if (!jsonPath || !fs.existsSync(jsonPath)) return "";
+
+  try {
+    const raw  = fs.readFileSync(jsonPath, "utf-8");
+    const data = JSON.parse(raw) as SimOutputForList;
+    return buildTickerListText(market, data.results ?? []);
+  } catch (e) {
+    console.warn(`⚠️  sim JSON 읽기/파싱 실패 (${jsonPath}):`, e);
+    return "";
+  }
+}
+
 // ── 오케스트레이션 ─────────────────────────────────────────────────────────────────
 
 /**
@@ -180,7 +234,12 @@ export async function notifySlack(opts: NotifyOptions): Promise<void> {
 
   const marketLabel = opts.market.toUpperCase();
   const timestamp   = new Date().toISOString().slice(0, 16).replace("T", " ");
-  const comment     = `📈 [${marketLabel}] 추세 시뮬레이션 차트 (${timestamp} UTC)`;
+  let   comment      = `📈 [${marketLabel}] 추세 시뮬레이션 차트 (${timestamp} UTC)`;
+
+  const tickerListText = opts.jsonPath ? loadTickerListText(opts.market, opts.jsonPath) : "";
+  if (tickerListText) {
+    comment += `\n\n종목 리스트:\n${tickerListText}`;
+  }
 
   await completeUpload(opts.token, opts.channel, fileIds, comment);
   console.log(`✅ Slack 전송 완료: ${fileIds.length}개 파일 → 채널 ${opts.channel}`);
@@ -193,7 +252,7 @@ export async function notifySlack(opts: NotifyOptions): Promise<void> {
  * env 는 주입 가능(테스트 용이). 미지정 시 process.env 사용.
  */
 export async function main(env: NodeJS.ProcessEnv = process.env): Promise<void> {
-  const { files, market } = parseNotifyArgs(process.argv);
+  const { files, market, jsonPath } = parseNotifyArgs(process.argv);
 
   const token   = env.SLACK_BOT_TOKEN;
   const channel = env.SLACK_CHANNEL_ID;
@@ -209,7 +268,7 @@ export async function main(env: NodeJS.ProcessEnv = process.env): Promise<void> 
     return;
   }
 
-  await notifySlack({ token, channel, files, market });
+  await notifySlack({ token, channel, files, market, jsonPath });
 }
 
 // 직접 실행 시에만 main 호출 (테스트 import 시 실행 방지)
