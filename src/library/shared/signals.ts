@@ -1416,8 +1416,8 @@ export function calcTrendTouchPoints(
   // 실가격 기준: lower = R*(1-tol/100), upper = R*(1+tol/100)
   // 로그 기준:   lower = R + ln(1-tol/100), upper = R + ln(1+tol/100)
   // (R 자체가 ln(price)이므로 곱셈이 아닌 덧셈으로 변환해야 실가격 퍼센트와 동치가 된다.)
-  const touchOffset = isLogScale ? Math.log(1 - touchTolerance / 100) : 0;
-  const breakoutOffset = isLogScale ? Math.log(1 + breakoutTolerance / 100) : 0;
+  const touchOffset = isLogScale ? Math.log(Math.max(1e-9, 1 - touchTolerance / 100)) : 0;
+  const breakoutOffset = isLogScale ? Math.log(Math.max(1e-9, 1 + breakoutTolerance / 100)) : 0;
 
   for (let i = 0; i < timestamps.length; i++) {
     const R_i = m * i + c;
