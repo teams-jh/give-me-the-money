@@ -27,6 +27,8 @@ import {
   parseNotifyArgs,
   uploadFileToSlack,
   completeUpload,
+  buildTickerListText,
+  loadTickerListText,
   notifySlack,
   main,
 } from './notify_slack.ts';
@@ -36,23 +38,31 @@ import {
 describe('parseNotifyArgs', () => {
   it('--files 쉼표 구분 → 배열, --market 파싱', () => {
     const argv = ['node', 'script.ts', '--files', 'a.png,b.png', '--market', 'kr'];
-    expect(parseNotifyArgs(argv)).toEqual({ files: ['a.png', 'b.png'], market: 'kr' });
+    expect(parseNotifyArgs(argv)).toEqual({ files: ['a.png', 'b.png'], market: 'kr', jsonPath: '' });
   });
   it('단일 파일', () => {
     const argv = ['node', 'script.ts', '--files', 'only.png', '--market', 'us'];
-    expect(parseNotifyArgs(argv)).toEqual({ files: ['only.png'], market: 'us' });
+    expect(parseNotifyArgs(argv)).toEqual({ files: ['only.png'], market: 'us', jsonPath: '' });
   });
   it('공백/빈 항목 제거', () => {
     const argv = ['node', 'script.ts', '--files', 'a.png, ,b.png,', '--market', 'kr'];
-    expect(parseNotifyArgs(argv)).toEqual({ files: ['a.png', 'b.png'], market: 'kr' });
+    expect(parseNotifyArgs(argv)).toEqual({ files: ['a.png', 'b.png'], market: 'kr', jsonPath: '' });
   });
   it('--files 없으면 빈 배열', () => {
     const argv = ['node', 'script.ts', '--market', 'kr'];
-    expect(parseNotifyArgs(argv)).toEqual({ files: [], market: 'kr' });
+    expect(parseNotifyArgs(argv)).toEqual({ files: [], market: 'kr', jsonPath: '' });
   });
   it('--market 없으면 빈 문자열', () => {
     const argv = ['node', 'script.ts', '--files', 'a.png'];
-    expect(parseNotifyArgs(argv)).toEqual({ files: ['a.png'], market: '' });
+    expect(parseNotifyArgs(argv)).toEqual({ files: ['a.png'], market: '', jsonPath: '' });
+  });
+  it('--json 파싱', () => {
+    const argv = ['node', 'script.ts', '--files', 'a.png', '--market', 'kr', '--json', 'src/db/kr/trend_sim/sim_kr.json'];
+    expect(parseNotifyArgs(argv)).toEqual({
+      files: ['a.png'],
+      market: 'kr',
+      jsonPath: 'src/db/kr/trend_sim/sim_kr.json',
+    });
   });
 });
 
@@ -124,6 +134,62 @@ describe('uploadFileToSlack', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(uploadFileToSlack('t', '/path/x.png')).rejects.toThrow(/500/);
+  });
+});
+
+// ── buildTickerListText ───────────────────────────────────────────────────────
+
+describe('buildTickerListText', () => {
+  it('us: 티커명만 콤마로 나열', () => {
+    const text = buildTickerListText('us', [
+      { ticker: 'AAPL', name: 'Apple Inc.' },
+      { ticker: 'MSFT', name: 'Microsoft' },
+    ]);
+    expect(text).toBe('AAPL, MSFT');
+  });
+
+  it('kr: 종목코드(종목명) 형태로 나열', () => {
+    const text = buildTickerListText('kr', [
+      { ticker: '005930', name: '삼성전자' },
+      { ticker: '000660', name: 'SK하이닉스' },
+    ]);
+    expect(text).toBe('005930(삼성전자), 000660(SK하이닉스)');
+  });
+
+  it('결과 없으면 빈 문자열', () => {
+    expect(buildTickerListText('us', [])).toBe('');
+  });
+});
+
+// ── loadTickerListText ──────────────────────────────────────────────────────────
+
+describe('loadTickerListText', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('json 파일 읽어 종목 리스트 텍스트 반환 (kr)', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockReturnValue(JSON.stringify({
+      results: [{ ticker: '005930', name: '삼성전자' }],
+    }));
+
+    expect(loadTickerListText('kr', '/a/sim_kr.json')).toBe('005930(삼성전자)');
+  });
+
+  it('파일 없으면 빈 문자열', () => {
+    mockExistsSync.mockReturnValue(false);
+    expect(loadTickerListText('kr', '/a/missing.json')).toBe('');
+  });
+
+  it('jsonPath 빈 문자열이면 빈 문자열', () => {
+    expect(loadTickerListText('kr', '')).toBe('');
+  });
+
+  it('파싱 실패 시 빈 문자열', () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockReturnValue('NOT JSON');
+    expect(loadTickerListText('kr', '/a/bad.json')).toBe('');
   });
 });
 
@@ -241,6 +307,39 @@ describe('notifySlack', () => {
 
     await notifySlack({ token: 'xoxb', channel: 'C1', files: ['/a/x.png'], market: 'kr' });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('jsonPath 제공 시 종목 리스트가 comment에 포함됨 (kr)', async () => {
+    mockExistsSync.mockReturnValue(true);
+    mockReadFileSync.mockImplementation((p: string) => {
+      if (p === '/a/sim_kr.json') {
+        return JSON.stringify({
+          results: [
+            { ticker: '005930', name: '삼성전자' },
+            { ticker: '000660', name: 'SK하이닉스' },
+          ],
+        });
+      }
+      return Buffer.from('PNG');
+    });
+
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true, upload_url: 'u1', file_id: 'F1' }) })
+      .mockResolvedValueOnce({ ok: true, status: 200, text: async () => 'OK' })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ ok: true }) });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await notifySlack({
+      token: 'xoxb',
+      channel: 'C1',
+      files: ['/a/sim_kr.png'],
+      market: 'kr',
+      jsonPath: '/a/sim_kr.json',
+    });
+
+    const completeCall = fetchMock.mock.calls[2];
+    const body = JSON.parse(completeCall[1].body);
+    expect(body.initial_comment).toContain('005930(삼성전자), 000660(SK하이닉스)');
   });
 });
 
