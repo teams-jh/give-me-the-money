@@ -15,6 +15,10 @@
  *     - us: 티커명 (예: AAPL, MSFT)
  *     - kr: 종목코드(종목명) (예: 005930(삼성전자))
  *
+ * 파일이 많을 경우 files.completeUploadExternal 을 COMPLETE_UPLOAD_BATCH_SIZE(10)개씩
+ * 배치로 나눠 호출한다 — 한 번에 너무 많은 파일을 보내면 ok:true 응답에도 불구하고
+ * 일부 파일이 채널에 공유되지 않는 Slack 측 사례가 보고되어 있다.
+ *
  * 환경변수:
  *   SLACK_BOT_TOKEN   — xoxb-... (scope: files:write, chat:write)
  *   SLACK_CHANNEL_ID  — C...
@@ -61,10 +65,26 @@ interface GetUploadUrlResponse {
   error?:      string;
 }
 
+interface SlackFileResult {
+  id?:       string;
+  channels?: string[];
+}
+
 interface SlackApiResponse {
   ok:     boolean;
   error?: string;
+  files?: SlackFileResult[];
 }
+
+/**
+ * files.completeUploadExternal 1회 호출에 담을 최대 파일 수.
+ *
+ * Slack 측에서 한 번에 너무 많은 파일을 묶어 보내면 응답이 ok:true 임에도
+ * 일부(또는 전체) 파일이 실제로는 채널에 공유되지 않는 사례가 보고되어 있다
+ * (예: slackapi/bolt-js#2326, slackapi/python-slack-sdk#1818).
+ * 안전하게 배치로 나눠 보낸다.
+ */
+export const COMPLETE_UPLOAD_BATCH_SIZE = 10;
 
 // ── CLI 파싱 ──────────────────────────────────────────────────────────────────────
 
@@ -176,6 +196,17 @@ export async function completeUpload(
   if (!data.ok) {
     throw new Error(`files.completeUploadExternal 실패: ${data.error ?? "unknown"}`);
   }
+
+  // ok:true 이지만 실제로는 채널에 공유되지 않은 파일이 있는지 확인(Slack 측 알려진 케이스 대응)
+  if (data.files) {
+    const notShared = data.files.filter(f => !(f.channels ?? []).includes(channel));
+    if (notShared.length > 0) {
+      console.warn(
+        `⚠️  응답상 ${notShared.length}개 파일이 채널(${channel})에 공유되지 않은 것으로 보입니다: ` +
+        notShared.map(f => f.id ?? "?").join(", "),
+      );
+    }
+  }
 }
 
 // ── 종목 리스트 텍스트 구성 ──────────────────────────────────────────────────────
@@ -241,8 +272,18 @@ export async function notifySlack(opts: NotifyOptions): Promise<void> {
     comment += `\n\n종목 리스트:\n${tickerListText}`;
   }
 
-  await completeUpload(opts.token, opts.channel, fileIds, comment);
-  console.log(`✅ Slack 전송 완료: ${fileIds.length}개 파일 → 채널 ${opts.channel}`);
+  // 너무 많은 파일을 한 번에 보내면 일부가 채널에 공유되지 않는 사례가 있어 배치로 나눠 전송한다.
+  const batches: string[][] = [];
+  for (let i = 0; i < fileIds.length; i += COMPLETE_UPLOAD_BATCH_SIZE) {
+    batches.push(fileIds.slice(i, i + COMPLETE_UPLOAD_BATCH_SIZE));
+  }
+
+  for (let i = 0; i < batches.length; i++) {
+    const batchComment = batches.length > 1 ? `${comment}  [${i + 1}/${batches.length}]` : comment;
+    await completeUpload(opts.token, opts.channel, batches[i]!, batchComment);
+  }
+
+  console.log(`✅ Slack 전송 완료: ${fileIds.length}개 파일 → 채널 ${opts.channel} (${batches.length}개 메시지)`);
 }
 
 // ── main ──────────────────────────────────────────────────────────────────────────

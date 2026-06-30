@@ -31,6 +31,7 @@ import {
   loadTickerListText,
   notifySlack,
   main,
+  COMPLETE_UPLOAD_BATCH_SIZE,
 } from './notify_slack.ts';
 
 // ── parseNotifyArgs ─────────────────────────────────────────────────────────────
@@ -229,6 +230,26 @@ describe('completeUpload', () => {
     await expect(completeUpload('t', 'C1', ['F1'], 'x')).rejects.toThrow(/channel_not_found/);
   });
 
+  it('ok:true 이지만 일부 파일이 channels에 없으면 경고 로그', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const fetchMock = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        ok: true,
+        files: [
+          { id: 'F1', channels: ['C999'] },
+          { id: 'F2', channels: [] },
+        ],
+      }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await completeUpload('xoxb', 'C999', ['F1', 'F2'], 'x');
+
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('F2'));
+    warnSpy.mockRestore();
+  });
+
   it('HTTP 5xx(non-ok) → 에러 (json 파싱 전 차단)', async () => {
     const fetchMock = vi.fn().mockResolvedValueOnce({
       ok: false,
@@ -307,6 +328,37 @@ describe('notifySlack', () => {
 
     await notifySlack({ token: 'xoxb', channel: 'C1', files: ['/a/x.png'], market: 'kr' });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it(`파일이 ${COMPLETE_UPLOAD_BATCH_SIZE}개를 초과하면 completeUpload를 여러 번 호출 (배치 분할)`, async () => {
+    const n = COMPLETE_UPLOAD_BATCH_SIZE + 2; // 12개 → 10개 + 2개, 2배치
+    const files = Array.from({ length: n }, (_, i) => `/a/sim_${i}.png`);
+
+    const calls: unknown[] = [];
+    const fetchMock = vi.fn(async (url: string, opts?: { body?: string }) => {
+      calls.push(url);
+      if (url.toString().includes('getUploadURLExternal')) {
+        return { ok: true, json: async () => ({ ok: true, upload_url: 'u', file_id: `F${calls.length}` }) };
+      }
+      if (url.toString().includes('completeUploadExternal')) {
+        return { ok: true, json: async () => ({ ok: true }) };
+      }
+      // PUT 업로드
+      return { ok: true, status: 200, text: async () => 'OK' };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await notifySlack({ token: 'xoxb', channel: 'C1', files, market: 'us' });
+
+    const completeCalls = fetchMock.mock.calls.filter(c => String(c[0]).includes('completeUploadExternal'));
+    expect(completeCalls).toHaveLength(2);
+
+    const firstBody = JSON.parse((completeCalls[0]![1] as { body: string }).body);
+    const secondBody = JSON.parse((completeCalls[1]![1] as { body: string }).body);
+    expect(firstBody.files).toHaveLength(COMPLETE_UPLOAD_BATCH_SIZE);
+    expect(secondBody.files).toHaveLength(2);
+    expect(firstBody.initial_comment).toContain('[1/2]');
+    expect(secondBody.initial_comment).toContain('[2/2]');
   });
 
   it('jsonPath 제공 시 종목 리스트가 comment에 포함됨 (kr)', async () => {
