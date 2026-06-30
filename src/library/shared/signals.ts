@@ -1358,6 +1358,13 @@ export interface CalcTrendTouchPointsParams {
   breakoutTolerance: number;
   /** 판정 기준 가격 */
   touchBasis: 'close' | 'high' | 'both';
+  /**
+   * timestamps/highPrices/closePrices/m/c 가 로그 변환된 가격인지 여부.
+   * true면 퍼센트 허용오차를 로그 공간의 가산 오프셋(ln(1±tol/100))으로 변환해 적용한다.
+   * (R_i가 로그값일 때 R_i * (1+tol/100) 형태로 곱하면 실제 가격 기준 퍼센트와 전혀 다른
+   *  값이 나오는 버그를 방지하기 위함. 기본값 false → 기존 실가격 기준 동작 유지)
+   */
+  isLogScale?: boolean;
 }
 
 export interface TrendTouchPoint {
@@ -1393,6 +1400,7 @@ export function calcTrendTouchPoints(
     touchTolerance,
     breakoutTolerance,
     touchBasis,
+    isLogScale = false,
   } = params;
 
   const touchPoints: TrendTouchPoint[] = [];
@@ -1404,13 +1412,20 @@ export function calcTrendTouchPoints(
   const checkClose = touchBasis === 'close' || touchBasis === 'both';
   const checkHigh = touchBasis === 'high' || touchBasis === 'both';
 
+  // 로그 스케일일 때는 퍼센트 허용오차를 로그 공간의 가산 오프셋으로 변환한다.
+  // 실가격 기준: lower = R*(1-tol/100), upper = R*(1+tol/100)
+  // 로그 기준:   lower = R + ln(1-tol/100), upper = R + ln(1+tol/100)
+  // (R 자체가 ln(price)이므로 곱셈이 아닌 덧셈으로 변환해야 실가격 퍼센트와 동치가 된다.)
+  const touchOffset = isLogScale ? Math.log(Math.max(1e-9, 1 - touchTolerance / 100)) : 0;
+  const breakoutOffset = isLogScale ? Math.log(Math.max(1e-9, 1 + breakoutTolerance / 100)) : 0;
+
   for (let i = 0; i < timestamps.length; i++) {
     const R_i = m * i + c;
     const high = highPrices[i];
     const close = closePrices[i];
     if (high == null || close == null) continue; // 데이터 누락 시 오탐 방지
-    const lowerBoundTouch = R_i * (1 - touchTolerance / 100);
-    const upperBoundBreak = R_i * (1 + breakoutTolerance / 100);
+    const lowerBoundTouch = isLogScale ? R_i + touchOffset : R_i * (1 - touchTolerance / 100);
+    const upperBoundBreak = isLogScale ? R_i + breakoutOffset : R_i * (1 + breakoutTolerance / 100);
     const isInTrendRange = i >= trendMinIdx && i <= trendMaxIdx;
 
     let touchedY: number = high;
