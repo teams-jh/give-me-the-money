@@ -541,6 +541,9 @@ export function runTickerSim(
           touchTolerance: cfg.trendTouchTolerance,
           breakoutTolerance: cfg.trendBreakoutTolerance,
           touchBasis: cfg.trendTouchBasis,
+          // runTickerSim은 highPrices/closePrices/m/c를 모두 로그 변환된 값으로 계산한다.
+          // (safeLog 적용) → 퍼센트 허용오차를 로그 공간 기준으로 변환해야 함.
+          isLogScale: true,
         })
       : {
           touchPoints: [] as TrendTouchPoint[],
