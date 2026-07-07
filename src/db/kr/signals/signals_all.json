@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07 02:08",
+  "generated_at": "2026-07-07 06:41",
   "market": "kr",
   "analyzed_count": 497,
   "skipped_count": 0,
@@ -43533,93 +43533,6 @@
       ]
     },
     {
-      "ticker": "034020.KS",
-      "name": "두산에너빌리티",
-      "sector": "Industrials",
-      "totalScore": -1.5,
-      "techScore": -1.5,
-      "fundScore": 0,
-      "rsi": 39.46,
-      "macd": -4973.3803,
-      "bandWidth": 26.41,
-      "volRatio": 0.35,
-      "atr": 6500.6608,
-      "stopLoss": 76049.01,
-      "mdd": -40.54,
-      "high52w": 136400,
-      "low52w": 57400,
-      "stochK": 22.33,
-      "roc20": 0,
-      "mfi": 28,
-      "adx": 19.45,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.02369,
-      "roa": 0.01795,
-      "dividendYield": null,
-      "insiderPct": 0.30894,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -40.54%)",
-          "value": -40.54,
-          "scoreAffecting": false
-        },
-        {
-          "type": "pv_bullish_divergence",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "가격-거래량 강세 다이버전스 (가격 -33.8% / 거래량 -27.8%)",
-          "value": -27.839133377849368,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (1봉 전)",
-          "value": 25.33,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-2.5% 20d:0.0% 60d:-9.6%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 103,398.346)",
-          "value": 103398.3458,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 -99% vs 이전 245%)",
-          "value": -0.989584049029173,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (30.9%)",
-          "value": 30.894,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
       "ticker": "001440.KS",
       "name": "대한전선",
       "sector": "Industrials",
@@ -44850,6 +44763,101 @@
           "strength": "weak",
           "label": "Supertrend 하락 추세 유지 (선: 994)",
           "value": 994,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "034020.KS",
+      "name": "두산에너빌리티",
+      "sector": "Industrials",
+      "totalScore": -2,
+      "techScore": -2,
+      "fundScore": 0,
+      "rsi": 35.12,
+      "macd": -5256.1156,
+      "bandWidth": 28.54,
+      "volRatio": 0.82,
+      "atr": 6676.8891,
+      "stopLoss": 70884.67,
+      "mdd": -40.69,
+      "high52w": 136400,
+      "low52w": 57400,
+      "stochK": 16.75,
+      "roc20": -12.35,
+      "mfi": 23.89,
+      "adx": 20.1,
+      "supertrendDir": "bearish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.02369,
+      "roa": 0.01795,
+      "dividendYield": null,
+      "insiderPct": 0.30894,
+      "shortRatio": null,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -40.69%)",
+          "value": -40.69,
+          "scoreAffecting": false
+        },
+        {
+          "type": "pv_bullish_divergence",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "가격-거래량 강세 다이버전스 (가격 -36.8% / 거래량 -25.9%)",
+          "value": -25.89473251162491,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_oversold",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 과매도 (%K 16.75)",
+          "value": 16.75,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "Stochastic 데드크로스 (2봉 전)",
+          "value": 25.33,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bearish",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "ROC 전 구간 하락 모멘텀 (5d:-6.8% 20d:-12.3% 60d:-20.1%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 101,579.66)",
+          "value": 101579.6602,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 -99% vs 이전 245%)",
+          "value": -0.989584049029173,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (30.9%)",
+          "value": 30.894,
           "scoreAffecting": true
         }
       ]
