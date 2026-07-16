@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16 16:20",
+  "generated_at": "2026-07-16 18:08",
   "market": "us",
   "analyzed_count": 954,
   "skipped_count": 3,
@@ -16120,109 +16120,6 @@
       ]
     },
     {
-      "ticker": "TFC",
-      "name": "Truist Financial Corporation",
-      "sector": "Financial Services",
-      "totalScore": 3.5,
-      "techScore": 1.5,
-      "fundScore": 2,
-      "rsi": 60.07,
-      "macd": 0.707,
-      "bandWidth": 9.52,
-      "volRatio": 0.7,
-      "atr": 1.1653,
-      "stopLoss": 50.2,
-      "mdd": -27.75,
-      "high52w": 55.81,
-      "low52w": 41.09,
-      "stochK": 89.22,
-      "roc20": 0.56,
-      "mfi": 73.84,
-      "adx": 12.27,
-      "supertrendDir": "bullish",
-      "pe": 13.056931,
-      "pb": 1.1083096,
-      "roe": 0.08579001,
-      "roa": 0.010190001,
-      "dividendYield": 0.04,
-      "insiderPct": 0.00174,
-      "shortRatio": 2.85,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "stoch_overbought",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 과매수 (%K 89.22)",
-          "value": 89.22,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (4봉 전)",
-          "value": 73.05,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (2봉 전)",
-          "value": 74.74,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bullish",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "ROC 전 구간 상승 모멘텀 (5d:+1.1% 20d:+0.6% 60d:+5.1%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 48.649)",
-          "value": 48.6491,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 7% vs 이전 -4%)",
-          "value": 0.0682699767261443,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.2%)",
-          "value": 0.174,
-          "scoreAffecting": false
-        },
-        {
-          "type": "dividend_attractive",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "배당 매력 (수익률 4.0% / 성향 51%)",
-          "value": 4,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (39.0%)",
-          "value": 38.990003,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
       "ticker": "FITB",
       "name": "Fifth Third Bancorp",
       "sector": "Financial Services",
@@ -19603,6 +19500,101 @@
           "strength": "weak",
           "label": "우수한 영업이익률 (21.0%)",
           "value": 21,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
+      "ticker": "TFC",
+      "name": "Truist Financial Corporation",
+      "sector": "Financial Services",
+      "totalScore": 3,
+      "techScore": 1,
+      "fundScore": 2,
+      "rsi": 63.81,
+      "macd": 0.7954,
+      "bandWidth": 9.86,
+      "volRatio": 0.59,
+      "atr": 1.1564,
+      "stopLoss": 51.07,
+      "mdd": -27.75,
+      "high52w": 55.81,
+      "low52w": 41.09,
+      "stochK": 90.85,
+      "roc20": 8.91,
+      "mfi": 72.69,
+      "adx": 12.61,
+      "supertrendDir": "bullish",
+      "pe": 13.305694,
+      "pb": 1.1294254,
+      "roe": 0.08579001,
+      "roa": 0.010190001,
+      "dividendYield": 0.0394,
+      "insiderPct": 0.00174,
+      "shortRatio": 2.85,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "stoch_extreme_overbought",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "Stochastic 극단 과매수 (%K 90.85)",
+          "value": 90.85,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (3봉 전)",
+          "value": 74.74,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bullish",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "ROC 전 구간 상승 모멘텀 (5d:+6.3% 20d:+8.9% 60d:+4.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 49.079)",
+          "value": 49.0786,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 7% vs 이전 -4%)",
+          "value": 0.0682699767261443,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.2%)",
+          "value": 0.174,
+          "scoreAffecting": false
+        },
+        {
+          "type": "dividend_attractive",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "배당 매력 (수익률 3.9% / 성향 51%)",
+          "value": 3.94,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (39.0%)",
+          "value": 38.990003,
           "scoreAffecting": false
         }
       ]
@@ -103521,6 +103513,99 @@
       ]
     },
     {
+      "ticker": "TDY",
+      "name": "Teledyne Technologies Incorporated",
+      "sector": "Technology",
+      "totalScore": -4,
+      "techScore": -2,
+      "fundScore": -2,
+      "rsi": 46.44,
+      "macd": 1.3415,
+      "bandWidth": 9.95,
+      "volRatio": 1.05,
+      "atr": 18.1553,
+      "stopLoss": 596.92,
+      "mdd": -18.77,
+      "high52w": 688.59,
+      "low52w": 484.47,
+      "stochK": 23.15,
+      "roc20": -0.67,
+      "mfi": 36.88,
+      "adx": 14.96,
+      "supertrendDir": "bullish",
+      "pe": 31.7642,
+      "pb": 2.7110114,
+      "roe": 0.09049,
+      "roa": 0.04893,
+      "dividendYield": null,
+      "insiderPct": 0.00856,
+      "shortRatio": 4.7,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "dead_cross_5_20",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "데드크로스 MA5/MA20 (1봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "golden_cross_20_60",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "골든크로스 MA20/MA60 (4봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "macd_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "MACD 데드크로스 (2봉 전)",
+          "value": 3.5921,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bearish",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "ROC 전 구간 하락 모멘텀 (5d:-2.4% 20d:-0.7% 60d:-1.8%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 603.03)",
+          "value": 603.0297,
+          "scoreAffecting": true
+        },
+        {
+          "type": "pe_overvalued",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "PER 고평가 (PE 31.8)",
+          "value": 31.7642,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 -18% vs 이전 25%)",
+          "value": -0.17706821480406387,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.9%)",
+          "value": 0.856,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
       "ticker": "ROIV",
       "name": "Roivant Sciences Ltd.",
       "sector": "Healthcare",
@@ -105455,99 +105540,6 @@
           "strength": "weak",
           "label": "우수한 영업이익률 (21.4%)",
           "value": 21.42,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
-      "ticker": "TDY",
-      "name": "Teledyne Technologies Incorporated",
-      "sector": "Technology",
-      "totalScore": -4.5,
-      "techScore": -2.5,
-      "fundScore": -2,
-      "rsi": 45.9,
-      "macd": 2.2979,
-      "bandWidth": 9.89,
-      "volRatio": 0.87,
-      "atr": 18.0634,
-      "stopLoss": 596,
-      "mdd": -18.77,
-      "high52w": 688.59,
-      "low52w": 484.47,
-      "stochK": 30.46,
-      "roc20": -0.47,
-      "mfi": 37.41,
-      "adx": 16.1,
-      "supertrendDir": "bullish",
-      "pe": 31.02405,
-      "pb": 2.651869,
-      "roe": 0.09049,
-      "roa": 0.04893,
-      "dividendYield": null,
-      "insiderPct": 0.00856,
-      "shortRatio": 4.7,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "dead_cross_5_20",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "데드크로스 MA5/MA20 (당일)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "golden_cross_20_60",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "골든크로스 MA20/MA60 (3봉 전)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "macd_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "MACD 데드크로스 (1봉 전)",
-          "value": 3.5921,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bearish",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "ROC 전 구간 하락 모멘텀 (5d:-2.9% 20d:-0.5% 60d:-2.0%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 603.03)",
-          "value": 603.0297,
-          "scoreAffecting": true
-        },
-        {
-          "type": "pe_overvalued",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "PER 고평가 (PE 31.0)",
-          "value": 31.02405,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 -18% vs 이전 25%)",
-          "value": -0.17706821480406387,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.9%)",
-          "value": 0.856,
           "scoreAffecting": false
         }
       ]
