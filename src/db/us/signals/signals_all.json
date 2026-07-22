@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-22 16:26",
+  "generated_at": "2026-07-22 18:13",
   "market": "us",
   "analyzed_count": 954,
   "skipped_count": 3,
@@ -2262,6 +2262,132 @@
       ]
     },
     {
+      "ticker": "FITB",
+      "name": "Fifth Third Bancorp",
+      "sector": "Financial Services",
+      "totalScore": 6.5,
+      "techScore": 3.5,
+      "fundScore": 3,
+      "rsi": 59.08,
+      "macd": 1.3122,
+      "bandWidth": 7.47,
+      "volRatio": 0.66,
+      "atr": 1.4218,
+      "stopLoss": 55.53,
+      "mdd": -31.21,
+      "high52w": 59.37,
+      "low52w": 40.36,
+      "stochK": 59.78,
+      "roc20": 7.55,
+      "mfi": 74.89,
+      "adx": 25.96,
+      "supertrendDir": "bullish",
+      "pe": 19.42256,
+      "pb": 1.9114285,
+      "roe": 0.08447,
+      "roa": 0.0092,
+      "dividendYield": 0.0277,
+      "insiderPct": 0.0035299999,
+      "shortRatio": 0.01,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "macd_golden_cross",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "MACD 골든크로스 (제로선 위) (3봉 전)",
+          "value": 1.5352,
+          "scoreAffecting": true
+        },
+        {
+          "type": "macd_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "MACD 데드크로스 (2봉 전)",
+          "value": 1.4889,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -31.21%)",
+          "value": -31.21,
+          "scoreAffecting": false
+        },
+        {
+          "type": "high52w_near",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "52주 신고가 근접 (고가 대비 -2.9%)",
+          "value": 57.66,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "Stochastic 데드크로스 (1봉 전)",
+          "value": 72.3,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bullish",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "ROC 전 구간 상승 모멘텀 (5d:+1.1% 20d:+7.5% 60d:+13.3%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 55.102)",
+          "value": 55.102,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 496% vs 이전 -82%)",
+          "value": 4.9609375,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.4%)",
+          "value": 0.35299999,
+          "scoreAffecting": false
+        },
+        {
+          "type": "growth_high_quality",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "고성장·고수익 (매출+52% / 순이익률 23.3%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_exists",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "배당 지급 (수익률 2.8%)",
+          "value": 2.77,
+          "scoreAffecting": false
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (32.9%)",
+          "value": 32.941002000000005,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
       "ticker": "TIGO",
       "name": "Millicom International Cellular S.A.",
       "sector": "Communication Services",
@@ -4444,124 +4570,6 @@
           "strength": "weak",
           "label": "우수한 영업이익률 (39.6%)",
           "value": 39.646997999999996,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
-      "ticker": "FITB",
-      "name": "Fifth Third Bancorp",
-      "sector": "Financial Services",
-      "totalScore": 5.5,
-      "techScore": 2.5,
-      "fundScore": 3,
-      "rsi": 58,
-      "macd": 1.3871,
-      "bandWidth": 9.03,
-      "volRatio": 0.78,
-      "atr": 1.4496,
-      "stopLoss": 55.23,
-      "mdd": -31.21,
-      "high52w": 59.37,
-      "low52w": 40.36,
-      "stochK": 72.3,
-      "roc20": 8.84,
-      "mfi": 73.75,
-      "adx": 27.62,
-      "supertrendDir": "bullish",
-      "pe": 19.267675,
-      "pb": 1.896186,
-      "roe": 0.08447,
-      "roa": 0.0092,
-      "dividendYield": 0.0279,
-      "insiderPct": 0.0035299999,
-      "shortRatio": 0.01,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "macd_golden_cross",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "MACD 골든크로스 (제로선 위) (2봉 전)",
-          "value": 1.5352,
-          "scoreAffecting": true
-        },
-        {
-          "type": "macd_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "MACD 데드크로스 (1봉 전)",
-          "value": 1.4889,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -31.21%)",
-          "value": -31.21,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 데드크로스 (당일)",
-          "value": 72.3,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bullish",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "ROC 전 구간 상승 모멘텀 (5d:+0.4% 20d:+8.8% 60d:+13.5%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 55.102)",
-          "value": 55.102,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 496% vs 이전 -82%)",
-          "value": 4.9609375,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.4%)",
-          "value": 0.35299999,
-          "scoreAffecting": false
-        },
-        {
-          "type": "growth_high_quality",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "고성장·고수익 (매출+52% / 순이익률 23.3%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_exists",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "배당 지급 (수익률 2.8%)",
-          "value": 2.79,
-          "scoreAffecting": false
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (32.9%)",
-          "value": 32.941002000000005,
           "scoreAffecting": false
         }
       ]
@@ -12339,6 +12347,139 @@
           "strength": "normal",
           "label": "균형 성장 (매출+12% / 순이익률 6.2%)",
           "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "PTC",
+      "name": "PTC Inc.",
+      "sector": "Technology",
+      "totalScore": 4,
+      "techScore": -1.5,
+      "fundScore": 5.5,
+      "rsi": 44.27,
+      "macd": -0.7649,
+      "bandWidth": 16.72,
+      "volRatio": 1.1,
+      "atr": 4.4667,
+      "stopLoss": 114.07,
+      "mdd": -48.12,
+      "high52w": 216.53,
+      "low52w": 112.33,
+      "stochK": 67.31,
+      "roc20": 5.02,
+      "mfi": 56.8,
+      "adx": 16.03,
+      "supertrendDir": "bearish",
+      "pe": 10.814602,
+      "pb": 3.3687425,
+      "roe": 0.344,
+      "roa": 0.119899996,
+      "dividendYield": null,
+      "insiderPct": 0.0032499998,
+      "shortRatio": 2.4,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -48.12%)",
+          "value": -48.12,
+          "scoreAffecting": false
+        },
+        {
+          "type": "pv_bullish_divergence",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "가격-거래량 강세 다이버전스 (가격 -18.5% / 거래량 -23.8%)",
+          "value": -23.77784802297934,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (4봉 전)",
+          "value": 76,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (3봉 전)",
+          "value": 79.48,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (당일)",
+          "value": 67.31,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:-1.4% 20d:+5.0% 60d:-11.1%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 127.525)",
+          "value": 127.5253,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 255% vs 이전 -53%)",
+          "value": 2.5475023721159276,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.3%)",
+          "value": 0.32499998,
+          "scoreAffecting": false
+        },
+        {
+          "type": "growth_high_quality",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "고성장·고수익 (매출+22% / 순이익률 41.6%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "peg_undervalued",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "PEG 저평가 (0.99 — 성장 대비 저평가)",
+          "value": 0.99,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_excellent",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "우수한 수익성 (ROE 34.4% / ROA 12.0%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (41.6%)",
+          "value": 41.625,
+          "scoreAffecting": false
         }
       ]
     },
@@ -28156,123 +28297,6 @@
           "label": "양호한 자본효율 (ROE 81.0%)",
           "value": 80.981004,
           "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "PTC",
-      "name": "PTC Inc.",
-      "sector": "Technology",
-      "totalScore": 2.5,
-      "techScore": -2.5,
-      "fundScore": 5,
-      "rsi": 50.81,
-      "macd": -0.5766,
-      "bandWidth": 17.27,
-      "volRatio": 0.71,
-      "atr": 4.3826,
-      "stopLoss": 118.26,
-      "mdd": -48.12,
-      "high52w": 216.53,
-      "low52w": 112.33,
-      "stochK": 84.33,
-      "roc20": 8.78,
-      "mfi": 57.01,
-      "adx": 16.09,
-      "supertrendDir": "bearish",
-      "pe": 11.734871,
-      "pb": 3.6554058,
-      "roe": 0.344,
-      "roa": 0.119899996,
-      "dividendYield": null,
-      "insiderPct": 0.0032499998,
-      "shortRatio": 2.4,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -48.12%)",
-          "value": -48.12,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_overbought",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 과매수 (%K 84.33)",
-          "value": 84.33,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (3봉 전)",
-          "value": 76,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (2봉 전)",
-          "value": 79.48,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-0.5% 20d:+8.8% 60d:-11.2%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 127.525)",
-          "value": 127.5253,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 255% vs 이전 -53%)",
-          "value": 2.5475023721159276,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.3%)",
-          "value": 0.32499998,
-          "scoreAffecting": false
-        },
-        {
-          "type": "growth_high_quality",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "고성장·고수익 (매출+22% / 순이익률 41.6%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_excellent",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "우수한 수익성 (ROE 34.4% / ROA 12.0%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (41.6%)",
-          "value": 41.625,
-          "scoreAffecting": false
         }
       ]
     },
@@ -60912,108 +60936,6 @@
       ]
     },
     {
-      "ticker": "NTR",
-      "name": "Nutrien Ltd.",
-      "sector": "Basic Materials",
-      "totalScore": 0,
-      "techScore": -1,
-      "fundScore": 1,
-      "rsi": 52.3,
-      "macd": 0.3091,
-      "bandWidth": 16.25,
-      "volRatio": 1,
-      "atr": 1.6658,
-      "stopLoss": 64.16,
-      "mdd": -36.07,
-      "high52w": 83.94,
-      "low52w": 53.64,
-      "stochK": 73.27,
-      "roc20": 6.05,
-      "mfi": 71.66,
-      "adx": 19.33,
-      "supertrendDir": "bullish",
-      "pe": 13.614054,
-      "pb": 1.2775698,
-      "roe": 0.098129995,
-      "roa": 0.04227,
-      "dividendYield": 0.033,
-      "insiderPct": 0.00029999999,
-      "shortRatio": 3.07,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -36.07%)",
-          "value": -36.07,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (4봉 전)",
-          "value": 89.67,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 데드크로스 (과매수 영역) (2봉 전)",
-          "value": 87.22,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-1.4% 20d:+6.0% 60d:-6.8%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 63.512)",
-          "value": 63.5118,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 -77% vs 이전 23%)",
-          "value": -0.7705779334500875,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.0%)",
-          "value": 0.029999999000000003,
-          "scoreAffecting": false
-        },
-        {
-          "type": "growth_balanced",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "균형 성장 (매출+19% / 순이익률 8.9%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_attractive",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "배당 매력 (수익률 3.3% / 성향 45%)",
-          "value": 3.3000000000000003,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
       "ticker": "CNP",
       "name": "CenterPoint Energy, Inc.",
       "sector": "Utilities",
@@ -64149,6 +64071,116 @@
           "label": "배당 지속 불가 (성향 129% — 이익 초과 배당)",
           "value": 128.73000000000002,
           "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "SNY",
+      "name": "Sanofi",
+      "sector": "Healthcare",
+      "totalScore": 0,
+      "techScore": 0.5,
+      "fundScore": -0.5,
+      "rsi": 51.78,
+      "macd": 0.1872,
+      "bandWidth": 8.49,
+      "volRatio": 0.51,
+      "atr": 0.8957,
+      "stopLoss": 42.41,
+      "mdd": -30.44,
+      "high52w": 52.34,
+      "low52w": 41.33,
+      "stochK": 79.89,
+      "roc20": 4.72,
+      "mfi": 46.04,
+      "adx": 12.44,
+      "supertrendDir": "bullish",
+      "pe": 19.488888,
+      "pb": null,
+      "roe": 0.06576,
+      "roa": 0.04666,
+      "dividendYield": 0.0553,
+      "insiderPct": 0.000010000001,
+      "shortRatio": 1.68,
+      "earningsTrend": "insufficient",
+      "alerts": [
+        {
+          "type": "obv_bearish_divergence",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "OBV 하락 다이버전스 (가격↑ OBV↓, 20봉 기준)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -30.44%)",
+          "value": -30.44,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (3봉 전)",
+          "value": 83.35,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (당일)",
+          "value": 79.89,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bullish",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "ROC 상승 모멘텀 (5d:+1.3% 20d:+4.7% 60d:-8.0%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 41.642)",
+          "value": 41.6416,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.0%)",
+          "value": 0.0010000001,
+          "scoreAffecting": false
+        },
+        {
+          "type": "peg_overvalued",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "PEG 고평가 (3.86 — 성장 대비 고평가)",
+          "value": 3.86,
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_exists",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "배당 지급 (수익률 5.5%)",
+          "value": 5.53,
+          "scoreAffecting": false
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (20.0%)",
+          "value": 20.002002,
+          "scoreAffecting": false
         }
       ]
     },
@@ -67351,6 +67383,100 @@
           "strength": "strong",
           "label": "심각한 자본 훼손 (ROE -26.0%)",
           "value": -26.044,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "NTR",
+      "name": "Nutrien Ltd.",
+      "sector": "Basic Materials",
+      "totalScore": -0.5,
+      "techScore": -1.5,
+      "fundScore": 1,
+      "rsi": 52.97,
+      "macd": 0.3241,
+      "bandWidth": 16.13,
+      "volRatio": 0.72,
+      "atr": 1.6632,
+      "stopLoss": 64.35,
+      "mdd": -36.07,
+      "high52w": 83.94,
+      "low52w": 53.64,
+      "stochK": 69.05,
+      "roc20": 7.37,
+      "mfi": 68.42,
+      "adx": 18.65,
+      "supertrendDir": "bullish",
+      "pe": 13.990835,
+      "pb": 1.3129277,
+      "roe": 0.098129995,
+      "roa": 0.04227,
+      "dividendYield": 0.032899998,
+      "insiderPct": 0.00029999999,
+      "shortRatio": 3.07,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -36.07%)",
+          "value": -36.07,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "Stochastic 데드크로스 (과매수 영역) (3봉 전)",
+          "value": 87.22,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:-2.6% 20d:+7.4% 60d:-7.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 63.512)",
+          "value": 63.5118,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 -77% vs 이전 23%)",
+          "value": -0.7705779334500875,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.0%)",
+          "value": 0.029999999000000003,
+          "scoreAffecting": false
+        },
+        {
+          "type": "growth_balanced",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "균형 성장 (매출+19% / 순이익률 8.9%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_attractive",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "배당 매력 (수익률 3.3% / 성향 45%)",
+          "value": 3.2899998,
           "scoreAffecting": true
         }
       ]
@@ -99021,124 +99147,6 @@
           "strength": "weak",
           "label": "우수한 영업이익률 (31.6%)",
           "value": 31.617,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
-      "ticker": "SNY",
-      "name": "Sanofi",
-      "sector": "Healthcare",
-      "totalScore": -3,
-      "techScore": -2.5,
-      "fundScore": -0.5,
-      "rsi": 53.26,
-      "macd": 0.193,
-      "bandWidth": 8.78,
-      "volRatio": 1.71,
-      "atr": 0.9146,
-      "stopLoss": 42.61,
-      "mdd": -30.44,
-      "high52w": 52.34,
-      "low52w": 41.33,
-      "stochK": 89.79,
-      "roc20": 3.78,
-      "mfi": 45.44,
-      "adx": 12.45,
-      "supertrendDir": "bullish",
-      "pe": 19.382744,
-      "pb": null,
-      "roe": 0.06576,
-      "roa": 0.04666,
-      "dividendYield": 0.055,
-      "insiderPct": 0.000010000001,
-      "shortRatio": 1.68,
-      "earningsTrend": "insufficient",
-      "alerts": [
-        {
-          "type": "obv_bearish_divergence",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "OBV 하락 다이버전스 (가격↑ OBV↓, 20봉 기준)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -30.44%)",
-          "value": -30.44,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_overbought",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 과매수 (%K 89.79)",
-          "value": 89.79,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 데드크로스 (과매수 영역) (4봉 전)",
-          "value": 81.1,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (2봉 전)",
-          "value": 83.35,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-0.1% 20d:+3.8% 60d:-6.2%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_flip",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Supertrend 상승 전환↑ (2봉 전, 선: 41.642)",
-          "value": 41.6416,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.0%)",
-          "value": 0.0010000001,
-          "scoreAffecting": false
-        },
-        {
-          "type": "peg_overvalued",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "PEG 고평가 (3.94 — 성장 대비 고평가)",
-          "value": 3.94,
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_exists",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "배당 지급 (수익률 5.5%)",
-          "value": 5.5,
-          "scoreAffecting": false
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (20.0%)",
-          "value": 20.002002,
           "scoreAffecting": false
         }
       ]
