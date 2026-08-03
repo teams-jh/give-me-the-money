@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03 17:14",
+  "generated_at": "2026-08-03 19:29",
   "market": "us",
   "analyzed_count": 953,
   "skipped_count": 4,
@@ -88696,6 +88696,130 @@
       ]
     },
     {
+      "ticker": "GLW",
+      "name": "Corning Incorporated",
+      "sector": "Technology",
+      "totalScore": -1.5,
+      "techScore": -1.5,
+      "fundScore": 0,
+      "rsi": 38.08,
+      "macd": -16.1122,
+      "bandWidth": 55.04,
+      "volRatio": 1.03,
+      "atr": 14.7246,
+      "stopLoss": 116.16,
+      "mdd": -51.48,
+      "high52w": 255.69,
+      "low52w": 62.05,
+      "stochK": 22.73,
+      "roc20": -29.75,
+      "mfi": 38.27,
+      "adx": 20.84,
+      "supertrendDir": "bearish",
+      "pe": 68.03681,
+      "pb": 10.649923,
+      "roe": 0.16813,
+      "roa": 0.05367,
+      "dividendYield": 0.0081,
+      "insiderPct": 0.08165,
+      "shortRatio": 1.14,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "dead_cross_20_60",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "데드크로스 MA20/MA60 (4봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "dead_cross_20_120",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "데드크로스 MA20/MA120 (1봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -51.48%)",
+          "value": -51.48,
+          "scoreAffecting": false
+        },
+        {
+          "type": "pv_bullish_divergence",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "가격-거래량 강세 다이버전스 (가격 -30.1% / 거래량 -23.7%)",
+          "value": -23.70883046128578,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "Stochastic 골든크로스 (과매도 영역) (2봉 전)",
+          "value": 11.73,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bearish",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "ROC 전 구간 하락 모멘텀 (5d:-5.7% 20d:-29.8% 60d:-14.7%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 166.603)",
+          "value": 166.6032,
+          "scoreAffecting": true
+        },
+        {
+          "type": "pe_extreme",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "PER 과도 고평가 (PE 68.0)",
+          "value": 68.03681,
+          "scoreAffecting": true
+        },
+        {
+          "type": "pb_overvalued",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "PBR 고평가 (PB 10.65)",
+          "value": 10.649923,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 51% vs 이전 -31%)",
+          "value": 0.5067385444743935,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_balanced",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "균형 성장 (매출+17% / 순이익률 11.2%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_good",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "양호한 자본효율 (ROE 16.8%)",
+          "value": 16.813,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
       "ticker": "PH",
       "name": "Parker-Hannifin Corporation",
       "sector": "Industrials",
@@ -104286,138 +104410,6 @@
           "strength": "normal",
           "label": "배당 지속 불가 (성향 117% — 이익 초과 배당)",
           "value": 116.67,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "GLW",
-      "name": "Corning Incorporated",
-      "sector": "Technology",
-      "totalScore": -3,
-      "techScore": -3,
-      "fundScore": 0,
-      "rsi": 36.45,
-      "macd": -16.4442,
-      "bandWidth": 55.26,
-      "volRatio": 1.33,
-      "atr": 14.9511,
-      "stopLoss": 112.79,
-      "mdd": -51.48,
-      "high52w": 255.69,
-      "low52w": 61.98,
-      "stochK": 17,
-      "roc20": -38.71,
-      "mfi": 32.38,
-      "adx": 20.93,
-      "supertrendDir": "bearish",
-      "pe": 64.85185,
-      "pb": 10.104595,
-      "roe": 0.16813,
-      "roa": 0.05367,
-      "dividendYield": 0.0083,
-      "insiderPct": 0.08165,
-      "shortRatio": 1.14,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "dead_cross_20_60",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "데드크로스 MA20/MA60 (3봉 전)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "dead_cross_20_120",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "데드크로스 MA20/MA120 (당일)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -51.48%)",
-          "value": -51.48,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_oversold",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Stochastic 과매도 (%K 17)",
-          "value": 17,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 데드크로스 (4봉 전)",
-          "value": 8.55,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "Stochastic 골든크로스 (과매도 영역) (1봉 전)",
-          "value": 11.73,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bearish",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "ROC 전 구간 하락 모멘텀 (5d:-13.3% 20d:-38.7% 60d:-15.5%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 166.603)",
-          "value": 166.6032,
-          "scoreAffecting": true
-        },
-        {
-          "type": "pe_extreme",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "PER 과도 고평가 (PE 64.9)",
-          "value": 64.85185,
-          "scoreAffecting": true
-        },
-        {
-          "type": "pb_overvalued",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "PBR 고평가 (PB 10.10)",
-          "value": 10.104595,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 51% vs 이전 -31%)",
-          "value": 0.5067385444743935,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_balanced",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "균형 성장 (매출+17% / 순이익률 11.2%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_good",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "양호한 자본효율 (ROE 16.8%)",
-          "value": 16.813,
           "scoreAffecting": true
         }
       ]
