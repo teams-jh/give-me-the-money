@@ -1,8 +1,8 @@
 {
   "ticker": "CLX",
-  "updated_at": "2026-08-03T17:13:53.281Z",
+  "updated_at": "2026-08-04T17:00:09.511Z",
   "info": {
-    "name": "Clorox Company (The)",
+    "name": "The Clorox Company",
     "kr_name": "The Clorox Company",
     "exchange": "NYSE",
     "currency": "USD",
@@ -13,27 +13,27 @@
     "is_actively_trading": true
   },
   "market": {
-    "market_cap": null,
-    "shares_outstanding": null,
+    "market_cap": 12388391936,
+    "shares_outstanding": 120921351,
     "float_shares": 120505382,
-    "price": 97.7181,
-    "previous_close": 95.53,
+    "price": 102.45,
+    "previous_close": 98.26,
     "fifty_two_week_high": 128.9,
     "fifty_two_week_low": 84.7,
     "beta": 0.541
   },
   "liquidity": {
-    "avg_daily_volume_3m": 2648629,
+    "avg_daily_volume_3m": 2590265,
     "avg_daily_volume_10d": 2235710
   },
   "valuation": {
-    "trailing_pe": 15.889122,
-    "forward_pe": 16.411432,
+    "trailing_pe": 16.184834,
+    "forward_pe": 17.206139,
     "peg_ratio": 2.37,
     "price_to_book": null,
-    "trailing_eps": 6.15,
+    "trailing_eps": 6.33,
     "forward_eps": 5.95427,
-    "enterprise_value": 15004616704
+    "enterprise_value": 15334731776
   },
   "profitability": {
     "profit_margins": 0.111829996,
@@ -43,13 +43,30 @@
     "roa": 0.110369995,
     "revenue_growth": 0.001,
     "earnings_growth": 0.027,
-    "quarterly_earnings": []
+    "quarterly_earnings": [
+      {
+        "quarter": "2026Q2",
+        "net_income": 163000000
+      },
+      {
+        "quarter": "2026Q1",
+        "net_income": 187000000
+      },
+      {
+        "quarter": "2025Q4",
+        "net_income": 157000000
+      },
+      {
+        "quarter": "2025Q3",
+        "net_income": 80000000
+      }
+    ]
   },
   "dividend": {
     "rate": 4.96,
     "yield": 0.0519,
     "payout_ratio": 0.8033,
-    "avg_yield_3y": 0.0376
+    "avg_yield_3y": 0.0377
   },
   "ownership": {
     "held_pct_institutions": 0.86304003,
@@ -57,15 +74,6 @@
     "short_ratio": 4.64
   },
   "prices": [
-    {
-      "date": "2023-08-03",
-      "open": 161.95,
-      "high": 169.14,
-      "low": 161.33,
-      "close": 166.13,
-      "adj_close": 148.74,
-      "volume": 4284300
-    },
     {
       "date": "2023-08-04",
       "open": 165.83,
@@ -306,7 +314,7 @@
       "high": 154.54,
       "low": 148.79,
       "close": 149.6,
-      "adj_close": 134.93,
+      "adj_close": 134.92,
       "volume": 1345100
     },
     {
@@ -6814,7 +6822,16 @@
       "low": 94.2,
       "close": 95.53,
       "adj_close": 95.53,
-      "volume": 3162700
+      "volume": 3164700
+    },
+    {
+      "date": "2026-08-03",
+      "open": 97.32,
+      "high": 99.8,
+      "low": 96.58,
+      "close": 98.26,
+      "adj_close": 98.26,
+      "volume": 3980100
     }
   ]
 }
