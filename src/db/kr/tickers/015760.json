@@ -1,8 +1,8 @@
 {
   "ticker": "015760.KS",
-  "updated_at": "2026-08-05T01:45:16.579Z",
+  "updated_at": "2026-08-06T01:33:57.975Z",
   "info": {
-    "name": "KEPCO",
+    "name": "Korea Electric Power Corporation",
     "kr_name": "한국전력",
     "exchange": "KSE",
     "currency": "KRW",
@@ -13,11 +13,11 @@
     "is_actively_trading": true
   },
   "market": {
-    "market_cap": null,
-    "shares_outstanding": null,
+    "market_cap": 23046511394816,
+    "shares_outstanding": 641964077,
     "float_shares": 305658356,
     "price": 35900,
-    "previous_close": 35150,
+    "previous_close": 35700,
     "fifty_two_week_high": 69500,
     "fifty_two_week_low": 32000,
     "beta": 0.819
@@ -33,7 +33,7 @@
     "price_to_book": null,
     "trailing_eps": null,
     "forward_eps": null,
-    "enterprise_value": 149018185302016
+    "enterprise_value": 149371261812736
   },
   "profitability": {
     "profit_margins": 0.08923,
@@ -43,16 +43,33 @@
     "roa": 0.03334,
     "revenue_growth": 0.007,
     "earnings_growth": 0.071,
-    "quarterly_earnings": []
+    "quarterly_earnings": [
+      {
+        "quarter": "2026Q1",
+        "net_income": 3239000000
+      },
+      {
+        "quarter": "2025Q4",
+        "net_income": 1396387000000
+      },
+      {
+        "quarter": "2025Q3",
+        "net_income": 3755618000000
+      },
+      {
+        "quarter": "2025Q2",
+        "net_income": 1136712000000
+      }
+    ]
   },
   "dividend": {
     "rate": 1542,
-    "yield": 0.044699997,
+    "yield": 0.0432,
     "payout_ratio": 0.1137,
     "avg_yield_3y": 0.0094
   },
   "ownership": {
-    "held_pct_institutions": 0.50932,
+    "held_pct_institutions": 0.50926995,
     "held_pct_insiders": 0.19482,
     "short_ratio": null
   },
@@ -6595,10 +6612,19 @@
       "date": "2026-08-05",
       "open": 36200,
       "high": 36500,
-      "low": 35700,
+      "low": 35650,
+      "close": 35700,
+      "adj_close": 35700,
+      "volume": 1083486
+    },
+    {
+      "date": "2026-08-06",
+      "open": 35950,
+      "high": 36050,
+      "low": 35500,
       "close": 35900,
       "adj_close": 35900,
-      "volume": 489961
+      "volume": 345495
     }
   ]
 }
