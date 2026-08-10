@@ -1,8 +1,8 @@
 {
   "ticker": "015760.KS",
-  "updated_at": "2026-08-07T01:32:44.702Z",
+  "updated_at": "2026-08-10T01:02:32.735Z",
   "info": {
-    "name": "KEPCO",
+    "name": "Korea Electric Power Corporation",
     "kr_name": "한국전력",
     "exchange": "KSE",
     "currency": "KRW",
@@ -13,18 +13,18 @@
     "is_actively_trading": true
   },
   "market": {
-    "market_cap": null,
-    "shares_outstanding": null,
-    "float_shares": 305658356,
-    "price": 35350,
-    "previous_close": 35950,
+    "market_cap": 22982315474944,
+    "shares_outstanding": 641964077,
+    "float_shares": 305529963,
+    "price": 35800,
+    "previous_close": 35600,
     "fifty_two_week_high": 69500,
     "fifty_two_week_low": 32000,
     "beta": 0.819
   },
   "liquidity": {
-    "avg_daily_volume_3m": 2256501,
-    "avg_daily_volume_10d": 1599846
+    "avg_daily_volume_3m": 2167425,
+    "avg_daily_volume_10d": 1438448
   },
   "valuation": {
     "trailing_pe": null,
@@ -33,7 +33,7 @@
     "price_to_book": null,
     "trailing_eps": null,
     "forward_eps": null,
-    "enterprise_value": 149531752660992
+    "enterprise_value": 149307055407104
   },
   "profitability": {
     "profit_margins": 0.08923,
@@ -43,47 +43,37 @@
     "roa": 0.03334,
     "revenue_growth": 0.007,
     "earnings_growth": 0.071,
-    "quarterly_earnings": []
+    "quarterly_earnings": [
+      {
+        "quarter": "2026Q1",
+        "net_income": 3239000000
+      },
+      {
+        "quarter": "2025Q4",
+        "net_income": 1396387000000
+      },
+      {
+        "quarter": "2025Q3",
+        "net_income": 3755618000000
+      },
+      {
+        "quarter": "2025Q2",
+        "net_income": 1136712000000
+      }
+    ]
   },
   "dividend": {
     "rate": 1542,
-    "yield": 0.0429,
+    "yield": 0.0433,
     "payout_ratio": 0.1137,
-    "avg_yield_3y": 0.0095
+    "avg_yield_3y": 0.0096
   },
   "ownership": {
-    "held_pct_institutions": 0.50947,
+    "held_pct_institutions": 0.51234,
     "held_pct_insiders": 0.19482,
     "short_ratio": null
   },
   "prices": [
-    {
-      "date": "2023-08-07",
-      "open": 19350,
-      "high": 19440,
-      "low": 19210,
-      "close": 19280,
-      "adj_close": 18472.11,
-      "volume": 858959
-    },
-    {
-      "date": "2023-08-08",
-      "open": 19440,
-      "high": 19820,
-      "low": 19350,
-      "close": 19460,
-      "adj_close": 18644.57,
-      "volume": 1307099
-    },
-    {
-      "date": "2023-08-09",
-      "open": 19460,
-      "high": 19510,
-      "low": 18960,
-      "close": 19370,
-      "adj_close": 18558.34,
-      "volume": 1316582
-    },
     {
       "date": "2023-08-10",
       "open": 19180,
@@ -6613,10 +6603,19 @@
       "date": "2026-08-07",
       "open": 35600,
       "high": 35750,
-      "low": 35050,
-      "close": 35300,
-      "adj_close": 35300,
-      "volume": 323686
+      "low": 34900,
+      "close": 35600,
+      "adj_close": 35600,
+      "volume": 864179
+    },
+    {
+      "date": "2026-08-10",
+      "open": 35650,
+      "high": 36050,
+      "low": 35350,
+      "close": 35750,
+      "adj_close": 35750,
+      "volume": 212034
     }
   ]
 }
