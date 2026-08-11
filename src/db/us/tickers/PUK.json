@@ -1,8 +1,8 @@
 {
   "ticker": "PUK",
-  "updated_at": "2026-08-10T16:00:18.476Z",
+  "updated_at": "2026-08-11T15:55:00.244Z",
   "info": {
-    "name": "Prudential Public Limited Compa",
+    "name": "Prudential plc",
     "kr_name": "Prudential plc",
     "exchange": "NYSE",
     "currency": "USD",
@@ -13,27 +13,27 @@
     "is_actively_trading": true
   },
   "market": {
-    "market_cap": 35202629632,
+    "market_cap": 34153105408,
     "shares_outstanding": 1243513698,
-    "float_shares": 4704143460,
-    "price": 28.309,
-    "previous_close": 28.28,
+    "float_shares": 4351439028,
+    "price": 27.465,
+    "previous_close": 28.22,
     "fifty_two_week_high": 34.03,
     "fifty_two_week_low": 24.61,
     "beta": 0.904
   },
   "liquidity": {
-    "avg_daily_volume_3m": 1164993,
-    "avg_daily_volume_10d": 1331780
+    "avg_daily_volume_3m": 1170853,
+    "avg_daily_volume_10d": 1315240
   },
   "valuation": {
-    "trailing_pe": 9.221173,
-    "forward_pe": 14.220269,
+    "trailing_pe": 8.946255,
+    "forward_pe": 13.7963085,
     "peg_ratio": 3.01,
-    "price_to_book": 7.125346,
+    "price_to_book": 6.912912,
     "trailing_eps": 3.07,
     "forward_eps": 1.99075,
-    "enterprise_value": 146615074816
+    "enterprise_value": 146311282688
   },
   "profitability": {
     "profit_margins": 0.27573,
@@ -43,29 +43,37 @@
     "roa": 0.01894,
     "revenue_growth": 0.188,
     "earnings_growth": 0.308,
-    "quarterly_earnings": []
+    "quarterly_earnings": [
+      {
+        "quarter": "2013Q1",
+        "net_income": 0
+      },
+      {
+        "quarter": "2011Q3",
+        "net_income": 466000000
+      },
+      {
+        "quarter": "2011Q1",
+        "net_income": 0
+      },
+      {
+        "quarter": "2010Q3",
+        "net_income": 0
+      }
+    ]
   },
   "dividend": {
-    "rate": null,
-    "yield": null,
-    "payout_ratio": null,
-    "avg_yield_3y": 0.0196
+    "rate": 0.53,
+    "yield": 0.0189,
+    "payout_ratio": 0.15640001,
+    "avg_yield_3y": 0.0197
   },
   "ownership": {
-    "held_pct_institutions": 0.029159999,
+    "held_pct_institutions": 0.0292,
     "held_pct_insiders": 0,
     "short_ratio": 0.77
   },
   "prices": [
-    {
-      "date": "2023-08-10",
-      "open": 26.74,
-      "high": 26.94,
-      "low": 26.31,
-      "close": 26.39,
-      "adj_close": 24.8,
-      "volume": 329300
-    },
     {
       "date": "2023-08-11",
       "open": 25.76,
@@ -6815,6 +6823,15 @@
       "close": 28.28,
       "adj_close": 28.28,
       "volume": 1340400
+    },
+    {
+      "date": "2026-08-10",
+      "open": 28.3,
+      "high": 28.48,
+      "low": 28.17,
+      "close": 28.22,
+      "adj_close": 28.22,
+      "volume": 828400
     }
   ]
 }
