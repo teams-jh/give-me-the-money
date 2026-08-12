@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12 16:00",
+  "generated_at": "2026-08-12 16:55",
   "market": "us",
   "analyzed_count": 953,
   "skipped_count": 4,
@@ -84374,6 +84374,108 @@
       ]
     },
     {
+      "ticker": "SAIA",
+      "name": "Saia, Inc.",
+      "sector": "Industrials",
+      "totalScore": -1.5,
+      "techScore": -2.5,
+      "fundScore": 1,
+      "rsi": 33.85,
+      "macd": -20.2187,
+      "bandWidth": 34.15,
+      "volRatio": 0.85,
+      "atr": 16.6501,
+      "stopLoss": 331.98,
+      "mdd": -60.94,
+      "high52w": 487.14,
+      "low52w": 250.48,
+      "stochK": 18.64,
+      "roc20": -17.51,
+      "mfi": 23.85,
+      "adx": 45.35,
+      "supertrendDir": "bearish",
+      "pe": 35.530434,
+      "pb": 3.5880923,
+      "roe": 0.10767,
+      "roa": 0.06303,
+      "dividendYield": null,
+      "insiderPct": 0.00153,
+      "shortRatio": 2.7,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -60.94%)",
+          "value": -60.94,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_oversold",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 과매도 (%K 18.64)",
+          "value": 18.64,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "Stochastic 데드크로스 (2봉 전)",
+          "value": 20.22,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bearish",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "ROC 전 구간 하락 모멘텀 (5d:-4.6% 20d:-17.5% 60d:-22.3%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 406.979)",
+          "value": 406.979,
+          "scoreAffecting": true
+        },
+        {
+          "type": "pe_overvalued",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "PER 고평가 (PE 35.5)",
+          "value": 35.530434,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 89% vs 이전 5%)",
+          "value": 0.8901521987607531,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.2%)",
+          "value": 0.153,
+          "scoreAffecting": false
+        },
+        {
+          "type": "growth_balanced",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "균형 성장 (매출+17% / 순이익률 8.2%)",
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
       "ticker": "POWL",
       "name": "Powell Industries, Inc.",
       "sector": "Industrials",
@@ -96564,100 +96666,6 @@
           "strength": "normal",
           "label": "배당 지속 불가 (성향 147% — 이익 초과 배당)",
           "value": 147.14999,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "SAIA",
-      "name": "Saia, Inc.",
-      "sector": "Industrials",
-      "totalScore": -2.5,
-      "techScore": -3.5,
-      "fundScore": 1,
-      "rsi": 33.2,
-      "macd": -20.2463,
-      "bandWidth": 33.69,
-      "volRatio": 0.72,
-      "atr": 17.0993,
-      "stopLoss": 330.12,
-      "mdd": -60.94,
-      "high52w": 487.14,
-      "low52w": 250.48,
-      "stochK": 20.05,
-      "roc20": -17.66,
-      "mfi": 27.89,
-      "adx": 45.12,
-      "supertrendDir": "bearish",
-      "pe": 35.109547,
-      "pb": 3.4633715,
-      "roe": 0.10767,
-      "roa": 0.06303,
-      "dividendYield": null,
-      "insiderPct": 0.00153,
-      "shortRatio": 3.33,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -60.94%)",
-          "value": -60.94,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 데드크로스 (1봉 전)",
-          "value": 20.22,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bearish",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "ROC 전 구간 하락 모멘텀 (5d:-1.2% 20d:-17.7% 60d:-17.5%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 410.021)",
-          "value": 410.0214,
-          "scoreAffecting": true
-        },
-        {
-          "type": "pe_overvalued",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "PER 고평가 (PE 35.1)",
-          "value": 35.109547,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 89% vs 이전 5%)",
-          "value": 0.8901521987607531,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.2%)",
-          "value": 0.153,
-          "scoreAffecting": false
-        },
-        {
-          "type": "growth_balanced",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "균형 성장 (매출+17% / 순이익률 8.2%)",
           "scoreAffecting": true
         }
       ]
