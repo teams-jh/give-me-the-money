@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-13 01:09",
+  "generated_at": "2026-08-13 04:05",
   "market": "kr",
   "analyzed_count": 495,
   "skipped_count": 2,
@@ -42077,116 +42077,6 @@
       ]
     },
     {
-      "ticker": "352820.KS",
-      "name": "하이브",
-      "sector": "Communication Services",
-      "totalScore": -2.5,
-      "techScore": -2.5,
-      "fundScore": 0,
-      "rsi": 41.46,
-      "macd": -8231.8743,
-      "bandWidth": 34.92,
-      "volRatio": 0.11,
-      "atr": 11929.1301,
-      "stopLoss": 160306.3,
-      "mdd": -59.7,
-      "high52w": 404500,
-      "low52w": 163000,
-      "stochK": 31.11,
-      "roc20": -13.5,
-      "mfi": 48.49,
-      "adx": 15.14,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": -0.12962,
-      "roa": -0.01883,
-      "dividendYield": 0.0028,
-      "insiderPct": 0.41189,
-      "shortRatio": null,
-      "earningsTrend": "turnaround",
-      "alerts": [
-        {
-          "type": "macd_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "MACD 골든크로스 (1봉 전)",
-          "value": -8337.7709,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -59.7%)",
-          "value": -59.7,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (당일)",
-          "value": 31.11,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bearish",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "ROC 전 구간 하락 모멘텀 (5d:-1.6% 20d:-13.5% 60d:-27.0%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 211,720.281)",
-          "value": 211720.281,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_turnaround",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "흑자 전환 (직전 적자→최신 흑자 1023억)",
-          "value": 102300000000,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (41.2%)",
-          "value": 41.189,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_margin_erosion",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "외형성장·이익잠식 (매출+40% / 순이익률 -16.0%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_negative_roe",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "자본 잠식 위험 (ROE -13.0%)",
-          "value": -12.962000000000002,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_operating_loss",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "영업 구조 문제 (영업이익률 -28.1%)",
-          "value": -28.149997999999997,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
       "ticker": "047040.KS",
       "name": "대우건설",
       "sector": "Industrials",
@@ -49084,6 +48974,116 @@
           "strength": "normal",
           "label": "영업 구조 문제 (영업이익률 -85.9%)",
           "value": -85.949,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "352820.KS",
+      "name": "하이브",
+      "sector": "Communication Services",
+      "totalScore": -5.5,
+      "techScore": -2.5,
+      "fundScore": -3,
+      "rsi": 41.11,
+      "macd": -8022.892,
+      "bandWidth": 34.42,
+      "volRatio": 0.58,
+      "atr": 11423.9882,
+      "stopLoss": 160464.02,
+      "mdd": -59.7,
+      "high52w": 404500,
+      "low52w": 163000,
+      "stochK": 28.85,
+      "roc20": -14.62,
+      "mfi": 43.71,
+      "adx": 15.23,
+      "supertrendDir": "bearish",
+      "pe": null,
+      "pb": null,
+      "roe": -0.12962,
+      "roa": -0.01883,
+      "dividendYield": 0.0028,
+      "insiderPct": 0.41189,
+      "shortRatio": null,
+      "earningsTrend": "deteriorating",
+      "alerts": [
+        {
+          "type": "macd_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "MACD 골든크로스 (2봉 전)",
+          "value": -8337.7709,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -59.7%)",
+          "value": -59.7,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (1봉 전)",
+          "value": 31.7,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bearish",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "ROC 전 구간 하락 모멘텀 (5d:-1.7% 20d:-14.6% 60d:-24.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 209,330.253)",
+          "value": 209330.2529,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_consecutive_loss",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "연속 적자 (최근 3분기)",
+          "value": -158500000000,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (41.2%)",
+          "value": 41.189,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_margin_erosion",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "외형성장·이익잠식 (매출+40% / 순이익률 -16.0%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_negative_roe",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "자본 잠식 위험 (ROE -13.0%)",
+          "value": -12.962000000000002,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_operating_loss",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "영업 구조 문제 (영업이익률 -28.1%)",
+          "value": -28.149997999999997,
           "scoreAffecting": true
         }
       ]
