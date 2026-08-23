@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-16 02:21",
+  "generated_at": "2026-08-23 02:24",
   "market": "kr",
   "quarters": [
     "2023Q4",
@@ -17,9 +17,9 @@
   ],
   "sectors": [
     "Utilities",
+    "Financial Services",
     "Technology",
     "Industrials",
-    "Financial Services",
     "Energy",
     "Consumer Cyclical",
     "Consumer Defensive",
@@ -1090,91 +1090,91 @@
       "rows": [
         {
           "sector": "Energy",
-          "avgReturn": 12.78,
-          "medianReturn": 8.51,
+          "avgReturn": 10.93,
+          "medianReturn": 6.44,
           "stockCount": 8,
-          "positiveRatio": 1,
+          "positiveRatio": 0.88,
           "rank": 1,
           "rankChange": 6
         },
         {
           "sector": "Consumer Defensive",
-          "avgReturn": 11.94,
-          "medianReturn": 7.93,
+          "avgReturn": 9.74,
+          "medianReturn": 4.46,
           "stockCount": 39,
-          "positiveRatio": 0.85,
+          "positiveRatio": 0.74,
           "rank": 2,
           "rankChange": 7
         },
         {
           "sector": "Communication Services",
-          "avgReturn": 8.9,
-          "medianReturn": 4.06,
+          "avgReturn": 6.07,
+          "medianReturn": 0.96,
           "stockCount": 24,
-          "positiveRatio": 0.67,
+          "positiveRatio": 0.54,
           "rank": 3,
           "rankChange": 5
         },
         {
-          "sector": "Healthcare",
-          "avgReturn": 3.55,
-          "medianReturn": 2.51,
-          "stockCount": 34,
-          "positiveRatio": 0.65,
+          "sector": "Financial Services",
+          "avgReturn": 1.27,
+          "medianReturn": -0.24,
+          "stockCount": 41,
+          "positiveRatio": 0.49,
           "rank": 4,
-          "rankChange": 6
+          "rankChange": -1
+        },
+        {
+          "sector": "Healthcare",
+          "avgReturn": -1.5,
+          "medianReturn": -2.28,
+          "stockCount": 34,
+          "positiveRatio": 0.41,
+          "rank": 5,
+          "rankChange": 5
         },
         {
           "sector": "Utilities",
-          "avgReturn": 3.23,
-          "medianReturn": 4.76,
+          "avgReturn": -2.05,
+          "medianReturn": -1.03,
           "stockCount": 4,
           "positiveRatio": 0.5,
-          "rank": 5,
-          "rankChange": 0
-        },
-        {
-          "sector": "Financial Services",
-          "avgReturn": 2.54,
-          "medianReturn": 1.6,
-          "stockCount": 41,
-          "positiveRatio": 0.61,
           "rank": 6,
-          "rankChange": -3
-        },
-        {
-          "sector": "Consumer Cyclical",
-          "avgReturn": 0.74,
-          "medianReturn": 1.71,
-          "stockCount": 64,
-          "positiveRatio": 0.63,
-          "rank": 7,
-          "rankChange": -3
+          "rankChange": -1
         },
         {
           "sector": "Basic Materials",
-          "avgReturn": -0.05,
-          "medianReturn": 0,
+          "avgReturn": -4.11,
+          "medianReturn": -3.44,
           "stockCount": 49,
-          "positiveRatio": 0.45,
+          "positiveRatio": 0.33,
+          "rank": 7,
+          "rankChange": -1
+        },
+        {
+          "sector": "Consumer Cyclical",
+          "avgReturn": -5.23,
+          "medianReturn": -3.12,
+          "stockCount": 64,
+          "positiveRatio": 0.38,
           "rank": 8,
-          "rankChange": -2
+          "rankChange": -4
         },
         {
           "sector": "Industrials",
-          "avgReturn": -3.81,
-          "medianReturn": -2.95,
+          "avgReturn": -9.99,
+          "medianReturn": -8.36,
           "stockCount": 110,
-          "positiveRatio": 0.41,
+          "positiveRatio": 0.2,
           "rank": 9,
           "rankChange": -7
         },
         {
           "sector": "Technology",
-          "avgReturn": -9.85,
-          "medianReturn": -7.71,
+          "avgReturn": -15.88,
+          "medianReturn": -14.78,
           "stockCount": 54,
-          "positiveRatio": 0.3,
+          "positiveRatio": 0.2,
           "rank": 10,
           "rankChange": -9
         }
@@ -1195,7 +1195,7 @@
         9.68,
         30.77,
         -11.26,
-        3.23
+        -2.05
       ],
       "ranks": [
         8,
@@ -1209,7 +1209,7 @@
         3,
         1,
         5,
-        5
+        6
       ],
       "stockCounts": [
         3,
@@ -1226,6 +1226,50 @@
         4
       ]
     },
+    "Financial Services": {
+      "returns": [
+        6.83,
+        11.2,
+        5.25,
+        2.41,
+        -2.04,
+        0.92,
+        42.19,
+        4.69,
+        6.49,
+        27.54,
+        -7.31,
+        1.27
+      ],
+      "ranks": [
+        5,
+        2,
+        5,
+        2,
+        5,
+        5,
+        2,
+        4,
+        7,
+        2,
+        3,
+        4
+      ],
+      "stockCounts": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41
+      ]
+    },
     "Technology": {
       "returns": [
         13.65,
@@ -1239,7 +1283,7 @@
         18.2,
         24.68,
         40.94,
-        -9.85
+        -15.88
       ],
       "ranks": [
         1,
@@ -1283,7 +1327,7 @@
         7.14,
         19.31,
         -6.83,
-        -3.81
+        -9.99
       ],
       "ranks": [
         3,
@@ -1314,50 +1358,6 @@
         110
       ]
     },
-    "Financial Services": {
-      "returns": [
-        6.83,
-        11.2,
-        5.25,
-        2.41,
-        -2.04,
-        0.92,
-        42.19,
-        4.69,
-        6.49,
-        27.54,
-        -7.31,
-        2.54
-      ],
-      "ranks": [
-        5,
-        2,
-        5,
-        2,
-        5,
-        5,
-        2,
-        4,
-        7,
-        2,
-        3,
-        6
-      ],
-      "stockCounts": [
-        40,
-        40,
-        40,
-        40,
-        40,
-        41,
-        41,
-        41,
-        41,
-        41,
-        41,
-        41
-      ]
-    },
     "Energy": {
       "returns": [
         0.77,
@@ -1371,7 +1371,7 @@
         9.38,
         12.95,
         -13.54,
-        12.78
+        10.93
       ],
       "ranks": [
         10,
@@ -1415,7 +1415,7 @@
         14.68,
         8.09,
         -9.97,
-        0.74
+        -5.23
       ],
       "ranks": [
         7,
@@ -1429,7 +1429,7 @@
         2,
         7,
         4,
-        7
+        8
       ],
       "stockCounts": [
         63,
@@ -1459,7 +1459,7 @@
         -1.91,
         3.31,
         -17.91,
-        11.94
+        9.74
       ],
       "ranks": [
         9,
@@ -1503,7 +1503,7 @@
         4.34,
         9.2,
         -12.53,
-        -0.05
+        -4.11
       ],
       "ranks": [
         6,
@@ -1517,7 +1517,7 @@
         8,
         6,
         6,
-        8
+        7
       ],
       "stockCounts": [
         46,
@@ -1547,7 +1547,7 @@
         8.8,
         -7.73,
         -25.32,
-        3.55
+        -1.5
       ],
       "ranks": [
         2,
@@ -1561,7 +1561,7 @@
         5,
         10,
         10,
-        4
+        5
       ],
       "stockCounts": [
         25,
@@ -1591,7 +1591,7 @@
         -0.84,
         -6.14,
         -14.82,
-        8.9
+        6.07
       ],
       "ranks": [
         4,
@@ -2905,31 +2905,31 @@
       "complete": true,
       "rows": [
         {
+          "sector": "Energy",
+          "avgSlope": 0.3,
+          "avgR2": 0.36,
+          "strengthScore": 0.11,
+          "dominantTrend": "sideways",
+          "bullishRatio": 0.25,
+          "stockCount": 8,
+          "rank": 1,
+          "rankChange": 5
+        },
+        {
           "sector": "Consumer Defensive",
-          "avgSlope": 0.29,
+          "avgSlope": 0.3,
           "avgR2": 0.34,
           "strengthScore": 0.1,
           "dominantTrend": "sideways",
           "bullishRatio": 0.28,
           "stockCount": 39,
-          "rank": 1,
-          "rankChange": 8
-        },
-        {
-          "sector": "Energy",
-          "avgSlope": 0.28,
-          "avgR2": 0.28,
-          "strengthScore": 0.08,
-          "dominantTrend": "sideways",
-          "bullishRatio": 0.13,
-          "stockCount": 8,
           "rank": 2,
-          "rankChange": 4
+          "rankChange": 7
         },
         {
           "sector": "Communication Services",
           "avgSlope": 0.2,
-          "avgR2": 0.34,
+          "avgR2": 0.35,
           "strengthScore": 0.07,
           "dominantTrend": "sideways",
           "bullishRatio": 0.25,
@@ -2940,9 +2940,9 @@
         {
           "sector": "Utilities",
           "avgSlope": 0.17,
-          "avgR2": 0.28,
-          "strengthScore": 0.05,
-          "dominantTrend": "sideways",
+          "avgR2": 0.38,
+          "strengthScore": 0.06,
+          "dominantTrend": "bullish",
           "bullishRatio": 0.25,
           "stockCount": 4,
           "rank": 4,
@@ -2950,66 +2950,66 @@
         },
         {
           "sector": "Healthcare",
-          "avgSlope": 0.1,
-          "avgR2": 0.26,
+          "avgSlope": 0.12,
+          "avgR2": 0.27,
           "strengthScore": 0.03,
-          "dominantTrend": "recovering",
-          "bullishRatio": 0.18,
+          "dominantTrend": "sideways",
+          "bullishRatio": 0.24,
           "stockCount": 34,
           "rank": 5,
           "rankChange": 5
         },
         {
           "sector": "Basic Materials",
-          "avgSlope": -0.04,
-          "avgR2": 0.25,
-          "strengthScore": -0.01,
-          "dominantTrend": "recovering",
-          "bullishRatio": 0.08,
+          "avgSlope": 0.02,
+          "avgR2": 0.26,
+          "strengthScore": 0.01,
+          "dominantTrend": "sideways",
+          "bullishRatio": 0.1,
           "stockCount": 49,
           "rank": 6,
           "rankChange": 2
         },
         {
-          "sector": "Industrials",
-          "avgSlope": -0.13,
-          "avgR2": 0.23,
-          "strengthScore": -0.03,
-          "dominantTrend": "recovering",
-          "bullishRatio": 0.11,
-          "stockCount": 110,
-          "rank": 7,
-          "rankChange": -3
-        },
-        {
           "sector": "Financial Services",
-          "avgSlope": -0.09,
-          "avgR2": 0.33,
-          "strengthScore": -0.03,
-          "dominantTrend": "recovering",
+          "avgSlope": -0.02,
+          "avgR2": 0.34,
+          "strengthScore": -0.01,
+          "dominantTrend": "sideways",
           "bullishRatio": 0.17,
           "stockCount": 41,
+          "rank": 7,
+          "rankChange": -5
+        },
+        {
+          "sector": "Industrials",
+          "avgSlope": -0.07,
+          "avgR2": 0.23,
+          "strengthScore": -0.02,
+          "dominantTrend": "sideways",
+          "bullishRatio": 0.08,
+          "stockCount": 110,
           "rank": 8,
-          "rankChange": -6
+          "rankChange": -4
         },
         {
           "sector": "Consumer Cyclical",
-          "avgSlope": -0.12,
-          "avgR2": 0.33,
-          "strengthScore": -0.04,
+          "avgSlope": -0.1,
+          "avgR2": 0.32,
+          "strengthScore": -0.03,
           "dominantTrend": "sideways",
-          "bullishRatio": 0.13,
+          "bullishRatio": 0.14,
           "stockCount": 64,
           "rank": 9,
           "rankChange": -6
         },
         {
           "sector": "Technology",
-          "avgSlope": -0.44,
-          "avgR2": 0.24,
-          "strengthScore": -0.11,
+          "avgSlope": -0.27,
+          "avgR2": 0.22,
+          "strengthScore": -0.06,
           "dominantTrend": "recovering",
-          "bullishRatio": 0.06,
+          "bullishRatio": 0.09,
           "stockCount": 54,
           "rank": 10,
           "rankChange": -9
@@ -3031,7 +3031,7 @@
         0.05,
         0.12,
         -0.16,
-        0.05
+        0.06
       ],
       "slopes": [
         0.17,
@@ -3059,7 +3059,7 @@
         0.3,
         0.4,
         0.46,
-        0.28
+        0.38
       ],
       "ranks": [
         5,
@@ -3089,7 +3089,7 @@
         0.03,
         0.26,
         -0.07,
-        -0.03
+        -0.01
       ],
       "slopes": [
         0.1,
@@ -3103,7 +3103,7 @@
         0.08,
         0.58,
         -0.15,
-        -0.09
+        -0.02
       ],
       "r2s": [
         0.38,
@@ -3117,7 +3117,7 @@
         0.4,
         0.45,
         0.44,
-        0.33
+        0.34
       ],
       "ranks": [
         7,
@@ -3131,7 +3131,7 @@
         5,
         1,
         2,
-        8
+        7
       ]
     },
     "Industrials": {
@@ -3147,7 +3147,7 @@
         0,
         0.1,
         -0.12,
-        -0.03
+        -0.02
       ],
       "slopes": [
         0.22,
@@ -3161,7 +3161,7 @@
         0,
         0.24,
         -0.29,
-        -0.13
+        -0.07
       ],
       "r2s": [
         0.43,
@@ -3189,7 +3189,7 @@
         7,
         4,
         4,
-        7
+        8
       ]
     },
     "Energy": {
@@ -3205,7 +3205,7 @@
         0.05,
         0.1,
         -0.15,
-        0.08
+        0.11
       ],
       "slopes": [
         0.06,
@@ -3219,7 +3219,7 @@
         0.14,
         0.26,
         -0.34,
-        0.28
+        0.3
       ],
       "r2s": [
         0.28,
@@ -3233,7 +3233,7 @@
         0.38,
         0.39,
         0.43,
-        0.28
+        0.36
       ],
       "ranks": [
         10,
@@ -3247,7 +3247,7 @@
         3,
         5,
         6,
-        2
+        1
       ]
     },
     "Technology": {
@@ -3263,7 +3263,7 @@
         -0.02,
         0.18,
         0.12,
-        -0.11
+        -0.06
       ],
       "slopes": [
         0.2,
@@ -3277,7 +3277,7 @@
         -0.04,
         0.46,
         0.27,
-        -0.44
+        -0.27
       ],
       "r2s": [
         0.45,
@@ -3291,7 +3291,7 @@
         0.43,
         0.39,
         0.46,
-        0.24
+        0.22
       ],
       "ranks": [
         2,
@@ -3321,7 +3321,7 @@
         0.12,
         0.02,
         -0.12,
-        -0.04
+        -0.03
       ],
       "slopes": [
         0.1,
@@ -3335,7 +3335,7 @@
         0.25,
         0.1,
         -0.25,
-        -0.12
+        -0.1
       ],
       "r2s": [
         0.43,
@@ -3349,7 +3349,7 @@
         0.48,
         0.21,
         0.47,
-        0.33
+        0.32
       ],
       "ranks": [
         6,
@@ -3407,7 +3407,7 @@
         0.43,
         0.35,
         0.51,
-        0.34
+        0.35
       ],
       "ranks": [
         1,
@@ -3451,7 +3451,7 @@
         -0.23,
         0.1,
         -0.42,
-        0.29
+        0.3
       ],
       "r2s": [
         0.42,
@@ -3479,7 +3479,7 @@
         10,
         7,
         9,
-        1
+        2
       ]
     },
     "Basic Materials": {
@@ -3495,7 +3495,7 @@
         0,
         0.05,
         -0.2,
-        -0.01
+        0.01
       ],
       "slopes": [
         0.11,
@@ -3509,7 +3509,7 @@
         0,
         0.14,
         -0.43,
-        -0.04
+        0.02
       ],
       "r2s": [
         0.35,
@@ -3523,7 +3523,7 @@
         0.35,
         0.35,
         0.46,
-        0.25
+        0.26
       ],
       "ranks": [
         8,
@@ -3567,7 +3567,7 @@
         0.22,
         -0.17,
         -0.59,
-        0.1
+        0.12
       ],
       "r2s": [
         0.42,
@@ -3581,7 +3581,7 @@
         0.43,
         0.36,
         0.72,
-        0.26
+        0.27
       ],
       "ranks": [
         4,
