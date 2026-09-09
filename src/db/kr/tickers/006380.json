@@ -1,30 +1,30 @@
 {
   "ticker": "006380.KS",
-  "updated_at": "2026-09-08T00:14:49.327Z",
+  "updated_at": "2026-09-09T00:06:00.359Z",
   "info": {
     "name": "Capro Corporation",
     "kr_name": "카프로",
-    "exchange": "KOSDAQ",
+    "exchange": "KSE",
     "currency": "KRW",
-    "sector": null,
-    "industry": null,
-    "country": null,
+    "sector": "Basic Materials",
+    "industry": "Chemicals",
+    "country": "South Korea",
     "employees": null,
     "is_actively_trading": true
   },
   "market": {
-    "market_cap": 0,
-    "shares_outstanding": null,
-    "float_shares": null,
-    "price": 0,
-    "previous_close": null,
-    "fifty_two_week_high": null,
-    "fifty_two_week_low": null,
-    "beta": null
+    "market_cap": 31264425984,
+    "shares_outstanding": 168996893,
+    "float_shares": 7995830,
+    "price": 185,
+    "previous_close": 3660,
+    "fifty_two_week_high": 3660,
+    "fifty_two_week_low": 0,
+    "beta": -0.03
   },
   "liquidity": {
-    "avg_daily_volume_3m": null,
-    "avg_daily_volume_10d": null
+    "avg_daily_volume_3m": 0,
+    "avg_daily_volume_10d": 0
   },
   "valuation": {
     "trailing_pe": null,
@@ -33,39 +33,47 @@
     "price_to_book": null,
     "trailing_eps": null,
     "forward_eps": null,
-    "enterprise_value": null
+    "enterprise_value": 158073896960
   },
   "profitability": {
-    "profit_margins": null,
-    "gross_margins": null,
-    "operating_margins": null,
-    "roe": null,
-    "roa": null,
-    "revenue_growth": null,
+    "profit_margins": -0.73303,
+    "gross_margins": -0.39418,
+    "operating_margins": -0.022079999,
+    "roe": -0.32754,
+    "roa": -0.03654,
+    "revenue_growth": 0.005,
     "earnings_growth": null,
-    "quarterly_earnings": []
+    "quarterly_earnings": [
+      {
+        "quarter": "2018Q4",
+        "net_income": 1376240000
+      },
+      {
+        "quarter": "2018Q3",
+        "net_income": 0
+      },
+      {
+        "quarter": "2018Q1",
+        "net_income": 2754120000
+      },
+      {
+        "quarter": "2017Q4",
+        "net_income": 5720220000
+      }
+    ]
   },
   "dividend": {
     "rate": null,
     "yield": null,
-    "payout_ratio": null,
+    "payout_ratio": 0,
     "avg_yield_3y": null
   },
   "ownership": {
-    "held_pct_institutions": null,
-    "held_pct_insiders": null,
+    "held_pct_institutions": 0,
+    "held_pct_insiders": 0.95722,
     "short_ratio": null
   },
   "prices": [
-    {
-      "date": "2023-09-08",
-      "open": 1150,
-      "high": 1220,
-      "low": 1015,
-      "close": 1024,
-      "adj_close": 1024,
-      "volume": 5516877
-    },
     {
       "date": "2023-09-11",
       "open": 1010,
@@ -6590,6 +6598,15 @@
       "close": 3660,
       "adj_close": 3660,
       "volume": 0
+    },
+    {
+      "date": "2026-09-08",
+      "open": 300,
+      "high": 340,
+      "low": 185,
+      "close": 185,
+      "adj_close": 185,
+      "volume": 5215801
     }
   ]
 }
