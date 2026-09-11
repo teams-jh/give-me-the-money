@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-11 00:15",
+  "generated_at": "2026-09-11 18:09",
   "market": "us",
   "analyzed_count": 961,
   "skipped_count": 0,
   "alerted_count": 961,
   "summary": {
-    "bullish_count": 538,
-    "bearish_count": 375,
+    "bullish_count": 539,
+    "bearish_count": 374,
     "neutral_count": 48,
     "avg_tech_score": 0.2,
     "avg_fund_score": 0.4
@@ -59045,6 +59045,108 @@
       ]
     },
     {
+      "ticker": "TW",
+      "name": "Tradeweb Markets Inc.",
+      "sector": "Financial Services",
+      "totalScore": 1,
+      "techScore": 0,
+      "fundScore": 1,
+      "rsi": 43.91,
+      "macd": 0.1464,
+      "bandWidth": 7.26,
+      "volRatio": 1.31,
+      "atr": 2.7061,
+      "stopLoss": 98.41,
+      "mdd": -38.6,
+      "high52w": 126.57,
+      "low52w": 91.5,
+      "stochK": 12.73,
+      "roc20": -1.4,
+      "mfi": 51.62,
+      "adx": 14.16,
+      "supertrendDir": "bullish",
+      "pe": 24.272076,
+      "pb": 3.271569,
+      "roe": 0.14468999,
+      "roa": 0.1248,
+      "dividendYield": 0.0055,
+      "insiderPct": 0.0027700001,
+      "shortRatio": 2.94,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "dead_cross_5_20",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "데드크로스 MA5/MA20 (3봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -38.6%)",
+          "value": -38.6,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_oversold",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 과매도 (%K 12.73)",
+          "value": 12.73,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:-1.0% 20d:-1.4% 60d:+0.7%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 100.982)",
+          "value": 100.9815,
+          "scoreAffecting": true
+        },
+        {
+          "type": "pe_caution",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "PER 주의 구간 (PE 24.3)",
+          "value": 24.272076,
+          "scoreAffecting": false
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 -12% vs 이전 -37%)",
+          "value": -0.11674558173067555,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.3%)",
+          "value": 0.27700001,
+          "scoreAffecting": false
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (43.8%)",
+          "value": 43.829,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
       "ticker": "RCI",
       "name": "Rogers Communications Inc.",
       "sector": "Communication Services",
@@ -91929,116 +92031,6 @@
           "strength": "weak",
           "label": "우수한 영업이익률 (41.8%)",
           "value": 41.838002,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
-      "ticker": "TW",
-      "name": "Tradeweb Markets Inc.",
-      "sector": "Financial Services",
-      "totalScore": -1.5,
-      "techScore": -2.5,
-      "fundScore": 1,
-      "rsi": 45.01,
-      "macd": 0.3974,
-      "bandWidth": 6.86,
-      "volRatio": 1.12,
-      "atr": 2.7358,
-      "stopLoss": 98.84,
-      "mdd": -38.6,
-      "high52w": 126.57,
-      "low52w": 91.5,
-      "stochK": 23.8,
-      "roc20": -1.42,
-      "mfi": 51.49,
-      "adx": 13.85,
-      "supertrendDir": "bullish",
-      "pe": 24.291168,
-      "pb": 3.2741425,
-      "roe": 0.14468999,
-      "roa": 0.1248,
-      "dividendYield": 0.0054,
-      "insiderPct": 0.0027700001,
-      "shortRatio": 2.29,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "dead_cross_5_20",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "데드크로스 MA5/MA20 (2봉 전)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "macd_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "MACD 데드크로스 (4봉 전)",
-          "value": 1.2305,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -38.6%)",
-          "value": -38.6,
-          "scoreAffecting": false
-        },
-        {
-          "type": "pv_bearish_divergence",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "가격-거래량 약세 다이버전스 (가격 +2.2% / 거래량 -31.0%)",
-          "value": -31.04991675195582,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-3.5% 20d:-1.4% 60d:+1.7%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 100.982)",
-          "value": 100.9815,
-          "scoreAffecting": true
-        },
-        {
-          "type": "pe_caution",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "PER 주의 구간 (PE 24.3)",
-          "value": 24.291168,
-          "scoreAffecting": false
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 -12% vs 이전 -37%)",
-          "value": -0.11674558173067555,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.3%)",
-          "value": 0.27700001,
-          "scoreAffecting": false
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (43.8%)",
-          "value": 43.829,
           "scoreAffecting": false
         }
       ]
