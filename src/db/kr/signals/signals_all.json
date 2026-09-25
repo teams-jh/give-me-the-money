@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-24 08:02",
+  "generated_at": "2026-09-25 00:31",
   "market": "kr",
   "analyzed_count": 498,
   "skipped_count": 2,
   "alerted_count": 498,
   "summary": {
-    "bullish_count": 322,
-    "bearish_count": 147,
+    "bullish_count": 326,
+    "bearish_count": 143,
     "neutral_count": 29,
     "avg_tech_score": 0,
     "avg_fund_score": 1.4
@@ -1278,8 +1278,8 @@
           "type": "peg_undervalued",
           "direction": "bullish",
           "strength": "weak",
-          "label": "PEG 저평가 (0.44 — 성장 대비 저평가)",
-          "value": 0.44,
+          "label": "PEG 저평가 (0.43 — 성장 대비 저평가)",
+          "value": 0.43,
           "scoreAffecting": true
         },
         {
@@ -4250,109 +4250,6 @@
           "label": "우수한 영업이익률 (29.5%)",
           "value": 29.493000000000002,
           "scoreAffecting": false
-        }
-      ]
-    },
-    {
-      "ticker": "005850.KS",
-      "name": "에스엘",
-      "sector": "Consumer Cyclical",
-      "totalScore": 6,
-      "techScore": 1,
-      "fundScore": 5,
-      "rsi": 33.95,
-      "macd": -1379.1543,
-      "bandWidth": 9.98,
-      "volRatio": 1.62,
-      "atr": 1933.9045,
-      "stopLoss": 45399.14,
-      "mdd": -39.89,
-      "high52w": 76200,
-      "low52w": 33450,
-      "stochK": 5.68,
-      "roc20": -8.87,
-      "mfi": 44.38,
-      "adx": 21.28,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.14947,
-      "roa": 0.06853,
-      "dividendYield": 0.0573,
-      "insiderPct": 0.69934,
-      "shortRatio": null,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "bb_lower_breakout",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "볼린저밴드 하단 이탈 (당일)",
-          "value": 48300,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -39.89%)",
-          "value": -39.89,
-          "scoreAffecting": false
-        },
-        {
-          "type": "pv_bullish_divergence",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "가격-거래량 강세 다이버전스 (가격 -2.9% / 거래량 -27.7%)",
-          "value": -27.749136783878512,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_extreme_oversold",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "Stochastic 극단 과매도 (%K 5.68)",
-          "value": 5.68,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bearish",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "ROC 전 구간 하락 모멘텀 (5d:-4.0% 20d:-8.9% 60d:-17.6%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 53,884.295)",
-          "value": 53884.2951,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 80% vs 이전 7%)",
-          "value": 0.8030481273506287,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_high",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "내부자 고보유 (69.9%)",
-          "value": 69.934,
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_high_sustainable",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "고배당·지속가능 (수익률 5.7% / 성향 33%)",
-          "value": 5.7299999999999995,
-          "scoreAffecting": true
         }
       ]
     },
@@ -8243,6 +8140,115 @@
       ]
     },
     {
+      "ticker": "483650.KS",
+      "name": "달바글로벌",
+      "sector": "Consumer Defensive",
+      "totalScore": 4.5,
+      "techScore": 1.5,
+      "fundScore": 3,
+      "rsi": 43.09,
+      "macd": -11813.3334,
+      "bandWidth": 40.87,
+      "volRatio": 1.03,
+      "atr": 12057.7722,
+      "stopLoss": 164013.34,
+      "mdd": -49.39,
+      "high52w": 265000,
+      "low52w": 121200,
+      "stochK": 52.55,
+      "roc20": -21.34,
+      "mfi": 35.95,
+      "adx": 21.05,
+      "supertrendDir": "bearish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.4941,
+      "roa": 0.29145,
+      "dividendYield": 0.014400001,
+      "insiderPct": 0.21931,
+      "shortRatio": null,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "macd_golden_cross",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "MACD 골든크로스 (2봉 전)",
+          "value": -13849.8823,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -49.39%)",
+          "value": -49.39,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "Stochastic 골든크로스 (과매도 영역) (4봉 전)",
+          "value": 8.39,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:+13.7% 20d:-21.3% 60d:-21.9%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 192,622.942)",
+          "value": 192622.942,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 5% vs 이전 78%)",
+          "value": 0.04741723312326279,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_high_quality",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "고성장·고수익 (매출+46% / 순이익률 17.1%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_exists",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "배당 지급 (수익률 1.4%)",
+          "value": 1.4400001,
+          "scoreAffecting": false
+        },
+        {
+          "type": "profitability_excellent",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "우수한 수익성 (ROE 49.4% / ROA 29.1%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (25.3%)",
+          "value": 25.281,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
       "ticker": "007810.KS",
       "name": "코리아써키트",
       "sector": "Technology",
@@ -9882,115 +9888,6 @@
       ]
     },
     {
-      "ticker": "483650.KS",
-      "name": "달바글로벌",
-      "sector": "Consumer Defensive",
-      "totalScore": 4.5,
-      "techScore": 1.5,
-      "fundScore": 3,
-      "rsi": 43.09,
-      "macd": -11813.3334,
-      "bandWidth": 40.87,
-      "volRatio": 1.03,
-      "atr": 12057.7722,
-      "stopLoss": 164013.34,
-      "mdd": -49.39,
-      "high52w": 265000,
-      "low52w": 121200,
-      "stochK": 52.55,
-      "roc20": -21.34,
-      "mfi": 35.95,
-      "adx": 21.05,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.4941,
-      "roa": 0.29145,
-      "dividendYield": 0.014400001,
-      "insiderPct": 0.21931,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "macd_golden_cross",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "MACD 골든크로스 (2봉 전)",
-          "value": -13849.8823,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -49.39%)",
-          "value": -49.39,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "Stochastic 골든크로스 (과매도 영역) (4봉 전)",
-          "value": 8.39,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:+13.7% 20d:-21.3% 60d:-21.9%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 192,622.942)",
-          "value": 192622.942,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 5% vs 이전 78%)",
-          "value": 0.04741723312326279,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_high_quality",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "고성장·고수익 (매출+46% / 순이익률 17.1%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_exists",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "배당 지급 (수익률 1.4%)",
-          "value": 1.4400001,
-          "scoreAffecting": false
-        },
-        {
-          "type": "profitability_excellent",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "우수한 수익성 (ROE 49.4% / ROA 29.1%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (25.3%)",
-          "value": 25.281,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
       "ticker": "012330.KS",
       "name": "현대모비스",
       "sector": "Consumer Cyclical",
@@ -10692,6 +10589,109 @@
       ]
     },
     {
+      "ticker": "005850.KS",
+      "name": "에스엘",
+      "sector": "Consumer Cyclical",
+      "totalScore": 4,
+      "techScore": 1,
+      "fundScore": 3,
+      "rsi": 33.95,
+      "macd": -1379.1543,
+      "bandWidth": 9.98,
+      "volRatio": 1.62,
+      "atr": 1933.9045,
+      "stopLoss": 45399.14,
+      "mdd": -39.89,
+      "high52w": 76200,
+      "low52w": 33450,
+      "stochK": 5.68,
+      "roc20": -8.87,
+      "mfi": 44.38,
+      "adx": 21.28,
+      "supertrendDir": "bearish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.14947,
+      "roa": 0.06853,
+      "dividendYield": 0.0573,
+      "insiderPct": 0.69934,
+      "shortRatio": null,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "bb_lower_breakout",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "볼린저밴드 하단 이탈 (당일)",
+          "value": 48300,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -39.89%)",
+          "value": -39.89,
+          "scoreAffecting": false
+        },
+        {
+          "type": "pv_bullish_divergence",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "가격-거래량 강세 다이버전스 (가격 -2.9% / 거래량 -27.7%)",
+          "value": -27.749136783878512,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_extreme_oversold",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "Stochastic 극단 과매도 (%K 5.68)",
+          "value": 5.68,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bearish",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "ROC 전 구간 하락 모멘텀 (5d:-4.0% 20d:-8.9% 60d:-17.6%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 53,884.295)",
+          "value": 53884.2951,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 -19% vs 이전 80%)",
+          "value": -0.18836034371022836,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_high",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "내부자 고보유 (69.9%)",
+          "value": 69.934,
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_high_sustainable",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "고배당·지속가능 (수익률 5.7% / 성향 33%)",
+          "value": 5.7299999999999995,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
       "ticker": "002790.KS",
       "name": "아모레퍼시픽홀딩스",
       "sector": "Consumer Defensive",
@@ -11207,132 +11207,6 @@
           "strength": "normal",
           "label": "배당 매력 (수익률 6.2% / 성향 71%)",
           "value": 6.2,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "285130.KS",
-      "name": "SK케미칼",
-      "sector": "Basic Materials",
-      "totalScore": 4,
-      "techScore": 3,
-      "fundScore": 1,
-      "rsi": 46.32,
-      "macd": 815.0789,
-      "bandWidth": 13.42,
-      "volRatio": 0.37,
-      "atr": 2363.5265,
-      "stopLoss": 46454.71,
-      "mdd": -54.07,
-      "high52w": 79800,
-      "low52w": 36650,
-      "stochK": 12.94,
-      "roc20": -3.85,
-      "mfi": 28.24,
-      "adx": 39.44,
-      "supertrendDir": "bullish",
-      "pe": null,
-      "pb": null,
-      "roe": -0.0065499996,
-      "roa": -0.00099,
-      "dividendYield": 0.031,
-      "insiderPct": 0.41511002,
-      "shortRatio": null,
-      "earningsTrend": "turnaround",
-      "alerts": [
-        {
-          "type": "dead_cross_5_20",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "데드크로스 MA5/MA20 (3봉 전)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "bb_lower_breakout",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "볼린저밴드 하단 이탈 (1봉 전)",
-          "value": 49800,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -54.07%)",
-          "value": -54.07,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_oversold",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Stochastic 과매도 (%K 12.94)",
-          "value": 12.94,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "Stochastic 골든크로스 (과매도 영역) (당일)",
-          "value": 12.94,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-7.6% 20d:-3.9% 60d:+23.1%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 46,908.085)",
-          "value": 46908.0854,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_turnaround",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "흑자 전환 (직전 적자→최신 흑자 88억)",
-          "value": 8815540000,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (41.5%)",
-          "value": 41.511002000000005,
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_exists",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "배당 지급 (수익률 3.1%)",
-          "value": 3.1,
-          "scoreAffecting": false
-        },
-        {
-          "type": "dividend_unsustainable",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "배당 지속 불가 (성향 313% — 이익 초과 배당)",
-          "value": 312.5,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_negative_roe",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "자본 잠식 위험 (ROE -0.7%)",
-          "value": -0.65499996,
           "scoreAffecting": true
         }
       ]
@@ -12995,7 +12869,7 @@
       "roe": 0.08525,
       "roa": 0.01475,
       "dividendYield": 0.045,
-      "insiderPct": 0.688,
+      "insiderPct": 0.68786,
       "shortRatio": null,
       "earningsTrend": "insufficient",
       "alerts": [
@@ -13064,7 +12938,7 @@
           "direction": "bullish",
           "strength": "strong",
           "label": "내부자 고보유 (68.8%)",
-          "value": 68.8,
+          "value": 68.786,
           "scoreAffecting": true
         },
         {
@@ -13168,6 +13042,108 @@
           "strength": "strong",
           "label": "내부자 고보유 (56.3%)",
           "value": 56.321996,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "093370.KS",
+      "name": "후성",
+      "sector": "Basic Materials",
+      "totalScore": 3.5,
+      "techScore": -0.5,
+      "fundScore": 4,
+      "rsi": 56.71,
+      "macd": 578.7469,
+      "bandWidth": 23.7,
+      "volRatio": 2.32,
+      "atr": 1049.5881,
+      "stopLoss": 12375.62,
+      "mdd": -69.06,
+      "high52w": 22400,
+      "low52w": 5550,
+      "stochK": 52.57,
+      "roc20": 12.23,
+      "mfi": 79.07,
+      "adx": 28.13,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.11468001,
+      "roa": 0.03103,
+      "dividendYield": null,
+      "insiderPct": 0.46045,
+      "shortRatio": null,
+      "earningsTrend": "turnaround",
+      "alerts": [
+        {
+          "type": "macd_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "MACD 데드크로스 (당일)",
+          "value": 578.7469,
+          "scoreAffecting": true
+        },
+        {
+          "type": "volume_spike_up",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "거래량 급증 2.3배 (가격 상승)",
+          "value": 2.32,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -69.06%)",
+          "value": -69.06,
+          "scoreAffecting": false
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:-4.0% 20d:+12.2% 60d:-25.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "mfi_rsi_positive_gap",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "MFI-RSI 괴리 +22.4 (거래량 대비 가격 상승 부족)",
+          "value": 22.359999999999992,
+          "scoreAffecting": false
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 11,838.941)",
+          "value": 11838.9409,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_turnaround",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "흑자 전환 (직전 적자→최신 흑자 214억)",
+          "value": 21412590000,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (46.0%)",
+          "value": 46.045,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_balanced",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "균형 성장 (매출+52% / 순이익률 6.4%)",
           "scoreAffecting": true
         }
       ]
@@ -15032,7 +15008,7 @@
       "roe": 0.0579,
       "roa": 0.03479,
       "dividendYield": null,
-      "insiderPct": 0.32853,
+      "insiderPct": 0.33008,
       "shortRatio": null,
       "earningsTrend": "insufficient",
       "alerts": [
@@ -15079,8 +15055,8 @@
           "type": "insider_high",
           "direction": "bullish",
           "strength": "normal",
-          "label": "내부자 보유 높음 (32.9%)",
-          "value": 32.853,
+          "label": "내부자 보유 높음 (33.0%)",
+          "value": 33.007999999999996,
           "scoreAffecting": true
         }
       ]
@@ -15597,131 +15573,6 @@
           "strength": "normal",
           "label": "양호한 자본효율 (ROE 15.2%)",
           "value": 15.196000000000002,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "006260.KS",
-      "name": "LS",
-      "sector": "Industrials",
-      "totalScore": 3,
-      "techScore": 1,
-      "fundScore": 2,
-      "rsi": 53.21,
-      "macd": 2427.7782,
-      "bandWidth": 13.39,
-      "volRatio": 0.67,
-      "atr": 19999.4044,
-      "stopLoss": 291500.89,
-      "mdd": -59.58,
-      "high52w": 553000,
-      "low52w": 162300,
-      "stochK": 69.7,
-      "roc20": 9.54,
-      "mfi": 56.37,
-      "adx": 9.33,
-      "supertrendDir": "bullish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.093789995,
-      "roa": 0.0381,
-      "dividendYield": 0.0078,
-      "insiderPct": 0.33113998,
-      "shortRatio": null,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "golden_cross_20_60",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "골든크로스 MA20/MA60 (당일)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "macd_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "MACD 데드크로스 (제로선 아래) (4봉 전)",
-          "value": -1171.5591,
-          "scoreAffecting": true
-        },
-        {
-          "type": "macd_golden_cross",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "MACD 골든크로스 (제로선 위) (3봉 전)",
-          "value": 237.42,
-          "scoreAffecting": true
-        },
-        {
-          "type": "bb_squeeze",
-          "direction": "neutral",
-          "strength": "strong",
-          "label": "볼린저밴드 스퀴즈 (120봉 중 최저 밴드폭: 13.4%)",
-          "value": 13.39,
-          "scoreAffecting": false
-        },
-        {
-          "type": "obv_bearish_divergence",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "OBV 하락 다이버전스 (가격↑ OBV↓, 20봉 기준)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -59.58%)",
-          "value": -59.58,
-          "scoreAffecting": false
-        },
-        {
-          "type": "pv_bearish_divergence",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "가격-거래량 약세 다이버전스 (가격 +32.0% / 거래량 -43.6%)",
-          "value": -43.61963177138654,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (3봉 전)",
-          "value": 50,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bullish",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "ROC 상승 모멘텀 (5d:+5.9% 20d:+9.5% 60d:-10.3%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 274,816.493)",
-          "value": 274816.4933,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 802% vs 이전 -74%)",
-          "value": 8.021993286259983,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (33.1%)",
-          "value": 33.113998,
           "scoreAffecting": true
         }
       ]
@@ -17348,8 +17199,8 @@
           "type": "peg_undervalued",
           "direction": "bullish",
           "strength": "weak",
-          "label": "PEG 저평가 (0.88 — 성장 대비 저평가)",
-          "value": 0.88,
+          "label": "PEG 저평가 (0.89 — 성장 대비 저평가)",
+          "value": 0.89,
           "scoreAffecting": true
         }
       ]
@@ -18312,7 +18163,7 @@
       "roe": 0.19315,
       "roa": 0.082320005,
       "dividendYield": 0.0336,
-      "insiderPct": 0.27357998,
+      "insiderPct": 0.27533,
       "shortRatio": null,
       "earningsTrend": "accelerating",
       "alerts": [
@@ -18615,6 +18466,116 @@
           "label": "내부자 고보유 (81.7%)",
           "value": 81.714,
           "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "138930.KS",
+      "name": "BNK금융지주",
+      "sector": "Financial Services",
+      "totalScore": 2.5,
+      "techScore": -1.5,
+      "fundScore": 4,
+      "rsi": 55.74,
+      "macd": 89.9425,
+      "bandWidth": 8.21,
+      "volRatio": 1.01,
+      "atr": 529.8135,
+      "stopLoss": 15175.28,
+      "mdd": -36.87,
+      "high52w": 22650,
+      "low52w": 13810,
+      "stochK": 51.95,
+      "roc20": 7.33,
+      "mfi": 62.2,
+      "adx": 23.1,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.06862,
+      "roa": 0.00478,
+      "dividendYield": 0.0376,
+      "insiderPct": 0.27095,
+      "shortRatio": null,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -36.87%)",
+          "value": -36.87,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "Stochastic 데드크로스 (4봉 전)",
+          "value": 74.12,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 골든크로스 (당일)",
+          "value": 51.95,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_bearish_divergence",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "Stochastic 하락 다이버전스 (가격↑ %K↓)",
+          "value": 51.95,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:-0.8% 20d:+7.3% 60d:-5.7%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 14,698.59)",
+          "value": 14698.5902,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 370% vs 이전 -85%)",
+          "value": 3.6975689969334695,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_high_quality",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "고성장·고수익 (매출+27% / 순이익률 11.7%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_attractive",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "배당 매력 (수익률 3.8% / 성향 33%)",
+          "value": 3.7600000000000002,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (25.5%)",
+          "value": 25.489,
+          "scoreAffecting": false
         }
       ]
     },
@@ -19392,7 +19353,7 @@
       "roe": 0.04008,
       "roa": -0.00671,
       "dividendYield": 0.0023,
-      "insiderPct": 0.71496004,
+      "insiderPct": 0.71509004,
       "shortRatio": null,
       "earningsTrend": "stable",
       "alerts": [
@@ -19432,7 +19393,7 @@
           "direction": "bullish",
           "strength": "strong",
           "label": "내부자 고보유 (71.5%)",
-          "value": 71.496004,
+          "value": 71.509004,
           "scoreAffecting": true
         }
       ]
@@ -21155,7 +21116,7 @@
       "roe": 0.29365999,
       "roa": 0.02487,
       "dividendYield": 0.013099999,
-      "insiderPct": 0.25424,
+      "insiderPct": 0.25425,
       "shortRatio": null,
       "earningsTrend": "stable",
       "alerts": [
@@ -22618,7 +22579,7 @@
       "roe": 0.25636,
       "roa": 0.033239998,
       "dividendYield": null,
-      "insiderPct": 0.48918998,
+      "insiderPct": 0.48921,
       "shortRatio": null,
       "earningsTrend": "stable",
       "alerts": [
@@ -22682,7 +22643,7 @@
           "direction": "bullish",
           "strength": "normal",
           "label": "내부자 보유 높음 (48.9%)",
-          "value": 48.918998,
+          "value": 48.921,
           "scoreAffecting": true
         },
         {
@@ -22822,6 +22783,124 @@
       ]
     },
     {
+      "ticker": "285130.KS",
+      "name": "SK케미칼",
+      "sector": "Basic Materials",
+      "totalScore": 2,
+      "techScore": 3,
+      "fundScore": -1,
+      "rsi": 46.32,
+      "macd": 815.0789,
+      "bandWidth": 13.42,
+      "volRatio": 0.37,
+      "atr": 2363.5265,
+      "stopLoss": 46454.71,
+      "mdd": -54.07,
+      "high52w": 79800,
+      "low52w": 36650,
+      "stochK": 12.94,
+      "roc20": -3.85,
+      "mfi": 28.24,
+      "adx": 39.44,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": -0.0065499996,
+      "roa": -0.00099,
+      "dividendYield": 0.031,
+      "insiderPct": 0.41511002,
+      "shortRatio": null,
+      "earningsTrend": "stable",
+      "alerts": [
+        {
+          "type": "dead_cross_5_20",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "데드크로스 MA5/MA20 (3봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "bb_lower_breakout",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "볼린저밴드 하단 이탈 (1봉 전)",
+          "value": 49800,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -54.07%)",
+          "value": -54.07,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_oversold",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 과매도 (%K 12.94)",
+          "value": 12.94,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "Stochastic 골든크로스 (과매도 영역) (당일)",
+          "value": 12.94,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:-7.6% 20d:-3.9% 60d:+23.1%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 46,908.085)",
+          "value": 46908.0854,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (41.5%)",
+          "value": 41.511002000000005,
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_exists",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "배당 지급 (수익률 3.1%)",
+          "value": 3.1,
+          "scoreAffecting": false
+        },
+        {
+          "type": "dividend_unsustainable",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "배당 지속 불가 (성향 313% — 이익 초과 배당)",
+          "value": 312.5,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_negative_roe",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "자본 잠식 위험 (ROE -0.7%)",
+          "value": -0.65499996,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
       "ticker": "032350.KS",
       "name": "롯데관광개발",
       "sector": "Consumer Cyclical",
@@ -22948,8 +23027,8 @@
           "type": "peg_undervalued",
           "direction": "bullish",
           "strength": "weak",
-          "label": "PEG 저평가 (0.11 — 성장 대비 저평가)",
-          "value": 0.11,
+          "label": "PEG 저평가 (0.12 — 성장 대비 저평가)",
+          "value": 0.12,
           "scoreAffecting": true
         },
         {
@@ -22959,6 +23038,124 @@
           "label": "우수한 영업이익률 (25.5%)",
           "value": 25.546000000000003,
           "scoreAffecting": false
+        }
+      ]
+    },
+    {
+      "ticker": "336370.KS",
+      "name": "솔루스첨단소재",
+      "sector": "Technology",
+      "totalScore": 2,
+      "techScore": -1,
+      "fundScore": 3,
+      "rsi": 47.57,
+      "macd": 94.8405,
+      "bandWidth": 18.48,
+      "volRatio": 0.63,
+      "atr": 515.1749,
+      "stopLoss": 6847.24,
+      "mdd": -75.75,
+      "high52w": 16150,
+      "low52w": 5590,
+      "stochK": 35.52,
+      "roc20": 1.06,
+      "mfi": 55.13,
+      "adx": 16.55,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": -0.09049,
+      "roa": -0.02537,
+      "dividendYield": 0.0013,
+      "insiderPct": 0.53276,
+      "shortRatio": null,
+      "earningsTrend": "turnaround",
+      "alerts": [
+        {
+          "type": "macd_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "MACD 데드크로스 (당일)",
+          "value": 94.8405,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -75.75%)",
+          "value": -75.75,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (2봉 전)",
+          "value": 48.4,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (1봉 전)",
+          "value": 47.02,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:-3.5% 20d:+1.1% 60d:-15.7%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 6,766.269)",
+          "value": 6766.2693,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_turnaround",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "흑자 전환 (직전 적자→최신 흑자 76억)",
+          "value": 7600000000,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_high",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "내부자 고보유 (53.3%)",
+          "value": 53.276,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_balanced",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "균형 성장 (매출+31% / 순이익률 6.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_negative_roe",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "자본 잠식 위험 (ROE -9.0%)",
+          "value": -9.049,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_operating_loss",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "영업 구조 문제 (영업이익률 -21.3%)",
+          "value": -21.278,
+          "scoreAffecting": true
         }
       ]
     },
@@ -24894,6 +25091,132 @@
       ]
     },
     {
+      "ticker": "071970.KS",
+      "name": "HD현대마린엔진",
+      "sector": "Industrials",
+      "totalScore": 1.5,
+      "techScore": -3.5,
+      "fundScore": 5,
+      "rsi": 42.33,
+      "macd": -1129.6191,
+      "bandWidth": 11.5,
+      "volRatio": 1.25,
+      "atr": 2910.8758,
+      "stopLoss": 44633.69,
+      "mdd": -58.53,
+      "high52w": 115500,
+      "low52w": 47900,
+      "stochK": 28.61,
+      "roc20": -7.37,
+      "mfi": 54.68,
+      "adx": 7.17,
+      "supertrendDir": "bearish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.4429,
+      "roa": 0.08957,
+      "dividendYield": null,
+      "insiderPct": 0.35066003,
+      "shortRatio": null,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -58.53%)",
+          "value": -58.53,
+          "scoreAffecting": false
+        },
+        {
+          "type": "low52w_near",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "52주 신저가 근접 (저가 대비 +2.3%)",
+          "value": 49000,
+          "scoreAffecting": true
+        },
+        {
+          "type": "pv_bearish_divergence",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "가격-거래량 약세 다이버전스 (가격 +2.2% / 거래량 -34.3%)",
+          "value": -34.314430620620705,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (3봉 전)",
+          "value": 42.62,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (1봉 전)",
+          "value": 49.26,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:+0.5% 20d:-7.4% 60d:-16.8%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 57,071.02)",
+          "value": 57071.02,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 13% vs 이전 -75%)",
+          "value": 0.13233622282222537,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (35.1%)",
+          "value": 35.066003,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_high_quality",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "고성장·고수익 (매출+29% / 순이익률 40.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_good",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "양호한 자본효율 (ROE 44.3%)",
+          "value": 44.29,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (24.4%)",
+          "value": 24.433,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
       "ticker": "0009K0.KQ",
       "name": "에임드바이오",
       "sector": "Healthcare",
@@ -25311,6 +25634,69 @@
           "strength": "weak",
           "label": "배당 지급 (수익률 1.6%)",
           "value": 1.5700001000000001,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
+      "ticker": "090460.KS",
+      "name": "비에이치",
+      "sector": "Technology",
+      "totalScore": 1.5,
+      "techScore": 1.5,
+      "fundScore": 0,
+      "rsi": 54.73,
+      "macd": 519.067,
+      "bandWidth": 25.47,
+      "volRatio": 0.43,
+      "atr": 1348.3103,
+      "stopLoss": 18227.53,
+      "mdd": -67.41,
+      "high52w": 40200,
+      "low52w": 13100,
+      "stochK": 31.3,
+      "roc20": 18.91,
+      "mfi": 62.05,
+      "adx": 19.32,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.1257,
+      "roa": 0.03837,
+      "dividendYield": 0.0123000005,
+      "insiderPct": 0.21597,
+      "shortRatio": null,
+      "earningsTrend": "stable",
+      "alerts": [
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -67.41%)",
+          "value": -67.41,
+          "scoreAffecting": false
+        },
+        {
+          "type": "roc_bullish",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "ROC 상승 모멘텀 (5d:+8.1% 20d:+18.9% 60d:-3.6%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 16,994.266)",
+          "value": 16994.2657,
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_exists",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "배당 지급 (수익률 1.2%)",
+          "value": 1.23000005,
           "scoreAffecting": false
         }
       ]
@@ -27942,6 +28328,131 @@
           "strength": "normal",
           "label": "자본 잠식 위험 (ROE -5.7%)",
           "value": -5.705,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "006260.KS",
+      "name": "LS",
+      "sector": "Industrials",
+      "totalScore": 1,
+      "techScore": 1,
+      "fundScore": 0,
+      "rsi": 53.21,
+      "macd": 2427.7782,
+      "bandWidth": 13.39,
+      "volRatio": 0.67,
+      "atr": 19999.4044,
+      "stopLoss": 291500.89,
+      "mdd": -59.58,
+      "high52w": 553000,
+      "low52w": 162300,
+      "stochK": 69.7,
+      "roc20": 9.54,
+      "mfi": 56.37,
+      "adx": 9.33,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.093789995,
+      "roa": 0.0381,
+      "dividendYield": 0.0078,
+      "insiderPct": 0.33113998,
+      "shortRatio": null,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "golden_cross_20_60",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "골든크로스 MA20/MA60 (당일)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "macd_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "MACD 데드크로스 (제로선 아래) (4봉 전)",
+          "value": -1171.5591,
+          "scoreAffecting": true
+        },
+        {
+          "type": "macd_golden_cross",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "MACD 골든크로스 (제로선 위) (3봉 전)",
+          "value": 237.42,
+          "scoreAffecting": true
+        },
+        {
+          "type": "bb_squeeze",
+          "direction": "neutral",
+          "strength": "strong",
+          "label": "볼린저밴드 스퀴즈 (120봉 중 최저 밴드폭: 13.4%)",
+          "value": 13.39,
+          "scoreAffecting": false
+        },
+        {
+          "type": "obv_bearish_divergence",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "OBV 하락 다이버전스 (가격↑ OBV↓, 20봉 기준)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -59.58%)",
+          "value": -59.58,
+          "scoreAffecting": false
+        },
+        {
+          "type": "pv_bearish_divergence",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "가격-거래량 약세 다이버전스 (가격 +32.0% / 거래량 -43.6%)",
+          "value": -43.61963177138654,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (3봉 전)",
+          "value": 50,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bullish",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "ROC 상승 모멘텀 (5d:+5.9% 20d:+9.5% 60d:-10.3%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 274,816.493)",
+          "value": 274816.4933,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 21% vs 이전 802%)",
+          "value": 0.20869632157657717,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (33.1%)",
+          "value": 33.113998,
           "scoreAffecting": true
         }
       ]
@@ -30621,7 +31132,7 @@
       "roe": 0.09111,
       "roa": 0.04366,
       "dividendYield": 0.004,
-      "insiderPct": 0.36174,
+      "insiderPct": 0.36172,
       "shortRatio": null,
       "earningsTrend": "accelerating",
       "alerts": [
@@ -30698,7 +31209,7 @@
           "direction": "bullish",
           "strength": "normal",
           "label": "내부자 보유 높음 (36.2%)",
-          "value": 36.174,
+          "value": 36.172,
           "scoreAffecting": true
         },
         {
@@ -31302,7 +31813,7 @@
       "roe": -0.07412,
       "roa": 0.00778,
       "dividendYield": 0.0238,
-      "insiderPct": 0.29024,
+      "insiderPct": 0.28353,
       "shortRatio": null,
       "earningsTrend": "deteriorating",
       "alerts": [
@@ -31788,6 +32299,93 @@
       ]
     },
     {
+      "ticker": "032640.KS",
+      "name": "LG유플러스",
+      "sector": "Communication Services",
+      "totalScore": 0.5,
+      "techScore": -1,
+      "fundScore": 1.5,
+      "rsi": 47.71,
+      "macd": -93.4177,
+      "bandWidth": 6.68,
+      "volRatio": 0.97,
+      "atr": 350.5181,
+      "stopLoss": 14114.22,
+      "mdd": -21.39,
+      "high52w": 17810,
+      "low52w": 14000,
+      "stochK": 45.32,
+      "roc20": -1.74,
+      "mfi": 32.84,
+      "adx": 17.09,
+      "supertrendDir": "bearish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.05726,
+      "roa": 0.03018,
+      "dividendYield": 0.0464,
+      "insiderPct": 0.38746,
+      "shortRatio": null,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (1봉 전)",
+          "value": 28.07,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:-0.1% 20d:-1.7% 60d:+0.5%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 15,440.807)",
+          "value": 15440.8066,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 24% vs 이전 76%)",
+          "value": 0.24194460146975694,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (38.7%)",
+          "value": 38.746,
+          "scoreAffecting": true
+        },
+        {
+          "type": "peg_undervalued",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "PEG 저평가 (0.64 — 성장 대비 저평가)",
+          "value": 0.64,
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_attractive",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "배당 매력 (수익률 4.6% / 성향 52%)",
+          "value": 4.64,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
       "ticker": "052690.KS",
       "name": "한전기술",
       "sector": "Industrials",
@@ -31879,116 +32477,6 @@
           "label": "배당 지속 불가 (성향 143% — 이익 초과 배당)",
           "value": 142.53999,
           "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "138930.KS",
-      "name": "BNK금융지주",
-      "sector": "Financial Services",
-      "totalScore": 0.5,
-      "techScore": -1.5,
-      "fundScore": 2,
-      "rsi": 55.74,
-      "macd": 89.9425,
-      "bandWidth": 8.21,
-      "volRatio": 1.01,
-      "atr": 529.8135,
-      "stopLoss": 15175.28,
-      "mdd": -36.87,
-      "high52w": 22650,
-      "low52w": 13810,
-      "stochK": 51.95,
-      "roc20": 7.33,
-      "mfi": 62.2,
-      "adx": 23.1,
-      "supertrendDir": "bullish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.06862,
-      "roa": 0.00478,
-      "dividendYield": 0.0376,
-      "insiderPct": 0.27095,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -36.87%)",
-          "value": -36.87,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 데드크로스 (4봉 전)",
-          "value": 74.12,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Stochastic 골든크로스 (당일)",
-          "value": 51.95,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_bearish_divergence",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 하락 다이버전스 (가격↑ %K↓)",
-          "value": 51.95,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-0.8% 20d:+7.3% 60d:-5.7%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 14,698.59)",
-          "value": 14698.5902,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 -5% vs 이전 370%)",
-          "value": -0.05203405865657521,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_high_quality",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "고성장·고수익 (매출+27% / 순이익률 11.7%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_attractive",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "배당 매력 (수익률 3.8% / 성향 33%)",
-          "value": 3.7600000000000002,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (25.5%)",
-          "value": 25.489,
-          "scoreAffecting": false
         }
       ]
     },
@@ -32105,7 +32593,7 @@
       "roe": 0.118640006,
       "roa": 0.01775,
       "dividendYield": 0.011,
-      "insiderPct": 0.24824,
+      "insiderPct": 0.24811001,
       "shortRatio": null,
       "earningsTrend": "accelerating",
       "alerts": [
@@ -32885,73 +33373,89 @@
       ]
     },
     {
-      "ticker": "090460.KS",
-      "name": "비에이치",
+      "ticker": "248070.KS",
+      "name": "솔루엠",
       "sector": "Technology",
       "totalScore": 0.5,
-      "techScore": 1.5,
-      "fundScore": -1,
-      "rsi": 54.73,
-      "macd": 519.067,
-      "bandWidth": 25.47,
-      "volRatio": 0.43,
-      "atr": 1348.3103,
-      "stopLoss": 18227.53,
-      "mdd": -67.41,
-      "high52w": 40200,
-      "low52w": 13100,
-      "stochK": 31.3,
-      "roc20": 18.91,
-      "mfi": 62.05,
-      "adx": 19.32,
-      "supertrendDir": "bullish",
+      "techScore": -1.5,
+      "fundScore": 2,
+      "rsi": 46.98,
+      "macd": -276.0923,
+      "bandWidth": 8.35,
+      "volRatio": 1.06,
+      "atr": 469.3804,
+      "stopLoss": 12295.93,
+      "mdd": -59.97,
+      "high52w": 23600,
+      "low52w": 12490,
+      "stochK": 66.96,
+      "roc20": -1.81,
+      "mfi": 36.33,
+      "adx": 32.09,
+      "supertrendDir": "bearish",
       "pe": null,
       "pb": null,
-      "roe": 0.1257,
-      "roa": 0.03837,
-      "dividendYield": 0.0123000005,
-      "insiderPct": 0.21597,
+      "roe": 0.022720002,
+      "roa": 0.030720001,
+      "dividendYield": 0.0058,
+      "insiderPct": 0.16835,
       "shortRatio": null,
-      "earningsTrend": "decelerating",
+      "earningsTrend": "turnaround",
       "alerts": [
+        {
+          "type": "bb_squeeze",
+          "direction": "neutral",
+          "strength": "strong",
+          "label": "볼린저밴드 스퀴즈 (120봉 중 최저 밴드폭: 8.3%)",
+          "value": 8.35,
+          "scoreAffecting": false
+        },
         {
           "type": "mdd_warning",
           "direction": "bearish",
           "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -67.41%)",
-          "value": -67.41,
+          "label": "최대낙폭 경보 (MDD -59.97%)",
+          "value": -59.97,
           "scoreAffecting": false
         },
         {
-          "type": "roc_bullish",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "ROC 상승 모멘텀 (5d:+8.1% 20d:+18.9% 60d:-3.6%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 16,994.266)",
-          "value": 16994.2657,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
+          "type": "pv_bearish_divergence",
           "direction": "bearish",
           "strength": "normal",
-          "label": "이익 성장 감속 (최근 -89% vs 이전 -11%)",
-          "value": -0.8851914229691451,
+          "label": "가격-거래량 약세 다이버전스 (가격 +2.9% / 거래량 -33.4%)",
+          "value": -33.40136671062519,
           "scoreAffecting": true
         },
         {
-          "type": "dividend_exists",
+          "type": "stoch_golden_cross",
           "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 골든크로스 (2봉 전)",
+          "value": 31.88,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bearish",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "ROC 하락 모멘텀 (5d:+2.4% 20d:-1.8% 60d:-18.6%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
           "strength": "weak",
-          "label": "배당 지급 (수익률 1.2%)",
-          "value": 1.23000005,
-          "scoreAffecting": false
+          "label": "Supertrend 하락 추세 유지 (선: 13,700.804)",
+          "value": 13700.8036,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_turnaround",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "흑자 전환 (직전 적자→최신 흑자 36억)",
+          "value": 3612420000,
+          "scoreAffecting": true
         }
       ]
     },
@@ -35159,93 +35663,6 @@
       ]
     },
     {
-      "ticker": "032640.KS",
-      "name": "LG유플러스",
-      "sector": "Communication Services",
-      "totalScore": 0.5,
-      "techScore": -1,
-      "fundScore": 1.5,
-      "rsi": 47.71,
-      "macd": -93.4177,
-      "bandWidth": 6.68,
-      "volRatio": 0.97,
-      "atr": 350.5181,
-      "stopLoss": 14114.22,
-      "mdd": -21.39,
-      "high52w": 17810,
-      "low52w": 14000,
-      "stochK": 45.32,
-      "roc20": -1.74,
-      "mfi": 32.84,
-      "adx": 17.09,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.05726,
-      "roa": 0.03018,
-      "dividendYield": 0.0464,
-      "insiderPct": 0.38746,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (1봉 전)",
-          "value": 28.07,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-0.1% 20d:-1.7% 60d:+0.5%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 15,440.807)",
-          "value": 15440.8066,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 22% vs 이전 99%)",
-          "value": 0.2234200113058225,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (38.7%)",
-          "value": 38.746,
-          "scoreAffecting": true
-        },
-        {
-          "type": "peg_undervalued",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "PEG 저평가 (0.64 — 성장 대비 저평가)",
-          "value": 0.64,
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_attractive",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "배당 매력 (수익률 4.6% / 성향 52%)",
-          "value": 4.64,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
       "ticker": "005380.KS",
       "name": "현대차",
       "sector": "Consumer Cyclical",
@@ -36191,7 +36608,7 @@
       "roe": 0.117089994,
       "roa": 0.09507,
       "dividendYield": 0.0113,
-      "insiderPct": 0.37658,
+      "insiderPct": 0.3752,
       "shortRatio": null,
       "earningsTrend": "deteriorating",
       "alerts": [
@@ -36262,8 +36679,8 @@
           "type": "insider_high",
           "direction": "bullish",
           "strength": "normal",
-          "label": "내부자 보유 높음 (37.7%)",
-          "value": 37.658,
+          "label": "내부자 보유 높음 (37.5%)",
+          "value": 37.519999999999996,
           "scoreAffecting": true
         },
         {
@@ -36881,6 +37298,132 @@
       ]
     },
     {
+      "ticker": "014680.KS",
+      "name": "한솔케미칼",
+      "sector": "Basic Materials",
+      "totalScore": 0,
+      "techScore": -2,
+      "fundScore": 2,
+      "rsi": 68.68,
+      "macd": 2464.2446,
+      "bandWidth": 20.93,
+      "volRatio": 1.23,
+      "atr": 10918.4069,
+      "stopLoss": 220122.39,
+      "mdd": -61.99,
+      "high52w": 338000,
+      "low52w": 172500,
+      "stochK": 89.21,
+      "roc20": 16.79,
+      "mfi": 72.62,
+      "adx": 21.34,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.13783,
+      "roa": 0.062750004,
+      "dividendYield": 0.011,
+      "insiderPct": 0.2859,
+      "shortRatio": null,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "bb_upper_breakout",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "볼린저밴드 상단 돌파 (1봉 전)",
+          "value": 225000,
+          "scoreAffecting": true
+        },
+        {
+          "type": "bb_upper_breakout",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "볼린저밴드 상단 돌파 (당일)",
+          "value": 236500,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -61.99%)",
+          "value": -61.99,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_overbought",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "Stochastic 과매수 (%K 89.21)",
+          "value": 89.21,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "Stochastic 데드크로스 (과매수 영역) (2봉 전)",
+          "value": 84.27,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 골든크로스 (당일)",
+          "value": 89.21,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bullish",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "ROC 상승 모멘텀 (5d:+10.3% 20d:+16.8% 60d:-15.1%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_flip",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Supertrend 상승 전환↑ (1봉 전, 선: 199,264.841)",
+          "value": 199264.8411,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 158% vs 이전 -64%)",
+          "value": 1.5761221962128622,
+          "scoreAffecting": true
+        },
+        {
+          "type": "growth_balanced",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "균형 성장 (매출+12% / 순이익률 16.6%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_exists",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "배당 지급 (수익률 1.1%)",
+          "value": 1.0999999999999999,
+          "scoreAffecting": false
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (20.1%)",
+          "value": 20.1,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
       "ticker": "007070.KS",
       "name": "GS리테일",
       "sector": "Consumer Cyclical",
@@ -37474,140 +38017,6 @@
           "strength": "strong",
           "label": "고배당·지속가능 (수익률 6.3% / 성향 46%)",
           "value": 6.2700000000000005,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "051370.KQ",
-      "name": "인터플렉스",
-      "sector": "Technology",
-      "totalScore": 0,
-      "techScore": 0,
-      "fundScore": 0,
-      "rsi": 61.52,
-      "macd": 25.9781,
-      "bandWidth": 17.24,
-      "volRatio": 1.53,
-      "atr": 370.5738,
-      "stopLoss": 6444.14,
-      "mdd": -73.16,
-      "high52w": 14480,
-      "low52w": 5690,
-      "stochK": 53.23,
-      "roc20": 13.82,
-      "mfi": 83.86,
-      "adx": 16.95,
-      "supertrendDir": "bullish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.09941,
-      "roa": 0.03098,
-      "dividendYield": null,
-      "insiderPct": 0.47717997,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "golden_cross_5_20",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "골든크로스 MA5/MA20 (3봉 전)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "bb_upper_breakout",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "볼린저밴드 상단 돌파 (1봉 전)",
-          "value": 7130,
-          "scoreAffecting": true
-        },
-        {
-          "type": "bb_upper_breakout",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "볼린저밴드 상단 돌파 (당일)",
-          "value": 7000,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -73.16%)",
-          "value": -73.16,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (4봉 전)",
-          "value": 33.33,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (3봉 전)",
-          "value": 32.71,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (2봉 전)",
-          "value": 35.56,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bullish",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "ROC 상승 모멘텀 (5d:+12.4% 20d:+13.8% 60d:-8.4%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "mfi_overbought",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "MFI 과매수 (83.86)",
-          "value": 83.86,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mfi_rsi_positive_gap",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "MFI-RSI 괴리 +22.3 (거래량 대비 가격 상승 부족)",
-          "value": 22.339999999999996,
-          "scoreAffecting": false
-        },
-        {
-          "type": "supertrend_bullish_flip",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Supertrend 상승 전환↑ (1봉 전, 선: 5,918.254)",
-          "value": 5918.2544,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 -38% vs 이전 102%)",
-          "value": -0.38374125979742424,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (47.7%)",
-          "value": 47.717997000000004,
           "scoreAffecting": true
         }
       ]
@@ -38537,6 +38946,109 @@
           "strength": "normal",
           "label": "자본 잠식 위험 (ROE -11.8%)",
           "value": -11.797,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "015760.KS",
+      "name": "한국전력",
+      "sector": "Utilities",
+      "totalScore": -0.5,
+      "techScore": -1.5,
+      "fundScore": 1,
+      "rsi": 37.62,
+      "macd": -803.7709,
+      "bandWidth": 13.9,
+      "volRatio": 0.84,
+      "atr": 1143.1445,
+      "stopLoss": 28535.28,
+      "mdd": -55.45,
+      "high52w": 67900,
+      "low52w": 30750,
+      "stochK": 4.17,
+      "roc20": -13.07,
+      "mfi": 52.81,
+      "adx": 10.56,
+      "supertrendDir": "bearish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.16595,
+      "roa": 0.030350002,
+      "dividendYield": 0.051,
+      "insiderPct": 0.19464001,
+      "shortRatio": null,
+      "earningsTrend": "deteriorating",
+      "alerts": [
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -55.45%)",
+          "value": -55.45,
+          "scoreAffecting": false
+        },
+        {
+          "type": "low52w_breakdown",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "52주 신저가 이탈 (현재 30,250 / 저가 30,750)",
+          "value": 30250,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_extreme_oversold",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "Stochastic 극단 과매도 (%K 4.17)",
+          "value": 4.17,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 골든크로스 (과매도 영역) (2봉 전)",
+          "value": 3.24,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bearish",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "ROC 전 구간 하락 모멘텀 (5d:-1.9% 20d:-13.1% 60d:-20.9%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 33,643.465)",
+          "value": 33643.4647,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_deteriorating",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "적자 전환 (직전 흑자→최신 적자 -3610억)",
+          "value": -361000000000,
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_high_sustainable",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "고배당·지속가능 (수익률 5.1% / 성향 13%)",
+          "value": 5.1,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_good",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "양호한 자본효율 (ROE 16.6%)",
+          "value": 16.595,
           "scoreAffecting": true
         }
       ]
@@ -39474,132 +39986,6 @@
       ]
     },
     {
-      "ticker": "071970.KS",
-      "name": "HD현대마린엔진",
-      "sector": "Industrials",
-      "totalScore": -0.5,
-      "techScore": -3.5,
-      "fundScore": 3,
-      "rsi": 42.33,
-      "macd": -1129.6191,
-      "bandWidth": 11.5,
-      "volRatio": 1.25,
-      "atr": 2910.8758,
-      "stopLoss": 44633.69,
-      "mdd": -58.53,
-      "high52w": 115500,
-      "low52w": 47900,
-      "stochK": 28.61,
-      "roc20": -7.37,
-      "mfi": 54.68,
-      "adx": 7.17,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.4429,
-      "roa": 0.08957,
-      "dividendYield": null,
-      "insiderPct": 0.35066003,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -58.53%)",
-          "value": -58.53,
-          "scoreAffecting": false
-        },
-        {
-          "type": "low52w_near",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "52주 신저가 근접 (저가 대비 +2.3%)",
-          "value": 49000,
-          "scoreAffecting": true
-        },
-        {
-          "type": "pv_bearish_divergence",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "가격-거래량 약세 다이버전스 (가격 +2.2% / 거래량 -34.3%)",
-          "value": -34.314430620620705,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (3봉 전)",
-          "value": 42.62,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (1봉 전)",
-          "value": 49.26,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:+0.5% 20d:-7.4% 60d:-16.8%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 57,071.02)",
-          "value": 57071.02,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 -75% vs 이전 396%)",
-          "value": -0.7488826043125675,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (35.1%)",
-          "value": 35.066003,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_high_quality",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "고성장·고수익 (매출+29% / 순이익률 40.4%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_good",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "양호한 자본효율 (ROE 44.3%)",
-          "value": 44.29,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (24.4%)",
-          "value": 24.433,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
       "ticker": "008770.KS",
       "name": "호텔신라",
       "sector": "Consumer Cyclical",
@@ -39728,108 +40114,6 @@
           "strength": "normal",
           "label": "자본 잠식 위험 (ROE -11.5%)",
           "value": -11.4779994,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "093370.KS",
-      "name": "후성",
-      "sector": "Basic Materials",
-      "totalScore": -0.5,
-      "techScore": -0.5,
-      "fundScore": 0,
-      "rsi": 56.71,
-      "macd": 578.7469,
-      "bandWidth": 23.7,
-      "volRatio": 2.32,
-      "atr": 1049.5881,
-      "stopLoss": 12375.62,
-      "mdd": -69.06,
-      "high52w": 22400,
-      "low52w": 5550,
-      "stochK": 52.57,
-      "roc20": 12.23,
-      "mfi": 79.07,
-      "adx": 28.13,
-      "supertrendDir": "bullish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.11468001,
-      "roa": 0.03103,
-      "dividendYield": null,
-      "insiderPct": 0.46045,
-      "shortRatio": null,
-      "earningsTrend": "deteriorating",
-      "alerts": [
-        {
-          "type": "macd_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "MACD 데드크로스 (당일)",
-          "value": 578.7469,
-          "scoreAffecting": true
-        },
-        {
-          "type": "volume_spike_up",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "거래량 급증 2.3배 (가격 상승)",
-          "value": 2.32,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -69.06%)",
-          "value": -69.06,
-          "scoreAffecting": false
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-4.0% 20d:+12.2% 60d:-25.4%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "mfi_rsi_positive_gap",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "MFI-RSI 괴리 +22.4 (거래량 대비 가격 상승 부족)",
-          "value": 22.359999999999992,
-          "scoreAffecting": false
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 11,838.941)",
-          "value": 11838.9409,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_deteriorating",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "적자 전환 (직전 흑자→최신 적자 -100억)",
-          "value": -9961590000,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (46.0%)",
-          "value": 46.045,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_balanced",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "균형 성장 (매출+52% / 순이익률 6.4%)",
           "scoreAffecting": true
         }
       ]
@@ -42856,109 +43140,6 @@
       ]
     },
     {
-      "ticker": "015760.KS",
-      "name": "한국전력",
-      "sector": "Utilities",
-      "totalScore": -0.5,
-      "techScore": -1.5,
-      "fundScore": 1,
-      "rsi": 37.62,
-      "macd": -803.7709,
-      "bandWidth": 13.9,
-      "volRatio": 0.84,
-      "atr": 1143.1445,
-      "stopLoss": 28535.28,
-      "mdd": -55.45,
-      "high52w": 67900,
-      "low52w": 30750,
-      "stochK": 4.17,
-      "roc20": -13.07,
-      "mfi": 52.81,
-      "adx": 10.56,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.16595,
-      "roa": 0.030350002,
-      "dividendYield": 0.051,
-      "insiderPct": 0.19464001,
-      "shortRatio": null,
-      "earningsTrend": "deteriorating",
-      "alerts": [
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -55.45%)",
-          "value": -55.45,
-          "scoreAffecting": false
-        },
-        {
-          "type": "low52w_breakdown",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "52주 신저가 이탈 (현재 30,250 / 저가 30,750)",
-          "value": 30250,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_extreme_oversold",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "Stochastic 극단 과매도 (%K 4.17)",
-          "value": 4.17,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Stochastic 골든크로스 (과매도 영역) (2봉 전)",
-          "value": 3.24,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bearish",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "ROC 전 구간 하락 모멘텀 (5d:-1.9% 20d:-13.1% 60d:-20.9%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 33,643.465)",
-          "value": 33643.4647,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_deteriorating",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "적자 전환 (직전 흑자→최신 적자 -3610억)",
-          "value": -361000000000,
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_high_sustainable",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "고배당·지속가능 (수익률 5.1% / 성향 13%)",
-          "value": 5.1,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_good",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "양호한 자본효율 (ROE 16.6%)",
-          "value": 16.595,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
       "ticker": "373220.KS",
       "name": "LG에너지솔루션",
       "sector": "Industrials",
@@ -43155,8 +43336,8 @@
           "type": "earnings_decelerating",
           "direction": "bearish",
           "strength": "normal",
-          "label": "이익 성장 감속 (최근 -85% vs 이전 1239%)",
-          "value": -0.8537148725345448,
+          "label": "이익 성장 감속 (최근 -43% vs 이전 1239%)",
+          "value": -0.42677642800941523,
           "scoreAffecting": true
         },
         {
@@ -43705,7 +43886,7 @@
       "roe": 0.107530005,
       "roa": 0.01193,
       "dividendYield": 0.0461,
-      "insiderPct": 0.24765,
+      "insiderPct": 0.24766001,
       "shortRatio": null,
       "earningsTrend": "stable",
       "alerts": [
@@ -44040,124 +44221,6 @@
       ]
     },
     {
-      "ticker": "336370.KS",
-      "name": "솔루스첨단소재",
-      "sector": "Technology",
-      "totalScore": -1,
-      "techScore": -1,
-      "fundScore": 0,
-      "rsi": 47.57,
-      "macd": 94.8405,
-      "bandWidth": 18.48,
-      "volRatio": 0.63,
-      "atr": 515.1749,
-      "stopLoss": 6847.24,
-      "mdd": -75.75,
-      "high52w": 16150,
-      "low52w": 5590,
-      "stochK": 35.52,
-      "roc20": 1.06,
-      "mfi": 55.13,
-      "adx": 16.55,
-      "supertrendDir": "bullish",
-      "pe": null,
-      "pb": null,
-      "roe": -0.09049,
-      "roa": -0.02537,
-      "dividendYield": 0.0013,
-      "insiderPct": 0.53276,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "macd_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "MACD 데드크로스 (당일)",
-          "value": 94.8405,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -75.75%)",
-          "value": -75.75,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (2봉 전)",
-          "value": 48.4,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (1봉 전)",
-          "value": 47.02,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:-3.5% 20d:+1.1% 60d:-15.7%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 6,766.269)",
-          "value": 6766.2693,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 457% vs 이전 10404%)",
-          "value": 4.565789473684211,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_high",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "내부자 고보유 (53.3%)",
-          "value": 53.276,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_balanced",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "균형 성장 (매출+31% / 순이익률 6.4%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_negative_roe",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "자본 잠식 위험 (ROE -9.0%)",
-          "value": -9.049,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_operating_loss",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "영업 구조 문제 (영업이익률 -21.3%)",
-          "value": -21.278,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
       "ticker": "009240.KS",
       "name": "한샘",
       "sector": "Consumer Cyclical",
@@ -44287,6 +44350,140 @@
           "strength": "normal",
           "label": "배당 지속 불가 (성향 207% — 이익 초과 배당)",
           "value": 207.18,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "051370.KQ",
+      "name": "인터플렉스",
+      "sector": "Technology",
+      "totalScore": -1,
+      "techScore": 0,
+      "fundScore": -1,
+      "rsi": 61.52,
+      "macd": 25.9781,
+      "bandWidth": 17.24,
+      "volRatio": 1.53,
+      "atr": 370.5738,
+      "stopLoss": 6444.14,
+      "mdd": -73.16,
+      "high52w": 14480,
+      "low52w": 5690,
+      "stochK": 53.23,
+      "roc20": 13.82,
+      "mfi": 83.86,
+      "adx": 16.95,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.09941,
+      "roa": 0.03098,
+      "dividendYield": null,
+      "insiderPct": 0.47717997,
+      "shortRatio": null,
+      "earningsTrend": "deteriorating",
+      "alerts": [
+        {
+          "type": "golden_cross_5_20",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "골든크로스 MA5/MA20 (3봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "bb_upper_breakout",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "볼린저밴드 상단 돌파 (1봉 전)",
+          "value": 7130,
+          "scoreAffecting": true
+        },
+        {
+          "type": "bb_upper_breakout",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "볼린저밴드 상단 돌파 (당일)",
+          "value": 7000,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -73.16%)",
+          "value": -73.16,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (4봉 전)",
+          "value": 33.33,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (3봉 전)",
+          "value": 32.71,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (2봉 전)",
+          "value": 35.56,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bullish",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "ROC 상승 모멘텀 (5d:+12.4% 20d:+13.8% 60d:-8.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "mfi_overbought",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "MFI 과매수 (83.86)",
+          "value": 83.86,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mfi_rsi_positive_gap",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "MFI-RSI 괴리 +22.3 (거래량 대비 가격 상승 부족)",
+          "value": 22.339999999999996,
+          "scoreAffecting": false
+        },
+        {
+          "type": "supertrend_bullish_flip",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Supertrend 상승 전환↑ (1봉 전, 선: 5,918.254)",
+          "value": 5918.2544,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_deteriorating",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "적자 전환 (직전 흑자→최신 적자 -40억)",
+          "value": -3996600000,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (47.7%)",
+          "value": 47.717997000000004,
           "scoreAffecting": true
         }
       ]
@@ -45450,7 +45647,7 @@
       "roe": 0.0517,
       "roa": -0.000120000004,
       "dividendYield": null,
-      "insiderPct": 0.36046,
+      "insiderPct": 0.36036998,
       "shortRatio": null,
       "earningsTrend": "stable",
       "alerts": [
@@ -45498,7 +45695,7 @@
           "direction": "bullish",
           "strength": "normal",
           "label": "내부자 보유 높음 (36.0%)",
-          "value": 36.046,
+          "value": 36.036998,
           "scoreAffecting": true
         }
       ]
@@ -47355,132 +47552,6 @@
       ]
     },
     {
-      "ticker": "014680.KS",
-      "name": "한솔케미칼",
-      "sector": "Basic Materials",
-      "totalScore": -2,
-      "techScore": -2,
-      "fundScore": 0,
-      "rsi": 68.68,
-      "macd": 2464.2446,
-      "bandWidth": 20.93,
-      "volRatio": 1.23,
-      "atr": 10918.4069,
-      "stopLoss": 220122.39,
-      "mdd": -61.99,
-      "high52w": 338000,
-      "low52w": 172500,
-      "stochK": 89.21,
-      "roc20": 16.79,
-      "mfi": 72.62,
-      "adx": 21.34,
-      "supertrendDir": "bullish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.13783,
-      "roa": 0.062750004,
-      "dividendYield": 0.011,
-      "insiderPct": 0.2859,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "bb_upper_breakout",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "볼린저밴드 상단 돌파 (1봉 전)",
-          "value": 225000,
-          "scoreAffecting": true
-        },
-        {
-          "type": "bb_upper_breakout",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "볼린저밴드 상단 돌파 (당일)",
-          "value": 236500,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -61.99%)",
-          "value": -61.99,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_overbought",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 과매수 (%K 89.21)",
-          "value": 89.21,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "Stochastic 데드크로스 (과매수 영역) (2봉 전)",
-          "value": 84.27,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Stochastic 골든크로스 (당일)",
-          "value": 89.21,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bullish",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "ROC 상승 모멘텀 (5d:+10.3% 20d:+16.8% 60d:-15.1%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_flip",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Supertrend 상승 전환↑ (1봉 전, 선: 199,264.841)",
-          "value": 199264.8411,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 21% vs 이전 158%)",
-          "value": 0.20785315720749675,
-          "scoreAffecting": true
-        },
-        {
-          "type": "growth_balanced",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "균형 성장 (매출+12% / 순이익률 16.6%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_exists",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "배당 지급 (수익률 1.1%)",
-          "value": 1.0999999999999999,
-          "scoreAffecting": false
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (20.1%)",
-          "value": 20.1,
-          "scoreAffecting": false
-        }
-      ]
-    },
-    {
       "ticker": "069960.KS",
       "name": "현대백화점",
       "sector": "Consumer Cyclical",
@@ -48945,117 +49016,6 @@
       ]
     },
     {
-      "ticker": "001820.KS",
-      "name": "삼화콘덴서",
-      "sector": "Technology",
-      "totalScore": -2.5,
-      "techScore": -3.5,
-      "fundScore": 1,
-      "rsi": 70.83,
-      "macd": 12759.2765,
-      "bandWidth": 50.27,
-      "volRatio": 0.58,
-      "atr": 11672.87,
-      "stopLoss": 129390.7,
-      "mdd": -69.59,
-      "high52w": 190100,
-      "low52w": 28300,
-      "stochK": 80.91,
-      "roc20": 36.27,
-      "mfi": 87.06,
-      "adx": 39.7,
-      "supertrendDir": "bullish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.06869,
-      "roa": 0.028469998,
-      "dividendYield": 0.0034,
-      "insiderPct": 0.2719,
-      "shortRatio": null,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "rsi_overbought",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "RSI 과매수 (70.83)",
-          "value": 70.83,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -69.59%)",
-          "value": -69.59,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_overbought",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "Stochastic 과매수 (%K 80.91)",
-          "value": 80.91,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "Stochastic 데드크로스 (과매수 영역) (4봉 전)",
-          "value": 84.64,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Stochastic 골든크로스 (1봉 전)",
-          "value": 83.35,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "Stochastic 데드크로스 (과매수 영역) (당일)",
-          "value": 80.91,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bullish",
-          "direction": "bullish",
-          "strength": "strong",
-          "label": "ROC 전 구간 상승 모멘텀 (5d:+2.1% 20d:+36.3% 60d:+10.4%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "mfi_overbought",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "MFI 과매수 (87.06)",
-          "value": 87.06,
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bullish_hold",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Supertrend 상승 추세 유지 (선: 115,813.141)",
-          "value": 115813.1406,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 220% vs 이전 -60%)",
-          "value": 2.204761904761905,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
       "ticker": "006280.KS",
       "name": "녹십자",
       "sector": "Healthcare",
@@ -49311,93 +49271,6 @@
           "label": "우수한 영업이익률 (23.4%)",
           "value": 23.448999,
           "scoreAffecting": false
-        }
-      ]
-    },
-    {
-      "ticker": "248070.KS",
-      "name": "솔루엠",
-      "sector": "Technology",
-      "totalScore": -2.5,
-      "techScore": -1.5,
-      "fundScore": -1,
-      "rsi": 46.98,
-      "macd": -276.0923,
-      "bandWidth": 8.35,
-      "volRatio": 1.06,
-      "atr": 469.3804,
-      "stopLoss": 12295.93,
-      "mdd": -59.97,
-      "high52w": 23600,
-      "low52w": 12490,
-      "stochK": 66.96,
-      "roc20": -1.81,
-      "mfi": 36.33,
-      "adx": 32.09,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": 0.022720002,
-      "roa": 0.030720001,
-      "dividendYield": 0.0058,
-      "insiderPct": 0.16794,
-      "shortRatio": null,
-      "earningsTrend": "decelerating",
-      "alerts": [
-        {
-          "type": "bb_squeeze",
-          "direction": "neutral",
-          "strength": "strong",
-          "label": "볼린저밴드 스퀴즈 (120봉 중 최저 밴드폭: 8.3%)",
-          "value": 8.35,
-          "scoreAffecting": false
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -59.97%)",
-          "value": -59.97,
-          "scoreAffecting": false
-        },
-        {
-          "type": "pv_bearish_divergence",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "가격-거래량 약세 다이버전스 (가격 +2.9% / 거래량 -33.4%)",
-          "value": -33.40136671062519,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "Stochastic 골든크로스 (2봉 전)",
-          "value": 31.88,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_bearish",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "ROC 하락 모멘텀 (5d:+2.4% 20d:-1.8% 60d:-18.6%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 13,700.804)",
-          "value": 13700.8036,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_decelerating",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "이익 성장 감속 (최근 90% vs 이전 151%)",
-          "value": 0.9030511402328633,
-          "scoreAffecting": true
         }
       ]
     },
@@ -52514,139 +52387,6 @@
       ]
     },
     {
-      "ticker": "001040.KS",
-      "name": "CJ",
-      "sector": "Industrials",
-      "totalScore": -4,
-      "techScore": -4,
-      "fundScore": 0,
-      "rsi": 48.05,
-      "macd": -1041.9343,
-      "bandWidth": 5.87,
-      "volRatio": 0.77,
-      "atr": 5157.4393,
-      "stopLoss": 122263.84,
-      "mdd": -47.72,
-      "high52w": 232000,
-      "low52w": 121300,
-      "stochK": 33.63,
-      "roc20": -0.61,
-      "mfi": 49.11,
-      "adx": 10.32,
-      "supertrendDir": "bearish",
-      "pe": null,
-      "pb": null,
-      "roe": -0.0013400001,
-      "roa": 0.03091,
-      "dividendYield": 0.0254,
-      "insiderPct": 0.47768003,
-      "shortRatio": null,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "dead_cross_5_20",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "데드크로스 MA5/MA20 (2봉 전)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "bb_squeeze",
-          "direction": "neutral",
-          "strength": "strong",
-          "label": "볼린저밴드 스퀴즈 (120봉 중 최저 밴드폭: 5.9%)",
-          "value": 5.87,
-          "scoreAffecting": false
-        },
-        {
-          "type": "obv_bearish_divergence",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "OBV 하락 다이버전스 (가격↑ OBV↓, 20봉 기준)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -47.72%)",
-          "value": -47.72,
-          "scoreAffecting": false
-        },
-        {
-          "type": "stoch_dead_cross",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Stochastic 데드크로스 (4봉 전)",
-          "value": 50.3,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (당일)",
-          "value": 33.63,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bearish",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "ROC 전 구간 하락 모멘텀 (5d:-0.8% 20d:-0.6% 60d:-18.9%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 143,341.914)",
-          "value": 143341.9137,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 104% vs 이전 -74%)",
-          "value": 1.0356886306807451,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_high",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "내부자 보유 높음 (47.8%)",
-          "value": 47.768003,
-          "scoreAffecting": true
-        },
-        {
-          "type": "dividend_exists",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "배당 지급 (수익률 2.5%)",
-          "value": 2.54,
-          "scoreAffecting": false
-        },
-        {
-          "type": "dividend_unsustainable",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "배당 지속 불가 (성향 236% — 이익 초과 배당)",
-          "value": 236.22,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_negative_roe",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "자본 잠식 위험 (ROE -0.1%)",
-          "value": -0.13400001,
-          "scoreAffecting": true
-        }
-      ]
-    },
-    {
       "ticker": "024830.KQ",
       "name": "세원물산",
       "sector": "Consumer Cyclical",
@@ -53120,6 +52860,117 @@
           "strength": "normal",
           "label": "배당 지속 불가 (성향 316% — 이익 초과 배당)",
           "value": 315.66,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "001820.KS",
+      "name": "삼화콘덴서",
+      "sector": "Technology",
+      "totalScore": -4.5,
+      "techScore": -3.5,
+      "fundScore": -1,
+      "rsi": 70.83,
+      "macd": 12759.2765,
+      "bandWidth": 50.27,
+      "volRatio": 0.58,
+      "atr": 11672.87,
+      "stopLoss": 129390.7,
+      "mdd": -69.59,
+      "high52w": 190100,
+      "low52w": 28300,
+      "stochK": 80.91,
+      "roc20": 36.27,
+      "mfi": 87.06,
+      "adx": 39.7,
+      "supertrendDir": "bullish",
+      "pe": null,
+      "pb": null,
+      "roe": 0.06869,
+      "roa": 0.028469998,
+      "dividendYield": 0.0034,
+      "insiderPct": 0.2719,
+      "shortRatio": null,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "rsi_overbought",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "RSI 과매수 (70.83)",
+          "value": 70.83,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -69.59%)",
+          "value": -69.59,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_overbought",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "Stochastic 과매수 (%K 80.91)",
+          "value": 80.91,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "Stochastic 데드크로스 (과매수 영역) (4봉 전)",
+          "value": 84.64,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "Stochastic 골든크로스 (1봉 전)",
+          "value": 83.35,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "Stochastic 데드크로스 (과매수 영역) (당일)",
+          "value": 80.91,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bullish",
+          "direction": "bullish",
+          "strength": "strong",
+          "label": "ROC 전 구간 상승 모멘텀 (5d:+2.1% 20d:+36.3% 60d:+10.4%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "mfi_overbought",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "MFI 과매수 (87.06)",
+          "value": 87.06,
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bullish_hold",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Supertrend 상승 추세 유지 (선: 115,813.141)",
+          "value": 115813.1406,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 60% vs 이전 220%)",
+          "value": 0.5993786302850196,
           "scoreAffecting": true
         }
       ]
@@ -54037,6 +53888,139 @@
           "strength": "normal",
           "label": "내부자 보유 높음 (42.7%)",
           "value": 42.745999,
+          "scoreAffecting": true
+        }
+      ]
+    },
+    {
+      "ticker": "001040.KS",
+      "name": "CJ",
+      "sector": "Industrials",
+      "totalScore": -6,
+      "techScore": -4,
+      "fundScore": -2,
+      "rsi": 48.05,
+      "macd": -1041.9343,
+      "bandWidth": 5.87,
+      "volRatio": 0.77,
+      "atr": 5157.4393,
+      "stopLoss": 122263.84,
+      "mdd": -47.72,
+      "high52w": 232000,
+      "low52w": 121300,
+      "stochK": 33.63,
+      "roc20": -0.61,
+      "mfi": 49.11,
+      "adx": 10.32,
+      "supertrendDir": "bearish",
+      "pe": null,
+      "pb": null,
+      "roe": -0.0013400001,
+      "roa": 0.03091,
+      "dividendYield": 0.0254,
+      "insiderPct": 0.47768003,
+      "shortRatio": null,
+      "earningsTrend": "decelerating",
+      "alerts": [
+        {
+          "type": "dead_cross_5_20",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "데드크로스 MA5/MA20 (2봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "bb_squeeze",
+          "direction": "neutral",
+          "strength": "strong",
+          "label": "볼린저밴드 스퀴즈 (120봉 중 최저 밴드폭: 5.9%)",
+          "value": 5.87,
+          "scoreAffecting": false
+        },
+        {
+          "type": "obv_bearish_divergence",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "OBV 하락 다이버전스 (가격↑ OBV↓, 20봉 기준)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -47.72%)",
+          "value": -47.72,
+          "scoreAffecting": false
+        },
+        {
+          "type": "stoch_dead_cross",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Stochastic 데드크로스 (4봉 전)",
+          "value": 50.3,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (당일)",
+          "value": 33.63,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_strong_bearish",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "ROC 전 구간 하락 모멘텀 (5d:-0.8% 20d:-0.6% 60d:-18.9%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 143,341.914)",
+          "value": 143341.9137,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_decelerating",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "이익 성장 감속 (최근 -19% vs 이전 104%)",
+          "value": -0.18776593558376872,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_high",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "내부자 보유 높음 (47.8%)",
+          "value": 47.768003,
+          "scoreAffecting": true
+        },
+        {
+          "type": "dividend_exists",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "배당 지급 (수익률 2.5%)",
+          "value": 2.54,
+          "scoreAffecting": false
+        },
+        {
+          "type": "dividend_unsustainable",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "배당 지속 불가 (성향 236% — 이익 초과 배당)",
+          "value": 236.22,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_negative_roe",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "자본 잠식 위험 (ROE -0.1%)",
+          "value": -0.13400001,
           "scoreAffecting": true
         }
       ]
