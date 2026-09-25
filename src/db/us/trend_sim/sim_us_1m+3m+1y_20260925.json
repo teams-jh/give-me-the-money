@@ -1,0 +1,6712 @@
+{
+  "generated_at": "2026-09-25 00:49",
+  "market": "us",
+  "config": {
+    "market": "us",
+    "n": null,
+    "periods": [
+      "1m",
+      "3m",
+      "1y"
+    ],
+    "periodConfigs": {
+      "1m": {
+        "barUnit": "daily",
+        "trendBase": "highlow",
+        "trendAlgo": "regression",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 5,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "negative",
+        "slopeMin": "",
+        "slopeMax": ""
+      },
+      "3m": {
+        "barUnit": "daily",
+        "trendBase": "highlow",
+        "trendAlgo": "regression",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 5,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "negative",
+        "slopeMin": "",
+        "slopeMax": ""
+      },
+      "1y": {
+        "barUnit": "weekly",
+        "trendBase": "highlow",
+        "trendAlgo": "regression",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 5,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "negative",
+        "slopeMin": "",
+        "slopeMax": ""
+      }
+    },
+    "patternFilter": {
+      "enabled": true,
+      "minTouches": 3
+    }
+  },
+  "result_count": 17,
+  "results": [
+    {
+      "ticker": "HEI-A",
+      "name": "HEICO Corporation",
+      "periodStats": {
+        "1m": {
+          "touchCount": 15,
+          "breakoutCount": 1,
+          "slope": -3.0244915935254193
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "HEI-A",
+        "name": "HEICO Corporation",
+        "touchCount": 15,
+        "closeTouchCount": 6,
+        "highTouchCount": 9,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 262.9,
+            "high": 263.62,
+            "low": 258.56,
+            "close": 259.23
+          },
+          {
+            "date": "2026-08-25",
+            "open": 262.3,
+            "high": 262.77,
+            "low": 256.77,
+            "close": 257.1
+          },
+          {
+            "date": "2026-08-26",
+            "open": 262.31,
+            "high": 265.98,
+            "low": 250.17,
+            "close": 255.84
+          },
+          {
+            "date": "2026-08-27",
+            "open": 257.5,
+            "high": 258.43,
+            "low": 246.97,
+            "close": 251.01
+          },
+          {
+            "date": "2026-08-28",
+            "open": 249.3,
+            "high": 252.27,
+            "low": 246.4,
+            "close": 250.06
+          },
+          {
+            "date": "2026-08-31",
+            "open": 246.92,
+            "high": 249.34,
+            "low": 244.11,
+            "close": 244.17
+          },
+          {
+            "date": "2026-09-01",
+            "open": 242.95,
+            "high": 245.21,
+            "low": 241.33,
+            "close": 242
+          },
+          {
+            "date": "2026-09-02",
+            "open": 243.98,
+            "high": 243.98,
+            "low": 239.21,
+            "close": 239.83
+          },
+          {
+            "date": "2026-09-03",
+            "open": 243.26,
+            "high": 243.26,
+            "low": 236.65,
+            "close": 239.26
+          },
+          {
+            "date": "2026-09-04",
+            "open": 238.2,
+            "high": 241.58,
+            "low": 238.2,
+            "close": 240.18
+          },
+          {
+            "date": "2026-09-08",
+            "open": 240.26,
+            "high": 240.26,
+            "low": 234.88,
+            "close": 235.04
+          },
+          {
+            "date": "2026-09-09",
+            "open": 235.34,
+            "high": 236.31,
+            "low": 231.59,
+            "close": 232.48
+          },
+          {
+            "date": "2026-09-10",
+            "open": 232.36,
+            "high": 235.82,
+            "low": 229.64,
+            "close": 232.34
+          },
+          {
+            "date": "2026-09-11",
+            "open": 234.99,
+            "high": 239.53,
+            "low": 232.04,
+            "close": 235.25
+          },
+          {
+            "date": "2026-09-14",
+            "open": 233.39,
+            "high": 234.69,
+            "low": 225.53,
+            "close": 227.73
+          },
+          {
+            "date": "2026-09-15",
+            "open": 228,
+            "high": 228.24,
+            "low": 221.01,
+            "close": 222.45
+          },
+          {
+            "date": "2026-09-16",
+            "open": 223.35,
+            "high": 227.41,
+            "low": 222.04,
+            "close": 222.37
+          },
+          {
+            "date": "2026-09-17",
+            "open": 225.7,
+            "high": 225.7,
+            "low": 219.81,
+            "close": 220.87
+          },
+          {
+            "date": "2026-09-18",
+            "open": 220.78,
+            "high": 221.95,
+            "low": 218.92,
+            "close": 221.9
+          },
+          {
+            "date": "2026-09-21",
+            "open": 224.12,
+            "high": 227.64,
+            "low": 222.82,
+            "close": 226.67
+          },
+          {
+            "date": "2026-09-23",
+            "open": 229,
+            "high": 234.56,
+            "low": 228.61,
+            "close": 231.11
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 5.574400462922219
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.405803189531694
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 5.5260181016368985
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.357420828246374
+          }
+        ],
+        "latestResistance": 5.405803189531694,
+        "touchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 5.557715698521418,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 5.549465114271844,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 5.544552249085644,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 5.521700889066854,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 5.518817426916829,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788307200000,
+            "y": 5.497086254720592,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 5.49413083019029,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 5.481388642232537,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 5.481721670293229,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788912000000,
+            "y": 5.4651445023833425,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788998400000,
+            "y": 5.463068802148527,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 5.460648778465489,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 5.430397706905245,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789516800000,
+            "y": 5.426754555723338,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 5.41920668382349,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.4577114186982865,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 5.557715698521418,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 5.549465114271844,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 5.544552249085644,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 5.521700889066854,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 5.518817426916829,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788307200000,
+            "y": 5.497086254720592,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 5.49413083019029,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 5.481388642232537,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 5.481721670293229,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788912000000,
+            "y": 5.4651445023833425,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788998400000,
+            "y": 5.463068802148527,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 5.460648778465489,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 5.430397706905245,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789516800000,
+            "y": 5.426754555723338,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 5.41920668382349,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.4577114186982865,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -3.0244915935254193,
+        "totalCount": 16
+      }
+    },
+    {
+      "ticker": "IR",
+      "name": "Ingersoll Rand Inc.",
+      "periodStats": {
+        "1m": {
+          "touchCount": 14,
+          "breakoutCount": 1,
+          "slope": -2.7798639645042154
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "IR",
+        "name": "Ingersoll Rand Inc.",
+        "touchCount": 14,
+        "closeTouchCount": 8,
+        "highTouchCount": 6,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 1,
+        "highBreakoutCount": 0,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 81.11,
+            "high": 81.47,
+            "low": 79.6,
+            "close": 79.99
+          },
+          {
+            "date": "2026-08-25",
+            "open": 81.02,
+            "high": 81.61,
+            "low": 78.51,
+            "close": 78.57
+          },
+          {
+            "date": "2026-08-26",
+            "open": 79.18,
+            "high": 80.53,
+            "low": 78.95,
+            "close": 79.97
+          },
+          {
+            "date": "2026-08-27",
+            "open": 79.62,
+            "high": 80.16,
+            "low": 78.78,
+            "close": 78.97
+          },
+          {
+            "date": "2026-08-28",
+            "open": 79.34,
+            "high": 79.75,
+            "low": 77.98,
+            "close": 78.58
+          },
+          {
+            "date": "2026-08-31",
+            "open": 78.25,
+            "high": 78.9,
+            "low": 77.01,
+            "close": 77.05
+          },
+          {
+            "date": "2026-09-01",
+            "open": 76.37,
+            "high": 76.86,
+            "low": 74.28,
+            "close": 74.64
+          },
+          {
+            "date": "2026-09-02",
+            "open": 75.02,
+            "high": 75.46,
+            "low": 74.03,
+            "close": 75
+          },
+          {
+            "date": "2026-09-03",
+            "open": 75.82,
+            "high": 76.35,
+            "low": 74.06,
+            "close": 75.4
+          },
+          {
+            "date": "2026-09-04",
+            "open": 75.3,
+            "high": 76.65,
+            "low": 75.3,
+            "close": 76.36
+          },
+          {
+            "date": "2026-09-08",
+            "open": 75.5,
+            "high": 76.54,
+            "low": 74.99,
+            "close": 75.11
+          },
+          {
+            "date": "2026-09-09",
+            "open": 74.72,
+            "high": 75.31,
+            "low": 73.23,
+            "close": 73.58
+          },
+          {
+            "date": "2026-09-10",
+            "open": 72.84,
+            "high": 73.2,
+            "low": 71.65,
+            "close": 73.09
+          },
+          {
+            "date": "2026-09-11",
+            "open": 74.41,
+            "high": 74.71,
+            "low": 72.39,
+            "close": 72.93
+          },
+          {
+            "date": "2026-09-14",
+            "open": 71.62,
+            "high": 72.64,
+            "low": 71.31,
+            "close": 72.13
+          },
+          {
+            "date": "2026-09-15",
+            "open": 72.54,
+            "high": 72.65,
+            "low": 71.2,
+            "close": 71.91
+          },
+          {
+            "date": "2026-09-16",
+            "open": 72.59,
+            "high": 73.04,
+            "low": 70.94,
+            "close": 71.44
+          },
+          {
+            "date": "2026-09-17",
+            "open": 72.63,
+            "high": 74.67,
+            "low": 71.27,
+            "close": 72.65
+          },
+          {
+            "date": "2026-09-18",
+            "open": 72.32,
+            "high": 72.78,
+            "low": 71.56,
+            "close": 71.83
+          },
+          {
+            "date": "2026-09-21",
+            "open": 72.51,
+            "high": 72.9,
+            "low": 71.62,
+            "close": 72.31
+          },
+          {
+            "date": "2026-09-23",
+            "open": 73.38,
+            "high": 76.46,
+            "low": 73.35,
+            "close": 76.22
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 4.40106286812542
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.278719307399226
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 4.350742898674076
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.228399337947882
+          }
+        ],
+        "latestResistance": 4.278719307399226,
+        "touchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 4.3819016268607305,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 4.381651564343798,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 4.36906803350949,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 4.364117214130314,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 4.368181227851829,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 4.335328031664641,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 4.335458998857547,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 4.337813479997556,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788912000000,
+            "y": 4.32161292811326,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 4.31361395198771,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789516800000,
+            "y": 4.291007236286713,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 4.285653390016292,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 4.27430221608671,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 4.28096243218686,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.333623895445714,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 4.3819016268607305,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 4.381651564343798,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 4.36906803350949,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 4.364117214130314,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 4.368181227851829,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 4.335328031664641,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 4.335458998857547,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 4.337813479997556,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788912000000,
+            "y": 4.32161292811326,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 4.31361395198771,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789516800000,
+            "y": 4.291007236286713,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 4.285653390016292,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 4.27430221608671,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 4.28096243218686,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.333623895445714,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -2.7798639645042154,
+        "totalCount": 15
+      }
+    },
+    {
+      "ticker": "LEN",
+      "name": "Lennar Corporation",
+      "periodStats": {
+        "1m": {
+          "touchCount": 13,
+          "breakoutCount": 1,
+          "slope": -3.0507657919951905
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "LEN",
+        "name": "Lennar Corporation",
+        "touchCount": 13,
+        "closeTouchCount": 6,
+        "highTouchCount": 7,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 88,
+            "high": 89.15,
+            "low": 87.42,
+            "close": 88.16
+          },
+          {
+            "date": "2026-08-25",
+            "open": 88.93,
+            "high": 88.93,
+            "low": 87.27,
+            "close": 87.68
+          },
+          {
+            "date": "2026-08-26",
+            "open": 87.27,
+            "high": 88.15,
+            "low": 86.41,
+            "close": 87.15
+          },
+          {
+            "date": "2026-08-27",
+            "open": 86.21,
+            "high": 86.55,
+            "low": 84.8,
+            "close": 85.11
+          },
+          {
+            "date": "2026-08-28",
+            "open": 85.97,
+            "high": 87.26,
+            "low": 84.67,
+            "close": 86.33
+          },
+          {
+            "date": "2026-08-31",
+            "open": 85.05,
+            "high": 85.55,
+            "low": 83.99,
+            "close": 84.11
+          },
+          {
+            "date": "2026-09-01",
+            "open": 83.75,
+            "high": 84.51,
+            "low": 82.74,
+            "close": 82.75
+          },
+          {
+            "date": "2026-09-02",
+            "open": 83.51,
+            "high": 83.98,
+            "low": 82.93,
+            "close": 83.58
+          },
+          {
+            "date": "2026-09-03",
+            "open": 85.35,
+            "high": 86.35,
+            "low": 83.71,
+            "close": 84.45
+          },
+          {
+            "date": "2026-09-04",
+            "open": 84,
+            "high": 84.45,
+            "low": 83.11,
+            "close": 83.58
+          },
+          {
+            "date": "2026-09-08",
+            "open": 82.6,
+            "high": 83.05,
+            "low": 80.18,
+            "close": 80.37
+          },
+          {
+            "date": "2026-09-09",
+            "open": 80.55,
+            "high": 81.19,
+            "low": 79.77,
+            "close": 80.76
+          },
+          {
+            "date": "2026-09-10",
+            "open": 79.99,
+            "high": 79.99,
+            "low": 76.63,
+            "close": 77.9
+          },
+          {
+            "date": "2026-09-11",
+            "open": 79.6,
+            "high": 80.5,
+            "low": 78.69,
+            "close": 79.6
+          },
+          {
+            "date": "2026-09-14",
+            "open": 78.79,
+            "high": 80.5,
+            "low": 78.66,
+            "close": 79.99
+          },
+          {
+            "date": "2026-09-15",
+            "open": 79.98,
+            "high": 80.5,
+            "low": 79,
+            "close": 80.07
+          },
+          {
+            "date": "2026-09-16",
+            "open": 80.63,
+            "high": 81.45,
+            "low": 77.83,
+            "close": 78.36
+          },
+          {
+            "date": "2026-09-17",
+            "open": 81,
+            "high": 81,
+            "low": 76.07,
+            "close": 79.7
+          },
+          {
+            "date": "2026-09-18",
+            "open": 78.25,
+            "high": 79.1,
+            "low": 75.7,
+            "close": 76.43
+          },
+          {
+            "date": "2026-09-21",
+            "open": 76.98,
+            "high": 78.38,
+            "low": 76.5,
+            "close": 78.08
+          },
+          {
+            "date": "2026-09-23",
+            "open": 82,
+            "high": 83.19,
+            "low": 81.31,
+            "close": 81.52
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 4.5016732126899175
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.364337706249763
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 4.4455330562687525
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.308197549828598
+          }
+        ],
+        "latestResistance": 4.364337706249763,
+        "touchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 4.49032034430915,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 4.487849543411548,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 4.4790399088438795,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 4.4581771622474315,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 4.449101000338202,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 4.436159643253809,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 4.425804257019769,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 4.419442836059304,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789344000000,
+            "y": 4.388257184424518,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 4.382901252084542,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 4.378269585796169,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 4.370712874773608,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 4.357733942104837,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.421127148295796,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 4.49032034430915,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 4.487849543411548,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 4.4790399088438795,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 4.4581771622474315,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 4.449101000338202,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 4.436159643253809,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 4.425804257019769,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 4.419442836059304,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789344000000,
+            "y": 4.388257184424518,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 4.382901252084542,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 4.378269585796169,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 4.370712874773608,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 4.357733942104837,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.421127148295796,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -3.0507657919951905,
+        "totalCount": 14
+      }
+    },
+    {
+      "ticker": "RCL",
+      "name": "Royal Caribbean Cruises Ltd.",
+      "periodStats": {
+        "1m": {
+          "touchCount": 12,
+          "breakoutCount": 1,
+          "slope": -3.169892245293817
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "RCL",
+        "name": "Royal Caribbean Cruises Ltd.",
+        "touchCount": 12,
+        "closeTouchCount": 6,
+        "highTouchCount": 6,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-08-25",
+            "open": 297.16,
+            "high": 297.23,
+            "low": 290.66,
+            "close": 292.29
+          },
+          {
+            "date": "2026-08-26",
+            "open": 293,
+            "high": 296.48,
+            "low": 289.73,
+            "close": 290
+          },
+          {
+            "date": "2026-08-27",
+            "open": 289.49,
+            "high": 291,
+            "low": 283.48,
+            "close": 284.8
+          },
+          {
+            "date": "2026-08-28",
+            "open": 286,
+            "high": 287.52,
+            "low": 279.41,
+            "close": 279.41
+          },
+          {
+            "date": "2026-08-31",
+            "open": 277,
+            "high": 278.61,
+            "low": 267.45,
+            "close": 268.74
+          },
+          {
+            "date": "2026-09-01",
+            "open": 267.13,
+            "high": 269,
+            "low": 263.55,
+            "close": 265.7
+          },
+          {
+            "date": "2026-09-02",
+            "open": 268.12,
+            "high": 272.02,
+            "low": 265.14,
+            "close": 265.6
+          },
+          {
+            "date": "2026-09-03",
+            "open": 266.59,
+            "high": 267.3,
+            "low": 262.04,
+            "close": 265.55
+          },
+          {
+            "date": "2026-09-04",
+            "open": 265.21,
+            "high": 266.54,
+            "low": 264.02,
+            "close": 265.19
+          },
+          {
+            "date": "2026-09-08",
+            "open": 263,
+            "high": 270.83,
+            "low": 262.99,
+            "close": 264.5
+          },
+          {
+            "date": "2026-09-09",
+            "open": 261,
+            "high": 262.5,
+            "low": 257.85,
+            "close": 259.76
+          },
+          {
+            "date": "2026-09-10",
+            "open": 258.33,
+            "high": 263.47,
+            "low": 256.71,
+            "close": 259.01
+          },
+          {
+            "date": "2026-09-11",
+            "open": 264,
+            "high": 264.3,
+            "low": 259.84,
+            "close": 260.14
+          },
+          {
+            "date": "2026-09-14",
+            "open": 256,
+            "high": 257.71,
+            "low": 252.74,
+            "close": 255.34
+          },
+          {
+            "date": "2026-09-15",
+            "open": 256.39,
+            "high": 257.13,
+            "low": 248.64,
+            "close": 249.3
+          },
+          {
+            "date": "2026-09-16",
+            "open": 251,
+            "high": 256.96,
+            "low": 249.24,
+            "close": 253.92
+          },
+          {
+            "date": "2026-09-17",
+            "open": 257.28,
+            "high": 258.2,
+            "low": 249.72,
+            "close": 249.74
+          },
+          {
+            "date": "2026-09-18",
+            "open": 250,
+            "high": 251.46,
+            "low": 245.06,
+            "close": 245.81
+          },
+          {
+            "date": "2026-09-21",
+            "open": 250.5,
+            "high": 252.15,
+            "low": 246.3,
+            "close": 250.25
+          },
+          {
+            "date": "2026-09-22",
+            "open": 259,
+            "high": 261.66,
+            "low": 231.03,
+            "close": 234.89
+          },
+          {
+            "date": "2026-09-23",
+            "open": 236.14,
+            "high": 237.13,
+            "low": 222.22,
+            "close": 230.3
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787616000000,
+            "y": 5.689235718496025
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.508893076638934
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787616000000,
+            "y": 5.623386127890479
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.443043486033387
+          }
+        ],
+        "latestResistance": 5.508893076638934,
+        "touchPoints": [
+          {
+            "x": 1787616000000,
+            "y": 5.67774646010536,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 5.66988092298052,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 5.651787179537821,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 5.661292423035249,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 5.601491317767735,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788998400000,
+            "y": 5.573939509507377,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 5.561219947635594,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789344000000,
+            "y": 5.551834921717229,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 5.549581793578901,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789516800000,
+            "y": 5.537019256778099,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 5.5272839311650355,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.52246041819533,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790035200000,
+            "y": 5.56704595108273,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787616000000,
+            "y": 5.67774646010536,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 5.66988092298052,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 5.651787179537821,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 5.661292423035249,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 5.601491317767735,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788998400000,
+            "y": 5.573939509507377,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 5.561219947635594,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789344000000,
+            "y": 5.551834921717229,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 5.549581793578901,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789516800000,
+            "y": 5.537019256778099,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 5.5272839311650355,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.52246041819533,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790035200000,
+            "y": 5.56704595108273,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -3.169892245293817,
+        "totalCount": 13
+      }
+    },
+    {
+      "ticker": "LEN-B",
+      "name": "Lennar Corporation",
+      "periodStats": {
+        "1m": {
+          "touchCount": 12,
+          "breakoutCount": 1,
+          "slope": -3.094422471037169
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "LEN-B",
+        "name": "Lennar Corporation",
+        "touchCount": 12,
+        "closeTouchCount": 6,
+        "highTouchCount": 6,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 86.46,
+            "high": 87.4,
+            "low": 86.15,
+            "close": 86.77
+          },
+          {
+            "date": "2026-08-25",
+            "open": 86.81,
+            "high": 87.13,
+            "low": 85.75,
+            "close": 86.12
+          },
+          {
+            "date": "2026-08-26",
+            "open": 86.09,
+            "high": 86.7,
+            "low": 85.46,
+            "close": 85.61
+          },
+          {
+            "date": "2026-08-27",
+            "open": 84.7,
+            "high": 85,
+            "low": 83.2,
+            "close": 83.45
+          },
+          {
+            "date": "2026-08-28",
+            "open": 84.3,
+            "high": 85.5,
+            "low": 83.11,
+            "close": 84.95
+          },
+          {
+            "date": "2026-08-31",
+            "open": 83.88,
+            "high": 84.94,
+            "low": 82.26,
+            "close": 82.26
+          },
+          {
+            "date": "2026-09-01",
+            "open": 82.18,
+            "high": 82.97,
+            "low": 81.2,
+            "close": 81.4
+          },
+          {
+            "date": "2026-09-02",
+            "open": 82.39,
+            "high": 82.5,
+            "low": 81.33,
+            "close": 82.15
+          },
+          {
+            "date": "2026-09-03",
+            "open": 83.01,
+            "high": 84.05,
+            "low": 82,
+            "close": 82.84
+          },
+          {
+            "date": "2026-09-04",
+            "open": 83.02,
+            "high": 83.02,
+            "low": 81.91,
+            "close": 82.17
+          },
+          {
+            "date": "2026-09-08",
+            "open": 82.52,
+            "high": 82.52,
+            "low": 78.64,
+            "close": 78.98
+          },
+          {
+            "date": "2026-09-09",
+            "open": 78.61,
+            "high": 79.62,
+            "low": 78.23,
+            "close": 79.13
+          },
+          {
+            "date": "2026-09-10",
+            "open": 78.83,
+            "high": 78.83,
+            "low": 75.19,
+            "close": 76.56
+          },
+          {
+            "date": "2026-09-11",
+            "open": 78.4,
+            "high": 79,
+            "low": 77.53,
+            "close": 78.27
+          },
+          {
+            "date": "2026-09-14",
+            "open": 77.87,
+            "high": 78.96,
+            "low": 77.5,
+            "close": 78.67
+          },
+          {
+            "date": "2026-09-15",
+            "open": 79.73,
+            "high": 79.73,
+            "low": 77.62,
+            "close": 78.57
+          },
+          {
+            "date": "2026-09-16",
+            "open": 78.07,
+            "high": 79.39,
+            "low": 76.43,
+            "close": 76.83
+          },
+          {
+            "date": "2026-09-17",
+            "open": 78.45,
+            "high": 78.45,
+            "low": 74.87,
+            "close": 78.33
+          },
+          {
+            "date": "2026-09-18",
+            "open": 78.25,
+            "high": 78.94,
+            "low": 74.44,
+            "close": 74.71
+          },
+          {
+            "date": "2026-09-21",
+            "open": 75.5,
+            "high": 77,
+            "low": 74.97,
+            "close": 76.71
+          },
+          {
+            "date": "2026-09-23",
+            "open": 80,
+            "high": 81.5,
+            "low": 79.93,
+            "close": 80
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 4.485087195388509
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.346299649368796
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 4.427018291753596
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.288230745733883
+          }
+        ],
+        "latestResistance": 4.346299649368796,
+        "touchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 4.470495282661489,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 4.467401256243195,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 4.462453883786496,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 4.442062848117941,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 4.441945124885125,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 4.416911036527384,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 4.408790271943096,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 4.413040688203051,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789344000000,
+            "y": 4.368941395125226,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 4.36398994718773,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 4.360930671379148,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 4.3400320779712045,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.400603020246817,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 4.470495282661489,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 4.467401256243195,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 4.462453883786496,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 4.442062848117941,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 4.441945124885125,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 4.416911036527384,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 4.408790271943096,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 4.413040688203051,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789344000000,
+            "y": 4.368941395125226,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 4.36398994718773,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 4.360930671379148,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 4.3400320779712045,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 4.400603020246817,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -3.094422471037169,
+        "totalCount": 13
+      }
+    },
+    {
+      "ticker": "ZBRA",
+      "name": "Zebra Technologies Corporation",
+      "periodStats": {
+        "1m": {
+          "touchCount": 12,
+          "breakoutCount": 1,
+          "slope": -0.8033578651809118
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "ZBRA",
+        "name": "Zebra Technologies Corporation",
+        "touchCount": 12,
+        "closeTouchCount": 5,
+        "highTouchCount": 7,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 1,
+        "highBreakoutCount": 0,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 365.23,
+            "high": 367.98,
+            "low": 358.43,
+            "close": 363.3
+          },
+          {
+            "date": "2026-08-25",
+            "open": 365.72,
+            "high": 366.9,
+            "low": 359.78,
+            "close": 360.52
+          },
+          {
+            "date": "2026-08-26",
+            "open": 361.96,
+            "high": 367.18,
+            "low": 359.26,
+            "close": 359.84
+          },
+          {
+            "date": "2026-08-27",
+            "open": 361.82,
+            "high": 366.91,
+            "low": 359.64,
+            "close": 361.11
+          },
+          {
+            "date": "2026-08-28",
+            "open": 360.8,
+            "high": 369,
+            "low": 353.58,
+            "close": 356.45
+          },
+          {
+            "date": "2026-08-31",
+            "open": 355.4,
+            "high": 356.88,
+            "low": 351.04,
+            "close": 353.55
+          },
+          {
+            "date": "2026-09-01",
+            "open": 352,
+            "high": 354.74,
+            "low": 342.6,
+            "close": 343.7
+          },
+          {
+            "date": "2026-09-02",
+            "open": 345.53,
+            "high": 354.33,
+            "low": 341.97,
+            "close": 351.11
+          },
+          {
+            "date": "2026-09-03",
+            "open": 351.71,
+            "high": 358.09,
+            "low": 348.93,
+            "close": 357.5
+          },
+          {
+            "date": "2026-09-04",
+            "open": 357.52,
+            "high": 365,
+            "low": 351.24,
+            "close": 362.74
+          },
+          {
+            "date": "2026-09-08",
+            "open": 359.58,
+            "high": 359.58,
+            "low": 348.66,
+            "close": 352.54
+          },
+          {
+            "date": "2026-09-09",
+            "open": 350.27,
+            "high": 352.25,
+            "low": 343.24,
+            "close": 344.83
+          },
+          {
+            "date": "2026-09-10",
+            "open": 340.75,
+            "high": 346.87,
+            "low": 336.4,
+            "close": 344.01
+          },
+          {
+            "date": "2026-09-11",
+            "open": 348.3,
+            "high": 356.77,
+            "low": 348.3,
+            "close": 350.37
+          },
+          {
+            "date": "2026-09-14",
+            "open": 344.1,
+            "high": 354.38,
+            "low": 343.51,
+            "close": 351.81
+          },
+          {
+            "date": "2026-09-15",
+            "open": 351.77,
+            "high": 355.55,
+            "low": 340.37,
+            "close": 342.73
+          },
+          {
+            "date": "2026-09-16",
+            "open": 344.86,
+            "high": 347.52,
+            "low": 338.67,
+            "close": 341.18
+          },
+          {
+            "date": "2026-09-17",
+            "open": 345.33,
+            "high": 349.18,
+            "low": 341.02,
+            "close": 347.81
+          },
+          {
+            "date": "2026-09-18",
+            "open": 349.53,
+            "high": 349.99,
+            "low": 342.07,
+            "close": 346.63
+          },
+          {
+            "date": "2026-09-21",
+            "open": 351.94,
+            "high": 353.58,
+            "low": 346.44,
+            "close": 350.84
+          },
+          {
+            "date": "2026-09-23",
+            "open": 362.99,
+            "high": 374.94,
+            "low": 360.51,
+            "close": 371.02
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 5.914316140649359
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.866803016761788
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 5.858430616268833
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.810917492381262
+          }
+        ],
+        "latestResistance": 5.866803016761788,
+        "touchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 5.895228939227156,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 5.9050893313612365,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 5.90585219103206,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 5.889182621059753,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 5.879135362134062,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 5.8849366836981485,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 5.877091316453384,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789344000000,
+            "y": 5.8630912571410825,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 5.873665886329527,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 5.855587548556628,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 5.857904582646717,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.860330279083181,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.916255969510227,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 5.895228939227156,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 5.9050893313612365,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787702400000,
+            "y": 5.90585219103206,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 5.889182621059753,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 5.879135362134062,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788825600000,
+            "y": 5.8849366836981485,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 5.877091316453384,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789344000000,
+            "y": 5.8630912571410825,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 5.873665886329527,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 5.855587548556628,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 5.857904582646717,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.860330279083181,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.916255969510227,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -0.8033578651809118,
+        "totalCount": 13
+      }
+    },
+    {
+      "ticker": "IONQ",
+      "name": "IonQ, Inc.",
+      "periodStats": {
+        "1m": {
+          "touchCount": 5,
+          "breakoutCount": 1,
+          "slope": -1.0925578776690719
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "IONQ",
+        "name": "IonQ, Inc.",
+        "touchCount": 5,
+        "closeTouchCount": 2,
+        "highTouchCount": 3,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-08-25",
+            "open": 42.08,
+            "high": 42.67,
+            "low": 40.99,
+            "close": 42.05
+          },
+          {
+            "date": "2026-08-26",
+            "open": 41.06,
+            "high": 41.91,
+            "low": 39.96,
+            "close": 40.03
+          },
+          {
+            "date": "2026-08-27",
+            "open": 41.03,
+            "high": 42.94,
+            "low": 40.76,
+            "close": 42.46
+          },
+          {
+            "date": "2026-08-28",
+            "open": 41.73,
+            "high": 41.92,
+            "low": 38.64,
+            "close": 39.2
+          },
+          {
+            "date": "2026-08-31",
+            "open": 38.8,
+            "high": 40.55,
+            "low": 38.43,
+            "close": 39.31
+          },
+          {
+            "date": "2026-09-01",
+            "open": 37.87,
+            "high": 39.25,
+            "low": 37.59,
+            "close": 37.78
+          },
+          {
+            "date": "2026-09-02",
+            "open": 37.42,
+            "high": 38.24,
+            "low": 36.78,
+            "close": 37.64
+          },
+          {
+            "date": "2026-09-03",
+            "open": 38.13,
+            "high": 39.78,
+            "low": 37.84,
+            "close": 39.02
+          },
+          {
+            "date": "2026-09-04",
+            "open": 39.07,
+            "high": 39.73,
+            "low": 38.83,
+            "close": 39.52
+          },
+          {
+            "date": "2026-09-08",
+            "open": 42.32,
+            "high": 44.43,
+            "low": 39.45,
+            "close": 40.47
+          },
+          {
+            "date": "2026-09-09",
+            "open": 39.51,
+            "high": 39.92,
+            "low": 38.1,
+            "close": 38.14
+          },
+          {
+            "date": "2026-09-10",
+            "open": 37.29,
+            "high": 38.34,
+            "low": 36.79,
+            "close": 36.84
+          },
+          {
+            "date": "2026-09-11",
+            "open": 37.23,
+            "high": 37.94,
+            "low": 36.33,
+            "close": 36.75
+          },
+          {
+            "date": "2026-09-14",
+            "open": 35.16,
+            "high": 38.56,
+            "low": 35,
+            "close": 37.5
+          },
+          {
+            "date": "2026-09-15",
+            "open": 36.28,
+            "high": 38.17,
+            "low": 36.26,
+            "close": 37.05
+          },
+          {
+            "date": "2026-09-16",
+            "open": 36.98,
+            "high": 37.65,
+            "low": 36.06,
+            "close": 36.84
+          },
+          {
+            "date": "2026-09-17",
+            "open": 38.32,
+            "high": 40.78,
+            "low": 38.09,
+            "close": 40.34
+          },
+          {
+            "date": "2026-09-18",
+            "open": 40.75,
+            "high": 40.94,
+            "low": 37.77,
+            "close": 39.13
+          },
+          {
+            "date": "2026-09-21",
+            "open": 40.43,
+            "high": 40.93,
+            "low": 39.83,
+            "close": 40.51
+          },
+          {
+            "date": "2026-09-22",
+            "open": 40.51,
+            "high": 40.8,
+            "low": 39.87,
+            "close": 40.74
+          },
+          {
+            "date": "2026-09-23",
+            "open": 45.84,
+            "high": 46.05,
+            "low": 41.63,
+            "close": 42.54
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787616000000,
+            "y": 3.7661488303240414
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.7250014745935944
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787616000000,
+            "y": 3.601607939196598
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.560460583466151
+          }
+        ],
+        "latestResistance": 3.7250014745935944,
+        "touchPoints": [
+          {
+            "x": 1787616000000,
+            "y": 3.7534960971999087,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 3.74856245627511,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 3.7121075802331434,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 3.7118632905043114,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790035200000,
+            "y": 3.70721041079866,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.8297277627013155,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787616000000,
+            "y": 3.7534960971999087,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 3.74856245627511,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 3.7121075802331434,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 3.7118632905043114,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790035200000,
+            "y": 3.70721041079866,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.8297277627013155,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -1.0925578776690719,
+        "totalCount": 6
+      }
+    },
+    {
+      "ticker": "AMGN",
+      "name": "Amgen Inc.",
+      "periodStats": {
+        "1m": {
+          "touchCount": 4,
+          "breakoutCount": 1,
+          "slope": -3.326661677834493
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "AMGN",
+        "name": "Amgen Inc.",
+        "touchCount": 4,
+        "closeTouchCount": 4,
+        "highTouchCount": 0,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 440.31,
+            "high": 445.87,
+            "low": 435.51,
+            "close": 443.84
+          },
+          {
+            "date": "2026-08-25",
+            "open": 443.26,
+            "high": 447.03,
+            "low": 441.26,
+            "close": 442.24
+          },
+          {
+            "date": "2026-08-26",
+            "open": 441,
+            "high": 442.89,
+            "low": 438.24,
+            "close": 440.34
+          },
+          {
+            "date": "2026-08-27",
+            "open": 433.08,
+            "high": 442.13,
+            "low": 431.01,
+            "close": 436.99
+          },
+          {
+            "date": "2026-08-28",
+            "open": 437.89,
+            "high": 437.89,
+            "low": 430.72,
+            "close": 432.42
+          },
+          {
+            "date": "2026-08-31",
+            "open": 428.59,
+            "high": 431.85,
+            "low": 426,
+            "close": 429.88
+          },
+          {
+            "date": "2026-09-01",
+            "open": 435.3,
+            "high": 438.65,
+            "low": 431,
+            "close": 438.12
+          },
+          {
+            "date": "2026-09-02",
+            "open": 440.65,
+            "high": 445.57,
+            "low": 435,
+            "close": 442.84
+          },
+          {
+            "date": "2026-09-03",
+            "open": 445.67,
+            "high": 445.82,
+            "low": 438.08,
+            "close": 444.12
+          },
+          {
+            "date": "2026-09-04",
+            "open": 437.03,
+            "high": 441.85,
+            "low": 435,
+            "close": 437.23
+          },
+          {
+            "date": "2026-09-08",
+            "open": 408.9,
+            "high": 410.03,
+            "low": 391.17,
+            "close": 393.17
+          },
+          {
+            "date": "2026-09-09",
+            "open": 393.07,
+            "high": 395.55,
+            "low": 389.28,
+            "close": 391.27
+          },
+          {
+            "date": "2026-09-10",
+            "open": 387.84,
+            "high": 391.67,
+            "low": 381.51,
+            "close": 382.47
+          },
+          {
+            "date": "2026-09-11",
+            "open": 386.14,
+            "high": 386.99,
+            "low": 377.22,
+            "close": 377.35
+          },
+          {
+            "date": "2026-09-14",
+            "open": 381.94,
+            "high": 384.61,
+            "low": 376.76,
+            "close": 381.5
+          },
+          {
+            "date": "2026-09-15",
+            "open": 380.23,
+            "high": 381.04,
+            "low": 375.15,
+            "close": 375.65
+          },
+          {
+            "date": "2026-09-16",
+            "open": 377.01,
+            "high": 379.11,
+            "low": 374.46,
+            "close": 376.35
+          },
+          {
+            "date": "2026-09-17",
+            "open": 379.15,
+            "high": 382.49,
+            "low": 376.08,
+            "close": 379.78
+          },
+          {
+            "date": "2026-09-18",
+            "open": 378.51,
+            "high": 386.5,
+            "low": 378.51,
+            "close": 385.65
+          },
+          {
+            "date": "2026-09-21",
+            "open": 385.71,
+            "high": 394.5,
+            "low": 381.9,
+            "close": 393.16
+          },
+          {
+            "date": "2026-09-23",
+            "open": 410.09,
+            "high": 415.76,
+            "low": 404.34,
+            "close": 406.09
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 6.183723531943076
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.978011970942692
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 6.0452448408278
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.839533279827416
+          }
+        ],
+        "latestResistance": 5.978011970942692,
+        "touchPoints": [
+          {
+            "x": 1788307200000,
+            "y": 6.093208530991266,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 6.0960947961860645,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 6.0804593724294875,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.974216653698429,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.030108170700187,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1788307200000,
+            "y": 6.093208530991266,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788393600000,
+            "y": 6.0960947961860645,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 6.0804593724294875,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.974216653698429,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.030108170700187,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -3.326661677834493,
+        "totalCount": 5
+      }
+    },
+    {
+      "ticker": "CDNS",
+      "name": "Cadence Design Systems, Inc.",
+      "periodStats": {
+        "1m": {
+          "touchCount": 4,
+          "breakoutCount": 1,
+          "slope": -3.7631549784841885
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "CDNS",
+        "name": "Cadence Design Systems, Inc.",
+        "touchCount": 4,
+        "closeTouchCount": 3,
+        "highTouchCount": 1,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 1,
+        "highBreakoutCount": 0,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 314.5,
+            "high": 317.34,
+            "low": 311.43,
+            "close": 315.92
+          },
+          {
+            "date": "2026-08-25",
+            "open": 318.43,
+            "high": 333.34,
+            "low": 317.18,
+            "close": 331.9
+          },
+          {
+            "date": "2026-08-26",
+            "open": 328.5,
+            "high": 340.31,
+            "low": 327.46,
+            "close": 334.68
+          },
+          {
+            "date": "2026-08-27",
+            "open": 340.04,
+            "high": 347.72,
+            "low": 330.5,
+            "close": 347.55
+          },
+          {
+            "date": "2026-08-28",
+            "open": 347.43,
+            "high": 347.43,
+            "low": 338.1,
+            "close": 340.39
+          },
+          {
+            "date": "2026-08-31",
+            "open": 336.22,
+            "high": 342.38,
+            "low": 336.22,
+            "close": 338.78
+          },
+          {
+            "date": "2026-09-01",
+            "open": 331.19,
+            "high": 332.84,
+            "low": 311.87,
+            "close": 313.04
+          },
+          {
+            "date": "2026-09-02",
+            "open": 312.62,
+            "high": 313.21,
+            "low": 303.66,
+            "close": 306.67
+          },
+          {
+            "date": "2026-09-03",
+            "open": 307.64,
+            "high": 311.04,
+            "low": 302.36,
+            "close": 304.88
+          },
+          {
+            "date": "2026-09-04",
+            "open": 305.96,
+            "high": 308.3,
+            "low": 287.9,
+            "close": 292.7
+          },
+          {
+            "date": "2026-09-08",
+            "open": 291.34,
+            "high": 295.82,
+            "low": 282.68,
+            "close": 284.11
+          },
+          {
+            "date": "2026-09-09",
+            "open": 283.85,
+            "high": 287.76,
+            "low": 281.65,
+            "close": 284.6
+          },
+          {
+            "date": "2026-09-10",
+            "open": 282.28,
+            "high": 289.14,
+            "low": 282.28,
+            "close": 284.95
+          },
+          {
+            "date": "2026-09-11",
+            "open": 288.21,
+            "high": 293.4,
+            "low": 285.02,
+            "close": 289.37
+          },
+          {
+            "date": "2026-09-14",
+            "open": 288,
+            "high": 288.8,
+            "low": 278.1,
+            "close": 279.06
+          },
+          {
+            "date": "2026-09-15",
+            "open": 277.38,
+            "high": 279,
+            "low": 273.07,
+            "close": 273.96
+          },
+          {
+            "date": "2026-09-16",
+            "open": 274.25,
+            "high": 282,
+            "low": 274.16,
+            "close": 279.9
+          },
+          {
+            "date": "2026-09-17",
+            "open": 285.55,
+            "high": 285.55,
+            "low": 278.3,
+            "close": 280.76
+          },
+          {
+            "date": "2026-09-18",
+            "open": 281.93,
+            "high": 284.98,
+            "low": 280.49,
+            "close": 282.9
+          },
+          {
+            "date": "2026-09-21",
+            "open": 285.73,
+            "high": 295.8,
+            "low": 283.39,
+            "close": 294.9
+          },
+          {
+            "date": "2026-09-23",
+            "open": 305.63,
+            "high": 315.7,
+            "low": 305.63,
+            "close": 309.09
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 5.8983361486660275
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.676372618239769
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 5.734484817676748
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.51252128725049
+          }
+        ],
+        "latestResistance": 5.676372618239769,
+        "touchPoints": [
+          {
+            "x": 1787788800000,
+            "y": 5.850908539546495,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 5.850563205864396,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 5.825350929158236,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.6866363158212305,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.733632496625086,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787788800000,
+            "y": 5.850908539546495,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 5.850563205864396,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788134400000,
+            "y": 5.825350929158236,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.6866363158212305,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.733632496625086,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -3.7631549784841885,
+        "totalCount": 5
+      }
+    },
+    {
+      "ticker": "MTD",
+      "name": "Mettler-Toledo International Inc.",
+      "periodStats": {
+        "1m": {
+          "touchCount": 3,
+          "breakoutCount": 1,
+          "slope": -0.4351637878020424
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "MTD",
+        "name": "Mettler-Toledo International Inc.",
+        "touchCount": 3,
+        "closeTouchCount": 2,
+        "highTouchCount": 1,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 1393.48,
+            "high": 1419.1,
+            "low": 1385.68,
+            "close": 1398.89
+          },
+          {
+            "date": "2026-08-25",
+            "open": 1413.57,
+            "high": 1421.78,
+            "low": 1395.99,
+            "close": 1402.25
+          },
+          {
+            "date": "2026-08-26",
+            "open": 1392.11,
+            "high": 1413.41,
+            "low": 1390.81,
+            "close": 1398.46
+          },
+          {
+            "date": "2026-08-27",
+            "open": 1406.36,
+            "high": 1440.22,
+            "low": 1400.61,
+            "close": 1407.43
+          },
+          {
+            "date": "2026-08-28",
+            "open": 1401.09,
+            "high": 1406.93,
+            "low": 1391.62,
+            "close": 1398.58
+          },
+          {
+            "date": "2026-08-31",
+            "open": 1384.2,
+            "high": 1407.11,
+            "low": 1376.24,
+            "close": 1405.14
+          },
+          {
+            "date": "2026-09-01",
+            "open": 1410.75,
+            "high": 1415,
+            "low": 1370.33,
+            "close": 1375.96
+          },
+          {
+            "date": "2026-09-02",
+            "open": 1361.36,
+            "high": 1398.13,
+            "low": 1357.19,
+            "close": 1367.74
+          },
+          {
+            "date": "2026-09-03",
+            "open": 1376.16,
+            "high": 1387.32,
+            "low": 1334.73,
+            "close": 1356.23
+          },
+          {
+            "date": "2026-09-04",
+            "open": 1341.57,
+            "high": 1358.78,
+            "low": 1339.09,
+            "close": 1345.26
+          },
+          {
+            "date": "2026-09-08",
+            "open": 1331.81,
+            "high": 1347.85,
+            "low": 1322.92,
+            "close": 1325.52
+          },
+          {
+            "date": "2026-09-09",
+            "open": 1303.57,
+            "high": 1316.39,
+            "low": 1288.84,
+            "close": 1290.36
+          },
+          {
+            "date": "2026-09-10",
+            "open": 1275.79,
+            "high": 1296.65,
+            "low": 1266.55,
+            "close": 1280.58
+          },
+          {
+            "date": "2026-09-11",
+            "open": 1294.03,
+            "high": 1302.85,
+            "low": 1286.66,
+            "close": 1293.52
+          },
+          {
+            "date": "2026-09-14",
+            "open": 1302.88,
+            "high": 1306.14,
+            "low": 1274.51,
+            "close": 1285.75
+          },
+          {
+            "date": "2026-09-15",
+            "open": 1293.46,
+            "high": 1335.84,
+            "low": 1284.73,
+            "close": 1330.4
+          },
+          {
+            "date": "2026-09-16",
+            "open": 1337.56,
+            "high": 1400.08,
+            "low": 1331.24,
+            "close": 1378.69
+          },
+          {
+            "date": "2026-09-17",
+            "open": 1401.12,
+            "high": 1423.42,
+            "low": 1380.44,
+            "close": 1410.44
+          },
+          {
+            "date": "2026-09-18",
+            "open": 1404.82,
+            "high": 1415.63,
+            "low": 1385.13,
+            "close": 1392.32
+          },
+          {
+            "date": "2026-09-21",
+            "open": 1402.66,
+            "high": 1436.09,
+            "low": 1396.11,
+            "close": 1430.44
+          },
+          {
+            "date": "2026-09-23",
+            "open": 1484.57,
+            "high": 1512.88,
+            "low": 1482.2,
+            "close": 1492.34
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 7.298585003121594
+          },
+          {
+            "x": 1790121600000,
+            "y": 7.266824204166058
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 7.166329637400669
+          },
+          {
+            "x": 1790121600000,
+            "y": 7.134568838445134
+          }
+        ],
+        "latestResistance": 7.266824204166058,
+        "touchPoints": [
+          {
+            "x": 1789603200000,
+            "y": 7.251656991430226,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 7.255329940673992,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 7.265737368234075,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 7.321770398019018,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1789603200000,
+            "y": 7.251656991430226,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 7.255329940673992,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 7.265737368234075,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 7.321770398019018,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -0.4351637878020424,
+        "totalCount": 4
+      }
+    },
+    {
+      "ticker": "BURL",
+      "name": "Burlington Stores, Inc.",
+      "periodStats": {
+        "1m": {
+          "touchCount": 3,
+          "breakoutCount": 1,
+          "slope": -5.525507711286351
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "BURL",
+        "name": "Burlington Stores, Inc.",
+        "touchCount": 3,
+        "closeTouchCount": 1,
+        "highTouchCount": 2,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 1,
+        "highBreakoutCount": 0,
+        "prices": [
+          {
+            "date": "2026-08-24",
+            "open": 326,
+            "high": 330.97,
+            "low": 324.44,
+            "close": 330.64
+          },
+          {
+            "date": "2026-08-25",
+            "open": 328.15,
+            "high": 328.17,
+            "low": 314,
+            "close": 315.27
+          },
+          {
+            "date": "2026-08-26",
+            "open": 314,
+            "high": 317.95,
+            "low": 310.69,
+            "close": 313.99
+          },
+          {
+            "date": "2026-08-27",
+            "open": 306.38,
+            "high": 314.72,
+            "low": 288.56,
+            "close": 290
+          },
+          {
+            "date": "2026-08-28",
+            "open": 291.3,
+            "high": 292.5,
+            "low": 272.72,
+            "close": 272.95
+          },
+          {
+            "date": "2026-08-31",
+            "open": 270.5,
+            "high": 271.18,
+            "low": 256.26,
+            "close": 259.76
+          },
+          {
+            "date": "2026-09-01",
+            "open": 256,
+            "high": 264.98,
+            "low": 253.65,
+            "close": 262.15
+          },
+          {
+            "date": "2026-09-02",
+            "open": 262.01,
+            "high": 262.9,
+            "low": 256.94,
+            "close": 257.07
+          },
+          {
+            "date": "2026-09-03",
+            "open": 258.39,
+            "high": 260.5,
+            "low": 252.61,
+            "close": 258.56
+          },
+          {
+            "date": "2026-09-04",
+            "open": 257.85,
+            "high": 267.51,
+            "low": 257.65,
+            "close": 265.33
+          },
+          {
+            "date": "2026-09-08",
+            "open": 264.83,
+            "high": 266.98,
+            "low": 252.81,
+            "close": 255.42
+          },
+          {
+            "date": "2026-09-09",
+            "open": 257.22,
+            "high": 257.22,
+            "low": 239,
+            "close": 239.18
+          },
+          {
+            "date": "2026-09-10",
+            "open": 238.15,
+            "high": 240.81,
+            "low": 236.75,
+            "close": 238.04
+          },
+          {
+            "date": "2026-09-11",
+            "open": 238.99,
+            "high": 239.95,
+            "low": 236.28,
+            "close": 239.04
+          },
+          {
+            "date": "2026-09-14",
+            "open": 238.4,
+            "high": 238.42,
+            "low": 231.89,
+            "close": 232.24
+          },
+          {
+            "date": "2026-09-15",
+            "open": 233.75,
+            "high": 234.5,
+            "low": 226.85,
+            "close": 227.28
+          },
+          {
+            "date": "2026-09-16",
+            "open": 230.57,
+            "high": 236.56,
+            "low": 229.97,
+            "close": 230.71
+          },
+          {
+            "date": "2026-09-17",
+            "open": 234.44,
+            "high": 240.73,
+            "low": 233.6,
+            "close": 239.54
+          },
+          {
+            "date": "2026-09-18",
+            "open": 239.18,
+            "high": 240.97,
+            "low": 235.43,
+            "close": 237.12
+          },
+          {
+            "date": "2026-09-21",
+            "open": 237.95,
+            "high": 253.39,
+            "low": 236.83,
+            "close": 251.8
+          },
+          {
+            "date": "2026-09-23",
+            "open": 255.66,
+            "high": 259.93,
+            "low": 253.23,
+            "close": 257.33
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1787529600000,
+            "y": 5.817323218484906
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.495886575457071
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1787529600000,
+            "y": 5.603776444932541
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.2823398019047065
+          }
+        ],
+        "latestResistance": 5.495886575457071,
+        "touchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 5.801030170203477,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 5.793531766799809,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 5.751683354640749,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.550359307904895,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1787529600000,
+            "y": 5.801030170203477,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1787616000000,
+            "y": 5.793531766799809,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787788800000,
+            "y": 5.751683354640749,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.550359307904895,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -5.525507711286351,
+        "totalCount": 4
+      }
+    },
+    {
+      "ticker": "FFIV",
+      "name": "F5, Inc.",
+      "periodStats": {
+        "3m": {
+          "touchCount": 9,
+          "breakoutCount": 1,
+          "slope": -0.06814635480322984
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "FFIV",
+        "name": "F5, Inc.",
+        "touchCount": 9,
+        "closeTouchCount": 6,
+        "highTouchCount": 3,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-06-24",
+            "open": 389.01,
+            "high": 391.49,
+            "low": 382.16,
+            "close": 384.78
+          },
+          {
+            "date": "2026-06-25",
+            "open": 384.78,
+            "high": 390,
+            "low": 381.67,
+            "close": 386.01
+          },
+          {
+            "date": "2026-06-26",
+            "open": 386.23,
+            "high": 395.96,
+            "low": 382.01,
+            "close": 394.53
+          },
+          {
+            "date": "2026-06-29",
+            "open": 400,
+            "high": 414,
+            "low": 396.92,
+            "close": 410.56
+          },
+          {
+            "date": "2026-06-30",
+            "open": 413.41,
+            "high": 427.54,
+            "low": 407,
+            "close": 415.96
+          },
+          {
+            "date": "2026-07-01",
+            "open": 413.41,
+            "high": 424.87,
+            "low": 413.01,
+            "close": 424.18
+          },
+          {
+            "date": "2026-07-02",
+            "open": 422.37,
+            "high": 425.34,
+            "low": 404.54,
+            "close": 408.14
+          },
+          {
+            "date": "2026-07-06",
+            "open": 407,
+            "high": 426.28,
+            "low": 407,
+            "close": 419.03
+          },
+          {
+            "date": "2026-07-07",
+            "open": 421.53,
+            "high": 423.91,
+            "low": 415.19,
+            "close": 417.11
+          },
+          {
+            "date": "2026-07-08",
+            "open": 415.32,
+            "high": 420.72,
+            "low": 408.99,
+            "close": 419.14
+          },
+          {
+            "date": "2026-07-09",
+            "open": 418.12,
+            "high": 431.41,
+            "low": 418.12,
+            "close": 430.32
+          },
+          {
+            "date": "2026-07-10",
+            "open": 427.79,
+            "high": 432.74,
+            "low": 425.82,
+            "close": 430.39
+          },
+          {
+            "date": "2026-07-13",
+            "open": 426.92,
+            "high": 431.66,
+            "low": 418.24,
+            "close": 420.95
+          },
+          {
+            "date": "2026-07-14",
+            "open": 424.34,
+            "high": 432.68,
+            "low": 421.97,
+            "close": 431.26
+          },
+          {
+            "date": "2026-07-15",
+            "open": 433.94,
+            "high": 435,
+            "low": 414.44,
+            "close": 421.47
+          },
+          {
+            "date": "2026-07-16",
+            "open": 419.34,
+            "high": 419.49,
+            "low": 399.97,
+            "close": 403.41
+          },
+          {
+            "date": "2026-07-17",
+            "open": 395.12,
+            "high": 413.54,
+            "low": 391.97,
+            "close": 409.1
+          },
+          {
+            "date": "2026-07-20",
+            "open": 410.98,
+            "high": 419.84,
+            "low": 410.98,
+            "close": 411.92
+          },
+          {
+            "date": "2026-07-21",
+            "open": 417.03,
+            "high": 417.03,
+            "low": 407.57,
+            "close": 408.74
+          },
+          {
+            "date": "2026-07-22",
+            "open": 405.2,
+            "high": 408.6,
+            "low": 399.56,
+            "close": 400.61
+          },
+          {
+            "date": "2026-07-23",
+            "open": 398.51,
+            "high": 403.49,
+            "low": 386.79,
+            "close": 388.08
+          },
+          {
+            "date": "2026-07-24",
+            "open": 393.77,
+            "high": 393.77,
+            "low": 385.37,
+            "close": 392.21
+          },
+          {
+            "date": "2026-07-27",
+            "open": 398.8,
+            "high": 410.81,
+            "low": 391.54,
+            "close": 407.96
+          },
+          {
+            "date": "2026-07-28",
+            "open": 393.99,
+            "high": 414,
+            "low": 366.93,
+            "close": 403.46
+          },
+          {
+            "date": "2026-07-29",
+            "open": 403.46,
+            "high": 411.1,
+            "low": 385.72,
+            "close": 386.95
+          },
+          {
+            "date": "2026-07-30",
+            "open": 390.6,
+            "high": 393.58,
+            "low": 386.01,
+            "close": 388.75
+          },
+          {
+            "date": "2026-07-31",
+            "open": 394.37,
+            "high": 405.85,
+            "low": 394.01,
+            "close": 402.57
+          },
+          {
+            "date": "2026-08-03",
+            "open": 403.8,
+            "high": 408.26,
+            "low": 392.39,
+            "close": 406.35
+          },
+          {
+            "date": "2026-08-04",
+            "open": 410.63,
+            "high": 418.59,
+            "low": 408.21,
+            "close": 412.25
+          },
+          {
+            "date": "2026-08-05",
+            "open": 414.63,
+            "high": 417.56,
+            "low": 408.89,
+            "close": 411.32
+          },
+          {
+            "date": "2026-08-06",
+            "open": 411.72,
+            "high": 414.8,
+            "low": 404,
+            "close": 413.07
+          },
+          {
+            "date": "2026-08-07",
+            "open": 420,
+            "high": 420,
+            "low": 400.07,
+            "close": 400.23
+          },
+          {
+            "date": "2026-08-10",
+            "open": 403.87,
+            "high": 415.79,
+            "low": 401.83,
+            "close": 409.99
+          },
+          {
+            "date": "2026-08-11",
+            "open": 410,
+            "high": 419.99,
+            "low": 406.83,
+            "close": 414
+          },
+          {
+            "date": "2026-08-12",
+            "open": 414.81,
+            "high": 425.61,
+            "low": 414.81,
+            "close": 422.95
+          },
+          {
+            "date": "2026-08-13",
+            "open": 421.48,
+            "high": 423.6,
+            "low": 412.55,
+            "close": 416
+          },
+          {
+            "date": "2026-08-14",
+            "open": 420.05,
+            "high": 420.05,
+            "low": 402.26,
+            "close": 403.2
+          },
+          {
+            "date": "2026-08-17",
+            "open": 399.45,
+            "high": 401.26,
+            "low": 394.02,
+            "close": 395.54
+          },
+          {
+            "date": "2026-08-18",
+            "open": 390.81,
+            "high": 399.26,
+            "low": 390.81,
+            "close": 393.62
+          },
+          {
+            "date": "2026-08-19",
+            "open": 397.33,
+            "high": 397.5,
+            "low": 381.7,
+            "close": 382.63
+          },
+          {
+            "date": "2026-08-20",
+            "open": 382.31,
+            "high": 385.6,
+            "low": 376.21,
+            "close": 377.79
+          },
+          {
+            "date": "2026-08-21",
+            "open": 379.58,
+            "high": 385.45,
+            "low": 376.54,
+            "close": 384.63
+          },
+          {
+            "date": "2026-08-24",
+            "open": 381.34,
+            "high": 384.39,
+            "low": 378.29,
+            "close": 379.04
+          },
+          {
+            "date": "2026-08-25",
+            "open": 382.26,
+            "high": 386.21,
+            "low": 378.35,
+            "close": 382.75
+          },
+          {
+            "date": "2026-08-26",
+            "open": 382.58,
+            "high": 403.42,
+            "low": 382.1,
+            "close": 399.59
+          },
+          {
+            "date": "2026-08-27",
+            "open": 403.39,
+            "high": 414.17,
+            "low": 402.19,
+            "close": 410.22
+          },
+          {
+            "date": "2026-08-28",
+            "open": 409.71,
+            "high": 410,
+            "low": 394.08,
+            "close": 394.24
+          },
+          {
+            "date": "2026-08-31",
+            "open": 395.86,
+            "high": 408.91,
+            "low": 395.06,
+            "close": 407.13
+          },
+          {
+            "date": "2026-09-01",
+            "open": 400.59,
+            "high": 407.63,
+            "low": 390.37,
+            "close": 395.72
+          },
+          {
+            "date": "2026-09-02",
+            "open": 398.57,
+            "high": 398.57,
+            "low": 384.95,
+            "close": 391.08
+          },
+          {
+            "date": "2026-09-03",
+            "open": 390.42,
+            "high": 395.1,
+            "low": 385.15,
+            "close": 392.15
+          },
+          {
+            "date": "2026-09-04",
+            "open": 391.45,
+            "high": 395.29,
+            "low": 389.62,
+            "close": 390.47
+          },
+          {
+            "date": "2026-09-08",
+            "open": 390.5,
+            "high": 392.12,
+            "low": 386.03,
+            "close": 389.62
+          },
+          {
+            "date": "2026-09-09",
+            "open": 390.76,
+            "high": 406.92,
+            "low": 389.44,
+            "close": 404.63
+          },
+          {
+            "date": "2026-09-10",
+            "open": 402.89,
+            "high": 412.01,
+            "low": 396.88,
+            "close": 398.48
+          },
+          {
+            "date": "2026-09-11",
+            "open": 400.74,
+            "high": 415.54,
+            "low": 400.74,
+            "close": 411.71
+          },
+          {
+            "date": "2026-09-14",
+            "open": 406.24,
+            "high": 415.99,
+            "low": 404.95,
+            "close": 411.49
+          },
+          {
+            "date": "2026-09-15",
+            "open": 412.12,
+            "high": 431.67,
+            "low": 412.06,
+            "close": 430.88
+          },
+          {
+            "date": "2026-09-16",
+            "open": 430.12,
+            "high": 435.45,
+            "low": 418.74,
+            "close": 423.59
+          },
+          {
+            "date": "2026-09-17",
+            "open": 425.56,
+            "high": 439.48,
+            "low": 423.3,
+            "close": 434.62
+          },
+          {
+            "date": "2026-09-18",
+            "open": 439.13,
+            "high": 439.83,
+            "low": 423.82,
+            "close": 432.03
+          },
+          {
+            "date": "2026-09-21",
+            "open": 433,
+            "high": 451.02,
+            "low": 432.06,
+            "close": 450.1
+          },
+          {
+            "date": "2026-09-23",
+            "open": 453.92,
+            "high": 462,
+            "low": 452.17,
+            "close": 455.99
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1782259200000,
+            "y": 6.084969185226611
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.080822500535979
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1782259200000,
+            "y": 5.93183126886579
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.927684584175158
+          }
+        ],
+        "latestResistance": 6.080822500535979,
+        "touchPoints": [
+          {
+            "x": 1783555200000,
+            "y": 6.064529117964987,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1783641600000,
+            "y": 6.064691774376913,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1783900800000,
+            "y": 6.067638241330824,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1783987200000,
+            "y": 6.06671115648252,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1784073600000,
+            "y": 6.075346031088684,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 6.0658296290632885,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789516800000,
+            "y": 6.076379979138749,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 6.07447208609159,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 6.068495030277401,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.135564891081739,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1783555200000,
+            "y": 6.064529117964987,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1783641600000,
+            "y": 6.064691774376913,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1783900800000,
+            "y": 6.067638241330824,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1783987200000,
+            "y": 6.06671115648252,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1784073600000,
+            "y": 6.075346031088684,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789430400000,
+            "y": 6.0658296290632885,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789516800000,
+            "y": 6.076379979138749,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 6.07447208609159,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 6.068495030277401,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.135564891081739,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -0.06814635480322984,
+        "totalCount": 10
+      }
+    },
+    {
+      "ticker": "CLS",
+      "name": "Celestica Inc.",
+      "periodStats": {
+        "3m": {
+          "touchCount": 5,
+          "breakoutCount": 1,
+          "slope": -1.930590673828026
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "CLS",
+        "name": "Celestica Inc.",
+        "touchCount": 5,
+        "closeTouchCount": 3,
+        "highTouchCount": 2,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-06-24",
+            "open": 351,
+            "high": 376.54,
+            "low": 347.57,
+            "close": 362.24
+          },
+          {
+            "date": "2026-06-25",
+            "open": 374.17,
+            "high": 374.17,
+            "low": 349,
+            "close": 361.4
+          },
+          {
+            "date": "2026-06-26",
+            "open": 351.39,
+            "high": 353.08,
+            "low": 336.54,
+            "close": 337.53
+          },
+          {
+            "date": "2026-06-29",
+            "open": 339.78,
+            "high": 344.36,
+            "low": 322.25,
+            "close": 343.25
+          },
+          {
+            "date": "2026-06-30",
+            "open": 345.34,
+            "high": 365.67,
+            "low": 343.18,
+            "close": 364.8
+          },
+          {
+            "date": "2026-07-01",
+            "open": 348.01,
+            "high": 362.78,
+            "low": 336.68,
+            "close": 361.62
+          },
+          {
+            "date": "2026-07-02",
+            "open": 354,
+            "high": 362.53,
+            "low": 328.5,
+            "close": 336.21
+          },
+          {
+            "date": "2026-07-06",
+            "open": 340,
+            "high": 359.77,
+            "low": 339.17,
+            "close": 350.2
+          },
+          {
+            "date": "2026-07-07",
+            "open": 339.9,
+            "high": 349.62,
+            "low": 330.18,
+            "close": 345.06
+          },
+          {
+            "date": "2026-07-08",
+            "open": 340,
+            "high": 361.15,
+            "low": 340,
+            "close": 360.74
+          },
+          {
+            "date": "2026-07-09",
+            "open": 373.73,
+            "high": 378,
+            "low": 353.82,
+            "close": 354.78
+          },
+          {
+            "date": "2026-07-10",
+            "open": 353.98,
+            "high": 361.64,
+            "low": 347.37,
+            "close": 359.85
+          },
+          {
+            "date": "2026-07-13",
+            "open": 350.3,
+            "high": 364.01,
+            "low": 339.14,
+            "close": 345.18
+          },
+          {
+            "date": "2026-07-14",
+            "open": 353.74,
+            "high": 353.82,
+            "low": 342,
+            "close": 345.03
+          },
+          {
+            "date": "2026-07-15",
+            "open": 349.7,
+            "high": 350.9,
+            "low": 322.5,
+            "close": 334.77
+          },
+          {
+            "date": "2026-07-16",
+            "open": 328.46,
+            "high": 329.36,
+            "low": 300.8,
+            "close": 303.86
+          },
+          {
+            "date": "2026-07-17",
+            "open": 293,
+            "high": 308.83,
+            "low": 282.21,
+            "close": 301.34
+          },
+          {
+            "date": "2026-07-20",
+            "open": 306.04,
+            "high": 316.9,
+            "low": 304.5,
+            "close": 307.34
+          },
+          {
+            "date": "2026-07-21",
+            "open": 317.05,
+            "high": 342.13,
+            "low": 312.46,
+            "close": 339.59
+          },
+          {
+            "date": "2026-07-22",
+            "open": 331.14,
+            "high": 341.66,
+            "low": 331.14,
+            "close": 335.5
+          },
+          {
+            "date": "2026-07-23",
+            "open": 334.27,
+            "high": 349.31,
+            "low": 331.64,
+            "close": 334.75
+          },
+          {
+            "date": "2026-07-24",
+            "open": 332.2,
+            "high": 332.2,
+            "low": 303.72,
+            "close": 305.28
+          },
+          {
+            "date": "2026-07-27",
+            "open": 306.82,
+            "high": 323.55,
+            "low": 289.26,
+            "close": 318.24
+          },
+          {
+            "date": "2026-07-28",
+            "open": 328,
+            "high": 350.91,
+            "low": 317.12,
+            "close": 350.2
+          },
+          {
+            "date": "2026-07-29",
+            "open": 350.99,
+            "high": 351.5,
+            "low": 317.61,
+            "close": 328.43
+          },
+          {
+            "date": "2026-07-30",
+            "open": 346.95,
+            "high": 357.97,
+            "low": 344.25,
+            "close": 352.59
+          },
+          {
+            "date": "2026-07-31",
+            "open": 364.53,
+            "high": 374.5,
+            "low": 330.13,
+            "close": 331.44
+          },
+          {
+            "date": "2026-08-03",
+            "open": 321.48,
+            "high": 345.44,
+            "low": 312.59,
+            "close": 341.91
+          },
+          {
+            "date": "2026-08-04",
+            "open": 355.21,
+            "high": 374.59,
+            "low": 344.35,
+            "close": 371.15
+          },
+          {
+            "date": "2026-08-05",
+            "open": 369.97,
+            "high": 378.99,
+            "low": 361.62,
+            "close": 362.76
+          },
+          {
+            "date": "2026-08-06",
+            "open": 311,
+            "high": 325.76,
+            "low": 307,
+            "close": 314.53
+          },
+          {
+            "date": "2026-08-07",
+            "open": 315,
+            "high": 319.48,
+            "low": 305.75,
+            "close": 317.83
+          },
+          {
+            "date": "2026-08-10",
+            "open": 320,
+            "high": 329.37,
+            "low": 314.47,
+            "close": 314.59
+          },
+          {
+            "date": "2026-08-11",
+            "open": 319,
+            "high": 319.08,
+            "low": 309.5,
+            "close": 310.38
+          },
+          {
+            "date": "2026-08-12",
+            "open": 320.08,
+            "high": 339.74,
+            "low": 318.63,
+            "close": 339.46
+          },
+          {
+            "date": "2026-08-13",
+            "open": 336.75,
+            "high": 365.52,
+            "low": 335.01,
+            "close": 347.63
+          },
+          {
+            "date": "2026-08-14",
+            "open": 349.63,
+            "high": 353.31,
+            "low": 333.43,
+            "close": 335.05
+          },
+          {
+            "date": "2026-08-17",
+            "open": 337.58,
+            "high": 346.24,
+            "low": 335.63,
+            "close": 340.4
+          },
+          {
+            "date": "2026-08-18",
+            "open": 330.37,
+            "high": 331.13,
+            "low": 308.52,
+            "close": 310.59
+          },
+          {
+            "date": "2026-08-19",
+            "open": 311.99,
+            "high": 314.26,
+            "low": 292.5,
+            "close": 301.36
+          },
+          {
+            "date": "2026-08-20",
+            "open": 301,
+            "high": 304.16,
+            "low": 294.56,
+            "close": 302
+          },
+          {
+            "date": "2026-08-21",
+            "open": 304.6,
+            "high": 306,
+            "low": 292.64,
+            "close": 296.55
+          },
+          {
+            "date": "2026-08-24",
+            "open": 298.63,
+            "high": 299,
+            "low": 284.55,
+            "close": 294.57
+          },
+          {
+            "date": "2026-08-25",
+            "open": 303.83,
+            "high": 307.34,
+            "low": 298.46,
+            "close": 306.86
+          },
+          {
+            "date": "2026-08-26",
+            "open": 305.21,
+            "high": 313.11,
+            "low": 303.19,
+            "close": 307.32
+          },
+          {
+            "date": "2026-08-27",
+            "open": 316.56,
+            "high": 325.82,
+            "low": 313.6,
+            "close": 317.38
+          },
+          {
+            "date": "2026-08-28",
+            "open": 315,
+            "high": 316,
+            "low": 298.53,
+            "close": 298.7
+          },
+          {
+            "date": "2026-08-31",
+            "open": 299.71,
+            "high": 302.08,
+            "low": 296.42,
+            "close": 299.4
+          },
+          {
+            "date": "2026-09-01",
+            "open": 293.88,
+            "high": 296.98,
+            "low": 287.5,
+            "close": 292.59
+          },
+          {
+            "date": "2026-09-02",
+            "open": 291.24,
+            "high": 291.75,
+            "low": 273.8,
+            "close": 277.77
+          },
+          {
+            "date": "2026-09-03",
+            "open": 282.64,
+            "high": 314.09,
+            "low": 280.7,
+            "close": 309.84
+          },
+          {
+            "date": "2026-09-04",
+            "open": 316.3,
+            "high": 318.41,
+            "low": 308.3,
+            "close": 312.35
+          },
+          {
+            "date": "2026-09-08",
+            "open": 318.37,
+            "high": 336.58,
+            "low": 317.31,
+            "close": 329.97
+          },
+          {
+            "date": "2026-09-09",
+            "open": 333.5,
+            "high": 346.72,
+            "low": 331.64,
+            "close": 333.6
+          },
+          {
+            "date": "2026-09-10",
+            "open": 324.92,
+            "high": 335.9,
+            "low": 322.07,
+            "close": 325.22
+          },
+          {
+            "date": "2026-09-11",
+            "open": 329.05,
+            "high": 353,
+            "low": 324.1,
+            "close": 346.55
+          },
+          {
+            "date": "2026-09-14",
+            "open": 323.15,
+            "high": 325.21,
+            "low": 313,
+            "close": 316.08
+          },
+          {
+            "date": "2026-09-15",
+            "open": 317.69,
+            "high": 324.89,
+            "low": 313.6,
+            "close": 316.81
+          },
+          {
+            "date": "2026-09-16",
+            "open": 320.2,
+            "high": 329.96,
+            "low": 318,
+            "close": 323.83
+          },
+          {
+            "date": "2026-09-17",
+            "open": 337.75,
+            "high": 353.96,
+            "low": 329.52,
+            "close": 329.94
+          },
+          {
+            "date": "2026-09-18",
+            "open": 332.06,
+            "high": 339.9,
+            "low": 328.92,
+            "close": 332.63
+          },
+          {
+            "date": "2026-09-21",
+            "open": 341.45,
+            "high": 348,
+            "low": 333.1,
+            "close": 344.4
+          },
+          {
+            "date": "2026-09-23",
+            "open": 356.02,
+            "high": 367.9,
+            "low": 354.37,
+            "close": 361.84
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1782259200000,
+            "y": 5.966124651389356
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.850943205280679
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1782259200000,
+            "y": 5.734405138681342
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.619223692572664
+          }
+        ],
+        "latestResistance": 5.850943205280679,
+        "touchPoints": [
+          {
+            "x": 1783555200000,
+            "y": 5.934894195619588,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1785888000000,
+            "y": 5.893741458579367,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788912000000,
+            "y": 5.848517537788049,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 5.848027108363993,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.841803772553575,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.907811162110729,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1783555200000,
+            "y": 5.934894195619588,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1785888000000,
+            "y": 5.893741458579367,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788912000000,
+            "y": 5.848517537788049,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 5.848027108363993,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 5.841803772553575,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 5.907811162110729,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -1.930590673828026,
+        "totalCount": 6
+      }
+    },
+    {
+      "ticker": "ASX",
+      "name": "ASE Technology Holding Co., Ltd.",
+      "periodStats": {
+        "3m": {
+          "touchCount": 4,
+          "breakoutCount": 1,
+          "slope": -1.8915523964163417
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "ASX",
+        "name": "ASE Technology Holding Co., Ltd.",
+        "touchCount": 4,
+        "closeTouchCount": 2,
+        "highTouchCount": 2,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-06-24",
+            "open": 40.65,
+            "high": 42.33,
+            "low": 40.3,
+            "close": 41.34
+          },
+          {
+            "date": "2026-06-25",
+            "open": 41.97,
+            "high": 42.73,
+            "low": 40.57,
+            "close": 41.85
+          },
+          {
+            "date": "2026-06-26",
+            "open": 40.1,
+            "high": 40.53,
+            "low": 39.35,
+            "close": 40.21
+          },
+          {
+            "date": "2026-06-29",
+            "open": 39.88,
+            "high": 42.23,
+            "low": 38.51,
+            "close": 42.13
+          },
+          {
+            "date": "2026-06-30",
+            "open": 42.8,
+            "high": 45.32,
+            "low": 42.53,
+            "close": 45.12
+          },
+          {
+            "date": "2026-07-01",
+            "open": 44.6,
+            "high": 44.71,
+            "low": 42.86,
+            "close": 42.99
+          },
+          {
+            "date": "2026-07-02",
+            "open": 44.74,
+            "high": 45.52,
+            "low": 41.1,
+            "close": 41.87
+          },
+          {
+            "date": "2026-07-06",
+            "open": 43.16,
+            "high": 45.27,
+            "low": 43,
+            "close": 43.32
+          },
+          {
+            "date": "2026-07-07",
+            "open": 40.02,
+            "high": 40.95,
+            "low": 38.82,
+            "close": 39.65
+          },
+          {
+            "date": "2026-07-08",
+            "open": 38.81,
+            "high": 40.53,
+            "low": 38.81,
+            "close": 39.93
+          },
+          {
+            "date": "2026-07-09",
+            "open": 43.4,
+            "high": 44.56,
+            "low": 42.83,
+            "close": 43.25
+          },
+          {
+            "date": "2026-07-10",
+            "open": 42.71,
+            "high": 43.05,
+            "low": 41.32,
+            "close": 42.66
+          },
+          {
+            "date": "2026-07-13",
+            "open": 41.5,
+            "high": 41.8,
+            "low": 40.28,
+            "close": 40.56
+          },
+          {
+            "date": "2026-07-14",
+            "open": 41.77,
+            "high": 42.08,
+            "low": 40.16,
+            "close": 40.36
+          },
+          {
+            "date": "2026-07-15",
+            "open": 41.74,
+            "high": 41.97,
+            "low": 39.05,
+            "close": 40.72
+          },
+          {
+            "date": "2026-07-16",
+            "open": 40.25,
+            "high": 41.17,
+            "low": 39.25,
+            "close": 39.51
+          },
+          {
+            "date": "2026-07-17",
+            "open": 37.68,
+            "high": 39.18,
+            "low": 36.28,
+            "close": 38.41
+          },
+          {
+            "date": "2026-07-20",
+            "open": 37.76,
+            "high": 38.3,
+            "low": 36.88,
+            "close": 36.9
+          },
+          {
+            "date": "2026-07-21",
+            "open": 39.57,
+            "high": 40.37,
+            "low": 39.18,
+            "close": 40.01
+          },
+          {
+            "date": "2026-07-22",
+            "open": 39.32,
+            "high": 40.81,
+            "low": 39.1,
+            "close": 40.49
+          },
+          {
+            "date": "2026-07-23",
+            "open": 39.39,
+            "high": 40.2,
+            "low": 38.84,
+            "close": 39.46
+          },
+          {
+            "date": "2026-07-24",
+            "open": 38.26,
+            "high": 38.48,
+            "low": 36.22,
+            "close": 36.84
+          },
+          {
+            "date": "2026-07-27",
+            "open": 37.5,
+            "high": 37.81,
+            "low": 34.95,
+            "close": 36.55
+          },
+          {
+            "date": "2026-07-28",
+            "open": 34.2,
+            "high": 34.43,
+            "low": 32.89,
+            "close": 33.93
+          },
+          {
+            "date": "2026-07-29",
+            "open": 32.24,
+            "high": 33.61,
+            "low": 31.12,
+            "close": 31.12
+          },
+          {
+            "date": "2026-07-30",
+            "open": 32.32,
+            "high": 34.96,
+            "low": 32.32,
+            "close": 34.77
+          },
+          {
+            "date": "2026-07-31",
+            "open": 36.41,
+            "high": 37.14,
+            "low": 34.41,
+            "close": 35.17
+          },
+          {
+            "date": "2026-08-03",
+            "open": 35.77,
+            "high": 36.72,
+            "low": 35.05,
+            "close": 36.68
+          },
+          {
+            "date": "2026-08-04",
+            "open": 37.8,
+            "high": 38.87,
+            "low": 37.2,
+            "close": 38.7
+          },
+          {
+            "date": "2026-08-05",
+            "open": 37.48,
+            "high": 38.12,
+            "low": 36.63,
+            "close": 36.78
+          },
+          {
+            "date": "2026-08-06",
+            "open": 36.03,
+            "high": 37.76,
+            "low": 35.76,
+            "close": 37.25
+          },
+          {
+            "date": "2026-08-07",
+            "open": 37.44,
+            "high": 38.1,
+            "low": 36.51,
+            "close": 37.39
+          },
+          {
+            "date": "2026-08-10",
+            "open": 39.05,
+            "high": 39.39,
+            "low": 37.53,
+            "close": 37.59
+          },
+          {
+            "date": "2026-08-11",
+            "open": 38.74,
+            "high": 39.44,
+            "low": 38.31,
+            "close": 38.65
+          },
+          {
+            "date": "2026-08-12",
+            "open": 39.5,
+            "high": 39.77,
+            "low": 38.88,
+            "close": 39.28
+          },
+          {
+            "date": "2026-08-13",
+            "open": 38.8,
+            "high": 40.31,
+            "low": 38.7,
+            "close": 39.64
+          },
+          {
+            "date": "2026-08-14",
+            "open": 38.67,
+            "high": 39.63,
+            "low": 38.14,
+            "close": 39.54
+          },
+          {
+            "date": "2026-08-17",
+            "open": 38.95,
+            "high": 40.29,
+            "low": 38.7,
+            "close": 39.91
+          },
+          {
+            "date": "2026-08-18",
+            "open": 37.04,
+            "high": 37.18,
+            "low": 35.88,
+            "close": 36.41
+          },
+          {
+            "date": "2026-08-19",
+            "open": 37.36,
+            "high": 37.45,
+            "low": 35.42,
+            "close": 35.66
+          },
+          {
+            "date": "2026-08-20",
+            "open": 37,
+            "high": 37.28,
+            "low": 36.33,
+            "close": 36.51
+          },
+          {
+            "date": "2026-08-21",
+            "open": 36.75,
+            "high": 36.94,
+            "low": 35.82,
+            "close": 36.51
+          },
+          {
+            "date": "2026-08-24",
+            "open": 36.6,
+            "high": 36.77,
+            "low": 35.78,
+            "close": 36.24
+          },
+          {
+            "date": "2026-08-25",
+            "open": 37.01,
+            "high": 37.42,
+            "low": 36.66,
+            "close": 37.08
+          },
+          {
+            "date": "2026-08-26",
+            "open": 36.92,
+            "high": 37.3,
+            "low": 36.71,
+            "close": 37.26
+          },
+          {
+            "date": "2026-08-27",
+            "open": 38.28,
+            "high": 39,
+            "low": 38.07,
+            "close": 38.9
+          },
+          {
+            "date": "2026-08-28",
+            "open": 38.71,
+            "high": 39.07,
+            "low": 37.53,
+            "close": 37.78
+          },
+          {
+            "date": "2026-08-31",
+            "open": 37,
+            "high": 37.77,
+            "low": 36.7,
+            "close": 36.95
+          },
+          {
+            "date": "2026-09-01",
+            "open": 37.73,
+            "high": 38,
+            "low": 36.5,
+            "close": 37.43
+          },
+          {
+            "date": "2026-09-02",
+            "open": 36.84,
+            "high": 37.41,
+            "low": 36.42,
+            "close": 37.08
+          },
+          {
+            "date": "2026-09-03",
+            "open": 36.81,
+            "high": 37.47,
+            "low": 36.24,
+            "close": 37.43
+          },
+          {
+            "date": "2026-09-04",
+            "open": 37.23,
+            "high": 38.2,
+            "low": 37.13,
+            "close": 37.51
+          },
+          {
+            "date": "2026-09-08",
+            "open": 39.24,
+            "high": 40.43,
+            "low": 39.1,
+            "close": 39.79
+          },
+          {
+            "date": "2026-09-09",
+            "open": 40.41,
+            "high": 41.37,
+            "low": 40.1,
+            "close": 41.2
+          },
+          {
+            "date": "2026-09-10",
+            "open": 40.24,
+            "high": 40.3,
+            "low": 39.45,
+            "close": 39.86
+          },
+          {
+            "date": "2026-09-11",
+            "open": 39.57,
+            "high": 39.86,
+            "low": 39.07,
+            "close": 39.47
+          },
+          {
+            "date": "2026-09-14",
+            "open": 37.41,
+            "high": 37.6,
+            "low": 36.68,
+            "close": 37.08
+          },
+          {
+            "date": "2026-09-15",
+            "open": 37.77,
+            "high": 37.88,
+            "low": 36.84,
+            "close": 37.12
+          },
+          {
+            "date": "2026-09-16",
+            "open": 38.15,
+            "high": 38.71,
+            "low": 37.43,
+            "close": 37.95
+          },
+          {
+            "date": "2026-09-17",
+            "open": 38.95,
+            "high": 40.29,
+            "low": 38.9,
+            "close": 39.99
+          },
+          {
+            "date": "2026-09-18",
+            "open": 40.35,
+            "high": 41.63,
+            "low": 39.98,
+            "close": 41.63
+          },
+          {
+            "date": "2026-09-21",
+            "open": 42.74,
+            "high": 44.02,
+            "low": 42.21,
+            "close": 43.73
+          },
+          {
+            "date": "2026-09-23",
+            "open": 44.35,
+            "high": 44.83,
+            "low": 43.15,
+            "close": 43.93
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1782259200000,
+            "y": 3.8188664829731547
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.7466306224985355
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1782259200000,
+            "y": 3.565881894647525
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.493646034172906
+          }
+        ],
+        "latestResistance": 3.7466306224985355,
+        "touchPoints": [
+          {
+            "x": 1782777600000,
+            "y": 3.8093256071898036,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1782864000000,
+            "y": 3.800197190245889,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1783555200000,
+            "y": 3.7968365956190286,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 3.728821061206884,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.802877558167348,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1782777600000,
+            "y": 3.8093256071898036,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1782864000000,
+            "y": 3.800197190245889,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1783555200000,
+            "y": 3.7968365956190286,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 3.728821061206884,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.802877558167348,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -1.8915523964163417,
+        "totalCount": 5
+      }
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms, Inc.",
+      "periodStats": {
+        "1y": {
+          "touchCount": 6,
+          "breakoutCount": 1,
+          "slope": -2.1079464132704584
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "META",
+        "name": "Meta Platforms, Inc.",
+        "touchCount": 6,
+        "closeTouchCount": 1,
+        "highTouchCount": 5,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 1,
+        "highBreakoutCount": 0,
+        "prices": [
+          {
+            "date": "2025-10-03",
+            "open": 748.72,
+            "high": 750.78,
+            "low": 710.18,
+            "close": 710.56
+          },
+          {
+            "date": "2025-10-10",
+            "open": 705.19,
+            "high": 735.27,
+            "low": 690.51,
+            "close": 705.3
+          },
+          {
+            "date": "2025-10-17",
+            "open": 713.01,
+            "high": 725.49,
+            "low": 699.33,
+            "close": 716.92
+          },
+          {
+            "date": "2025-10-24",
+            "open": 721.19,
+            "high": 742.41,
+            "low": 720.18,
+            "close": 738.36
+          },
+          {
+            "date": "2025-10-31",
+            "open": 749.73,
+            "high": 759.16,
+            "low": 645.57,
+            "close": 648.35
+          },
+          {
+            "date": "2025-11-07",
+            "open": 656,
+            "high": 659.33,
+            "low": 601.2,
+            "close": 621.71
+          },
+          {
+            "date": "2025-11-14",
+            "open": 631.09,
+            "high": 635,
+            "low": 595.2,
+            "close": 609.46
+          },
+          {
+            "date": "2025-11-21",
+            "open": 609.04,
+            "high": 611.69,
+            "low": 581.25,
+            "close": 594.25
+          },
+          {
+            "date": "2025-11-28",
+            "open": 598.72,
+            "high": 648.05,
+            "low": 597.63,
+            "close": 647.95
+          },
+          {
+            "date": "2025-12-05",
+            "open": 639.55,
+            "high": 676.1,
+            "low": 637.55,
+            "close": 673.42
+          },
+          {
+            "date": "2025-12-12",
+            "open": 669.34,
+            "high": 711,
+            "low": 638.61,
+            "close": 644.23
+          },
+          {
+            "date": "2025-12-19",
+            "open": 645.7,
+            "high": 671,
+            "low": 638.7,
+            "close": 658.77
+          },
+          {
+            "date": "2025-12-26",
+            "open": 661.65,
+            "high": 673.58,
+            "low": 656.65,
+            "close": 663.29
+          },
+          {
+            "date": "2026-01-02",
+            "open": 658.01,
+            "high": 672.22,
+            "low": 643.5,
+            "close": 650.41
+          },
+          {
+            "date": "2026-01-09",
+            "open": 651.01,
+            "high": 665.52,
+            "low": 635.72,
+            "close": 653.06
+          },
+          {
+            "date": "2026-01-16",
+            "open": 652.53,
+            "high": 653.97,
+            "low": 614.23,
+            "close": 620.25
+          },
+          {
+            "date": "2026-01-23",
+            "open": 607.88,
+            "high": 666.49,
+            "low": 600,
+            "close": 658.76
+          },
+          {
+            "date": "2026-01-30",
+            "open": 665.13,
+            "high": 744,
+            "low": 661.29,
+            "close": 716.5
+          },
+          {
+            "date": "2026-02-06",
+            "open": 714.6,
+            "high": 721.3,
+            "low": 646.5,
+            "close": 661.46
+          },
+          {
+            "date": "2026-02-13",
+            "open": 663.18,
+            "high": 683.31,
+            "low": 634.57,
+            "close": 639.77
+          },
+          {
+            "date": "2026-02-20",
+            "open": 639.5,
+            "high": 663.35,
+            "low": 628.15,
+            "close": 655.66
+          },
+          {
+            "date": "2026-02-27",
+            "open": 652.54,
+            "high": 661,
+            "low": 628.98,
+            "close": 648.18
+          },
+          {
+            "date": "2026-03-06",
+            "open": 637.16,
+            "high": 672.77,
+            "low": 634.5,
+            "close": 644.86
+          },
+          {
+            "date": "2026-03-13",
+            "open": 634.78,
+            "high": 660.3,
+            "low": 609.55,
+            "close": 613.71
+          },
+          {
+            "date": "2026-03-20",
+            "open": 632,
+            "high": 636.55,
+            "low": 587.25,
+            "close": 593.66
+          },
+          {
+            "date": "2026-03-27",
+            "open": 605.79,
+            "high": 608.64,
+            "low": 520.26,
+            "close": 525.72
+          },
+          {
+            "date": "2026-04-02",
+            "open": 536.38,
+            "high": 592.55,
+            "low": 528.54,
+            "close": 574.46
+          },
+          {
+            "date": "2026-04-10",
+            "open": 577.69,
+            "high": 638.58,
+            "low": 564.76,
+            "close": 629.86
+          },
+          {
+            "date": "2026-04-17",
+            "open": 629.5,
+            "high": 691.52,
+            "low": 624.4,
+            "close": 688.55
+          },
+          {
+            "date": "2026-04-24",
+            "open": 681.36,
+            "high": 683.38,
+            "low": 653.05,
+            "close": 675.03
+          },
+          {
+            "date": "2026-05-01",
+            "open": 671,
+            "high": 682.5,
+            "low": 600,
+            "close": 608.75
+          },
+          {
+            "date": "2026-05-08",
+            "open": 607.94,
+            "high": 624.98,
+            "low": 598.1,
+            "close": 609.63
+          },
+          {
+            "date": "2026-05-15",
+            "open": 604.57,
+            "high": 623.73,
+            "low": 592.6,
+            "close": 614.23
+          },
+          {
+            "date": "2026-05-22",
+            "open": 609.11,
+            "high": 615.59,
+            "low": 594.81,
+            "close": 610.26
+          },
+          {
+            "date": "2026-05-29",
+            "open": 608.89,
+            "high": 643,
+            "low": 605.3,
+            "close": 632.51
+          },
+          {
+            "date": "2026-06-05",
+            "open": 630.4,
+            "high": 642.4,
+            "low": 582.91,
+            "close": 593
+          },
+          {
+            "date": "2026-06-12",
+            "open": 592,
+            "high": 597.63,
+            "low": 557.01,
+            "close": 566.98
+          },
+          {
+            "date": "2026-06-18",
+            "open": 579.9,
+            "high": 605.81,
+            "low": 563.1,
+            "close": 577.22
+          },
+          {
+            "date": "2026-06-26",
+            "open": 572.02,
+            "high": 575.81,
+            "low": 540.18,
+            "close": 550.25
+          },
+          {
+            "date": "2026-07-02",
+            "open": 560,
+            "high": 628.28,
+            "low": 551.43,
+            "close": 582.9
+          },
+          {
+            "date": "2026-07-10",
+            "open": 594.84,
+            "high": 677.86,
+            "low": 577.07,
+            "close": 669.21
+          },
+          {
+            "date": "2026-07-17",
+            "open": 661.38,
+            "high": 686.08,
+            "low": 626,
+            "close": 646.01
+          },
+          {
+            "date": "2026-07-24",
+            "open": 646.7,
+            "high": 655.88,
+            "low": 594.45,
+            "close": 595.19
+          },
+          {
+            "date": "2026-07-31",
+            "open": 607.22,
+            "high": 611.26,
+            "low": 524.49,
+            "close": 556.71
+          },
+          {
+            "date": "2026-08-07",
+            "open": 562.24,
+            "high": 601,
+            "low": 559.36,
+            "close": 592.1
+          },
+          {
+            "date": "2026-08-14",
+            "open": 599.13,
+            "high": 612.43,
+            "low": 578.21,
+            "close": 589.85
+          },
+          {
+            "date": "2026-08-21",
+            "open": 589.75,
+            "high": 590.24,
+            "low": 537.27,
+            "close": 549.9
+          },
+          {
+            "date": "2026-08-28",
+            "open": 550.2,
+            "high": 593.34,
+            "low": 546.3,
+            "close": 578.02
+          },
+          {
+            "date": "2026-09-04",
+            "open": 577.63,
+            "high": 619.46,
+            "low": 556.1,
+            "close": 616.77
+          },
+          {
+            "date": "2026-09-11",
+            "open": 616.21,
+            "high": 664.24,
+            "low": 609.74,
+            "close": 648.03
+          },
+          {
+            "date": "2026-09-18",
+            "open": 657.83,
+            "high": 690.15,
+            "low": 649.22,
+            "close": 665.75
+          },
+          {
+            "date": "2026-09-23",
+            "open": 680.3,
+            "high": 763.9,
+            "low": 679.6,
+            "close": 744.1
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1759449600000,
+            "y": 6.636410271930859
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.49651829963378
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1759449600000,
+            "y": 6.3870326797424815
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.247140707445403
+          }
+        ],
+        "latestResistance": 6.49651829963378,
+        "touchPoints": [
+          {
+            "x": 1759449600000,
+            "y": 6.621112666105018,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1761264000000,
+            "y": 6.60990165120886,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1769731200000,
+            "y": 6.574378247268227,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1770336000000,
+            "y": 6.581055139509627,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1783641600000,
+            "y": 6.5189407769429515,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 6.4986435299537755,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.612175434403215,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1759449600000,
+            "y": 6.621112666105018,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1761264000000,
+            "y": 6.60990165120886,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1769731200000,
+            "y": 6.574378247268227,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1770336000000,
+            "y": 6.581055139509627,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1783641600000,
+            "y": 6.5189407769429515,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 6.4986435299537755,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 6.612175434403215,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -2.1079464132704584,
+        "totalCount": 7
+      }
+    },
+    {
+      "ticker": "RBLX",
+      "name": "Roblox Corporation",
+      "periodStats": {
+        "1y": {
+          "touchCount": 3,
+          "breakoutCount": 2,
+          "slope": -23.550561679469283
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "RBLX",
+        "name": "Roblox Corporation",
+        "touchCount": 3,
+        "closeTouchCount": 0,
+        "highTouchCount": 3,
+        "breakoutCount": 2,
+        "closeBreakoutCount": 1,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2025-10-03",
+            "open": 140.71,
+            "high": 142,
+            "low": 120.56,
+            "close": 122.69
+          },
+          {
+            "date": "2025-10-10",
+            "open": 124,
+            "high": 130.2,
+            "low": 122.23,
+            "close": 126.8
+          },
+          {
+            "date": "2025-10-17",
+            "open": 129.06,
+            "high": 141.95,
+            "low": 124.58,
+            "close": 132.92
+          },
+          {
+            "date": "2025-10-24",
+            "open": 133.9,
+            "high": 135.85,
+            "low": 125.81,
+            "close": 127.71
+          },
+          {
+            "date": "2025-10-31",
+            "open": 129.65,
+            "high": 134.67,
+            "low": 111.2,
+            "close": 113.72
+          },
+          {
+            "date": "2025-11-07",
+            "open": 112.93,
+            "high": 113.6,
+            "low": 100.6,
+            "close": 106.84
+          },
+          {
+            "date": "2025-11-14",
+            "open": 108.03,
+            "high": 108.29,
+            "low": 98.05,
+            "close": 102.28
+          },
+          {
+            "date": "2025-11-21",
+            "open": 102.25,
+            "high": 103.78,
+            "low": 88.23,
+            "close": 89.25
+          },
+          {
+            "date": "2025-11-28",
+            "open": 87.89,
+            "high": 95.74,
+            "low": 87.08,
+            "close": 95.03
+          },
+          {
+            "date": "2025-12-05",
+            "open": 93.01,
+            "high": 97.92,
+            "low": 90.65,
+            "close": 96.28
+          },
+          {
+            "date": "2025-12-12",
+            "open": 96.22,
+            "high": 99.98,
+            "low": 88.06,
+            "close": 88.51
+          },
+          {
+            "date": "2025-12-19",
+            "open": 87.96,
+            "high": 89.19,
+            "low": 81.25,
+            "close": 81.94
+          },
+          {
+            "date": "2025-12-26",
+            "open": 82.42,
+            "high": 83.19,
+            "low": 80.3,
+            "close": 82.22
+          },
+          {
+            "date": "2026-01-02",
+            "open": 81.12,
+            "high": 82.56,
+            "low": 78.8,
+            "close": 80.95
+          },
+          {
+            "date": "2026-01-09",
+            "open": 81.4,
+            "high": 82.38,
+            "low": 71.78,
+            "close": 73.27
+          },
+          {
+            "date": "2026-01-16",
+            "open": 73.05,
+            "high": 91.09,
+            "low": 72.83,
+            "close": 87.28
+          },
+          {
+            "date": "2026-01-23",
+            "open": 84.55,
+            "high": 84.76,
+            "low": 73.07,
+            "close": 74.12
+          },
+          {
+            "date": "2026-01-30",
+            "open": 73.25,
+            "high": 76.5,
+            "low": 64.54,
+            "close": 65.76
+          },
+          {
+            "date": "2026-02-06",
+            "open": 67.02,
+            "high": 69.41,
+            "low": 60.07,
+            "close": 66.42
+          },
+          {
+            "date": "2026-02-13",
+            "open": 68.76,
+            "high": 76.58,
+            "low": 61.6,
+            "close": 63.17
+          },
+          {
+            "date": "2026-02-20",
+            "open": 63.88,
+            "high": 65.8,
+            "low": 60.33,
+            "close": 62
+          },
+          {
+            "date": "2026-02-27",
+            "open": 61.7,
+            "high": 71.53,
+            "low": 59.7,
+            "close": 68.66
+          },
+          {
+            "date": "2026-03-06",
+            "open": 66.5,
+            "high": 69.91,
+            "low": 62.82,
+            "close": 63.53
+          },
+          {
+            "date": "2026-03-13",
+            "open": 62.46,
+            "high": 64.09,
+            "low": 55.85,
+            "close": 56.42
+          },
+          {
+            "date": "2026-03-20",
+            "open": 56.88,
+            "high": 60.56,
+            "low": 55.16,
+            "close": 56.96
+          },
+          {
+            "date": "2026-03-27",
+            "open": 57.06,
+            "high": 57.98,
+            "low": 51.72,
+            "close": 52.31
+          },
+          {
+            "date": "2026-04-02",
+            "open": 52.28,
+            "high": 60.23,
+            "low": 51.23,
+            "close": 60.11
+          },
+          {
+            "date": "2026-04-10",
+            "open": 59.79,
+            "high": 60.66,
+            "low": 52.72,
+            "close": 55.59
+          },
+          {
+            "date": "2026-04-17",
+            "open": 55.51,
+            "high": 62.99,
+            "low": 55.5,
+            "close": 60.34
+          },
+          {
+            "date": "2026-04-24",
+            "open": 60,
+            "high": 64.42,
+            "low": 52.62,
+            "close": 56.09
+          },
+          {
+            "date": "2026-05-01",
+            "open": 55.72,
+            "high": 58.89,
+            "low": 41.75,
+            "close": 45.13
+          },
+          {
+            "date": "2026-05-08",
+            "open": 44.92,
+            "high": 48.43,
+            "low": 41.66,
+            "close": 41.91
+          },
+          {
+            "date": "2026-05-15",
+            "open": 41.26,
+            "high": 44.19,
+            "low": 40.15,
+            "close": 42.85
+          },
+          {
+            "date": "2026-05-22",
+            "open": 42.82,
+            "high": 48.37,
+            "low": 42.65,
+            "close": 48.16
+          },
+          {
+            "date": "2026-05-29",
+            "open": 48.25,
+            "high": 48.53,
+            "low": 44.9,
+            "close": 47.15
+          },
+          {
+            "date": "2026-06-05",
+            "open": 47.76,
+            "high": 48,
+            "low": 41.07,
+            "close": 41.82
+          },
+          {
+            "date": "2026-06-12",
+            "open": 41.67,
+            "high": 44.57,
+            "low": 40.68,
+            "close": 43.31
+          },
+          {
+            "date": "2026-06-18",
+            "open": 44.09,
+            "high": 53.02,
+            "low": 43.56,
+            "close": 51.53
+          },
+          {
+            "date": "2026-06-26",
+            "open": 48.2,
+            "high": 49.54,
+            "low": 44.7,
+            "close": 47.56
+          },
+          {
+            "date": "2026-07-02",
+            "open": 50.9,
+            "high": 58.43,
+            "low": 50.79,
+            "close": 55.41
+          },
+          {
+            "date": "2026-07-10",
+            "open": 55.11,
+            "high": 58.4,
+            "low": 53.56,
+            "close": 55.35
+          },
+          {
+            "date": "2026-07-17",
+            "open": 55.53,
+            "high": 57.54,
+            "low": 50.56,
+            "close": 51.68
+          },
+          {
+            "date": "2026-07-24",
+            "open": 52,
+            "high": 55.42,
+            "low": 47.13,
+            "close": 47.55
+          },
+          {
+            "date": "2026-07-31",
+            "open": 48.37,
+            "high": 51.05,
+            "low": 33.88,
+            "close": 35.6
+          },
+          {
+            "date": "2026-08-07",
+            "open": 35.58,
+            "high": 38.28,
+            "low": 35.03,
+            "close": 37.79
+          },
+          {
+            "date": "2026-08-14",
+            "open": 37.84,
+            "high": 39.68,
+            "low": 35.16,
+            "close": 38.23
+          },
+          {
+            "date": "2026-08-21",
+            "open": 38.08,
+            "high": 40.19,
+            "low": 37.2,
+            "close": 38.37
+          },
+          {
+            "date": "2026-08-28",
+            "open": 38.56,
+            "high": 39.98,
+            "low": 37.31,
+            "close": 38.53
+          },
+          {
+            "date": "2026-09-04",
+            "open": 38.58,
+            "high": 43.46,
+            "low": 38.26,
+            "close": 43.31
+          },
+          {
+            "date": "2026-09-11",
+            "open": 44.56,
+            "high": 46.5,
+            "low": 43.18,
+            "close": 45.5
+          },
+          {
+            "date": "2026-09-18",
+            "open": 47.5,
+            "high": 51.3,
+            "low": 46.26,
+            "close": 47.82
+          },
+          {
+            "date": "2026-09-23",
+            "open": 50.9,
+            "high": 51.96,
+            "low": 48.8,
+            "close": 48.99
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1759449600000,
+            "y": 4.97158070915742
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.8007455278027056
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1759449600000,
+            "y": 4.44610108844399
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.275265907089276
+          }
+        ],
+        "latestResistance": 3.8007455278027056,
+        "touchPoints": [
+          {
+            "x": 1759449600000,
+            "y": 4.955827057601261,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1782950400000,
+            "y": 4.067829456566345,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 3.839452312593311,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 3.937690752176724,
+            "priceType": "high",
+            "type": "breakout"
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.8916161956504833,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1759449600000,
+            "y": 4.955827057601261,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1782950400000,
+            "y": 4.067829456566345,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 3.839452312593311,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 3.937690752176724,
+            "priceType": "high",
+            "type": "breakout"
+          },
+          {
+            "x": 1790121600000,
+            "y": 3.8916161956504833,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -23.550561679469283,
+        "totalCount": 5
+      }
+    },
+    {
+      "ticker": "PSKY",
+      "name": "Paramount Skydance Corporation",
+      "periodStats": {
+        "1y": {
+          "touchCount": 3,
+          "breakoutCount": 1,
+          "slope": -19.505149566483205
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "PSKY",
+        "name": "Paramount Skydance Corporation",
+        "touchCount": 3,
+        "closeTouchCount": 1,
+        "highTouchCount": 2,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2025-10-03",
+            "open": 19.17,
+            "high": 20.09,
+            "low": 18.31,
+            "close": 19.09
+          },
+          {
+            "date": "2025-10-10",
+            "open": 19.14,
+            "high": 19.22,
+            "low": 16.89,
+            "close": 17
+          },
+          {
+            "date": "2025-10-17",
+            "open": 17.13,
+            "high": 17.68,
+            "low": 16.51,
+            "close": 16.77
+          },
+          {
+            "date": "2025-10-24",
+            "open": 16.93,
+            "high": 17.29,
+            "low": 16.28,
+            "close": 16.72
+          },
+          {
+            "date": "2025-10-31",
+            "open": 16.81,
+            "high": 16.93,
+            "low": 15.29,
+            "close": 15.39
+          },
+          {
+            "date": "2025-11-07",
+            "open": 15.36,
+            "high": 15.47,
+            "low": 14.65,
+            "close": 15.1
+          },
+          {
+            "date": "2025-11-14",
+            "open": 15.13,
+            "high": 17.16,
+            "low": 14.97,
+            "close": 15.68
+          },
+          {
+            "date": "2025-11-21",
+            "open": 15.72,
+            "high": 16.31,
+            "low": 15.25,
+            "close": 15.89
+          },
+          {
+            "date": "2025-11-28",
+            "open": 15.89,
+            "high": 16.03,
+            "low": 15,
+            "close": 16.02
+          },
+          {
+            "date": "2025-12-05",
+            "open": 15.81,
+            "high": 16.05,
+            "low": 13.2,
+            "close": 13.37
+          },
+          {
+            "date": "2025-12-12",
+            "open": 14.08,
+            "high": 15.3,
+            "low": 13.53,
+            "close": 13.74
+          },
+          {
+            "date": "2025-12-19",
+            "open": 13.78,
+            "high": 14,
+            "low": 12.87,
+            "close": 13.05
+          },
+          {
+            "date": "2025-12-26",
+            "open": 13.48,
+            "high": 14.1,
+            "low": 13.36,
+            "close": 13.59
+          },
+          {
+            "date": "2026-01-02",
+            "open": 13.5,
+            "high": 13.69,
+            "low": 13.13,
+            "close": 13.18
+          },
+          {
+            "date": "2026-01-09",
+            "open": 13.13,
+            "high": 13.17,
+            "low": 12.02,
+            "close": 12.06
+          },
+          {
+            "date": "2026-01-16",
+            "open": 12.01,
+            "high": 12.22,
+            "low": 11.75,
+            "close": 11.8
+          },
+          {
+            "date": "2026-01-23",
+            "open": 11.53,
+            "high": 11.94,
+            "low": 11.42,
+            "close": 11.7
+          },
+          {
+            "date": "2026-01-30",
+            "open": 11.75,
+            "high": 12,
+            "low": 10.96,
+            "close": 11.21
+          },
+          {
+            "date": "2026-02-06",
+            "open": 11.1,
+            "high": 11.23,
+            "low": 10.34,
+            "close": 10.56
+          },
+          {
+            "date": "2026-02-13",
+            "open": 10.5,
+            "high": 11.07,
+            "low": 10.15,
+            "close": 10.32
+          },
+          {
+            "date": "2026-02-20",
+            "open": 10.62,
+            "high": 11.33,
+            "low": 10.62,
+            "close": 10.71
+          },
+          {
+            "date": "2026-02-27",
+            "open": 10.73,
+            "high": 14,
+            "low": 10.15,
+            "close": 13.51
+          },
+          {
+            "date": "2026-03-06",
+            "open": 14.1,
+            "high": 14.1,
+            "low": 11.33,
+            "close": 11.99
+          },
+          {
+            "date": "2026-03-13",
+            "open": 11.49,
+            "high": 11.6,
+            "low": 9.54,
+            "close": 9.72
+          },
+          {
+            "date": "2026-03-20",
+            "open": 9.62,
+            "high": 9.72,
+            "low": 8.62,
+            "close": 9.15
+          },
+          {
+            "date": "2026-03-27",
+            "open": 9.24,
+            "high": 9.42,
+            "low": 8.65,
+            "close": 8.79
+          },
+          {
+            "date": "2026-04-02",
+            "open": 8.85,
+            "high": 9.71,
+            "low": 8.71,
+            "close": 9.52
+          },
+          {
+            "date": "2026-04-10",
+            "open": 9.52,
+            "high": 11.34,
+            "low": 9.47,
+            "close": 10.62
+          },
+          {
+            "date": "2026-04-17",
+            "open": 10.53,
+            "high": 11.97,
+            "low": 10.32,
+            "close": 11.74
+          },
+          {
+            "date": "2026-04-24",
+            "open": 11.68,
+            "high": 11.92,
+            "low": 10.9,
+            "close": 10.97
+          },
+          {
+            "date": "2026-05-01",
+            "open": 11.02,
+            "high": 11.25,
+            "low": 10.18,
+            "close": 11.09
+          },
+          {
+            "date": "2026-05-08",
+            "open": 11.01,
+            "high": 11.23,
+            "low": 10.17,
+            "close": 11.09
+          },
+          {
+            "date": "2026-05-15",
+            "open": 11.15,
+            "high": 11.17,
+            "low": 9.81,
+            "close": 9.89
+          },
+          {
+            "date": "2026-05-22",
+            "open": 9.9,
+            "high": 10.61,
+            "low": 9.71,
+            "close": 10.46
+          },
+          {
+            "date": "2026-05-29",
+            "open": 10.41,
+            "high": 10.87,
+            "low": 10.29,
+            "close": 10.61
+          },
+          {
+            "date": "2026-06-05",
+            "open": 10.6,
+            "high": 11.17,
+            "low": 9.81,
+            "close": 10.22
+          },
+          {
+            "date": "2026-06-12",
+            "open": 10.16,
+            "high": 10.76,
+            "low": 9.87,
+            "close": 10.47
+          },
+          {
+            "date": "2026-06-18",
+            "open": 10.85,
+            "high": 10.97,
+            "low": 9.75,
+            "close": 9.94
+          },
+          {
+            "date": "2026-06-26",
+            "open": 9.88,
+            "high": 10.1,
+            "low": 9.35,
+            "close": 9.64
+          },
+          {
+            "date": "2026-07-02",
+            "open": 9.82,
+            "high": 10.39,
+            "low": 9.61,
+            "close": 10.39
+          },
+          {
+            "date": "2026-07-10",
+            "open": 10.32,
+            "high": 10.37,
+            "low": 8.84,
+            "close": 9.41
+          },
+          {
+            "date": "2026-07-17",
+            "open": 9.46,
+            "high": 9.8,
+            "low": 8.69,
+            "close": 8.75
+          },
+          {
+            "date": "2026-07-24",
+            "open": 8.8,
+            "high": 8.92,
+            "low": 8.17,
+            "close": 8.21
+          },
+          {
+            "date": "2026-07-31",
+            "open": 8.2,
+            "high": 8.24,
+            "low": 7.62,
+            "close": 7.96
+          },
+          {
+            "date": "2026-08-07",
+            "open": 8,
+            "high": 9.46,
+            "low": 7.92,
+            "close": 9.19
+          },
+          {
+            "date": "2026-08-14",
+            "open": 9.13,
+            "high": 10.32,
+            "low": 9,
+            "close": 10.14
+          },
+          {
+            "date": "2026-08-21",
+            "open": 10.05,
+            "high": 10.65,
+            "low": 10,
+            "close": 10.35
+          },
+          {
+            "date": "2026-08-28",
+            "open": 10.31,
+            "high": 10.98,
+            "low": 10.13,
+            "close": 10.88
+          },
+          {
+            "date": "2026-09-04",
+            "open": 10.8,
+            "high": 11.21,
+            "low": 10.37,
+            "close": 10.86
+          },
+          {
+            "date": "2026-09-11",
+            "open": 10.75,
+            "high": 11.03,
+            "low": 10.17,
+            "close": 10.6
+          },
+          {
+            "date": "2026-09-18",
+            "open": 10.84,
+            "high": 11.28,
+            "low": 10.12,
+            "close": 10.21
+          },
+          {
+            "date": "2026-09-23",
+            "open": 10.65,
+            "high": 11.49,
+            "low": 9.77,
+            "close": 9.96
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1759449600000,
+            "y": 2.9611922780217177
+          },
+          {
+            "x": 1790121600000,
+            "y": 2.3836072952424305
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1759449600000,
+            "y": 2.4896448931597077
+          },
+          {
+            "x": 1790121600000,
+            "y": 1.9120599103804206
+          }
+        ],
+        "latestResistance": 2.3836072952424305,
+        "touchPoints": [
+          {
+            "x": 1759449600000,
+            "y": 2.949164637737656,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 2.4168062370840686,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 2.400618833265411,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 2.4414770918606643,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1759449600000,
+            "y": 2.949164637737656,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 2.4168062370840686,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789084800000,
+            "y": 2.400618833265411,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 2.4414770918606643,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -19.505149566483205,
+        "totalCount": 4
+      }
+    }
+  ]
+}
