@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-10-09 00:59",
+  "generated_at": "2026-10-09 02:14",
   "market": "us",
   "analyzed_count": 960,
   "skipped_count": 1,
   "alerted_count": 960,
   "summary": {
-    "bullish_count": 550,
-    "bearish_count": 354,
+    "bullish_count": 551,
+    "bearish_count": 353,
     "neutral_count": 56,
     "avg_tech_score": 0.2,
     "avg_fund_score": 0.4
@@ -35490,6 +35490,148 @@
           "strength": "weak",
           "label": "우수한 영업이익률 (32.1%)",
           "value": 32.136002000000005,
+          "scoreAffecting": false
+        }
+      ]
+    },
+    {
+      "ticker": "TME",
+      "name": "Tencent Music Entertainment Group",
+      "sector": "Communication Services",
+      "totalScore": 2.5,
+      "techScore": -0.5,
+      "fundScore": 3,
+      "rsi": 44.24,
+      "macd": -0.1334,
+      "bandWidth": 10.44,
+      "volRatio": 0.65,
+      "atr": 0.2136,
+      "stopLoss": 7.64,
+      "mdd": -70.64,
+      "high52w": 23.71,
+      "low52w": 7.74,
+      "stochK": 36.14,
+      "roc20": 0.76,
+      "mfi": 61.08,
+      "adx": 15.65,
+      "supertrendDir": "bearish",
+      "pe": 9.707317,
+      "pb": 1.0694256,
+      "roe": 0.10974,
+      "roa": 0.055960003,
+      "dividendYield": 0.030299999,
+      "insiderPct": 0,
+      "shortRatio": 3.06,
+      "earningsTrend": "accelerating",
+      "alerts": [
+        {
+          "type": "dead_cross_5_20",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "데드크로스 MA5/MA20 (4봉 전)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "macd_dead_cross",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "MACD 데드크로스 (제로선 아래) (4봉 전)",
+          "value": -0.1588,
+          "scoreAffecting": true
+        },
+        {
+          "type": "macd_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "MACD 골든크로스 (2봉 전)",
+          "value": -0.153,
+          "scoreAffecting": true
+        },
+        {
+          "type": "mdd_warning",
+          "direction": "bearish",
+          "strength": "strong",
+          "label": "최대낙폭 경보 (MDD -70.64%)",
+          "value": -70.64,
+          "scoreAffecting": false
+        },
+        {
+          "type": "low52w_near",
+          "direction": "bearish",
+          "strength": "normal",
+          "label": "52주 신저가 근접 (저가 대비 +2.8%)",
+          "value": 7.96,
+          "scoreAffecting": true
+        },
+        {
+          "type": "pv_bullish_divergence",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "가격-거래량 강세 다이버전스 (가격 -8.1% / 거래량 -35.4%)",
+          "value": -35.35674212020464,
+          "scoreAffecting": true
+        },
+        {
+          "type": "stoch_golden_cross",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "Stochastic 골든크로스 (2봉 전)",
+          "value": 22.49,
+          "scoreAffecting": true
+        },
+        {
+          "type": "roc_bullish",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "ROC 상승 모멘텀 (5d:+2.5% 20d:+0.8% 60d:-10.2%)",
+          "scoreAffecting": true
+        },
+        {
+          "type": "supertrend_bearish_hold",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "Supertrend 하락 추세 유지 (선: 8.404)",
+          "value": 8.4037,
+          "scoreAffecting": true
+        },
+        {
+          "type": "pe_undervalued",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "PER 저평가 (PE 9.7)",
+          "value": 9.707317,
+          "scoreAffecting": true
+        },
+        {
+          "type": "earnings_accelerating",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "이익 성장 가속 (최근 18% vs 이전 -5%)",
+          "value": 0.18173122907699665,
+          "scoreAffecting": true
+        },
+        {
+          "type": "insider_very_low",
+          "direction": "bearish",
+          "strength": "weak",
+          "label": "내부자 보유 낮음 (0.0%)",
+          "value": 0,
+          "scoreAffecting": false
+        },
+        {
+          "type": "dividend_attractive",
+          "direction": "bullish",
+          "strength": "normal",
+          "label": "배당 매력 (수익률 3.0% / 성향 30%)",
+          "value": 3.0299999,
+          "scoreAffecting": true
+        },
+        {
+          "type": "profitability_high_margin",
+          "direction": "bullish",
+          "strength": "weak",
+          "label": "우수한 영업이익률 (29.2%)",
+          "value": 29.183999999999997,
           "scoreAffecting": false
         }
       ]
@@ -80936,148 +81078,6 @@
           "label": "양호한 자본효율 (ROE 28.3%)",
           "value": 28.288999999999998,
           "scoreAffecting": true
-        }
-      ]
-    },
-    {
-      "ticker": "TME",
-      "name": "Tencent Music Entertainment Group",
-      "sector": "Communication Services",
-      "totalScore": -0.5,
-      "techScore": -3.5,
-      "fundScore": 3,
-      "rsi": 43.05,
-      "macd": -0.153,
-      "bandWidth": 10.59,
-      "volRatio": 0.59,
-      "atr": 0.2239,
-      "stopLoss": 7.59,
-      "mdd": -70.64,
-      "high52w": 23.71,
-      "low52w": 7.74,
-      "stochK": 22.49,
-      "roc20": -1.61,
-      "mfi": 52.08,
-      "adx": 16.22,
-      "supertrendDir": "bearish",
-      "pe": 9.743902,
-      "pb": 1.073456,
-      "roe": 0.10974,
-      "roa": 0.055960003,
-      "dividendYield": 0.030299999,
-      "insiderPct": 0,
-      "shortRatio": 3.06,
-      "earningsTrend": "accelerating",
-      "alerts": [
-        {
-          "type": "dead_cross_5_20",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "데드크로스 MA5/MA20 (2봉 전)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "macd_dead_cross",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "MACD 데드크로스 (제로선 아래) (2봉 전)",
-          "value": -0.1588,
-          "scoreAffecting": true
-        },
-        {
-          "type": "macd_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "MACD 골든크로스 (당일)",
-          "value": -0.153,
-          "scoreAffecting": true
-        },
-        {
-          "type": "mdd_warning",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "최대낙폭 경보 (MDD -70.64%)",
-          "value": -70.64,
-          "scoreAffecting": false
-        },
-        {
-          "type": "low52w_near",
-          "direction": "bearish",
-          "strength": "normal",
-          "label": "52주 신저가 근접 (저가 대비 +2.5%)",
-          "value": 7.93,
-          "scoreAffecting": true
-        },
-        {
-          "type": "pv_bullish_divergence",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "가격-거래량 강세 다이버전스 (가격 -9.1% / 거래량 -40.9%)",
-          "value": -40.94790894476882,
-          "scoreAffecting": true
-        },
-        {
-          "type": "stoch_golden_cross",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "Stochastic 골든크로스 (당일)",
-          "value": 22.49,
-          "scoreAffecting": true
-        },
-        {
-          "type": "roc_strong_bearish",
-          "direction": "bearish",
-          "strength": "strong",
-          "label": "ROC 전 구간 하락 모멘텀 (5d:-0.4% 20d:-1.6% 60d:-10.2%)",
-          "scoreAffecting": true
-        },
-        {
-          "type": "supertrend_bearish_hold",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "Supertrend 하락 추세 유지 (선: 8.404)",
-          "value": 8.4037,
-          "scoreAffecting": true
-        },
-        {
-          "type": "pe_undervalued",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "PER 저평가 (PE 9.7)",
-          "value": 9.743902,
-          "scoreAffecting": true
-        },
-        {
-          "type": "earnings_accelerating",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "이익 성장 가속 (최근 18% vs 이전 -5%)",
-          "value": 0.18173122907699665,
-          "scoreAffecting": true
-        },
-        {
-          "type": "insider_very_low",
-          "direction": "bearish",
-          "strength": "weak",
-          "label": "내부자 보유 낮음 (0.0%)",
-          "value": 0,
-          "scoreAffecting": false
-        },
-        {
-          "type": "dividend_attractive",
-          "direction": "bullish",
-          "strength": "normal",
-          "label": "배당 매력 (수익률 3.0% / 성향 30%)",
-          "value": 3.0299999,
-          "scoreAffecting": true
-        },
-        {
-          "type": "profitability_high_margin",
-          "direction": "bullish",
-          "strength": "weak",
-          "label": "우수한 영업이익률 (29.2%)",
-          "value": 29.183999999999997,
-          "scoreAffecting": false
         }
       ]
     },
