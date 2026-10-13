@@ -1,6 +1,6 @@
 {
   "ticker": "BAC",
-  "updated_at": "2026-10-12T22:19:32.293Z",
+  "updated_at": "2026-10-13T03:05:48.542Z",
   "info": {
     "name": "Bank of America Corporation",
     "kr_name": "Bank of America Corporation",
@@ -10,7 +10,7 @@
     "industry": "Banks - Diversified",
     "country": "United States",
     "employees": 211000,
-    "is_actively_trading": false
+    "is_actively_trading": true
   },
   "market": {
     "market_cap": 381664231424,
@@ -23,8 +23,8 @@
     "beta": 1.214
   },
   "liquidity": {
-    "avg_daily_volume_3m": 33964868,
-    "avg_daily_volume_10d": 36982510
+    "avg_daily_volume_3m": 33904942,
+    "avg_daily_volume_10d": 36465710
   },
   "valuation": {
     "trailing_pe": 12.605082,
@@ -33,7 +33,7 @@
     "price_to_book": 1.3873215,
     "trailing_eps": 4.33,
     "forward_eps": 5.23698,
-    "enterprise_value": 325685084160
+    "enterprise_value": 327503216640
   },
   "profitability": {
     "profit_margins": 0.29524,
@@ -43,7 +43,24 @@
     "roa": 0.00969,
     "revenue_growth": 0.168,
     "earnings_growth": 0.341,
-    "quarterly_earnings": []
+    "quarterly_earnings": [
+      {
+        "quarter": "2026Q2",
+        "net_income": 8748000000
+      },
+      {
+        "quarter": "2026Q1",
+        "net_income": 8155000000
+      },
+      {
+        "quarter": "2025Q4",
+        "net_income": 7319000000
+      },
+      {
+        "quarter": "2025Q3",
+        "net_income": 8040000000
+      }
+    ]
   },
   "dividend": {
     "rate": 1.28,
@@ -57,15 +74,6 @@
     "short_ratio": 2.32
   },
   "prices": [
-    {
-      "date": "2023-10-12",
-      "open": 26.97,
-      "high": 27.08,
-      "low": 26.61,
-      "close": 26.9,
-      "adj_close": 25.03,
-      "volume": 44249800
-    },
     {
       "date": "2023-10-13",
       "open": 27.43,
@@ -216,7 +224,7 @@
       "high": 28.77,
       "low": 28.02,
       "close": 28.33,
-      "adj_close": 26.37,
+      "adj_close": 26.36,
       "volume": 45548000
     },
     {
@@ -6814,7 +6822,16 @@
       "low": 53.41,
       "close": 54.32,
       "adj_close": 54.32,
-      "volume": 28737700
+      "volume": 28781400
+    },
+    {
+      "date": "2026-10-12",
+      "open": 54.5,
+      "high": 54.93,
+      "low": 54.24,
+      "close": 54.58,
+      "adj_close": 54.58,
+      "volume": 23958800
     }
   ]
 }
