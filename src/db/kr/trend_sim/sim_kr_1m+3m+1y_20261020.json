@@ -1,0 +1,1755 @@
+{
+  "generated_at": "2026-10-20 01:21",
+  "market": "kr",
+  "config": {
+    "market": "kr",
+    "n": null,
+    "periods": [
+      "1m",
+      "3m",
+      "1y"
+    ],
+    "periodConfigs": {
+      "1m": {
+        "barUnit": "daily",
+        "trendBase": "highlow",
+        "trendAlgo": "regression",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 5,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "negative",
+        "slopeMin": "",
+        "slopeMax": ""
+      },
+      "3m": {
+        "barUnit": "daily",
+        "trendBase": "highlow",
+        "trendAlgo": "regression",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 5,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "negative",
+        "slopeMin": "",
+        "slopeMax": ""
+      },
+      "1y": {
+        "barUnit": "weekly",
+        "trendBase": "highlow",
+        "trendAlgo": "regression",
+        "zigzagThreshold": 5,
+        "regressionStdDev": 2,
+        "trendStartDate": "",
+        "trendEndDate": "",
+        "trendTouchBasis": "both",
+        "trendTouchTolerance": 2,
+        "trendBreakoutTolerance": 5,
+        "filterStartDate": "",
+        "filterEndDate": "",
+        "slopeFilter": "negative",
+        "slopeMin": "",
+        "slopeMax": ""
+      }
+    },
+    "patternFilter": {
+      "enabled": true,
+      "minTouches": 3
+    }
+  },
+  "result_count": 4,
+  "results": [
+    {
+      "ticker": "008470.KQ",
+      "name": "부스타",
+      "periodStats": {
+        "1m": {
+          "touchCount": 16,
+          "breakoutCount": 1,
+          "slope": -0.68013932981945
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "008470.KQ",
+        "name": "부스타",
+        "touchCount": 16,
+        "closeTouchCount": 9,
+        "highTouchCount": 7,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-09-16",
+            "open": 1720,
+            "high": 1720,
+            "low": 1655,
+            "close": 1666
+          },
+          {
+            "date": "2026-09-17",
+            "open": 1666,
+            "high": 1688,
+            "low": 1648,
+            "close": 1676
+          },
+          {
+            "date": "2026-09-18",
+            "open": 1662,
+            "high": 1689,
+            "low": 1662,
+            "close": 1673
+          },
+          {
+            "date": "2026-09-21",
+            "open": 1672,
+            "high": 1699,
+            "low": 1660,
+            "close": 1690
+          },
+          {
+            "date": "2026-09-22",
+            "open": 1719,
+            "high": 1719,
+            "low": 1678,
+            "close": 1692
+          },
+          {
+            "date": "2026-09-23",
+            "open": 1686,
+            "high": 1702,
+            "low": 1680,
+            "close": 1693
+          },
+          {
+            "date": "2026-09-28",
+            "open": 1679,
+            "high": 1696,
+            "low": 1673,
+            "close": 1688
+          },
+          {
+            "date": "2026-09-29",
+            "open": 1674,
+            "high": 1685,
+            "low": 1658,
+            "close": 1658
+          },
+          {
+            "date": "2026-09-30",
+            "open": 1644,
+            "high": 1668,
+            "low": 1630,
+            "close": 1654
+          },
+          {
+            "date": "2026-10-01",
+            "open": 1650,
+            "high": 1660,
+            "low": 1621,
+            "close": 1655
+          },
+          {
+            "date": "2026-10-02",
+            "open": 1610,
+            "high": 1670,
+            "low": 1608,
+            "close": 1652
+          },
+          {
+            "date": "2026-10-06",
+            "open": 1701,
+            "high": 1707,
+            "low": 1586,
+            "close": 1639
+          },
+          {
+            "date": "2026-10-07",
+            "open": 1677,
+            "high": 1680,
+            "low": 1620,
+            "close": 1630
+          },
+          {
+            "date": "2026-10-08",
+            "open": 1605,
+            "high": 1650,
+            "low": 1605,
+            "close": 1645
+          },
+          {
+            "date": "2026-10-12",
+            "open": 1645,
+            "high": 1649,
+            "low": 1581,
+            "close": 1630
+          },
+          {
+            "date": "2026-10-13",
+            "open": 1630,
+            "high": 1660,
+            "low": 1569,
+            "close": 1604
+          },
+          {
+            "date": "2026-10-14",
+            "open": 1662,
+            "high": 1662,
+            "low": 1603,
+            "close": 1614
+          },
+          {
+            "date": "2026-10-15",
+            "open": 1587,
+            "high": 1667,
+            "low": 1565,
+            "close": 1583
+          },
+          {
+            "date": "2026-10-16",
+            "open": 1583,
+            "high": 1639,
+            "low": 1583,
+            "close": 1635
+          },
+          {
+            "date": "2026-10-19",
+            "open": 1710,
+            "high": 1710,
+            "low": 1608,
+            "close": 1640
+          },
+          {
+            "date": "2026-10-20",
+            "open": 1734,
+            "high": 1734,
+            "low": 1626,
+            "close": 1639
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1789516800000,
+            "y": 7.453730966742704
+          },
+          {
+            "x": 1792454400000,
+            "y": 7.403035210898955
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1789516800000,
+            "y": 7.41220058072194
+          },
+          {
+            "x": 1792454400000,
+            "y": 7.361504824878192
+          }
+        ],
+        "latestResistance": 7.403035210898955,
+        "touchPoints": [
+          {
+            "x": 1789516800000,
+            "y": 7.450079569807499,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 7.431299675155903,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 7.4318919168078,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 7.432483807917119,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790035200000,
+            "y": 7.433666540166168,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 7.4342573821331355,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790553600000,
+            "y": 7.431299675155903,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790640000000,
+            "y": 7.429520842786462,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790726400000,
+            "y": 7.419380582918692,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790812800000,
+            "y": 7.411556287811163,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790899200000,
+            "y": 7.409741954080923,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1791417600000,
+            "y": 7.405495663199472,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1791763200000,
+            "y": 7.407924322559599,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1791849600000,
+            "y": 7.414572881350589,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1792108800000,
+            "y": 7.399398083331354,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792368000000,
+            "y": 7.402451520818244,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792454400000,
+            "y": 7.458186157340487,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1789516800000,
+            "y": 7.450079569807499,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789603200000,
+            "y": 7.431299675155903,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789689600000,
+            "y": 7.4318919168078,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1789948800000,
+            "y": 7.432483807917119,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790035200000,
+            "y": 7.433666540166168,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790121600000,
+            "y": 7.4342573821331355,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790553600000,
+            "y": 7.431299675155903,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790640000000,
+            "y": 7.429520842786462,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790726400000,
+            "y": 7.419380582918692,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790812800000,
+            "y": 7.411556287811163,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1790899200000,
+            "y": 7.409741954080923,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1791417600000,
+            "y": 7.405495663199472,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1791763200000,
+            "y": 7.407924322559599,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1791849600000,
+            "y": 7.414572881350589,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1792108800000,
+            "y": 7.399398083331354,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792368000000,
+            "y": 7.402451520818244,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792454400000,
+            "y": 7.458186157340487,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -0.68013932981945,
+        "totalCount": 17
+      }
+    },
+    {
+      "ticker": "020400.KQ",
+      "name": "대동금속",
+      "periodStats": {
+        "1m": {
+          "touchCount": 7,
+          "breakoutCount": 1,
+          "slope": -2.23444461948709
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "020400.KQ",
+        "name": "대동금속",
+        "touchCount": 7,
+        "closeTouchCount": 2,
+        "highTouchCount": 5,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2026-09-16",
+            "open": 2825,
+            "high": 2825,
+            "low": 2720,
+            "close": 2780
+          },
+          {
+            "date": "2026-09-17",
+            "open": 2865,
+            "high": 2865,
+            "low": 2750,
+            "close": 2780
+          },
+          {
+            "date": "2026-09-18",
+            "open": 2780,
+            "high": 2795,
+            "low": 2735,
+            "close": 2760
+          },
+          {
+            "date": "2026-09-21",
+            "open": 2760,
+            "high": 2800,
+            "low": 2600,
+            "close": 2645
+          },
+          {
+            "date": "2026-09-22",
+            "open": 2645,
+            "high": 2705,
+            "low": 2640,
+            "close": 2675
+          },
+          {
+            "date": "2026-09-23",
+            "open": 2725,
+            "high": 2725,
+            "low": 2520,
+            "close": 2600
+          },
+          {
+            "date": "2026-09-28",
+            "open": 2595,
+            "high": 2725,
+            "low": 2550,
+            "close": 2600
+          },
+          {
+            "date": "2026-09-29",
+            "open": 2625,
+            "high": 2625,
+            "low": 2525,
+            "close": 2540
+          },
+          {
+            "date": "2026-09-30",
+            "open": 2580,
+            "high": 2635,
+            "low": 2580,
+            "close": 2625
+          },
+          {
+            "date": "2026-10-01",
+            "open": 2625,
+            "high": 2680,
+            "low": 2565,
+            "close": 2645
+          },
+          {
+            "date": "2026-10-02",
+            "open": 2600,
+            "high": 2730,
+            "low": 2595,
+            "close": 2685
+          },
+          {
+            "date": "2026-10-06",
+            "open": 2685,
+            "high": 2685,
+            "low": 2585,
+            "close": 2605
+          },
+          {
+            "date": "2026-10-07",
+            "open": 2605,
+            "high": 2605,
+            "low": 2550,
+            "close": 2560
+          },
+          {
+            "date": "2026-10-08",
+            "open": 2530,
+            "high": 2560,
+            "low": 2490,
+            "close": 2490
+          },
+          {
+            "date": "2026-10-12",
+            "open": 2480,
+            "high": 2490,
+            "low": 2375,
+            "close": 2395
+          },
+          {
+            "date": "2026-10-13",
+            "open": 2390,
+            "high": 2390,
+            "low": 2220,
+            "close": 2325
+          },
+          {
+            "date": "2026-10-14",
+            "open": 2325,
+            "high": 2600,
+            "low": 2315,
+            "close": 2500
+          },
+          {
+            "date": "2026-10-15",
+            "open": 2500,
+            "high": 2500,
+            "low": 2250,
+            "close": 2270
+          },
+          {
+            "date": "2026-10-16",
+            "open": 2340,
+            "high": 2375,
+            "low": 2270,
+            "close": 2350
+          },
+          {
+            "date": "2026-10-19",
+            "open": 2270,
+            "high": 2460,
+            "low": 2270,
+            "close": 2400
+          },
+          {
+            "date": "2026-10-20",
+            "open": 2385,
+            "high": 2600,
+            "low": 2350,
+            "close": 2360
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1789516800000,
+            "y": 7.986355410950228
+          },
+          {
+            "x": 1792454400000,
+            "y": 7.807904722177135
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1789516800000,
+            "y": 7.876498619763028
+          },
+          {
+            "x": 1792454400000,
+            "y": 7.698047930989935
+          }
+        ],
+        "latestResistance": 7.807904722177135,
+        "touchPoints": [
+          {
+            "x": 1789603200000,
+            "y": 7.96032362914884,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790812800000,
+            "y": 7.893572073504902,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790899200000,
+            "y": 7.895436006942965,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1791331200000,
+            "y": 7.865187954187467,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1791936000000,
+            "y": 7.824046010856292,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792022400000,
+            "y": 7.824046010856292,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1792368000000,
+            "y": 7.807916628926408,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1792454400000,
+            "y": 7.8632667240095735,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1789603200000,
+            "y": 7.96032362914884,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790812800000,
+            "y": 7.893572073504902,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790899200000,
+            "y": 7.895436006942965,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1791331200000,
+            "y": 7.865187954187467,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1791936000000,
+            "y": 7.824046010856292,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792022400000,
+            "y": 7.824046010856292,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1792368000000,
+            "y": 7.807916628926408,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1792454400000,
+            "y": 7.8632667240095735,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -2.23444461948709,
+        "totalCount": 8
+      }
+    },
+    {
+      "ticker": "026960.KS",
+      "name": "동서",
+      "periodStats": {
+        "1y": {
+          "touchCount": 7,
+          "breakoutCount": 1,
+          "slope": -0.6959943119282225
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "026960.KS",
+        "name": "동서",
+        "touchCount": 7,
+        "closeTouchCount": 4,
+        "highTouchCount": 3,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 0,
+        "highBreakoutCount": 1,
+        "prices": [
+          {
+            "date": "2025-10-31",
+            "open": 27900,
+            "high": 28250,
+            "low": 26850,
+            "close": 27000
+          },
+          {
+            "date": "2025-11-07",
+            "open": 26750,
+            "high": 27450,
+            "low": 26200,
+            "close": 26850
+          },
+          {
+            "date": "2025-11-14",
+            "open": 27250,
+            "high": 28100,
+            "low": 26950,
+            "close": 27700
+          },
+          {
+            "date": "2025-11-21",
+            "open": 27500,
+            "high": 29500,
+            "low": 27450,
+            "close": 27950
+          },
+          {
+            "date": "2025-11-28",
+            "open": 28200,
+            "high": 28500,
+            "low": 27200,
+            "close": 27400
+          },
+          {
+            "date": "2025-12-05",
+            "open": 27650,
+            "high": 27750,
+            "low": 27000,
+            "close": 27600
+          },
+          {
+            "date": "2025-12-12",
+            "open": 27650,
+            "high": 30950,
+            "low": 27100,
+            "close": 28300
+          },
+          {
+            "date": "2025-12-19",
+            "open": 28250,
+            "high": 29500,
+            "low": 27950,
+            "close": 29000
+          },
+          {
+            "date": "2025-12-26",
+            "open": 29100,
+            "high": 29600,
+            "low": 28600,
+            "close": 28900
+          },
+          {
+            "date": "2026-01-02",
+            "open": 28250,
+            "high": 28250,
+            "low": 25900,
+            "close": 26000
+          },
+          {
+            "date": "2026-01-09",
+            "open": 26200,
+            "high": 26800,
+            "low": 24600,
+            "close": 24900
+          },
+          {
+            "date": "2026-01-16",
+            "open": 25200,
+            "high": 26300,
+            "low": 24750,
+            "close": 25700
+          },
+          {
+            "date": "2026-01-23",
+            "open": 25600,
+            "high": 26400,
+            "low": 25100,
+            "close": 26200
+          },
+          {
+            "date": "2026-01-30",
+            "open": 26200,
+            "high": 26800,
+            "low": 25500,
+            "close": 26000
+          },
+          {
+            "date": "2026-02-06",
+            "open": 26400,
+            "high": 26400,
+            "low": 25000,
+            "close": 26000
+          },
+          {
+            "date": "2026-02-13",
+            "open": 26200,
+            "high": 29250,
+            "low": 26100,
+            "close": 28750
+          },
+          {
+            "date": "2026-02-20",
+            "open": 28850,
+            "high": 29550,
+            "low": 28000,
+            "close": 29200
+          },
+          {
+            "date": "2026-02-27",
+            "open": 29250,
+            "high": 30550,
+            "low": 27350,
+            "close": 27450
+          },
+          {
+            "date": "2026-03-06",
+            "open": 27100,
+            "high": 27850,
+            "low": 24100,
+            "close": 25500
+          },
+          {
+            "date": "2026-03-13",
+            "open": 25000,
+            "high": 26650,
+            "low": 24500,
+            "close": 25550
+          },
+          {
+            "date": "2026-03-20",
+            "open": 25350,
+            "high": 26550,
+            "low": 25000,
+            "close": 26200
+          },
+          {
+            "date": "2026-03-27",
+            "open": 25750,
+            "high": 27450,
+            "low": 25100,
+            "close": 27400
+          },
+          {
+            "date": "2026-04-03",
+            "open": 26650,
+            "high": 28750,
+            "low": 26600,
+            "close": 26950
+          },
+          {
+            "date": "2026-04-10",
+            "open": 26850,
+            "high": 28350,
+            "low": 26600,
+            "close": 27750
+          },
+          {
+            "date": "2026-04-17",
+            "open": 27600,
+            "high": 27900,
+            "low": 26950,
+            "close": 27700
+          },
+          {
+            "date": "2026-04-24",
+            "open": 28200,
+            "high": 28200,
+            "low": 26450,
+            "close": 26550
+          },
+          {
+            "date": "2026-04-30",
+            "open": 26600,
+            "high": 27150,
+            "low": 26000,
+            "close": 26700
+          },
+          {
+            "date": "2026-05-08",
+            "open": 27000,
+            "high": 27100,
+            "low": 24900,
+            "close": 25350
+          },
+          {
+            "date": "2026-05-15",
+            "open": 25100,
+            "high": 25900,
+            "low": 24100,
+            "close": 25350
+          },
+          {
+            "date": "2026-05-22",
+            "open": 25950,
+            "high": 26400,
+            "low": 24500,
+            "close": 26150
+          },
+          {
+            "date": "2026-05-29",
+            "open": 26150,
+            "high": 26450,
+            "low": 24100,
+            "close": 24550
+          },
+          {
+            "date": "2026-06-05",
+            "open": 24550,
+            "high": 24700,
+            "low": 23300,
+            "close": 23650
+          },
+          {
+            "date": "2026-06-12",
+            "open": 23000,
+            "high": 25950,
+            "low": 22750,
+            "close": 25500
+          },
+          {
+            "date": "2026-06-19",
+            "open": 25650,
+            "high": 26350,
+            "low": 24200,
+            "close": 24800
+          },
+          {
+            "date": "2026-06-26",
+            "open": 24800,
+            "high": 24950,
+            "low": 22350,
+            "close": 22950
+          },
+          {
+            "date": "2026-07-03",
+            "open": 23150,
+            "high": 26350,
+            "low": 23050,
+            "close": 25950
+          },
+          {
+            "date": "2026-07-10",
+            "open": 25950,
+            "high": 26300,
+            "low": 24900,
+            "close": 25900
+          },
+          {
+            "date": "2026-07-16",
+            "open": 26000,
+            "high": 26150,
+            "low": 24750,
+            "close": 25500
+          },
+          {
+            "date": "2026-07-24",
+            "open": 25500,
+            "high": 26500,
+            "low": 24450,
+            "close": 26100
+          },
+          {
+            "date": "2026-07-31",
+            "open": 26100,
+            "high": 26850,
+            "low": 25000,
+            "close": 25500
+          },
+          {
+            "date": "2026-08-07",
+            "open": 25150,
+            "high": 26500,
+            "low": 25000,
+            "close": 26500
+          },
+          {
+            "date": "2026-08-14",
+            "open": 26250,
+            "high": 26850,
+            "low": 25550,
+            "close": 26300
+          },
+          {
+            "date": "2026-08-21",
+            "open": 26050,
+            "high": 26450,
+            "low": 25050,
+            "close": 25700
+          },
+          {
+            "date": "2026-08-28",
+            "open": 25700,
+            "high": 26700,
+            "low": 25500,
+            "close": 26150
+          },
+          {
+            "date": "2026-09-04",
+            "open": 26150,
+            "high": 26150,
+            "low": 25000,
+            "close": 25450
+          },
+          {
+            "date": "2026-09-11",
+            "open": 25600,
+            "high": 25900,
+            "low": 24900,
+            "close": 25900
+          },
+          {
+            "date": "2026-09-18",
+            "open": 25650,
+            "high": 26150,
+            "low": 25200,
+            "close": 25500
+          },
+          {
+            "date": "2026-09-23",
+            "open": 25400,
+            "high": 25700,
+            "low": 25200,
+            "close": 25350
+          },
+          {
+            "date": "2026-10-02",
+            "open": 25400,
+            "high": 27850,
+            "low": 25250,
+            "close": 27700
+          },
+          {
+            "date": "2026-10-08",
+            "open": 27550,
+            "high": 27900,
+            "low": 26050,
+            "close": 26300
+          },
+          {
+            "date": "2026-10-16",
+            "open": 26100,
+            "high": 27800,
+            "low": 26100,
+            "close": 27500
+          },
+          {
+            "date": "2026-10-20",
+            "open": 27500,
+            "high": 29550,
+            "low": 27200,
+            "close": 28500
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1761868800000,
+            "y": 10.304239565937284
+          },
+          {
+            "x": 1792454400000,
+            "y": 10.232522644670903
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1761868800000,
+            "y": 10.126504812924736
+          },
+          {
+            "x": 1792454400000,
+            "y": 10.054787891658355
+          }
+        ],
+        "latestResistance": 10.232522644670903,
+        "touchPoints": [
+          {
+            "x": 1763683200000,
+            "y": 10.292145542327912,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1766102400000,
+            "y": 10.275051108968611,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1770940800000,
+            "y": 10.266393046225497,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1775174400000,
+            "y": 10.266393046225497,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1775779200000,
+            "y": 10.252382309155898,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790899200000,
+            "y": 10.22918769217543,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792108800000,
+            "y": 10.221941283654663,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792454400000,
+            "y": 10.293839022834245,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1763683200000,
+            "y": 10.292145542327912,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1766102400000,
+            "y": 10.275051108968611,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1770940800000,
+            "y": 10.266393046225497,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1775174400000,
+            "y": 10.266393046225497,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1775779200000,
+            "y": 10.252382309155898,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1790899200000,
+            "y": 10.22918769217543,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792108800000,
+            "y": 10.221941283654663,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792454400000,
+            "y": 10.293839022834245,
+            "priceType": "high",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -0.6959943119282225,
+        "totalCount": 8
+      }
+    },
+    {
+      "ticker": "000100.KS",
+      "name": "유한양행",
+      "periodStats": {
+        "1y": {
+          "touchCount": 4,
+          "breakoutCount": 1,
+          "slope": -4.86541090908561
+        }
+      },
+      "longestPeriodResult": {
+        "ticker": "000100.KS",
+        "name": "유한양행",
+        "touchCount": 4,
+        "closeTouchCount": 1,
+        "highTouchCount": 3,
+        "breakoutCount": 1,
+        "closeBreakoutCount": 1,
+        "highBreakoutCount": 0,
+        "prices": [
+          {
+            "date": "2025-10-31",
+            "open": 114400,
+            "high": 121600,
+            "low": 114100,
+            "close": 118000
+          },
+          {
+            "date": "2025-11-07",
+            "open": 119000,
+            "high": 123000,
+            "low": 112400,
+            "close": 115300
+          },
+          {
+            "date": "2025-11-14",
+            "open": 116000,
+            "high": 129200,
+            "low": 112100,
+            "close": 125000
+          },
+          {
+            "date": "2025-11-21",
+            "open": 125400,
+            "high": 125500,
+            "low": 115300,
+            "close": 116700
+          },
+          {
+            "date": "2025-11-28",
+            "open": 118100,
+            "high": 122800,
+            "low": 114200,
+            "close": 122000
+          },
+          {
+            "date": "2025-12-05",
+            "open": 121400,
+            "high": 122300,
+            "low": 115900,
+            "close": 117300
+          },
+          {
+            "date": "2025-12-12",
+            "open": 117200,
+            "high": 117500,
+            "low": 115600,
+            "close": 117000
+          },
+          {
+            "date": "2025-12-19",
+            "open": 116500,
+            "high": 117400,
+            "low": 111900,
+            "close": 116400
+          },
+          {
+            "date": "2025-12-26",
+            "open": 116800,
+            "high": 117300,
+            "low": 112600,
+            "close": 112700
+          },
+          {
+            "date": "2026-01-02",
+            "open": 112600,
+            "high": 114200,
+            "low": 111400,
+            "close": 112800
+          },
+          {
+            "date": "2026-01-09",
+            "open": 113400,
+            "high": 115900,
+            "low": 112100,
+            "close": 113300
+          },
+          {
+            "date": "2026-01-16",
+            "open": 113300,
+            "high": 114000,
+            "low": 106300,
+            "close": 107900
+          },
+          {
+            "date": "2026-01-23",
+            "open": 108000,
+            "high": 108600,
+            "low": 101500,
+            "close": 108200
+          },
+          {
+            "date": "2026-01-30",
+            "open": 108700,
+            "high": 111700,
+            "low": 107400,
+            "close": 108000
+          },
+          {
+            "date": "2026-02-06",
+            "open": 106400,
+            "high": 111100,
+            "low": 102000,
+            "close": 104800
+          },
+          {
+            "date": "2026-02-13",
+            "open": 105800,
+            "high": 109800,
+            "low": 105200,
+            "close": 108800
+          },
+          {
+            "date": "2026-02-20",
+            "open": 109700,
+            "high": 113400,
+            "low": 109400,
+            "close": 111800
+          },
+          {
+            "date": "2026-02-27",
+            "open": 112000,
+            "high": 114500,
+            "low": 106600,
+            "close": 110200
+          },
+          {
+            "date": "2026-03-06",
+            "open": 108800,
+            "high": 109700,
+            "low": 91600,
+            "close": 99300
+          },
+          {
+            "date": "2026-03-13",
+            "open": 95000,
+            "high": 104800,
+            "low": 93700,
+            "close": 99300
+          },
+          {
+            "date": "2026-03-20",
+            "open": 99000,
+            "high": 101000,
+            "low": 96900,
+            "close": 100300
+          },
+          {
+            "date": "2026-03-27",
+            "open": 97200,
+            "high": 101200,
+            "low": 93300,
+            "close": 100400
+          },
+          {
+            "date": "2026-04-03",
+            "open": 96700,
+            "high": 100200,
+            "low": 92400,
+            "close": 92800
+          },
+          {
+            "date": "2026-04-10",
+            "open": 92800,
+            "high": 95400,
+            "low": 90900,
+            "close": 92900
+          },
+          {
+            "date": "2026-04-17",
+            "open": 92000,
+            "high": 98500,
+            "low": 91200,
+            "close": 97500
+          },
+          {
+            "date": "2026-04-24",
+            "open": 97900,
+            "high": 98000,
+            "low": 94000,
+            "close": 94800
+          },
+          {
+            "date": "2026-04-30",
+            "open": 95300,
+            "high": 95400,
+            "low": 91600,
+            "close": 91600
+          },
+          {
+            "date": "2026-05-08",
+            "open": 93100,
+            "high": 93100,
+            "low": 86100,
+            "close": 86600
+          },
+          {
+            "date": "2026-05-15",
+            "open": 85900,
+            "high": 90500,
+            "low": 82400,
+            "close": 86000
+          },
+          {
+            "date": "2026-05-22",
+            "open": 85900,
+            "high": 89600,
+            "low": 80000,
+            "close": 88300
+          },
+          {
+            "date": "2026-05-29",
+            "open": 89600,
+            "high": 89900,
+            "low": 81300,
+            "close": 85000
+          },
+          {
+            "date": "2026-06-05",
+            "open": 84200,
+            "high": 84800,
+            "low": 77000,
+            "close": 77500
+          },
+          {
+            "date": "2026-06-12",
+            "open": 74000,
+            "high": 79000,
+            "low": 71700,
+            "close": 77200
+          },
+          {
+            "date": "2026-06-19",
+            "open": 78900,
+            "high": 81200,
+            "low": 74600,
+            "close": 76100
+          },
+          {
+            "date": "2026-06-26",
+            "open": 75600,
+            "high": 75900,
+            "low": 65000,
+            "close": 66400
+          },
+          {
+            "date": "2026-07-03",
+            "open": 66500,
+            "high": 74000,
+            "low": 66500,
+            "close": 70400
+          },
+          {
+            "date": "2026-07-10",
+            "open": 70500,
+            "high": 71200,
+            "low": 66600,
+            "close": 68500
+          },
+          {
+            "date": "2026-07-16",
+            "open": 68600,
+            "high": 71000,
+            "low": 66200,
+            "close": 70800
+          },
+          {
+            "date": "2026-07-24",
+            "open": 70800,
+            "high": 77100,
+            "low": 67900,
+            "close": 74900
+          },
+          {
+            "date": "2026-07-31",
+            "open": 74900,
+            "high": 75200,
+            "low": 68500,
+            "close": 73500
+          },
+          {
+            "date": "2026-08-07",
+            "open": 72100,
+            "high": 80700,
+            "low": 71300,
+            "close": 80600
+          },
+          {
+            "date": "2026-08-14",
+            "open": 80600,
+            "high": 87500,
+            "low": 78900,
+            "close": 83700
+          },
+          {
+            "date": "2026-08-21",
+            "open": 83200,
+            "high": 84300,
+            "low": 77500,
+            "close": 82300
+          },
+          {
+            "date": "2026-08-28",
+            "open": 82900,
+            "high": 87100,
+            "low": 81450,
+            "close": 84900
+          },
+          {
+            "date": "2026-09-04",
+            "open": 83500,
+            "high": 84700,
+            "low": 80900,
+            "close": 81400
+          },
+          {
+            "date": "2026-09-11",
+            "open": 82000,
+            "high": 82000,
+            "low": 77700,
+            "close": 79400
+          },
+          {
+            "date": "2026-09-18",
+            "open": 78200,
+            "high": 81500,
+            "low": 75900,
+            "close": 75900
+          },
+          {
+            "date": "2026-09-23",
+            "open": 75900,
+            "high": 76000,
+            "low": 73700,
+            "close": 74100
+          },
+          {
+            "date": "2026-10-02",
+            "open": 74500,
+            "high": 75500,
+            "low": 72000,
+            "close": 74100
+          },
+          {
+            "date": "2026-10-08",
+            "open": 74500,
+            "high": 76900,
+            "low": 73100,
+            "close": 73100
+          },
+          {
+            "date": "2026-10-16",
+            "open": 73000,
+            "high": 82100,
+            "low": 69000,
+            "close": 80400
+          },
+          {
+            "date": "2026-10-20",
+            "open": 80500,
+            "high": 89800,
+            "low": 79800,
+            "close": 87300
+          }
+        ],
+        "resistanceData": [
+          {
+            "x": 1761868800000,
+            "y": 11.862006593800883
+          },
+          {
+            "x": 1792454400000,
+            "y": 11.28487123094964
+          }
+        ],
+        "supportData": [
+          {
+            "x": 1761868800000,
+            "y": 11.569768288651003
+          },
+          {
+            "x": 1792454400000,
+            "y": 10.99263292579976
+          }
+        ],
+        "latestResistance": 11.28487123094964,
+        "touchPoints": [
+          {
+            "x": 1786665600000,
+            "y": 11.379394072345706,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 11.374812162840595,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 11.346870880640147,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1792108800000,
+            "y": 11.294769455167058,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792454400000,
+            "y": 11.377105741827693,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "filteredTouchPoints": [
+          {
+            "x": 1786665600000,
+            "y": 11.379394072345706,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1787875200000,
+            "y": 11.374812162840595,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1788480000000,
+            "y": 11.346870880640147,
+            "priceType": "high",
+            "type": "touch"
+          },
+          {
+            "x": 1792108800000,
+            "y": 11.294769455167058,
+            "priceType": "close",
+            "type": "touch"
+          },
+          {
+            "x": 1792454400000,
+            "y": 11.377105741827693,
+            "priceType": "close",
+            "type": "breakout"
+          }
+        ],
+        "slopeType": "negative",
+        "slope": -4.86541090908561,
+        "totalCount": 5
+      }
+    }
+  ]
+}
